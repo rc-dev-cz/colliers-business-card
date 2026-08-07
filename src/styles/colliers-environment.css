@@ -1,0 +1,94 @@
+/*
+  COLLIERs ENVIRONMENT CSS
+  Layout geometry for Vue local + later Klai Studio Environment CSS.
+  Tokens + shell markers only — component look stays in Tailwind.
+*/
+
+:root {
+  --colliers-primary: #25408f;
+  --colliers-primary-hover: #1a2e6e;
+  --colliers-bg-app: #f8f9fa;
+  --colliers-bg-surface: #ffffff;
+  --colliers-text: #111827;
+  --colliers-text-muted: #6b7280;
+  --colliers-border: #e5e7eb;
+  --colliers-scroll-body-pad-x: 1.5rem;
+  --colliers-scroll-body-max-width: 72rem;
+}
+
+html,
+body,
+#app {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  font-family: Inter, 'Open Sans', Helvetica, Arial, sans-serif;
+  background: var(--colliers-bg-app);
+  color: var(--colliers-text);
+}
+
+/* Page shell — standalone (no left rail) */
+.colliers-page {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.colliers-right-column {
+  flex: 1 1 auto;
+  min-width: 0;
+  min-height: 0;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: var(--colliers-bg-app);
+}
+
+.colliers-site-header {
+  flex: 0 0 auto;
+  width: 100%;
+  background: var(--colliers-bg-surface);
+  border-bottom: 1px solid var(--colliers-border);
+  z-index: 20;
+}
+
+.colliers-right-body {
+  flex: 1 1 auto;
+  min-height: 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+/* Grow when page is short (footer at bottom); size to content when tall (footer below cards) */
+.colliers-main {
+  width: 100%;
+  max-width: var(--colliers-scroll-body-max-width);
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: var(--colliers-scroll-body-pad-x);
+  padding-right: var(--colliers-scroll-body-pad-x);
+  padding-bottom: 4rem;
+  flex: 1 0 auto;
+  min-height: auto;
+}
+
+.colliers-site-footer {
+  flex: 0 0 auto;
+  width: 100%;
+  margin-top: auto;
+}
+
+@media (max-width: 767px) {
+  :root {
+    --colliers-scroll-body-pad-x: 1rem;
+  }
+}
