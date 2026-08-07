@@ -29,7 +29,7 @@ npm run build
 npm run preview
 ```
 
-GitHub Pages base path defaults to `/colliers-business-card-portal/`. Override with:
+GitHub Pages base path defaults to `/colliers-business-card/`. Override with:
 
 ```bash
 VITE_BASE=/ npm run build
@@ -37,10 +37,10 @@ VITE_BASE=/ npm run build
 
 ## GitHub Pages
 
-1. Push this repo to GitHub (name ideally `colliers-business-card-portal`).
+1. Push this repo to GitHub (repo: `colliers-business-card`).
 2. Settings → Pages → Source: **GitHub Actions**.
 3. Push to `main` — workflow `.github/workflows/deploy-pages.yml` builds and deploys.
-4. Share: `https://<user>.github.io/colliers-business-card-portal/`
+4. Share: `https://rc-dev-cz.github.io/colliers-business-card/`
 
 ## localStorage keys
 
