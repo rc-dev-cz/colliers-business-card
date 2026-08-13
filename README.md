@@ -4,6 +4,12 @@ Vue 3 + Tailwind + Shoelace prototype of the Colliers Partner Portal for busines
 
 **Client preview:** GitHub Pages after you push this repo and enable Pages (Actions).
 
+## Product docs
+
+- [docs/FEATURES.md](docs/FEATURES.md) — what the product is and what it can do
+- [docs/BACKLOG.md](docs/BACKLOG.md) — done / mock / not started
+- [docs/TESTING.md](docs/TESTING.md) — use cases (cart, shipping, admin, theme)
+
 ## Stack
 
 - Vite + Vue 3
