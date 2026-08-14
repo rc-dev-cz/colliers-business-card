@@ -15,7 +15,12 @@ dist-ssr
 !.env.example
 *.local
 
+# Original Colliers Word/PDF guides (markdown in docs/ is the source of truth)
+docs/*.pdf
+docs/*.docx
+
 # Editor directories and files
+.cursor/
 .vscode/*
 !.vscode/extensions.json
 .idea
