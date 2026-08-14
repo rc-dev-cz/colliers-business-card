@@ -1,14 +1,15 @@
 # Features
 
-What this product is and what it can do. Status lives in [BACKLOG.md](BACKLOG.md). Use cases live in [TESTING.md](TESTING.md).
+What this product is and what it can do. Agreed rules: [BUSINESS-RULES.md](BUSINESS-RULES.md). Status lives in [BACKLOG.md](BACKLOG.md). Use cases live in [TESTING.md](TESTING.md).
 
-This is a **Vue 3 + JavaScript** prototype of the Colliers Partner Portal for **ordering branded business cards**. Partners pick a card, customize details, put it in a **cart**, set shipping, and confirm an order.
+This is a **Vue 3 + JavaScript** prototype of the Colliers Partner Portal for **ordering branded business cards**. A **user** picks a card, customizes details, puts it in a **cart**, sets shipping, and confirms an order. An **admin** manages addresses, titles, and dashboard apps.
 
-There is no real backend. Product data is in `src/data/products.js`. Session, cart, and order draft are in `localStorage`. Shipping is **$0.00**. There is **no payment**. Intended later: port the UI into **Klai Studio**.
+There is no real backend. Product data is in `src/data/products.js`. Session, cart, and order draft are in `localStorage`. Shipping is **$0.00** because it is already included in the **$63** box fee — do not add a separate shipping calculation. There is **no payment**. Intended later: port the UI into **Klai Studio**. Do not port RC Web Dev (`src/rc-web-dev/`) — that stays in this Vue app with Cursor and Supabase.
 
 **Source of truth**
 
-- **This Vue repo** — partner order flow, especially customize (ahead of the designer). Do not copy customize from AI Studio.
+- **[BUSINESS-RULES.md](BUSINESS-RULES.md)** — agreed product behaviour and test IDs (V2, August 2026)
+- **This Vue repo** — user order flow, especially customize (ahead of the designer). Do not copy customize from AI Studio.
 - **Designer preview** — admin screens only, at a high level. Do not match that UI pixel for pixel.
 
 Preview login (`demo` / any email in Vue) is for designer and us only. It is **not** a product feature. Signup and forgot-password are preview-only too. Do not list them here.
@@ -17,17 +18,20 @@ Preview login (`demo` / any email in Vue) is for designer and us only. It is **n
 
 | Term | Meaning |
 | --- | --- |
+| **user** | Regular person who orders cards (catalogue → confirm). Not an admin. Stories: [USER.md](USER.md) |
+| **admin** | Person who manages addresses, titles, and dashboard apps. Stories: [ADMIN.md](ADMIN.md) |
+| **Partner Portal** | Product name on the login screen. It is not a third role |
 | **cart item** | One row in the cart drawer |
 | **cart badge icon** | Red number on the shopping-cart icon in the header (total quantity of all cart items) |
 | **Business Card Bilingual** | A product (`BCAD-PL-BIL`), not the website EN/FR toggle |
 
-## Order flow (partner)
+## Order flow (user)
 
-**Cards** (3 products) → Details → Customize (Vue) → Cart → Shipping → Confirmed.
+**Cards** (3 products) → Details → Customize (Vue) → Cart → Shipping → Review → Confirmed.
 
 ## Cards
 
-Three products. Same in Vue and the designer. $63 per box, 250 cards per box, details page with pricing tiers.
+Three products. Same in Vue and the designer. $63 per box (shipping included), 250 cards per box, details page with pricing tiers.
 
 | ID | Product | SKU |
 | --- | --- | --- |
@@ -43,9 +47,9 @@ Never say only “bilingual.” That is the **product name**, not the navbar lan
 
 F-05 — Customize the card in this repo (`src/pages/CustomizePage.vue`). Do not match the AI Studio customize screen.
 
-- Full name (max 30 characters, two lines on the card)
-- Title (one title per card; dropdown of job titles)
-- Email (max 30 characters)
+- Full name (max 50 characters, two lines on the card)
+- Designation (one or more from the list; Vue still allows one)
+- Email (max 40 characters)
 - Mobile phone (Canadian +1, formatted)
 - Office address (dropdown)
 - Company locked: **Colliers**
@@ -67,19 +71,21 @@ F-09 — Shipping splits: Split Order, Remove Split only when there is more than
 
 F-10 — Ship-to addresses: add/remove location, select a saved location, qty on a location (does not change cart quantity).
 
-F-11 — Order confirmed: success screen; cart and order draft cleared. No order history in Vue.
+F-11 — Order confirmed: success screen; cart and order draft cleared. No order history in Vue. Review before confirm is F-27.
 
 ## Admin (designer only; not in this Vue repo)
 
-F-12 — Admin login: `admin` / `123`. Nav shows ADMIN, Catalogue, Manage Addresses, Manage Titles. Profile: Admin Panel and Log out.
+Work checklist: [ADMIN.md](ADMIN.md). User order-flow stories: [USER.md](USER.md).
 
-F-13 — Admin Dashboard: Total Orders, Pending Approvals, Active Users, plus shortcuts.
+F-12 — Admin login: `admin` / `123`. Nav: ADMIN, Catalogue, Manage Addresses, Manage Titles. Profile: Admin Panel, Order History, Log out.
 
-F-14 — Manage Addresses: list of office addresses; add; remove; Edit Supplier Details.
+F-13 — Admin Dashboard: System Options (Order History, Invoice History, Reporting, Manage Addresses, Manage Titles). No Total Orders / Pending Approvals / Active Users tiles.
 
-F-15 — Manage Titles: list of designations (PMP, LEED AP, and others); add; remove.
+F-14 — Manage Addresses: list; add and edit via structured address form; remove. Edit Supplier Details is gone.
 
-F-16 / F-17 / F-18 — Dashboard also shows Order History, Invoice History, Reporting. Treat as intended / placeholder unless confirmed working.
+F-15 — Manage Titles: list of designations (PMP, LEED AP, and others); add; delete; inline edit.
+
+F-16 / F-17 / F-18 — Order History, Invoice History, and Reporting are real screens in the designer (mock data).
 
 ## Language and theme
 

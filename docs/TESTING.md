@@ -1,12 +1,12 @@
 # Testing
 
-Use cases to implement against. There is no test runner in this repo yet.
+Use cases to implement against. Agreed rules and test IDs: [BUSINESS-RULES.md](BUSINESS-RULES.md). There is no test runner in this repo yet.
 
-Partner customize, cart, and shipping follow **this Vue app**. Do not write customize cases against the AI Studio customize screen.
+User customize, cart, and shipping follow **this Vue app**. Do not write customize cases against the AI Studio customize screen.
 
 Do **not** add tests for `demo` / `123`, signup, or forgot password. Those are preview gates for us, not product. Admin tests stay.
 
-Price today: **$63.00** per box (`BCAD-PL-ENG`, `BCAD-PL-BIL`, `BCAD-PL-FR`). Cart key: `colliers.cart`.
+Price today: **$63.00** per box (`BCAD-PL-ENG`, `BCAD-PL-BIL`, `BCAD-PL-FR`). Shipping is included in that fee, so Shipping & Handling is **$0.00**. Cart key: `colliers.cart`.
 
 ## Terms
 
@@ -19,7 +19,7 @@ Price today: **$63.00** per box (`BCAD-PL-ENG`, `BCAD-PL-BIL`, `BCAD-PL-FR`). Ca
 ## How quantity works
 
 - Customize **Add to Cart** adds **quantity 1** each click.
-- Same card + same name/title/email/phone/office → those clicks **combine into one cart item**. Cart badge icon = total quantity.
+- Same card + same name/designation(s)/email/phone/office → those clicks **combine into one cart item**. Cart badge icon = total quantity.
 - **Qty 10** means **one cart item** with quantity 10 — not 10 different products. Cart badge icon **10**, subtotal **$630.00** (10 × $63).
 - Say the SKU, quantity, how many cart items, cart badge icon, and total. Do not say “cart has 10 boxes” as a vague setup.
 
