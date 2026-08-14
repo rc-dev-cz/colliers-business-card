@@ -17,6 +17,11 @@ function goCatalog() {
   router.push({ name: 'catalog' })
 }
 
+function goWebDev() {
+  menuOpen.value = false
+  router.push({ name: 'rc-web-dev-board' })
+}
+
 function onLogout() {
   menuOpen.value = false
   logout()
@@ -28,12 +33,25 @@ function onLogout() {
   <header class="colliers-site-header">
     <div class="mx-auto flex h-[64px] w-full max-w-6xl items-center justify-between px-4 sm:h-[72px] sm:px-6 lg:px-8">
       <div class="flex min-w-0 items-center gap-4 sm:gap-8">
-        <button type="button" class="shrink-0 focus:outline-none" @click="goCatalog">
-          <img
-            src="https://www.collierscanada.com/-/media/images/colliers/unitedstates/national/footer/logofooter.ashx?bid=19443a8c23424c689d86c4d1320eac0f"
-            alt="Colliers"
-            class="h-8 object-contain sm:h-10"
-          />
+        <button
+          type="button"
+          class="shrink-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-colliers-primary"
+          aria-label="Colliers"
+          @click="goCatalog"
+        >
+          <span
+            class="inline-flex h-8 w-[58px] flex-col overflow-hidden rounded-[2.5px] bg-white shadow-[0_1px_2px_rgba(0,0,0,0.1)] sm:h-10 sm:w-[72px]"
+            aria-hidden="true"
+          >
+            <span class="flex flex-1 items-center justify-center bg-[#24418A] px-[10%]">
+              <span class="w-full text-center font-serif leading-none tracking-normal text-white text-[11px] sm:text-[13px]">
+                Colliers
+              </span>
+            </span>
+            <span class="block h-[2px] w-full bg-[#00A9E0]" />
+            <span class="block h-[2px] w-full bg-[#FFD100]" />
+            <span class="block h-[2px] w-full bg-[#E31837]" />
+          </span>
         </button>
         <nav class="hidden h-full sm:flex">
           <button
@@ -97,12 +115,19 @@ function onLogout() {
           </button>
           <div
             v-if="menuOpen"
-            class="absolute right-0 z-30 mt-2 w-44 rounded-md border border-gray-200 bg-white py-2 shadow-lg"
+            class="absolute right-0 z-30 mt-2 w-52 overflow-hidden rounded-md border border-gray-200 bg-white py-2 shadow-lg"
           >
             <div class="border-b border-gray-100 px-3 pb-2 text-sm text-gray-600">{{ userEmail || 'demo' }}</div>
             <button
               type="button"
-              class="w-full px-3 py-2 text-left text-sm text-gray-800 hover:bg-gray-50"
+              class="web-dev-menu mx-2 mt-2 w-[calc(100%-1rem)] rounded-md px-3 py-2 text-left text-sm font-semibold text-gray-900"
+              @click="goWebDev"
+            >
+              RC Web Dev
+            </button>
+            <button
+              type="button"
+              class="mt-1 w-full px-3 py-2 text-left text-sm text-gray-800 hover:bg-gray-50"
               @click="onLogout"
             >
               {{ t('logOut') }}
@@ -113,3 +138,19 @@ function onLogout() {
     </div>
   </header>
 </template>
+
+<style scoped>
+/* Vue prototype only — strip this menu item before the Klai port. */
+.web-dev-menu {
+  background: linear-gradient(
+    90deg,
+    #fecaca 0%,
+    #fed7aa 16%,
+    #fef08a 33%,
+    #bbf7d0 50%,
+    #bfdbfe 66%,
+    #ddd6fe 83%,
+    #fbcfe8 100%
+  );
+}
+</style>

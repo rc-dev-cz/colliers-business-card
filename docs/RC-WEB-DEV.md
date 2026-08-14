@@ -6,7 +6,7 @@ How RC Dev works on a project. This is **our** place — not a product feature f
 
 ## Isolation
 
-RC Web Dev lives only in this repo, in `src/rc-web-dev/`. Stack: **Cursor** + **this Vue web app**. Tickets are **local only** right now.
+RC Web Dev lives only in this repo, in `src/rc-web-dev/`. Stack: **Cursor** + **this Vue web app**.
 
 Do not port it with the Colliers Partner Portal. When the product UI goes to Klai, leave this folder, these routes, and this file behind.
 
@@ -35,7 +35,7 @@ Only tickets with someone **assigned** count on the roadmap and in the percentag
 
 ## Ticket schema
 
-Ticket source of truth: [TICKETS.md](TICKETS.md). The board still seeds from `src/rc-web-dev/data/devTracker.js` — keep that file in sync with TICKETS.md. Local only. Do not write to Supabase until we turn that on.
+Git source of truth: [TICKETS.md](TICKETS.md) — the one document with every ticket. The board seeds from [devTracker.json](devTracker.json) (imported by `src/rc-web-dev/data/devTracker.js`). When tickets change, update **both** files. Supabase is not the source of truth.
 
 | Field | Meaning |
 | --- | --- |
@@ -71,7 +71,9 @@ Click a ticket to open it. **Edit ticket** changes the fields above. On Ideas (o
 
 Create, move, or edit a ticket and it gets a bouncing blue mark plus **Updated** or **In progress**. Click the pill on the open ticket to clear it. A move keeps the ticket’s category.
 
-Live board **loads from** `rc_tickets` and **writes on Save** (create ticket, or Edit → Save). Drag stays in the browser until you Save that ticket. The nav pill shows **Supabase on** when sync is live. Ask before running any live Supabase command from the agent.
+If `.env.local` has Supabase keys, the board **loads** `rc_tickets` on open and **writes on Save** (create ticket, or Edit → Save). Drag stays in the browser until you Save that ticket. Remote rows can overlay the seed, so stale Supabase text can hide newer git wording until you Save. The nav pill shows **Supabase on** / **off** / **down**. Ask before running any live Supabase command from the agent.
+
+Sync is still partial (DEV-030). Parent, blocked, hours, and due date are not stored in `rc_tickets`. Logs stay in the browser.
 
 Click **Create ticket** or **+** on Ideas. Pick category, priority, and who it is **Assigned** to (**CZ** or **KC**). The ticket gets an `RC-xx` id and lands in **Ideas**. Drag into Ready, In progress, QA, or Done.
 
@@ -87,7 +89,8 @@ Creates, column moves (board drag or roadmap checkbox), and ticket edits are wri
 | --- | --- |
 | `docs/BUSINESS-RULES.md` | Agreed product behaviour and test IDs (V2) |
 | `docs/FEATURES.md`, `BACKLOG.md`, `USER.md`, `ADMIN.md`, `TESTING.md` | The product (what goes to Klai) |
-| `docs/TICKETS.md` | Ticket source of truth (RC Web Dev) |
+| `docs/TICKETS.md` | **The** ticket document (git source of truth) |
+| `docs/devTracker.json` | Board seed — keep in lockstep with TICKETS.md |
 | `docs/RC-WEB-DEV.md` | How RC Dev works (this Vue app only) |
 
 When we start a new project, copy `src/rc-web-dev/`, the `#/rc-web-dev` routes, and this file. Do not copy them into Klai.

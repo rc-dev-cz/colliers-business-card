@@ -2,7 +2,7 @@
 
 This is the **source of truth** for RC Web Dev tickets. How the board works: [RC-WEB-DEV.md](RC-WEB-DEV.md). Product rules: [BUSINESS-RULES.md](BUSINESS-RULES.md). Product stories: [USER.md](USER.md), [ADMIN.md](ADMIN.md).
 
-The live board still loads seed data from `src/rc-web-dev/data/devTracker.js`. If that file and this document disagree, **this file wins** — update the seed to match.
+This is the one local ticket document. The board seeds from [devTracker.json](devTracker.json). If that file and this document disagree, **this file wins** — update the JSON to match. Supabase is a live overlay, not the source of truth.
 
 ## Snapshot
 

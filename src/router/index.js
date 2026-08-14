@@ -20,6 +20,22 @@ const router = createRouter({
     { path: '/customize/:code', name: 'customize', component: CustomizePage, props: true },
     { path: '/shipping', name: 'shipping', component: ShippingPage },
     { path: '/confirmed', name: 'confirmed', component: ConfirmedPage },
+    // RC Web Dev is internal (Cursor + Vue + Supabase). Do not port to Klai.
+    { path: '/admin-work', redirect: { name: 'rc-web-dev-roadmap' } },
+    { path: '/user-work', redirect: { name: 'rc-web-dev-roadmap' } },
+    {
+      path: '/rc-web-dev',
+      component: () => import('../rc-web-dev/RcWebDevLayout.vue'),
+      meta: { webDev: true },
+      children: [
+        { path: '', redirect: { name: 'rc-web-dev-board' } },
+        { path: 'board', name: 'rc-web-dev-board', component: () => import('../rc-web-dev/pages/RcWebDevPage.vue') },
+        { path: 'roadmap', name: 'rc-web-dev-roadmap', component: () => import('../rc-web-dev/pages/RcWebDevRoadmapPage.vue') },
+        { path: 'logs', name: 'rc-web-dev-logs', component: () => import('../rc-web-dev/pages/RcWebDevLogsPage.vue') },
+      ],
+    },
+    { path: '/dev', redirect: { name: 'rc-web-dev-board' } },
+    { path: '/gira', redirect: { name: 'rc-web-dev-board' } },
     { path: '/:pathMatch(.*)*', redirect: '/' },
   ],
   scrollBehavior() {

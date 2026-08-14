@@ -9,7 +9,11 @@ import CartDrawer from '../components/CartDrawer.vue'
     <div class="colliers-right-column">
       <AppHeader />
       <div class="colliers-right-body">
-        <main id="main" class="colliers-main flex flex-col py-6 sm:py-10" tabindex="-1">
+        <main
+          id="main"
+          class="colliers-main flex flex-col py-6 sm:py-10"
+          tabindex="-1"
+        >
           <slot />
         </main>
         <AppFooter />
