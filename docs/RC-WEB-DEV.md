@@ -31,7 +31,7 @@ Old shortcuts: `#/dev`, `#/gira`, `#/admin-work`, `#/user-work` all land in RC W
 Only tickets with someone **assigned** count on the roadmap and in the percentage.
 
 - Assigned to **CZ** (Carlos Zabaleta) or **KC** (Kevin Collins) → on the roadmap
-- New tickets default to **CZ**
+- New tickets land in Ideas **unassigned**. Checking Ready for development assigns them.
 
 ## Ticket schema
 
@@ -75,7 +75,7 @@ If `.env.local` has Supabase keys, the board **loads** `rc_tickets` on open and 
 
 Sync is still partial (DEV-030). Parent, blocked, hours, and due date are not stored in `rc_tickets`. Logs stay in the browser.
 
-Click **Create ticket** or **+** on Ideas. Pick category, priority, and who it is **Assigned** to (**CZ** or **KC**). The ticket gets an `RC-xx` id and lands in **Ideas**. Drag into Ready, In progress, QA, or Done.
+Click **Create ticket** or **+** on Ideas. Pick category and priority. The ticket gets an `RC-xx` id and lands in **Ideas**, unassigned. Check **Ready for development — assign to me** when it is approved. Drag into Ready, In progress, QA, or Done.
 
 Product codes: `F-xx`. Customer pages: `USR-010`, `USR-020`, … with children `USR-011` (`parentId: 'USR-010'`). Admin pages: `ADM-010`, `ADM-020`, …. RC work: `DEV-010`. Created here: `RC-xx`.
 

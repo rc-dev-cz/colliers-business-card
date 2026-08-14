@@ -1,10 +1,7 @@
 <script setup>
 import { onBeforeUnmount, reactive, ref, watch } from 'vue'
 import {
-  ASSIGNEE_LABEL,
-  ASSIGNEES,
   CATEGORIES,
-  DEFAULT_ASSIGNEE,
   PRIORITY_LABEL,
   categoryTheme,
 } from '../data/devTracker'
@@ -18,7 +15,7 @@ const form = reactive({
   title: '',
   description: '',
   priority: 'medium',
-  assignee: DEFAULT_ASSIGNEE,
+  assignee: '',
   category: 'Technical',
   acceptanceCriteria: [],
 })
@@ -28,7 +25,7 @@ function resetForm() {
   form.title = ''
   form.description = ''
   form.priority = 'medium'
-  form.assignee = DEFAULT_ASSIGNEE
+  form.assignee = ''
   form.category = 'Technical'
   form.acceptanceCriteria = []
 }
@@ -121,22 +118,6 @@ function save() {
               @click="form.priority = value"
             >
               {{ label }}
-            </button>
-          </div>
-        </div>
-
-        <div class="mt-8 px-6 sm:px-7">
-          <p class="mb-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-colliers-primary">Assigned</p>
-          <div class="inline-flex flex-wrap rounded-lg bg-slate-100 p-0.5">
-            <button
-              v-for="person in ASSIGNEES"
-              :key="person"
-              type="button"
-              class="rounded-md px-3 py-1.5 text-[12px] font-semibold transition"
-              :class="segmentClass(form.assignee === person)"
-              @click="form.assignee = person"
-            >
-              {{ ASSIGNEE_LABEL[person] }}
             </button>
           </div>
         </div>

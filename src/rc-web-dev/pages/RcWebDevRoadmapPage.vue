@@ -68,6 +68,7 @@ function toggle(id) {
   const ticket = tickets.value.find((item) => item.id === id)
   const current = ticket ? merged(ticket).status : ''
   setStatus(id, current === 'Done' ? READY_STATUS : 'Done')
+  selectedId.value = id
 }
 
 function openTicket(id) {
@@ -268,5 +269,5 @@ function toggleIdeaGroup(category) {
     </div>
   </section>
 
-  <TicketModal :ticket="selectedTicket" @close="closeTicket" @open="selectedId = $event" @saved="closeTicket" />
+  <TicketModal :ticket="selectedTicket" @close="closeTicket" @open="selectedId = $event" @saved="closeTicket" @deleted="closeTicket" />
 </template>

@@ -1,11 +1,9 @@
 <script setup>
 import { useRoute } from 'vue-router'
 import { useDevBoard } from '../composables/useDevBoard'
-import { useSupabaseStatus } from '../composables/useSupabaseStatus'
 
 const route = useRoute()
 const { openCreate } = useDevBoard()
-const { label, title, tone, dot } = useSupabaseStatus()
 
 const tabs = [
   { name: 'rc-web-dev-board', label: 'Board', to: { name: 'rc-web-dev-board' } },
@@ -32,14 +30,6 @@ const tabs = [
           {{ tab.label }}
         </router-link>
       </div>
-      <span
-        class="hidden items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-semibold ring-1 sm:inline-flex"
-        :class="tone"
-        :title="title"
-      >
-        <span class="h-1.5 w-1.5 rounded-full" :class="dot" aria-hidden="true" />
-        {{ label }}
-      </span>
     </div>
     <button type="button" class="btn-primary" @click="openCreate()">
       Create ticket

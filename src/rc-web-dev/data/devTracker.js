@@ -359,7 +359,7 @@ export function normalizeCustomTicket(ticket, id) {
     status,
     category,
     priority: ['high', 'medium', 'low'].includes(ticket.priority) ? ticket.priority : 'medium',
-    assignee: normalizeAssignee(ticket.assignee || DEFAULT_ASSIGNEE),
+    assignee: normalizeAssignee(ticket.assignee),
     acceptanceCriteria: asCriteria(ticket.acceptanceCriteria),
     parentId: ticket.parentId || null,
     blocked,

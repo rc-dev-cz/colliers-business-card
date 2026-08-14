@@ -17,7 +17,9 @@ import {
 import {
   fetchRcTicketLogs,
   fetchRcTickets,
+  insertRcTicketLog,
   upsertRcTicket,
+  deleteRcTicket,
 } from '../lib/rcTicketsApi'
 import { SUPABASE_SYNC } from '../lib/supabaseClient'
 
@@ -25,6 +27,17 @@ try {
   localStorage.removeItem('colliers.devTrackerV4')
 } catch {
   /* ignore */
+}
+
+const REMOVED_KEY = 'colliers.rcDeletedTicketIds'
+
+function loadRemovedIds() {
+  try {
+    const raw = JSON.parse(localStorage.getItem(REMOVED_KEY) || '[]')
+    return Array.isArray(raw) ? raw.filter((id) => typeof id === 'string') : []
+  } catch {
+    return []
+  }
 }
 
 const statusById = ref({})
@@ -35,12 +48,15 @@ const creating = ref(false)
 const focusId = ref('')
 const highlightId = ref('')
 const persistError = ref('')
+const lastSavedById = ref({})
+const removedIds = ref(loadRemovedIds())
 let logSeq = 0
 const seedIds = new Set(seedTickets.map((ticket) => ticket.id))
 
 const tickets = computed(() => {
-  const custom = Object.values(customById.value).filter((ticket) => ticket?.id && !seedIds.has(ticket.id))
-  return [...seedTickets, ...custom]
+  const hidden = new Set(removedIds.value)
+  const custom = Object.values(customById.value).filter((ticket) => ticket?.id && !seedIds.has(ticket.id) && !hidden.has(ticket.id))
+  return [...seedTickets, ...custom].filter((ticket) => !hidden.has(ticket.id))
 })
 
 function hasClearedReview(id) {
@@ -96,17 +112,77 @@ function findTicket(id) {
 
 const USE_SUPABASE = SUPABASE_SYNC
 
+function captureSaved(id) {
+  const ticket = findTicket(id)
+  if (!ticket) return
+  lastSavedById.value = {
+    ...lastSavedById.value,
+    [id]: { status: ticket.status, assignee: ticket.assignee || '' },
+  }
+}
+
+function captureAllSaved() {
+  const next = { ...lastSavedById.value }
+  for (const ticket of tickets.value) {
+    const current = merged(ticket)
+    next[current.id] = { status: current.status, assignee: current.assignee || '' }
+  }
+  lastSavedById.value = next
+}
+
+function hasUnsaved(id) {
+  const ticket = findTicket(id)
+  const saved = lastSavedById.value[id]
+  if (!ticket || !saved) return false
+  return ticket.status !== saved.status || (ticket.assignee || '') !== saved.assignee
+}
+
+captureAllSaved()
+
+async function persistLog(id, ticket, saved) {
+  const local = logs.value.find((item) => item.ticketId === id)
+  const entry =
+    local ||
+    (saved && saved.status !== ticket.status
+      ? {
+          type: 'moved',
+          ticketId: id,
+          title: ticket.title,
+          from: saved.status,
+          to: ticket.status,
+          assignee: ticket.assignee || '',
+        }
+      : null)
+  if (!entry) return
+  await insertRcTicketLog(entry)
+  const remoteLogs = await fetchRcTicketLogs(LOG_LIMIT)
+  if (remoteLogs.length) logs.value = remoteLogs
+}
+
 function persistTicket(id) {
   persistError.value = ''
-  if (!USE_SUPABASE) return Promise.resolve()
   const ticket = findTicket(id)
   if (!ticket) return Promise.resolve()
-  return upsertRcTicket(ticket).catch((error) => {
-    const message = error?.message || 'Could not save to the database.'
-    persistError.value = message
-    console.warn('RC Web Dev save failed', error)
-    throw error
-  })
+  const saved = lastSavedById.value[id]
+  if (!USE_SUPABASE) {
+    captureSaved(id)
+    return Promise.resolve()
+  }
+  return upsertRcTicket(ticket)
+    .then(async () => {
+      try {
+        await persistLog(id, ticket, saved)
+      } catch (error) {
+        console.warn('RC Web Dev log save failed', error)
+      }
+      captureSaved(id)
+    })
+    .catch((error) => {
+      const message = error?.message || 'Could not save to the database.'
+      persistError.value = message
+      console.warn('RC Web Dev save failed', error)
+      throw error
+    })
 }
 
 async function hydrateFromSupabase() {
@@ -120,6 +196,7 @@ async function hydrateFromSupabase() {
     const nextEdits = { ...editsById.value }
 
     for (const ticket of remoteTickets) {
+      if (removedIds.value.includes(ticket.id)) continue
       if (nextStatus[ticket.id] || nextCustom[ticket.id] || nextEdits[ticket.id]) continue
       if (seedIds.has(ticket.id)) {
         nextStatus[ticket.id] = normalizeStatus(ticket.status)
@@ -152,7 +229,21 @@ async function hydrateFromSupabase() {
     customById.value = nextCustom
     statusById.value = nextStatus
     editsById.value = nextEdits
-    if (remoteLogs.length && !logs.value.length) logs.value = remoteLogs
+    if (remoteLogs.length) {
+      if (!logs.value.length) logs.value = remoteLogs
+      else {
+        const seen = new Set(
+          logs.value.map((item) => `${item.ticketId}|${item.type}|${item.from}|${item.to}|${item.at}`),
+        )
+        const extra = remoteLogs.filter(
+          (item) => !seen.has(`${item.ticketId}|${item.type}|${item.from}|${item.to}|${item.at}`),
+        )
+        logs.value = [...logs.value, ...extra]
+          .sort((a, b) => String(b.at).localeCompare(String(a.at)))
+          .slice(0, LOG_LIMIT)
+      }
+    }
+    captureAllSaved()
   } catch (error) {
     persistError.value = error?.message || 'Could not load tickets from the database.'
     console.warn('RC Web Dev load failed', error)
@@ -197,6 +288,17 @@ export function useDevBoard() {
     editsById.value = {
       ...editsById.value,
       [id]: { ...(editsById.value[id] || {}), ...patch },
+    }
+  }
+
+  function revertUnsaved(id) {
+    const saved = lastSavedById.value[id]
+    if (!saved) return
+    statusById.value = { ...statusById.value, [id]: saved.status }
+    patchStored(id, { assignee: saved.assignee })
+    const idx = logs.value.findIndex((item) => item.ticketId === id && item.type === 'moved')
+    if (idx !== -1) {
+      logs.value = logs.value.filter((_, index) => index !== idx)
     }
   }
 
@@ -380,6 +482,43 @@ export function useDevBoard() {
     patchStored(id, { acceptanceCriteria: asCriteria(list) })
   }
 
+  async function removeTicket(id) {
+    if (!id) return
+    persistError.value = ''
+    if (USE_SUPABASE) {
+      await deleteRcTicket(id)
+    }
+    if (!removedIds.value.includes(id)) {
+      removedIds.value = [...removedIds.value, id]
+      try {
+        localStorage.setItem(REMOVED_KEY, JSON.stringify(removedIds.value))
+      } catch {
+        /* ignore */
+      }
+    }
+    if (customById.value[id]) {
+      const next = { ...customById.value }
+      delete next[id]
+      customById.value = next
+    }
+    if (editsById.value[id]) {
+      const next = { ...editsById.value }
+      delete next[id]
+      editsById.value = next
+    }
+    if (statusById.value[id]) {
+      const next = { ...statusById.value }
+      delete next[id]
+      statusById.value = next
+    }
+    if (lastSavedById.value[id]) {
+      const next = { ...lastSavedById.value }
+      delete next[id]
+      lastSavedById.value = next
+    }
+    logs.value = logs.value.filter((item) => item.ticketId !== id)
+  }
+
   return {
     statusById,
     tickets,
@@ -398,5 +537,8 @@ export function useDevBoard() {
     updateTicket,
     setAcceptanceCriteria,
     persistTicket,
+    hasUnsaved,
+    revertUnsaved,
+    removeTicket,
   }
 }

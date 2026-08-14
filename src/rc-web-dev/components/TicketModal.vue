@@ -34,12 +34,14 @@ const props = defineProps({
   ticket: { type: Object, default: null },
 })
 
-const emit = defineEmits(['close', 'open', 'saved'])
-const { tickets, merged, updateTicket, approveTicket, setReadyToWork, persistTicket, setAcceptanceCriteria } =
+const emit = defineEmits(['close', 'open', 'saved', 'deleted'])
+const { tickets, merged, updateTicket, approveTicket, setReadyToWork, persistTicket, setAcceptanceCriteria, hasUnsaved, revertUnsaved, removeTicket } =
   useDevBoard()
 const editing = ref(false)
 const error = ref('')
 const saving = ref(false)
+const confirmingDelete = ref(false)
+const deleting = ref(false)
 const isIdea = computed(() => props.ticket?.status === 'Ideas')
 const isReady = computed(() => props.ticket?.status === READY_STATUS)
 const canReadyToggle = computed(() => isIdea.value || isReady.value)
@@ -95,6 +97,13 @@ const dirty = computed(() => {
   )
 })
 
+const unsaved = computed(() => Boolean(props.ticket && hasUnsaved(props.ticket.id)))
+
+const canSave = computed(() => {
+  if (!props.ticket || saving.value) return false
+  return dirty.value || unsaved.value
+})
+
 function chipClass(active, on) {
   return active ? `${on} ring-2 ring-colliers-primary/30` : `${on} opacity-40 hover:opacity-90`
 }
@@ -141,6 +150,32 @@ function cancelEdit() {
   error.value = ''
 }
 
+function cancelView() {
+  if (confirmingDelete.value) {
+    confirmingDelete.value = false
+    return
+  }
+  if (props.ticket && unsaved.value) revertUnsaved(props.ticket.id)
+  emit('close')
+}
+
+async function confirmRemove() {
+  if (!props.ticket || deleting.value) return
+  deleting.value = true
+  error.value = ''
+  const id = props.ticket.id
+  try {
+    await removeTicket(id)
+    emit('deleted', id)
+    emit('close')
+  } catch (err) {
+    error.value = err?.message || 'Could not delete the ticket.'
+    confirmingDelete.value = false
+  } finally {
+    deleting.value = false
+  }
+}
+
 function onCriteriaUpdate(list) {
   form.acceptanceCriteria = asCriteria(list)
   if (editing.value || !props.ticket) return
@@ -171,6 +206,7 @@ async function saveEdit() {
 }
 
 async function saveTicket() {
+  if (!canSave.value || saving.value) return
   if (editing.value) {
     await saveEdit()
     return
@@ -185,8 +221,12 @@ function onReadyChange(event) {
 
 function onKey(event) {
   if (event.key !== 'Escape') return
+  if (confirmingDelete.value) {
+    confirmingDelete.value = false
+    return
+  }
   if (editing.value) cancelEdit()
-  else emit('close')
+  else cancelView()
 }
 
 watch(
@@ -195,7 +235,8 @@ watch(
     editing.value = false
     error.value = ''
     saving.value = false
-    if (props.ticket) fillForm(props.ticket)
+    confirmingDelete.value = false
+    deleting.value = false
     if (props.ticket) fillForm(props.ticket)
     if (id) window.addEventListener('keydown', onKey)
     else window.removeEventListener('keydown', onKey)
@@ -212,7 +253,7 @@ onBeforeUnmount(() => {
     <div
       v-if="ticket"
       class="fixed inset-0 z-[1100] flex items-center justify-center overflow-y-auto bg-slate-900/45 p-4 backdrop-blur-[2px] sm:p-6"
-      @click.self="emit('close')"
+      @click.self="cancelView"
     >
       <article
         :key="ticket.id"
@@ -262,7 +303,7 @@ onBeforeUnmount(() => {
             type="button"
             class="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-slate-400 transition hover:bg-slate-100 hover:text-slate-700"
             aria-label="Close"
-            @click="emit('close')"
+            @click="cancelView"
           >
             <svg viewBox="0 0 20 20" fill="none" class="h-4 w-4" aria-hidden="true">
               <path d="M5 5l10 10M15 5L5 15" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
@@ -359,6 +400,13 @@ onBeforeUnmount(() => {
           </label>
         </div>
 
+        <p
+          v-if="!editing && unsaved"
+          class="mx-6 mt-4 rounded-xl bg-amber-50 px-4 py-3 text-sm text-amber-950 ring-1 ring-amber-200 sm:mx-7"
+        >
+          Not saved yet. Save to keep this in the database.
+        </p>
+
         <label
           v-if="!editing && canReadyToggle"
           class="mx-6 mt-4 flex cursor-pointer items-start gap-3 rounded-xl px-4 py-3 ring-1 sm:mx-7"
@@ -448,25 +496,72 @@ onBeforeUnmount(() => {
           </ul>
         </section>
 
-        <div class="flex items-center justify-end gap-3 px-6 py-5 sm:px-7">
-          <p v-if="saving" class="mr-auto text-sm font-medium text-slate-500">Saving…</p>
-          <p v-else-if="editing && dirty" class="mr-auto text-sm font-medium text-amber-700">Unsaved changes</p>
-          <template v-if="editing">
-            <button type="button" class="text-sm font-medium text-colliers-primary hover:text-colliers-primary-hover" @click="cancelEdit">
-              Cancel
+        <div
+          v-if="confirmingDelete"
+          class="absolute inset-0 z-20 flex items-center justify-center bg-slate-900/40 p-6"
+        >
+          <div class="w-full max-w-sm rounded-2xl bg-white p-5 shadow-xl ring-1 ring-black/5">
+            <p class="text-lg font-semibold text-slate-900">Are you sure?</p>
+            <p class="mt-1 text-sm text-slate-600">
+              Delete {{ ticket.id }} — {{ ticket.title }}. This removes it from the board and the database.
+            </p>
+            <div class="mt-5 flex justify-end gap-3">
+              <button
+                type="button"
+                class="text-sm font-medium text-slate-600 hover:text-slate-900"
+                :disabled="deleting"
+                @click="confirmingDelete = false"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                class="inline-flex items-center justify-center rounded bg-rose-700 px-4 py-2.5 text-[15px] font-medium text-white hover:bg-rose-800 disabled:cursor-not-allowed disabled:opacity-40"
+                :disabled="deleting"
+                @click="confirmRemove"
+              >
+                {{ deleting ? 'Deleting…' : 'Delete' }}
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-3 px-6 py-5 sm:px-7">
+          <button
+            v-if="!editing"
+            type="button"
+            class="text-sm font-medium text-colliers-primary hover:text-colliers-primary-hover"
+            @click="startEdit"
+          >
+            Edit ticket
+          </button>
+          <button
+            v-if="!editing"
+            type="button"
+            class="text-sm font-medium text-rose-700 hover:text-rose-800"
+            @click="confirmingDelete = true"
+          >
+            Delete ticket
+          </button>
+          <p v-if="saving" class="text-sm font-medium text-slate-500">Saving…</p>
+          <p v-else-if="canSave" class="text-sm font-medium text-amber-700">Unsaved changes</p>
+          <div class="ml-auto flex items-center gap-3">
+            <button
+              type="button"
+              class="text-sm font-medium text-slate-600 hover:text-slate-900"
+              @click="editing ? cancelEdit() : cancelView()"
+            >
+              {{ editing || unsaved ? 'Cancel' : 'Close' }}
             </button>
-            <button type="button" class="btn-primary" :disabled="!dirty || saving" @click="saveTicket">
+            <button
+              type="button"
+              class="btn-primary disabled:cursor-not-allowed disabled:opacity-40"
+              :disabled="!canSave"
+              @click="saveTicket"
+            >
               {{ saving ? 'Saving…' : 'Save' }}
             </button>
-          </template>
-          <template v-else>
-            <button type="button" class="text-sm font-medium text-colliers-primary hover:text-colliers-primary-hover" @click="startEdit">
-              Edit ticket
-            </button>
-            <button type="button" class="btn-primary" :disabled="saving" @click="saveTicket">
-              {{ saving ? 'Saving…' : 'Save' }}
-            </button>
-          </template>
+          </div>
         </div>
       </article>
     </div>

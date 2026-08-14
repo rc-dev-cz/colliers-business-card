@@ -277,5 +277,5 @@ function closeTicket() {
     </div>
   </section>
 
-  <TicketModal :ticket="selectedTicket" @close="closeTicket" @open="selectedId = $event" @saved="closeTicket" />
+  <TicketModal :ticket="selectedTicket" @close="closeTicket" @open="selectedId = $event" @saved="closeTicket" @deleted="closeTicket" />
 </template>

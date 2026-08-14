@@ -50,6 +50,15 @@ function closeTicket() {
   focusId.value = ''
 }
 
+function onTicketDeleted() {
+  toast.value = 'Deleted'
+  window.clearTimeout(toastTimer)
+  toastTimer = window.setTimeout(() => {
+    toast.value = ''
+  }, 2200)
+  closeTicket()
+}
+
 function onTicketSaved(id) {
   const ticket = tickets.value.find((item) => item.id === id)
   const current = ticket ? merged(ticket) : null
@@ -195,13 +204,6 @@ function finishDrag(id, fromStatus, toStatus, toCategory) {
     if (category) {
       dirtyGroups.value = { ...dirtyGroups.value, [groupKey(toStatus, category)]: true }
     }
-    if (statusChanged && category) {
-      toast.value = `${category} updated`
-      window.clearTimeout(toastTimer)
-      toastTimer = window.setTimeout(() => {
-        toast.value = ''
-      }, 2800)
-    }
     movedTimer = window.setTimeout(() => {
       moved.value = null
     }, 1400)
@@ -209,6 +211,7 @@ function finishDrag(id, fromStatus, toStatus, toCategory) {
 
   window.setTimeout(() => {
     suppressClick = false
+    if (statusChanged && id) selectedId.value = id
   }, 50)
 }
 
@@ -402,7 +405,7 @@ onBeforeUnmount(() => {
     </div>
   </div>
 
-  <TicketModal :ticket="selectedTicket" @close="closeTicket" @open="selectedId = $event" @saved="onTicketSaved" />
+  <TicketModal :ticket="selectedTicket" @close="closeTicket" @open="selectedId = $event" @saved="onTicketSaved" @deleted="onTicketDeleted" />
 
   <Teleport to="body">
     <p

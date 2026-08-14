@@ -117,3 +117,10 @@ export async function insertRcTicketLog(entry) {
   })
   if (error) throw error
 }
+
+export async function deleteRcTicket(code) {
+  if (!supabase) return
+  const { error } = await supabase.from('rc_tickets').delete().eq('code', code)
+  if (error) throw error
+  await supabase.from('rc_ticket_logs').delete().eq('ticket_code', code)
+}
