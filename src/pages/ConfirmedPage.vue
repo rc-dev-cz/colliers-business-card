@@ -3,16 +3,17 @@ import { onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useLocale } from '../composables/useLocale'
 import { useCart } from '../composables/useCart'
-import { removeStorage } from '../composables/useStorage'
+import { useOrder } from '../composables/useOrder'
 import ColliersPageShell from '../layout/ColliersPageShell.vue'
 
 const router = useRouter()
 const { t } = useLocale()
 const { clearCart } = useCart()
+const { clearOrder } = useOrder()
 
 onMounted(() => {
   clearCart()
-  removeStorage('order')
+  clearOrder()
 })
 
 function backToCatalog() {

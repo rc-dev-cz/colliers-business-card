@@ -71,6 +71,24 @@ Each **page** is a tens ticket. Children are the pieces of that page.
   - [ ] **USR-063** Order review before confirm — F-27
 - [x] **USR-070** Header language `(AppHeader.vue)` — F-22
   - [x] **USR-071** Navbar EN/FR
+- [ ] **USR-080** Address Book — F-29 (admin: ADM-080)
+  - [ ] **USR-081** Address Book from profile menu
+  - [ ] **USR-082** My Address Book (personal list)
+  - [ ] **USR-083** Office Addresses tab (view only)
+  - [ ] **USR-084** Search addresses
+  - [ ] **USR-085** Add a personal address
+  - [ ] **USR-086** Edit a personal address
+  - [ ] **USR-087** Delete a personal address
+  - [ ] **USR-088** Canada address fields (Province / Postal)
+  - [ ] **USR-089** Shipping can use personal Address Book entries
+- [ ] **USR-090** Order History — F-30
+  - [ ] **USR-091** Order History from profile menu
+  - [ ] **USR-092** Order History table (this user's orders)
+  - [ ] **USR-093** Search own orders
+  - [ ] **USR-094** Filter own orders by status
+  - [ ] **USR-095** View order card preview
+  - [ ] **USR-096** Repeat Order
+  - [ ] **USR-097** Confirmed orders appear in history
 
 Ticket descriptions live on the RC Web Dev board (`#/rc-web-dev`). This file is the checklist.
 

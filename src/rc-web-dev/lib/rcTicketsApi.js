@@ -4,8 +4,27 @@ import { categoryToEpic, asCriteria, normalizeCategory, statusToRow } from '../d
 function encodeSource(ticket) {
   const notes = ticket.notes || ''
   const acceptanceCriteria = asCriteria(ticket.acceptanceCriteria)
-  if (!acceptanceCriteria.length) return notes
-  return JSON.stringify({ notes, acceptanceCriteria })
+  const parentId = ticket.parentId || null
+  const blocked = Boolean(ticket.blocked)
+  const blockedReason = blocked ? String(ticket.blockedReason || '') : ''
+  const estimatedHours = Number(ticket.estimatedHours) || 0
+  const dueDate = ticket.dueDate ? String(ticket.dueDate) : ''
+  const needsPack =
+    acceptanceCriteria.length ||
+    parentId ||
+    blocked ||
+    estimatedHours ||
+    dueDate
+  if (!needsPack) return notes
+  return JSON.stringify({
+    notes,
+    acceptanceCriteria,
+    parentId,
+    blocked,
+    blockedReason,
+    estimatedHours,
+    dueDate,
+  })
 }
 
 function decodeSource(raw) {
@@ -13,17 +32,40 @@ function decodeSource(raw) {
   if (source.startsWith('{')) {
     try {
       const parsed = JSON.parse(source)
-      if (parsed && typeof parsed === 'object' && Array.isArray(parsed.acceptanceCriteria)) {
+      if (parsed && typeof parsed === 'object') {
+        const hasParentKey = Object.prototype.hasOwnProperty.call(parsed, 'parentId')
+        const hasBlockedKey = Object.prototype.hasOwnProperty.call(parsed, 'blocked')
+        const hasHoursKey = Object.prototype.hasOwnProperty.call(parsed, 'estimatedHours')
+        const hasDueKey = Object.prototype.hasOwnProperty.call(parsed, 'dueDate')
         return {
           notes: String(parsed.notes || ''),
           acceptanceCriteria: asCriteria(parsed.acceptanceCriteria),
+          parentId: hasParentKey ? parsed.parentId || null : undefined,
+          blocked: hasBlockedKey ? Boolean(parsed.blocked) : undefined,
+          blockedReason: hasBlockedKey
+            ? parsed.blocked
+              ? String(parsed.blockedReason || '')
+              : ''
+            : undefined,
+          estimatedHours: hasHoursKey ? Number(parsed.estimatedHours) || 0 : undefined,
+          dueDate: hasDueKey ? (parsed.dueDate ? String(parsed.dueDate) : '') : undefined,
+          hasMeta: hasParentKey || hasBlockedKey || hasHoursKey || hasDueKey,
         }
       }
     } catch {
       /* plain notes */
     }
   }
-  return { notes: source, acceptanceCriteria: [] }
+  return {
+    notes: source,
+    acceptanceCriteria: [],
+    parentId: undefined,
+    blocked: undefined,
+    blockedReason: undefined,
+    estimatedHours: undefined,
+    dueDate: undefined,
+    hasMeta: false,
+  }
 }
 
 function ticketToRow(ticket) {
@@ -45,7 +87,7 @@ function ticketToRow(ticket) {
 
 export function rowToTicket(row) {
   const packed = decodeSource(row.notes || row.source || '')
-  return {
+  const ticket = {
     id: row.code,
     title: row.title,
     description: row.description || '',
@@ -60,6 +102,15 @@ export function rowToTicket(row) {
     review: row.review || '',
     reviewedAt: row.updated_at || '',
   }
+  // Only overlay hierarchy/meta when source was packed — old plain-note rows leave seed values alone.
+  if (packed.hasMeta) {
+    ticket.parentId = packed.parentId
+    ticket.blocked = packed.blocked
+    ticket.blockedReason = packed.blockedReason
+    ticket.estimatedHours = packed.estimatedHours
+    ticket.dueDate = packed.dueDate
+  }
+  return ticket
 }
 
 export function rowToLog(row) {

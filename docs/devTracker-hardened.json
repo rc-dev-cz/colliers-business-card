@@ -233,7 +233,7 @@
     {
       "id": "USR-011",
       "title": "Business Card English",
-      "description": "SKU BCAD-PL-ENG. $63 per box, 250 cards.",
+      "description": "$63 per box, 250 cards.",
       "status": "Done",
       "category": "Customer Portal",
       "priority": "medium",
@@ -256,7 +256,7 @@
     {
       "id": "USR-012",
       "title": "Business Card Bilingual",
-      "description": "SKU BCAD-PL-BIL. Product name, not the EN/FR toggle.",
+      "description": "Product name, not the EN/FR toggle.",
       "status": "Done",
       "category": "Customer Portal",
       "priority": "medium",
@@ -279,7 +279,7 @@
     {
       "id": "USR-013",
       "title": "Business Card French",
-      "description": "SKU BCAD-PL-FR. $63 per box, 250 cards.",
+      "description": "$63 per box, 250 cards.",
       "status": "Done",
       "category": "Customer Portal",
       "priority": "medium",
@@ -470,7 +470,10 @@
       "assignee": "",
       "acceptanceCriteria": [
         "The full-name field accepts no more than 50 characters.",
-        "A valid long name renders on no more than two lines without overlapping other card content."
+        "A valid long name renders on no more than two lines without overlapping other card content.",
+        "The field accepts 1–50 characters after leading and trailing spaces are removed; a 51st character cannot be stored or submitted.",
+        "A 50-character name remains readable within the approved two-line name area at supported widths; it does not overlap the designation, contact details, logo, or card edge.",
+        "An empty or whitespace-only name blocks Add to Cart and shows field-level guidance."
       ],
       "parentId": "USR-030",
       "blocked": false,
@@ -516,7 +519,10 @@
       "assignee": "",
       "acceptanceCriteria": [
         "The email field accepts no more than 40 characters.",
-        "The accepted email value appears unchanged on the preview and cart item."
+        "The accepted email value appears unchanged on the preview and cart item.",
+        "The field accepts a syntactically valid email of up to 40 characters after surrounding spaces are removed; 41 characters are rejected.",
+        "Invalid formats and whitespace-only values block Add to Cart and show field-level guidance without clearing the entered value.",
+        "A 40-character email is displayed gracefully in the preview without overlapping adjacent card content; the stored cart value is not truncated."
       ],
       "parentId": "USR-030",
       "blocked": false,
@@ -633,7 +639,10 @@
         "Users can select more than one designation.",
         "Selected designations appear below the field, on the card preview, and the control shows how many are selected.",
         "Users can remove a selected designation.",
-        "Removed designations disappear from the preview."
+        "Removed designations disappear from the preview.",
+        "The same designation cannot be selected more than once, and the selected-value count equals the number of unique selections.",
+        "Selection order is preserved in the preview and in the cart item so equality checks are deterministic.",
+        "If the approved maximum number of designations is reached, additional choices are disabled or rejected with clear guidance."
       ],
       "parentId": "USR-030",
       "blocked": false,
@@ -679,7 +688,9 @@
       "assignee": "CZ",
       "acceptanceCriteria": [
         "Cards with the same product and identical customization are combined into one cart line.",
-        "Combining lines increases quantity without changing the saved customization data."
+        "Combining lines increases quantity without changing the saved customization data.",
+        "Equality includes product, normalized full name, ordered designation IDs, normalized email, normalized phone, and office-address ID; changing any one value creates a separate cart line.",
+        "Adding an identical configuration repeatedly increments only its box quantity and never replaces the original configuration or shipping assignment."
       ],
       "parentId": "USR-040",
       "blocked": false,
@@ -771,7 +782,10 @@
       "assignee": "CZ",
       "acceptanceCriteria": [
         "Changing a cart-line quantity updates its subtotal and the order total.",
-        "Changing a shipping-location allocation does not modify the cart-line quantity."
+        "Changing a shipping-location allocation does not modify the cart-line quantity.",
+        "Cart quantity accepts whole numbers only, has a minimum of 1 box, and rejects blank, zero, negative, decimal, or non-numeric values.",
+        "After a valid quantity change, printed-card count equals quantity × 250 and line total equals quantity × $63.00.",
+        "A quantity change cannot leave shipping-location allocations above or below the ordered box quantity without a visible validation state."
       ],
       "parentId": "USR-040",
       "blocked": false,
@@ -794,7 +808,9 @@
       "assignee": "",
       "acceptanceCriteria": [
         "Each cart and review line displays printed-card total as box quantity multiplied by 250.",
-        "For quantity 3, the interface shows 750 printed cards and a $189 line total."
+        "For quantity 3, the interface shows 750 printed cards and a $189 line total.",
+        "Printed-card counts use whole numbers with thousands separators and are recalculated immediately after every valid box-quantity change.",
+        "The printed-card count is informational and cannot be edited independently of box quantity."
       ],
       "parentId": "USR-040",
       "blocked": false,
@@ -840,7 +856,9 @@
       "assignee": "CZ",
       "acceptanceCriteria": [
         "The user can add or select a saved ship-to location for a shipping group.",
-        "The user can remove an assigned location without deleting or changing the cart item."
+        "The user can remove an assigned location without deleting or changing the cart item.",
+        "Only saved, active addresses are selectable; selecting the same address twice in one group does not create a duplicate location row.",
+        "Removing a location that has an allocation requires confirmation or returns its allocation to an unassigned state that blocks submission."
       ],
       "parentId": "USR-050",
       "blocked": false,
@@ -863,7 +881,10 @@
       "assignee": "CZ",
       "acceptanceCriteria": [
         "A location allocation can be changed independently within its shipping group.",
-        "Changing the allocation does not change the original cart quantity or order total."
+        "Changing the allocation does not change the original cart quantity or order total.",
+        "Location quantities accept whole boxes only and cannot be negative, decimal, or greater than the remaining unallocated quantity for the product.",
+        "For each product, the sum of location quantities across all shipping groups must equal its cart quantity before Review or Submit is enabled.",
+        "Changing an allocation updates the remaining-unallocated value immediately but never changes price, cart badge, or ordered box quantity."
       ],
       "parentId": "USR-050",
       "blocked": false,
@@ -909,7 +930,9 @@
       "assignee": "CZ",
       "acceptanceCriteria": [
         "Split Order creates one additional shipping group.",
-        "Repeated use creates distinct groups without changing the total ordered quantity."
+        "Repeated use creates distinct groups without changing the total ordered quantity.",
+        "Shipping groups receive stable sequential labels and unique internal keys so repeated split/remove actions do not merge group state.",
+        "Creating a group does not copy products, locations, allocations, or totals from another group."
       ],
       "parentId": "USR-050",
       "blocked": false,
@@ -932,7 +955,9 @@
       "assignee": "CZ",
       "acceptanceCriteria": [
         "Remove Split is available when more than one shipping group exists.",
-        "The final remaining shipping group cannot be removed."
+        "The final remaining shipping group cannot be removed.",
+        "Removing a non-final group requires confirmation when it contains a product, address, or allocation.",
+        "After removal, no product quantity is lost: affected products return to Shipping Group 1 or become visibly unassigned according to the approved rule."
       ],
       "parentId": "USR-050",
       "blocked": false,
@@ -955,7 +980,10 @@
       "assignee": "",
       "acceptanceCriteria": [
         "A card can be moved from one shipping group to another.",
-        "After the move, the card exists only in the destination group and total ordered quantity is unchanged."
+        "After the move, the card exists only in the destination group and total ordered quantity is unchanged.",
+        "The move control lists every other active shipping group and does not list the current group as a destination.",
+        "Moving the last product out of a group leaves the group valid and empty; it does not automatically delete the group.",
+        "Moving a product preserves its customization and ordered quantity, and clears or revalidates any location allocation that is not valid in the destination group."
       ],
       "parentId": "USR-050",
       "blocked": false,
@@ -978,7 +1006,9 @@
       "assignee": "",
       "acceptanceCriteria": [
         "Split Order creates a new group with no cards and no selected address. Products and locations from the existing group are not duplicated.",
-        "Existing and newly added cards remain in Shipping Group 1 until the user moves them."
+        "Existing and newly added cards remain in Shipping Group 1 until the user moves them.",
+        "The new group receives the next group number and a unique key even after another group has been removed.",
+        "Adding a card after multiple groups exist still assigns it to Shipping Group 1 exactly once."
       ],
       "parentId": "USR-050",
       "blocked": false,
@@ -1001,7 +1031,9 @@
       "assignee": "",
       "acceptanceCriteria": [
         "Shipping locations contain approved Colliers offices and no New Jersey sample addresses.",
-        "The shipping address records use the same fields and values as the managed Colliers office list."
+        "The shipping address records use the same fields and values as the managed Colliers office list.",
+        "When no approved office is available, the selector shows an empty state and prevents the user from continuing; sample data is not substituted.",
+        "Address identity uses the managed address record ID, not a formatted display string, so edits do not create accidental duplicates."
       ],
       "parentId": "USR-050",
       "blocked": false,
@@ -1024,7 +1056,9 @@
       "assignee": "CZ",
       "acceptanceCriteria": [
         "Submitting a valid reviewed order opens the confirmation screen once.",
-        "Successful confirmation clears the cart and shipping draft without creating a payment step. Order History is USR-090."
+        "Successful confirmation clears the cart and shipping draft without creating a payment step. Order History is USR-090.",
+        "Submit is disabled while the request is in progress, preventing double-clicks from creating duplicate orders.",
+        "A failed submission keeps the cart and shipping draft intact, shows a retryable error, and does not open confirmation."
       ],
       "parentId": null,
       "blocked": false,
@@ -1047,7 +1081,9 @@
       "assignee": "CZ",
       "acceptanceCriteria": [
         "The confirmation screen clearly states that the order was submitted successfully.",
-        "Refreshing or navigating after confirmation does not resubmit the same order."
+        "Refreshing or navigating after confirmation does not resubmit the same order.",
+        "The confirmation shows a single order reference returned by the submission adapter; it does not generate a second order on refresh.",
+        "Direct navigation to confirmation without a successful submission redirects to a safe page or shows a non-success state."
       ],
       "parentId": "USR-060",
       "blocked": false,
@@ -1070,7 +1106,9 @@
       "assignee": "CZ",
       "acceptanceCriteria": [
         "After confirmation, the cart contains no items and its badge is zero.",
-        "Returning to shipping starts with a new empty order draft."
+        "Returning to shipping starts with a new empty order draft.",
+        "Cart and shipping state are cleared only after the submission adapter returns success; validation or network errors preserve both.",
+        "Starting a new order after confirmation creates Shipping Group 1 once and contains no products, locations, or allocations from the prior order."
       ],
       "parentId": "USR-060",
       "blocked": false,
@@ -1093,7 +1131,10 @@
       "assignee": "",
       "acceptanceCriteria": [
         "A review step shows every card, box quantity, printed-card total, shipping group, and selected address.",
-        "The user can return to correct the order or confirm it without entering payment details."
+        "The user can return to correct the order or confirm it without entering payment details.",
+        "Review is reachable only when every cart item has a valid configuration and every product is fully allocated to saved shipping locations.",
+        "Review totals reconcile: boxes × 250 equals printed cards, boxes × $63.00 equals product total, and shipping displays $0.00.",
+        "Back navigation returns to shipping with every group, address, and allocation preserved."
       ],
       "parentId": "USR-060",
       "blocked": false,
@@ -1139,7 +1180,10 @@
       "assignee": "CZ",
       "acceptanceCriteria": [
         "Selecting EN displays supported navigation and action labels in English.",
-        "Selecting FR displays the corresponding French labels, including Ajouter au panier."
+        "Selecting FR displays the corresponding French labels, including Ajouter au panier.",
+        "The selected interface language persists while navigating between portal pages during the current session.",
+        "Changing EN/FR does not reset form input, cart contents, shipping groups, addresses, quantities, or the selected card product.",
+        "Missing translations fall back to the approved default language and expose no raw translation keys to users."
       ],
       "parentId": "USR-070",
       "blocked": false,
@@ -1162,7 +1206,9 @@
       "assignee": "",
       "acceptanceCriteria": [
         "A signed-in user can open Address Book from the profile menu and see personal addresses and Colliers offices.",
-        "This page is not admin Manage Addresses (ADM-060). Company office add, edit, and delete stay admin work."
+        "This page is not admin Manage Addresses (ADM-060). Company office add, edit, and delete stay admin work.",
+        "Personal addresses and company offices are visually and functionally separated; regular users cannot mutate company-office records.",
+        "Loading, empty, and failed-load states are distinct, and a failed load never displays stale records as current data."
       ],
       "parentId": null,
       "blocked": false,
@@ -1277,7 +1323,9 @@
       "assignee": "",
       "acceptanceCriteria": [
         "New Address opens a form for a personal location.",
-        "Save adds the address to My Address Book and closes the form."
+        "Save adds the address to My Address Book and closes the form.",
+        "Final Save requires address nickname, recipient name, street, city, province, postal code, and country; invalid fields receive field-level guidance.",
+        "A successful save creates one personal-address record owned by the signed-in user; repeated clicks cannot create duplicates."
       ],
       "parentId": "USR-080",
       "blocked": false,
@@ -1300,7 +1348,9 @@
       "assignee": "",
       "acceptanceCriteria": [
         "Edit opens the form with the selected personal address already filled, including city, province, and postal code.",
-        "Save updates that row. Other addresses are unchanged."
+        "Save updates that row. Other addresses are unchanged.",
+        "Cancel or Back discards unsaved edits and leaves the stored address unchanged.",
+        "Users cannot edit another user’s personal address or change a company-office record through this form."
       ],
       "parentId": "USR-080",
       "blocked": false,
@@ -1323,7 +1373,9 @@
       "assignee": "",
       "acceptanceCriteria": [
         "Delete removes the personal address from My Address Book after the user confirms.",
-        "Office addresses cannot be deleted from this page."
+        "Office addresses cannot be deleted from this page.",
+        "Canceling the confirmation leaves the address unchanged.",
+        "If the address is assigned to the active order, deletion is blocked or the user is required to replace it before continuing."
       ],
       "parentId": "USR-080",
       "blocked": false,
@@ -1346,7 +1398,9 @@
       "assignee": "",
       "acceptanceCriteria": [
         "The personal address form labels city, province, and postal code for Canadian addresses.",
-        "Country defaults to Canada. United States is not the default."
+        "Country defaults to Canada. United States is not the default.",
+        "Province uses Canadian province/territory values and Postal Code accepts Canadian A1A 1A1 format case-insensitively, storing a normalized uppercase value.",
+        "Country defaults to Canada for a new address but does not overwrite the country of an existing record during edit."
       ],
       "parentId": "USR-080",
       "blocked": false,
@@ -2174,7 +2228,9 @@
       "assignee": "",
       "acceptanceCriteria": [
         "Add Address opens a blank New Address form.",
-        "Saving valid required fields adds one new office to the address list."
+        "Saving valid required fields adds one new office to the address list.",
+        "Final Save requires Address Name, Street, City, Province, Postal Code, and Country; invalid fields block save and retain the entered values.",
+        "A successful save creates exactly one managed office record and makes it available to customization and shipping after refresh or reload."
       ],
       "parentId": "ADM-060",
       "blocked": false,
@@ -2197,7 +2253,9 @@
       "assignee": "",
       "acceptanceCriteria": [
         "Remove targets the selected office and requires confirmation before deletion.",
-        "After confirmation, the office disappears from the managed list and is no longer selectable for new orders."
+        "After confirmation, the office disappears from the managed list and is no longer selectable for new orders.",
+        "Deletion requires confirmation and cannot be triggered by clicking elsewhere in the row.",
+        "An office referenced by an active draft or historical order is deactivated or blocked from deletion according to the approved data rule; historical order data is not corrupted."
       ],
       "parentId": "ADM-060",
       "blocked": false,
@@ -2220,7 +2278,9 @@
       "assignee": "",
       "acceptanceCriteria": [
         "Edit opens the selected address with every existing field prefilled correctly.",
-        "Saving changes updates that record without creating a duplicate address."
+        "Saving changes updates that record without creating a duplicate address.",
+        "Cancel restores the persisted values and produces no update request.",
+        "A successful edit updates the same record ID and does not create a duplicate office."
       ],
       "parentId": "ADM-060",
       "blocked": false,
@@ -2358,7 +2418,9 @@
       "assignee": "",
       "acceptanceCriteria": [
         "A non-empty unique designation can be added successfully.",
-        "Blank or duplicate values are rejected with a clear message."
+        "Blank or duplicate values are rejected with a clear message.",
+        "Uniqueness is checked after trimming whitespace and without regard to letter case.",
+        "A successful add creates exactly one active designation and makes it available to customization without duplicating existing values."
       ],
       "parentId": "ADM-070",
       "blocked": false,
@@ -2381,7 +2443,9 @@
       "assignee": "",
       "acceptanceCriteria": [
         "Deleting a designation requires confirmation and removes the selected value.",
-        "Deleting one designation does not remove or modify any other designation."
+        "Deleting one designation does not remove or modify any other designation.",
+        "A designation already used by a saved cart or historical order is deactivated or blocked according to the approved data rule; existing records keep their original display value.",
+        "Canceling the confirmation leaves the designation active and unchanged."
       ],
       "parentId": "ADM-070",
       "blocked": false,
@@ -2404,7 +2468,9 @@
       "assignee": "",
       "acceptanceCriteria": [
         "The pencil action changes only the selected row into an editable field.",
-        "Save commits the edited value and Cancel restores the original value without changes."
+        "Save commits the edited value and Cancel restores the original value without changes.",
+        "Blank, whitespace-only, and case-insensitive duplicate values cannot be saved.",
+        "Only one row can be in edit mode at a time, and a failed save keeps that row editable with a clear error."
       ],
       "parentId": "ADM-070",
       "blocked": false,
@@ -2565,7 +2631,10 @@
       "assignee": "",
       "acceptanceCriteria": [
         "The project includes a repeatable automated test command with documented setup.",
-        "The initial suite covers the listed P0 scenarios and reports clear pass or failure results."
+        "The initial suite covers the listed P0 scenarios and reports clear pass or failure results.",
+        "The automated suite runs in a clean install without FileMaker or Clay Studio and exits non-zero when any test fails.",
+        "Tests cover quantity/price calculation, cart identity comparison, shipping allocation reconciliation, split/move transitions, validation limits, and duplicate-submit prevention.",
+        "The test command is compatible with the project’s supported Node version and Vue 2 test utilities."
       ],
       "parentId": null,
       "blocked": false,
@@ -2657,7 +2726,10 @@
       "assignee": "",
       "acceptanceCriteria": [
         "Clay Studio migration remains separated from the standalone Vue delivery scope.",
-        "The ticket records the approved migration entry criteria before implementation begins."
+        "The ticket records the approved migration entry criteria before implementation begins.",
+        "Migration does not begin until the standalone Vue 2 build passes its release acceptance criteria and all external calls are routed through named actions or adapters.",
+        "The migration inventory identifies routes, page components, shared components, state modules, helpers, assets, translations, and every FileMaker-facing action.",
+        "No Vue 3-only dependency or API remains in the migration candidate build."
       ],
       "parentId": null,
       "blocked": false,
@@ -2695,15 +2767,16 @@
     },
     {
       "id": "ADM-N2",
-      "title": "Default country Canada, not United States",
-      "description": "Product question before building ADM-07. Designer defaults to United States.",
+      "title": "Default new addresses to Canada",
+      "description": "New Colliers address forms must default to Canada. Do not copy the designer prototype’s United States default.",
       "status": "Ideas",
       "category": "Admin Portal",
       "priority": "medium",
       "assignee": "",
       "acceptanceCriteria": [
-        "The team confirms and records the default country for new addresses.",
-        "If Canada is approved, new forms default to Canada while existing address countries remain unchanged."
+        "Every new user and admin address form defaults Country to Canada.",
+        "Canadian labels use Province and Postal Code, not State and ZIP.",
+        "Editing an existing address preserves its stored country and never overwrites it merely because the form opened."
       ],
       "parentId": null,
       "blocked": false,
@@ -2784,6 +2857,211 @@
       "fresh": false,
       "review": "",
       "reviewedAt": ""
+    },
+    {
+      "id": "DEV-100",
+      "title": "Establish the Vue 2 application baseline",
+      "status": "To do",
+      "category": "Technical",
+      "priority": "high",
+      "assignee": "CZ",
+      "parentId": null,
+      "description": "Replace the Vue 3 runtime and build assumptions with a clean Vue 2-compatible baseline that runs as a standalone browser application and can later be moved into Clay Studio.",
+      "acceptanceCriteria": [
+        "The project installs from a clean checkout and starts with the documented development command.",
+        "The production build completes successfully and opens without a blank screen, console error, or unhandled rejection.",
+        "package.json and the lockfile resolve Vue 2.x and Vue 2-compatible versions of the router, state, test, and UI dependencies.",
+        "No Vue 3-only bootstrap or component syntax remains, including createApp, script setup, Teleport, or Vue 3-only lifecycle APIs.",
+        "The README records the supported Node version, install command, development command, test command, and production-build command."
+      ],
+      "notes": "Foundation for all Vue 2 implementation tickets.",
+      "blocked": false,
+      "blockedReason": "",
+      "estimatedHours": 6,
+      "dueDate": "",
+      "origin": "now",
+      "fresh": true,
+      "review": "new",
+      "reviewedAt": ""
+    },
+    {
+      "id": "DEV-101",
+      "title": "Define Vue 2 routes and hash-navigation fallback",
+      "status": "To do",
+      "category": "Technical",
+      "priority": "high",
+      "assignee": "CZ",
+      "parentId": "DEV-100",
+      "description": "Create the page architecture in Vue 2 and ensure navigation can operate with Vue Router in the standalone build and a hash fallback when BF.router is unavailable.",
+      "acceptanceCriteria": [
+        "Every approved V2 page has one documented route and one owning page component; modal or drawer UI is not represented as a separate page route unless it must be directly addressable.",
+        "Direct loading and browser refresh work for catalogue, details, customization, cart/shipping, review, confirmation-safe-state, address book, login, and approved admin routes.",
+        "Navigation falls back to window.location.hash when BF.router is undefined and never throws a BF.router undefined error.",
+        "Unknown routes lead to a safe not-found or catalogue page and do not leave a blank application shell.",
+        "Back and forward navigation do not clear the active order draft unless the user has successfully submitted or explicitly cleared it."
+      ],
+      "notes": "Use hash routes compatible with the future Clay Studio host.",
+      "blocked": false,
+      "blockedReason": "",
+      "estimatedHours": 8,
+      "dueDate": "",
+      "origin": "now",
+      "fresh": true,
+      "review": "new",
+      "reviewedAt": ""
+    },
+    {
+      "id": "DEV-102",
+      "title": "Create Vue 2 reactive order and shipping state",
+      "status": "To do",
+      "category": "Technical",
+      "priority": "high",
+      "assignee": "CZ",
+      "parentId": "DEV-100",
+      "description": "Create a single order-state model for cart lines, shipping groups, locations, allocations, totals, language, and submission state using Vue 2-safe reactivity.",
+      "acceptanceCriteria": [
+        "The model has one source of truth for ordered box quantity; printed-card count, price, badge count, and allocation totals are derived values.",
+        "Adding or deleting reactive keys uses Vue.set, Vue.delete, or an equivalent Vue 2-safe replacement pattern.",
+        "Creating, moving, allocating, removing, and clearing items cannot produce negative values, duplicate IDs, orphan allocations, or mismatched order totals.",
+        "All new cards enter Shipping Group 1; a new split group begins empty; moving a card preserves total ordered quantity.",
+        "State-transition helpers have automated tests independent of rendered components."
+      ],
+      "notes": "Implements the V2 cart and split-order invariants.",
+      "blocked": false,
+      "blockedReason": "",
+      "estimatedHours": 12,
+      "dueDate": "",
+      "origin": "now",
+      "fresh": true,
+      "review": "new",
+      "reviewedAt": ""
+    },
+    {
+      "id": "DEV-103",
+      "title": "Create adapters and named-action helpers for FileMaker",
+      "status": "To do",
+      "category": "Technical",
+      "priority": "high",
+      "assignee": "CZ",
+      "parentId": "DEV-100",
+      "description": "Separate browser-test data from future FileMaker operations. Define helper files and named-action contracts for products, addresses, designations, order submission, and order lookup where approved.",
+      "acceptanceCriteria": [
+        "The standalone application uses mock adapters with the same request and response shapes as the future FileMaker adapters.",
+        "Each external operation has one named action or adapter function with documented input, success output, validation failure, request failure, and timeout behavior.",
+        "Page components do not call FileMaker, BF, fetch, or mock data directly; they call the adapter interface.",
+        "Requests expose loading state, prevent duplicate submission where applicable, and surface a recoverable error without clearing valid user state.",
+        "No credential, server URL, FileMaker file name, or production record identifier is hardcoded in a component."
+      ],
+      "notes": "Mike can implement FileMaker scripts against these contracts while Carlos builds the Vue 2 front end.",
+      "blocked": false,
+      "blockedReason": "",
+      "estimatedHours": 10,
+      "dueDate": "",
+      "origin": "now",
+      "fresh": true,
+      "review": "new",
+      "reviewedAt": ""
+    },
+    {
+      "id": "DEV-104",
+      "title": "Port shared UI components to Vue 2",
+      "status": "To do",
+      "category": "Technical",
+      "priority": "high",
+      "assignee": "CZ",
+      "parentId": "DEV-100",
+      "description": "Port the reusable shell and controls before page-by-page development: header, footer, buttons, form fields, selects, multi-select, card preview, drawers, dialogs, loading, empty, and error states.",
+      "acceptanceCriteria": [
+        "Every shared component compiles in Vue 2 and uses supported props, events, slots, and v-model conventions.",
+        "Inputs expose label, required state, help text, invalid state, and error text without relying on placeholder text as the only label.",
+        "Dialog and drawer components close through their explicit controls and Escape, restore focus, and do not allow background interaction while open.",
+        "Components remain usable at approved desktop and mobile widths without clipped content or nested scrolling that traps the user.",
+        "Shared components contain no Colliers order rules that belong in state helpers or page orchestration."
+      ],
+      "notes": "Complete before porting feature pages to reduce repeated migration work.",
+      "blocked": false,
+      "blockedReason": "",
+      "estimatedHours": 16,
+      "dueDate": "",
+      "origin": "now",
+      "fresh": true,
+      "review": "new",
+      "reviewedAt": ""
+    },
+    {
+      "id": "DEV-105",
+      "title": "Add Vue 2 quality and migration gates",
+      "status": "To do",
+      "category": "Quality Assurance",
+      "priority": "high",
+      "assignee": "CZ",
+      "parentId": "DEV-100",
+      "description": "Create automated and manual checks that prevent Vue 3 code, broken business rules, or Clay-incompatible coupling from entering the Vue 2 delivery.",
+      "acceptanceCriteria": [
+        "CI or the documented local verification command runs linting, unit tests, and a production build and returns a non-zero exit code on failure.",
+        "A dependency check confirms Vue 2.x and rejects known Vue 3-only packages or APIs.",
+        "The critical business-rule suite covers 50-character name, 40-character email, cart merging, quantity math, empty split groups, product moves, allocation reconciliation, review, failed submit, successful submit, and cart reset.",
+        "The standalone build can complete the approved order flow using mock adapters with network delay and forced-error modes.",
+        "A migration checklist confirms that components do not directly depend on browser-only storage, Vue Router, or FileMaker globals without an adapter or fallback."
+      ],
+      "notes": "Release gate for standalone Vue 2 and later Clay Studio migration.",
+      "blocked": false,
+      "blockedReason": "",
+      "estimatedHours": 12,
+      "dueDate": "",
+      "origin": "now",
+      "fresh": true,
+      "review": "new",
+      "reviewedAt": ""
     }
-  ]
+  ],
+  "projectContext": {
+    "product": "Colliers Business Card Portal",
+    "deliveryTarget": "Standalone Vue 2 web application prepared for later Clay Studio / FM BetterForms migration",
+    "framework": "Vue 2.x",
+    "sourceOfTruth": "Colliers Business Card Portal — Business Rules & Testing Guide, V2 Reference",
+    "updatedAt": "2026-08-14"
+  },
+  "releaseConstraints": [
+    "Use Vue 2-compatible syntax, lifecycle hooks, libraries, and build tooling. Do not use Vue 3-only APIs such as createApp, Composition API-only patterns, script setup, Teleport, or Vue 3-only packages.",
+    "Keep business logic out of page templates. Put reusable calculations, normalization, validation, cart comparison, shipping allocation, and data-access logic in helper or service modules.",
+    "The standalone web build must run without FileMaker so the team can test it in a browser. FileMaker and Clay Studio integration must remain behind replaceable adapters or named actions.",
+    "Use camelCase model keys and Vue.set or Vue.delete when adding or removing reactive object properties at runtime.",
+    "Do not assume Vue Router is available in Clay Studio. Navigation must have a hash-based fallback and must survive a browser refresh on supported routes.",
+    "Do not include credit-card payment, calculated shipping charges, SKU display, dark mode, invoice history, reporting, or a footer language selector in the V2 release.",
+    "Use approved Colliers addresses and designations. Prototype New Jersey addresses and mismatched sample identity data must not appear in user-facing flows."
+  ],
+  "definitionOfDone": [
+    "Every acceptance criterion for the ticket passes in the standalone Vue 2 build.",
+    "The feature works at supported desktop and mobile widths without clipped, overlapping, or unreachable controls.",
+    "Loading, empty, invalid-input, and failed-request states are handled where the feature can encounter them; the application does not silently fail.",
+    "No browser-console error or unhandled promise rejection is produced by the completed flow.",
+    "All user-facing English and French strings use the application translation layer; product data and user-entered values are not translated.",
+    "Business state remains correct after navigation and repeated actions; one click or submission must not create duplicate cart items, groups, addresses, or orders unless the rule explicitly requires it.",
+    "Automated tests cover calculation, comparison, validation, or state-transition logic introduced by the ticket; the relevant manual business-rule test is also recorded.",
+    "The ticket notes identify dependencies, unresolved product decisions, and any intentional difference from the V2 business-rules guide."
+  ],
+  "releaseScope": {
+    "inScope": [
+      "Standalone Vue 2 application baseline and reusable page/component architecture",
+      "English, Bilingual, and French business-card products at $63.00 per box of 250 cards",
+      "Customization, live preview, cart, shipping groups, split order, review, submission, and confirmation",
+      "English/French interface controlled from the header",
+      "Approved address and designation management required by the ordering flow"
+    ],
+    "requiresProductDecisionBeforeBuild": [
+      "Personal Address Book details beyond the agreed saved-address shipping requirement",
+      "Order History and Repeat Order behavior",
+      "Whether incomplete address drafts are supported",
+      "Deletion behavior for addresses or designations referenced by historical records"
+    ],
+    "outOfScope": [
+      "Credit-card or payment processing",
+      "Calculated shipping charges",
+      "SKU or internal identifier display",
+      "Invoice history and reporting",
+      "Dark mode",
+      "Footer language selector"
+    ]
+  }
 }

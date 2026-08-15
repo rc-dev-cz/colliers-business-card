@@ -29,6 +29,8 @@ Preview login (`demo` / any email in Vue) is for designer and us only. It is **n
 
 **Cards** (3 products) → Details → Customize (Vue) → Cart → Shipping → Review → Confirmed.
 
+Profile (still to discuss): Address Book (F-29) and this user's Order History (F-30). Admin also has Address Book on the profile menu (ADM-080). Not admin Manage Addresses.
+
 ## Cards
 
 Three products. Same in Vue and the designer. $63 per box (shipping included), 250 cards per box, details page with pricing tiers.
@@ -71,13 +73,17 @@ F-09 — Shipping splits: Split Order, Remove Split only when there is more than
 
 F-10 — Ship-to addresses: add/remove location, select a saved location, qty on a location (does not change cart quantity).
 
-F-11 — Order confirmed: success screen; cart and order draft cleared. No order history in Vue. Review before confirm is F-27.
+F-11 — Order confirmed: success screen; cart and order draft cleared. Review before confirm is F-27. User Order History is F-30.
+
+F-29 — Address Book: personal ship-to addresses plus a view of Colliers offices. Profile menu for the user and for admin. Not admin Manage Addresses (F-14). Still to discuss. Tickets: USR-080–USR-089, ADM-080–ADM-083.
+
+F-30 — User Order History: this user's past orders. Profile menu. Not admin Order History (F-16). Still to discuss. Tickets: USR-090–USR-097.
 
 ## Admin (designer only; not in this Vue repo)
 
 Work checklist: [ADMIN.md](ADMIN.md). User order-flow stories: [USER.md](USER.md).
 
-F-12 — Admin login: `admin` / `123`. Nav: ADMIN, Catalogue, Manage Addresses, Manage Titles. Profile: Admin Panel, Order History, Log out.
+F-12 — Admin login: `admin` / `123`. Nav: ADMIN, Catalogue, Manage Addresses, Manage Titles. Profile: Admin Panel, Address Book, Order History, Log out.
 
 F-13 — Admin Dashboard: System Options (Order History, Invoice History, Reporting, Manage Addresses, Manage Titles). No Total Orders / Pending Approvals / Active Users tiles.
 
@@ -85,7 +91,7 @@ F-14 — Manage Addresses: list; add and edit via structured address form; remov
 
 F-15 — Manage Titles: list of designations (PMP, LEED AP, and others); add; delete; inline edit.
 
-F-16 / F-17 / F-18 — Order History, Invoice History, and Reporting are real screens in the designer (mock data).
+F-16 / F-17 / F-18 — Admin Order History, Invoice History, and Reporting are real screens in the designer (mock data). User Order History is F-30.
 
 ## Language and theme
 

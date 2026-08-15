@@ -30,7 +30,7 @@ User stories: [USER.md](USER.md). Admin stories: [ADMIN.md](ADMIN.md).
 | F-13 | Admin Dashboard | Not started (Vue) | ADM-020. System Options only |
 | F-14 | Admin Manage Addresses | Not started (Vue) | ADM-060. Add/edit form in designer |
 | F-15 | Admin Manage Titles | Not started (Vue) | ADM-070. Inline edit in designer |
-| F-16 | Order history | Not started (Vue) | ADM-030. Mock screen in designer (not a tile only) |
+| F-16 | Admin order history | Not started (Vue) | ADM-030. Mock screen in designer (not a tile only). User Order History is F-30 |
 | F-17 | Invoice history | Not started (Vue) | ADM-040. Mock screen in designer |
 | F-18 | Reporting | Not started (Vue) | ADM-050. Mock screen in designer |
 | F-19 | Dark theme | Not started | Vue is light only |
@@ -43,3 +43,5 @@ User stories: [USER.md](USER.md). Admin stories: [ADMIN.md](ADMIN.md).
 | F-26 | Split Order empty group | Not started | USR-057. SH-02, SH-03 |
 | F-27 | Order review before confirm | Not started | USR-063. Section 7 / OR-01 |
 | F-28 | Colliers offices on shipping | Not started | USR-058. Not in the V2 guide; keep |
+| F-29 | Address Book | Not started | USR-080 / ADM-080. Designer profile (user and admin). Still to discuss. Not admin F-14 |
+| F-30 | User Order History | Not started | USR-090. Designer user profile (mock). Still to discuss. Not admin F-16 |

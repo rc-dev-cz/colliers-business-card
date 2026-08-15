@@ -1,18 +1,30 @@
 <script setup>
-import { computed, onBeforeUnmount, reactive, watch } from 'vue'
+import { computed, onBeforeUnmount, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import Sortable from 'sortablejs'
 import { products, getProduct } from '../data/products'
 import { useLocale } from '../composables/useLocale'
 import { useCart } from '../composables/useCart'
-import { readStorage, writeStorage } from '../composables/useStorage'
+import { useOrder } from '../composables/useOrder'
 import { productNameKey } from '../i18n/messages'
 import ColliersPageShell from '../layout/ColliersPageShell.vue'
 import LocationDrawer from '../components/LocationDrawer.vue'
 
 const router = useRouter()
 const { t } = useLocale()
-const { cart, openLocationPicker, locationTarget } = useCart()
+const { cart, openLocationPicker, locationTarget, removeLine: removeCartLine } = useCart()
+const {
+  order,
+  syncCartAssignments,
+  linesForSplit,
+  splitOrder,
+  removeSplit,
+  assignItem,
+  unassignItem,
+  moveItem,
+  addLocation,
+  removeLocation,
+} = useOrder()
 
 const sortableInstances = new Set()
 
@@ -29,49 +41,23 @@ const sortableOptions = {
   fallbackClass: 'sortable-fallback',
 }
 
-function createLocation(address = '', qty = 1) {
-  return {
-    id: `loc-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
-    address,
-    qty,
-  }
-}
-
-const storedOrder = readStorage('order', {
-  splits: [
-    {
-      id: 1,
-      locations: [
-        { address: '123 Address Street, South Plainfield, NJ 07080', qty: 15 },
-        { address: '7481 Lakeview Court, South Plainfield, NJ 07080', qty: 15 },
-        { address: '7105 Cherry Hill St., Millville, NJ 08332', qty: 15 },
-      ],
-    },
-  ],
-})
-
-storedOrder.splits.forEach((split) => {
-  split.locations = (split.locations || []).map((loc) => ({
-    ...loc,
-    id: loc.id || `loc-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
-  }))
-})
-
-const order = reactive(storedOrder)
-
-watch(order, (value) => writeStorage('order', value), { deep: true })
-
 const itemCount = computed(() => cart.value.reduce((s, l) => s + l.quantity, 0))
 
-function setupCartSortable(el) {
+watch(
+  cart,
+  (lines) => syncCartAssignments(lines.map((line) => line.id)),
+  { deep: true, immediate: true },
+)
+
+function setupCartSortable(el, split) {
   if (!el || el.__sortable) return
   const instance = Sortable.create(el, {
     ...sortableOptions,
     onEnd(evt) {
       const { oldIndex, newIndex } = evt
       if (oldIndex == null || newIndex == null || oldIndex === newIndex) return
-      const [item] = cart.value.splice(oldIndex, 1)
-      cart.value.splice(newIndex, 0, item)
+      const [itemId] = split.itemIds.splice(oldIndex, 1)
+      split.itemIds.splice(newIndex, 0, itemId)
     },
   })
   el.__sortable = instance
@@ -108,41 +94,23 @@ function checkout() {
   router.push({ name: 'confirmed' })
 }
 
-function addItem() {
+function addItem(split) {
   const first = products[0]
+  const id = `${Date.now()}-${Math.random().toString(36).slice(2, 6)}`
   cart.value.push({
-    id: `${Date.now()}`,
+    id,
     code: first.code,
     language: first.language,
     quantity: 1,
     price: first.price,
     details: {},
   })
+  assignItem(split, id)
 }
 
 function removeLine(id) {
-  const idx = cart.value.findIndex((l) => l.id === id)
-  if (idx >= 0) cart.value.splice(idx, 1)
-}
-
-function splitOrder() {
-  order.splits.push({
-    id: Date.now(),
-    locations: [createLocation()],
-  })
-}
-
-function removeSplit(index) {
-  if (order.splits.length <= 1) return
-  order.splits.splice(index, 1)
-}
-
-function addLocation(split) {
-  split.locations.push(createLocation())
-}
-
-function removeLocation(split, index) {
-  split.locations.splice(index, 1)
+  removeCartLine(id)
+  unassignItem(id)
 }
 
 function pickLocation(splitIndex) {
@@ -155,9 +123,13 @@ function onLocationSelect(addresses) {
   if (!split) return
   addresses.forEach((address) => {
     if (!split.locations.some((l) => l.address === address)) {
-      split.locations.push(createLocation(address, 1))
+      addLocation(split, address, 1)
     }
   })
+}
+
+function onAddLocation(split) {
+  addLocation(split)
 }
 
 function changeProduct(line, code) {
@@ -166,6 +138,14 @@ function changeProduct(line, code) {
   line.code = product.code
   line.language = product.language
   line.price = product.price
+}
+
+function onMoveLine(lineId, splitId) {
+  moveItem(lineId, splitId)
+}
+
+function splitLabel(index) {
+  return `${t('shipping')} ${index + 1}`
 }
 </script>
 
@@ -193,18 +173,24 @@ function changeProduct(line, code) {
       >
         <div class="grid grid-cols-1 divide-y divide-gray-200 lg:grid-cols-2 lg:divide-x lg:divide-y-0">
           <section class="p-4 sm:p-6">
-            <h2 class="mb-4 text-lg font-semibold text-gray-900">{{ t('selectedItems') }}</h2>
-            <div v-if="!cart.length" class="py-8 text-center text-sm text-gray-400">
+            <h2 class="mb-4 text-lg font-semibold text-gray-900">
+              {{ t('selectedItems') }}
+              <span class="ml-2 text-sm font-normal text-gray-500">{{ splitLabel(splitIndex) }}</span>
+            </h2>
+            <div
+              v-if="!linesForSplit(split, cart).length"
+              class="py-8 text-center text-sm text-gray-400"
+            >
               {{ t('noItemsSelected') }}
             </div>
             <ul
               v-else
-              :ref="setupCartSortable"
+              :ref="(el) => setupCartSortable(el, split)"
               class="space-y-3"
             >
               <li
-                v-for="line in cart"
-                :key="line.id + '-' + split.id"
+                v-for="line in linesForSplit(split, cart)"
+                :key="line.id"
                 class="flex flex-wrap items-center gap-2 rounded-md border border-gray-100 bg-white p-2"
               >
                 <div
@@ -242,6 +228,20 @@ function changeProduct(line, code) {
                     {{ t(productNameKey(p.code)) }} - {{ p.language }}
                   </option>
                 </select>
+                <select
+                  v-if="order.splits.length > 1"
+                  class="rounded border border-gray-300 px-2 py-1 text-sm"
+                  :value="split.id"
+                  @change="onMoveLine(line.id, $event.target.value)"
+                >
+                  <option
+                    v-for="(group, groupIndex) in order.splits"
+                    :key="group.id"
+                    :value="group.id"
+                  >
+                    {{ splitLabel(groupIndex) }}
+                  </option>
+                </select>
                 <button
                   type="button"
                   class="rounded border border-gray-200 p-2 text-gray-500 hover:text-red-600"
@@ -263,7 +263,11 @@ function changeProduct(line, code) {
               >
                 {{ t('removeSplit') }}
               </button>
-              <button type="button" class="ml-auto text-sm text-colliers-primary hover:underline" @click="addItem">
+              <button
+                type="button"
+                class="ml-auto text-sm text-colliers-primary hover:underline"
+                @click="addItem(split)"
+              >
                 + {{ t('addItem') }}
               </button>
             </div>
@@ -320,7 +324,7 @@ function changeProduct(line, code) {
               <button
                 type="button"
                 class="rounded border border-gray-300 bg-white px-3 py-2 text-sm hover:bg-gray-50"
-                @click="addLocation(split)"
+                @click="onAddLocation(split)"
               >
                 + {{ t('addLocation') }}
               </button>

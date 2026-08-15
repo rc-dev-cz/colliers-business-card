@@ -77,12 +77,12 @@ function latestLogFor(id) {
 
 function merged(ticket) {
   const edits = editsById.value[ticket.id] || {}
-  const next = {
-    ...ticket,
-    ...edits,
-    id: ticket.id,
-    status: normalizeStatus(statusById.value[ticket.id] || ticket.status),
+  const next = { ...ticket, id: ticket.id }
+  // Skip undefined overlays so incomplete remote rows cannot wipe seed parentId / meta.
+  for (const [key, value] of Object.entries(edits)) {
+    if (value !== undefined) next[key] = value
   }
+  next.status = normalizeStatus(statusById.value[ticket.id] || next.status)
   if (!STATUSES.includes(next.status)) next.status = 'Ideas'
   next.category = normalizeCategory(next.category || next.epic)
   next.assignee = normalizeAssignee(next.assignee)
@@ -200,7 +200,7 @@ async function hydrateFromSupabase() {
       if (nextStatus[ticket.id] || nextCustom[ticket.id] || nextEdits[ticket.id]) continue
       if (seedIds.has(ticket.id)) {
         nextStatus[ticket.id] = normalizeStatus(ticket.status)
-        nextEdits[ticket.id] = {
+        const edit = {
           title: ticket.title,
           description: ticket.description,
           category: ticket.category,
@@ -209,13 +209,15 @@ async function hydrateFromSupabase() {
           assignee: ticket.assignee,
           priority: ticket.priority,
           acceptanceCriteria: ticket.acceptanceCriteria,
-          parentId: ticket.parentId,
-          blocked: ticket.blocked,
-          blockedReason: ticket.blockedReason,
-          estimatedHours: ticket.estimatedHours,
-          dueDate: ticket.dueDate,
           fresh: ticket.fresh,
         }
+        // Only apply meta when remote packed it — otherwise keep seed parent/blocked/hours/due.
+        if (ticket.parentId !== undefined) edit.parentId = ticket.parentId
+        if (ticket.blocked !== undefined) edit.blocked = ticket.blocked
+        if (ticket.blockedReason !== undefined) edit.blockedReason = ticket.blockedReason
+        if (ticket.estimatedHours !== undefined) edit.estimatedHours = ticket.estimatedHours
+        if (ticket.dueDate !== undefined) edit.dueDate = ticket.dueDate
+        nextEdits[ticket.id] = edit
         if (ticket.review === '') {
           nextEdits[ticket.id].review = ''
           nextEdits[ticket.id].reviewedAt = ''

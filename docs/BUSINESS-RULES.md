@@ -284,6 +284,8 @@ Use this section when adding tickets. Do **not** create a second ticket for a ru
 | Colliers offices on shipping | [USR-058](TICKETS.md#usr-058) | Not in the PDF; keep |
 | Order review before confirm | [USR-063](TICKETS.md#usr-063) | Section 7 / OR-01 |
 | Remove footer language | [F-20](TICKETS.md#f-20) | UI-02 |
+| User Address Book | [USR-080](TICKETS.md#usr-080) | Designer user profile. Still to discuss. Not ADM-060 |
+| User Order History | [USR-090](TICKETS.md#usr-090) | Designer user profile. Still to discuss. Not ADM-030 |
 
 ### Limits and wording (updated)
 
@@ -296,8 +298,8 @@ Use this section when adding tickets. Do **not** create a second ticket for a ru
 
 ### Out of this guide — keep the tickets, do not treat as V2 rules
 
-Order History, Invoice History, Reporting, and Dark theme stay on the board. The PDF lists them as **not covered**, not as cancelled.
+Order History, Invoice History, Reporting, Dark theme, user Address Book, and user Order History stay on the board. The PDF lists order history / reporting as **not covered**, not as cancelled. User Address Book and user Order History are still to discuss.
 
 ### Backlog F-codes
 
-[BACKLOG.md](BACKLOG.md) includes F-24–F-28 for the Ideas above. Do not invent new F-codes for the same work.
+[BACKLOG.md](BACKLOG.md) includes F-24–F-30 for the Ideas above. Do not invent new F-codes for the same work.

@@ -339,6 +339,7 @@ onBeforeUnmount(() => {
             :key="ticket.id"
             :data-ticket-id="ticket.id"
             class="min-w-0"
+            :class="{ 'ticket-child': ticket.parentId }"
             @click="openTicket(ticket)"
           >
             <TicketCard
@@ -390,6 +391,7 @@ onBeforeUnmount(() => {
               :key="ticket.id"
               :data-ticket-id="ticket.id"
               class="min-w-0"
+              :class="{ 'ticket-child': ticket.parentId }"
               @click="openTicket(ticket)"
             >
               <TicketCard

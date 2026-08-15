@@ -73,7 +73,7 @@ Create, move, or edit a ticket and it gets a bouncing blue mark plus **Updated**
 
 If `.env.local` has Supabase keys, the board **loads** `rc_tickets` on open and **writes on Save** (create ticket, or Edit → Save). Drag stays in the browser until you Save that ticket. Remote rows can overlay the seed, so stale Supabase text can hide newer git wording until you Save. The nav pill shows **Supabase on** / **off** / **down**. Ask before running any live Supabase command from the agent.
 
-Sync is still partial (DEV-030). Parent, blocked, hours, and due date are not stored in `rc_tickets`. Logs stay in the browser.
+Sync stores title, status, assignee, notes, acceptance criteria, **parent**, blocked, hours, and due date in `rc_tickets` (meta fields live inside the `source` JSON). Logs stay in the browser until log sync lands.
 
 Click **Create ticket** or **+** on Ideas. Pick category and priority. The ticket gets an `RC-xx` id and lands in **Ideas**, unassigned. Check **Ready for development — assign to me** when it is approved. Drag into Ready, In progress, QA, or Done.
 

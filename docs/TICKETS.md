@@ -6,9 +6,9 @@ This is the one local ticket document. The board seeds from [devTracker.json](de
 
 ## Snapshot
 
-- **99 tickets**
-- Status: In progress 2 · QA 2 · Ready for development 0 · Ideas 54 · Done 41
-- Category: Technical 10 · Customer Portal 42 · Admin Portal 43 · Shared UI/UX 3 · Quality Assurance 1
+- **121 tickets**
+- Status: In progress 2 · QA 2 · Ready for development 0 · Ideas 76 · Done 41
+- Category: Technical 10 · Customer Portal 60 · Admin Portal 47 · Shared UI/UX 3 · Quality Assurance 1
 
 ## Index
 
@@ -64,6 +64,24 @@ This is the one local ticket document. The board seeds from [devTracker.json](de
 | [USR-063](#usr-063) | Order review before confirm | Ideas | Customer Portal | — | USR-060 |
 | [USR-070](#usr-070) | Header language | Done | Customer Portal | CZ | — |
 | [USR-071](#usr-071) | Navbar EN/FR | Done | Customer Portal | CZ | USR-070 |
+| [USR-080](#usr-080) | Address Book | Ideas | Customer Portal | — | — |
+| [USR-081](#usr-081) | Address Book from profile menu | Ideas | Customer Portal | — | USR-080 |
+| [USR-082](#usr-082) | My Address Book | Ideas | Customer Portal | — | USR-080 |
+| [USR-083](#usr-083) | Office Addresses tab | Ideas | Customer Portal | — | USR-080 |
+| [USR-084](#usr-084) | Search addresses | Ideas | Customer Portal | — | USR-080 |
+| [USR-085](#usr-085) | Add a personal address | Ideas | Customer Portal | — | USR-080 |
+| [USR-086](#usr-086) | Edit a personal address | Ideas | Customer Portal | — | USR-080 |
+| [USR-087](#usr-087) | Delete a personal address | Ideas | Customer Portal | — | USR-080 |
+| [USR-088](#usr-088) | Canada address fields on Address Book | Ideas | Customer Portal | — | USR-080 |
+| [USR-089](#usr-089) | Shipping can use personal Address Book entries | Ideas | Customer Portal | — | USR-080 |
+| [USR-090](#usr-090) | Order History | Ideas | Customer Portal | — | — |
+| [USR-091](#usr-091) | Order History from profile menu | Ideas | Customer Portal | — | USR-090 |
+| [USR-092](#usr-092) | Order History table | Ideas | Customer Portal | — | USR-090 |
+| [USR-093](#usr-093) | Search own orders | Ideas | Customer Portal | — | USR-090 |
+| [USR-094](#usr-094) | Filter own orders by status | Ideas | Customer Portal | — | USR-090 |
+| [USR-095](#usr-095) | View order card preview | Ideas | Customer Portal | — | USR-090 |
+| [USR-096](#usr-096) | Repeat Order | Ideas | Customer Portal | — | USR-090 |
+| [USR-097](#usr-097) | Confirmed orders appear in history | Ideas | Customer Portal | — | USR-090 |
 | [ADM-001](#adm-001) | Admin scoped from designer | Done | Admin Portal | CZ | — |
 | [ADM-010](#adm-010) | Admin login and nav | Ideas | Admin Portal | — | — |
 | [ADM-011](#adm-011) | Admin login admin / 123 | Ideas | Admin Portal | — | ADM-010 |
@@ -102,6 +120,10 @@ This is the one local ticket document. The board seeds from [devTracker.json](de
 | [ADM-073](#adm-073) | Delete title | Ideas | Admin Portal | — | ADM-070 |
 | [ADM-074](#adm-074) | Inline edit title | Ideas | Admin Portal | — | ADM-070 |
 | [ADM-075](#adm-075) | Customize titles come from Manage Titles | Ideas | Admin Portal | — | ADM-070 |
+| [ADM-080](#adm-080) | Address Book (admin) | Ideas | Admin Portal | — | — |
+| [ADM-081](#adm-081) | Address Book from admin profile menu | Ideas | Admin Portal | — | ADM-080 |
+| [ADM-082](#adm-082) | Admin My Address Book | Ideas | Admin Portal | — | ADM-080 |
+| [ADM-083](#adm-083) | Admin Office Addresses tab | Ideas | Admin Portal | — | ADM-080 |
 | [F-20](#f-20) | Remove footer language dropdown | Ideas | Shared UI/UX | — | — |
 | [F-21](#f-21) | Automated tests | Ideas | Quality Assurance | — | — |
 | [F-23](#f-23) | Light theme | Done | Shared UI/UX | CZ | — |
@@ -755,12 +777,12 @@ Notes: USER.md · F-28
 
 **Done** · medium · CZ
 
-Success screen. Clears cart and order draft. No payment. No user order history.
+Success screen. Clears cart and order draft. No payment. User order history is [USR-090](#usr-090) (Ideas; still to discuss).
 
 Acceptance criteria:
 
 - Submitting a valid reviewed order opens the confirmation screen once.
-- Successful confirmation clears the cart and shipping draft without creating a payment or order-history step.
+- Successful confirmation clears the cart and shipping draft without creating a payment step. Order History is [USR-090](#usr-090).
 
 Notes: USER.md · ConfirmedPage.vue · F-11
 
@@ -834,6 +856,258 @@ Acceptance criteria:
 
 Notes: USER.md · F-22
 
+<a id="usr-080"></a>
+### USR-080 — Address Book
+
+**Ideas** · medium · unassigned
+
+The user keeps personal ship-to addresses and can view Colliers offices. Designer: profile → Address Book. Not admin Manage Addresses ([ADM-060](#adm-060)). Not in Vue. Still to discuss.
+
+Acceptance criteria:
+
+- A signed-in user can open Address Book from the profile menu and see personal addresses and Colliers offices.
+- This page is not admin Manage Addresses (ADM-060). Company office add, edit, and delete stay admin work.
+
+Notes: USER.md · F-29. Designer 14 Aug 2026. Discuss before building. Do not copy office Edit from the user demo.
+
+<a id="usr-081"></a>
+#### USR-081 — Address Book from profile menu
+
+**Ideas** · medium · unassigned · child of [USR-080](#usr-080)
+
+User profile menu includes Address Book (with Order History and Log out). Vue profile has RC Web Dev and Log out only.
+
+Acceptance criteria:
+
+- Address Book appears in the regular-user profile menu.
+- Choosing Address Book opens the Address Book page.
+
+Notes: USER.md · F-29
+
+<a id="usr-082"></a>
+#### USR-082 — My Address Book
+
+**Ideas** · medium · unassigned · child of [USR-080](#usr-080)
+
+Tab lists this user's personal locations (name + address) with Edit and Delete. Designer samples: Home Office, Temporary Location.
+
+Acceptance criteria:
+
+- My Address Book lists only the current user's personal addresses, each with a location name and address.
+- Each personal row offers Edit and Delete. Colliers offices do not appear on this tab.
+
+Notes: USER.md · F-29
+
+<a id="usr-083"></a>
+#### USR-083 — Office Addresses tab
+
+**Ideas** · medium · unassigned · child of [USR-080](#usr-080)
+
+Tab lists Colliers offices used on customize and shipping. User can view them. Designer also shows Edit on offices — do not copy that; office edits are admin ([ADM-060](#adm-060)).
+
+Acceptance criteria:
+
+- Office Addresses lists the same Colliers offices used on customize and shipping, each with a distinct location name.
+- The user can view offices here. Adding, editing, or deleting company offices is not part of this user story.
+
+Notes: USER.md · F-29. Designer names every office "Office Location" and offers Edit. Discuss; do not copy.
+
+<a id="usr-084"></a>
+#### USR-084 — Search addresses
+
+**Ideas** · medium · unassigned · child of [USR-080](#usr-080)
+
+Search Addresses filters the active Address Book tab by location name or address text.
+
+Acceptance criteria:
+
+- Typing in Search Addresses filters the visible list by location name or address text.
+- Clearing the search restores the full list for the active tab.
+
+Notes: USER.md · F-29
+
+<a id="usr-085"></a>
+#### USR-085 — Add a personal address
+
+**Ideas** · medium · unassigned · child of [USR-080](#usr-080)
+
++ New Address opens a form. Save adds the location to My Address Book. Designer fields: nickname, name, email, phone, company, department, address 1/2, city, state, zip. Canada labels are [USR-088](#usr-088).
+
+Acceptance criteria:
+
+- New Address opens a form for a personal location.
+- Save adds the address to My Address Book and closes the form.
+
+Notes: USER.md · F-29
+
+<a id="usr-086"></a>
+#### USR-086 — Edit a personal address
+
+**Ideas** · medium · unassigned · child of [USR-080](#usr-080)
+
+Edit fills the form with the saved personal address, including city / province / postal. Save updates that row.
+
+Acceptance criteria:
+
+- Edit opens the form with the selected personal address already filled, including city, province, and postal code.
+- Save updates that row. Other addresses are unchanged.
+
+Notes: USER.md · F-29
+
+<a id="usr-087"></a>
+#### USR-087 — Delete a personal address
+
+**Ideas** · medium · unassigned · child of [USR-080](#usr-080)
+
+Delete removes a personal address from My Address Book. Users cannot delete Colliers offices from this page.
+
+Acceptance criteria:
+
+- Delete removes the personal address from My Address Book after the user confirms.
+- Office addresses cannot be deleted from this page.
+
+Notes: USER.md · F-29
+
+<a id="usr-088"></a>
+#### USR-088 — Canada address fields on Address Book
+
+**Ideas** · medium · unassigned · child of [USR-080](#usr-080)
+
+Designer form uses State and Zip. Colliers Canada should use Province and Postal, with Canada as the default country. Still to discuss.
+
+Acceptance criteria:
+
+- The personal address form labels city, province, and postal code for Canadian addresses.
+- Country defaults to Canada. United States is not the default.
+
+Notes: USER.md · F-29. Designer issue: State / Zip. Same Canada default discussion as ADM-N2, but this ticket is the user form.
+
+<a id="usr-089"></a>
+#### USR-089 — Shipping can use personal Address Book entries
+
+**Ideas** · medium · unassigned · child of [USR-080](#usr-080)
+
+Select location on shipping includes the user's personal addresses as well as Colliers offices. Designer picker lists offices only; Repeat Order still fills NJ samples. Offices-not-NJ is [USR-058](#usr-058). Still to discuss.
+
+Acceptance criteria:
+
+- Select location on shipping includes this user's personal Address Book entries and Colliers offices.
+- A personal address saved in Address Book can be chosen as a ship-to location without retyping it.
+
+Notes: USER.md · F-29. Related USR-058 (offices, not NJ samples). Do not duplicate USR-058.
+
+<a id="usr-090"></a>
+### USR-090 — Order History
+
+**Ideas** · medium · unassigned
+
+The user can see their own past business-card orders. Designer: profile → Order History (mock data, employee column, Back to Dashboard). Not admin Order History ([ADM-030](#adm-030)). Not in Vue. Still to discuss. Not in the V2 guide.
+
+Acceptance criteria:
+
+- A signed-in user can open Order History and see only their own orders.
+- This page is not the admin Order History for all employees (ADM-030). Do not copy Back to Dashboard as a user dashboard.
+
+Notes: USER.md · F-30. Designer 14 Aug 2026. Discuss before building. Designer list is mock and did not gain a row after Place Order.
+
+<a id="usr-091"></a>
+#### USR-091 — Order History from profile menu
+
+**Ideas** · medium · unassigned · child of [USR-090](#usr-090)
+
+User profile menu includes Order History. Vue profile has RC Web Dev and Log out only.
+
+Acceptance criteria:
+
+- Order History appears in the regular-user profile menu.
+- Choosing Order History opens the same Order History page used from any other user shortcut.
+
+Notes: USER.md · F-30
+
+<a id="usr-092"></a>
+#### USR-092 — Order History table
+
+**Ideas** · medium · unassigned · child of [USR-090](#usr-090)
+
+Table of this user's orders: order id, card / cardholder, box quantity, date, status, actions. Designer shows an Employee column and other people's names — that is admin-shaped. A user sees only their orders.
+
+Acceptance criteria:
+
+- The table lists this user's orders with order id, card or cardholder, box quantity, date, status, and actions.
+- Orders placed by other people are not shown.
+
+Notes: USER.md · F-30. Quantity is boxes (same as cart), not a second printed-card column. Printed-card count is USR-046.
+
+<a id="usr-093"></a>
+#### USR-093 — Search own orders
+
+**Ideas** · medium · unassigned · child of [USR-090](#usr-090)
+
+Search filters this user's Order History by cardholder name or order id. Designer label is Search by Name…
+
+Acceptance criteria:
+
+- Search filters this user's orders by cardholder name or order id.
+- Clearing search restores the full list of this user's orders.
+
+Notes: USER.md · F-30
+
+<a id="usr-094"></a>
+#### USR-094 — Filter own orders by status
+
+**Ideas** · medium · unassigned · child of [USR-090](#usr-090)
+
+Filter this user's orders by status. Designer options: All Statuses, Delivered, Shipped, Processing. Status set still to discuss.
+
+Acceptance criteria:
+
+- The user can filter their orders by status, including an all-statuses option.
+- Changing the filter updates the table to matching orders only.
+
+Notes: USER.md · F-30. Discuss which statuses we keep.
+
+<a id="usr-095"></a>
+#### USR-095 — View order card preview
+
+**Ideas** · medium · unassigned · child of [USR-090](#usr-090)
+
+View opens a preview of the business card on that order. Preview name, email, phone, and office must match the stored order. Designer issue: Alex Johnson with hubert.wolfeschlegelstein@… — do not copy.
+
+Acceptance criteria:
+
+- View opens a preview of the business card for that order.
+- The preview name, email, phone, and office match the details stored on the order.
+
+Notes: USER.md · F-30. Same class of issue as ADM-N5, but this ticket is the user preview.
+
+<a id="usr-096"></a>
+#### USR-096 — Repeat Order
+
+**Ideas** · medium · unassigned · child of [USR-090](#usr-090)
+
+Repeat Order recreates the cart and shipping draft from that order so the user can review and submit again. Designer Repeat Order still fills NJ sample streets. Offices-not-NJ is [USR-058](#usr-058).
+
+Acceptance criteria:
+
+- Repeat Order recreates the cart and shipping draft from that order so the user can review and submit again.
+- Ship-to locations on the repeated order are Colliers offices or this user's saved addresses, not New Jersey sample addresses.
+
+Notes: USER.md · F-30. Related USR-058 and USR-089. Do not copy ADM-N4 as a second ticket.
+
+<a id="usr-097"></a>
+#### USR-097 — Confirmed orders appear in history
+
+**Ideas** · medium · unassigned · child of [USR-090](#usr-090)
+
+After a successful confirmation, the order appears in this user's Order History. Designer list is mock; Place Order did not add a row.
+
+Acceptance criteria:
+
+- After a successful confirmation, the new order appears in this user's Order History.
+- The history row shows the same product, box quantity, and addresses that were confirmed.
+
+Notes: USER.md · F-30. Confirmation still clears the cart (USR-062) and does not collect payment (USR-053).
+
 <a id="idea-01"></a>
 ### IDEA-01 — Email character limit decided (40)
 
@@ -855,12 +1129,12 @@ Notes: BUSINESS-RULES.md section 4
 
 **Done** · medium · CZ
 
-Walked the designer admin preview (admin / 123). Wrote ADMIN.md and the ADM-010…ADM-075 stories. No admin screens in Vue yet. Do not copy leftovers ADM-N1–ADM-N5.
+Walked the designer admin preview (admin / 123). Wrote ADMIN.md and the ADM-010…ADM-083 stories. No admin screens in Vue yet. Do not copy designer issues ADM-N1–ADM-N5.
 
 Acceptance criteria:
 
-- The approved admin scope is represented by the ADM-010 through ADM-075 ticket groups.
-- Known designer leftovers are captured separately and are not treated as approved behavior.
+- The approved admin scope is represented by the ADM-010 through ADM-083 ticket groups.
+- Known designer issues are captured separately and are not treated as approved behavior.
 
 Notes: ADMIN.md
 
@@ -869,7 +1143,7 @@ Notes: ADMIN.md
 
 **Ideas** · medium · unassigned
 
-Not in Vue. Designer: login admin / 123. Header ADMIN, Catalogue, Manage Addresses, Manage Titles. Profile: Admin Panel, Order History, Log out.
+Not in Vue. Designer: login admin / 123. Header ADMIN, Catalogue, Manage Addresses, Manage Titles. Profile: Admin Panel, Address Book, Order History, Log out.
 
 Acceptance criteria:
 
@@ -911,14 +1185,14 @@ Notes: ADMIN.md
 
 **Ideas** · medium · unassigned · child of [ADM-010](#adm-010)
 
-Profile: Admin Panel, Order History, Log out. Vue profile has RC Web Dev and Log out only.
+Profile: Admin Panel, Address Book, Order History, Log out. Vue profile has RC Web Dev and Log out only. Address Book page work is [ADM-080](#adm-080).
 
 Acceptance criteria:
 
-- The profile menu shows Admin Panel, Order History, and Log out.
+- The profile menu shows Admin Panel, Address Book, Order History, and Log out.
 - Each option performs the expected navigation or ends the admin session.
 
-Notes: ADMIN.md
+Notes: ADMIN.md · F-12. Address Book: ADM-080. Order History: ADM-036.
 
 <a id="adm-020"></a>
 ### ADM-020 — Admin Dashboard
@@ -1037,7 +1311,7 @@ Notes: ADMIN.md
 
 **Ideas** · medium · unassigned · child of [ADM-030](#adm-030)
 
-View opens a business card preview modal. Designer leftover: name/email mismatch (ADM-N5).
+View opens a business card preview modal. Designer issue: name/email mismatch (ADM-N5).
 
 Acceptance criteria:
 
@@ -1051,7 +1325,7 @@ Notes: ADMIN.md
 
 **Ideas** · medium · unassigned · child of [ADM-030](#adm-030)
 
-Repeat Order puts that item in the cart and goes to shipping. Designer leftover: NJ samples (ADM-N4).
+Repeat Order puts that item in the cart and goes to shipping. Designer issue: NJ samples (ADM-N4).
 
 Acceptance criteria:
 
@@ -1247,7 +1521,7 @@ Notes: ADMIN.md
 
 **Ideas** · medium · unassigned · child of [ADM-060](#adm-060)
 
-Edit opens Update Existing Address (ADM-065). Designer leftover: fields do not fill (ADM-N1).
+Edit opens Update Existing Address (ADM-065). Designer issue: fields do not fill (ADM-N1).
 
 Acceptance criteria:
 
@@ -1261,7 +1535,7 @@ Notes: ADMIN.md
 
 **Ideas** · medium · unassigned · child of [ADM-060](#adm-060)
 
-Required: Address Name, Street, City, State/Province, ZIP/Postal, Country. Designer leftovers: default US (ADM-N2), empty Save Draft (ADM-N3).
+Required: Address Name, Street, City, State/Province, ZIP/Postal, Country. Designer issues: default US (ADM-N2), empty Save Draft (ADM-N3).
 
 Acceptance criteria:
 
@@ -1382,6 +1656,62 @@ Acceptance criteria:
 
 Notes: ADMIN.md · USR-033
 
+<a id="adm-080"></a>
+### ADM-080 — Address Book (admin)
+
+**Ideas** · medium · unassigned
+
+Admin can keep personal ship-to addresses and view Colliers offices. Designer 14 Aug 2026: profile → Address Book (same page as [USR-080](#usr-080)). Not Manage Addresses ([ADM-060](#adm-060)). Not in Vue. Still to discuss.
+
+Acceptance criteria:
+
+- A signed-in admin can open Address Book from the profile menu and see personal addresses and Colliers offices.
+- This page is not Manage Addresses (ADM-060). Company office add and delete stay on Manage Addresses.
+
+Notes: ADMIN.md · F-29. Same Address Book as the user. Discuss before building.
+
+<a id="adm-081"></a>
+#### ADM-081 — Address Book from admin profile menu
+
+**Ideas** · medium · unassigned · child of [ADM-080](#adm-080)
+
+Admin profile includes Address Book (with Admin Panel, Order History, and Log out). Menu listing is [ADM-013](#adm-013).
+
+Acceptance criteria:
+
+- Address Book appears in the admin profile menu.
+- Choosing Address Book opens the Address Book page.
+
+Notes: ADMIN.md · F-12 · F-29
+
+<a id="adm-082"></a>
+#### ADM-082 — Admin My Address Book
+
+**Ideas** · medium · unassigned · child of [ADM-080](#adm-080)
+
+Tab lists this admin's personal locations with Edit and Delete. Same behaviour as [USR-082](#usr-082). Designer samples: Home Office, Temporary Location.
+
+Acceptance criteria:
+
+- My Address Book lists only this admin's personal addresses, each with a location name and address.
+- Each personal row offers Edit and Delete. Colliers offices do not appear on this tab.
+
+Notes: ADMIN.md · F-29. Personal add / edit / delete / search / Canada fields follow USR-084–USR-088.
+
+<a id="adm-083"></a>
+#### ADM-083 — Admin Office Addresses tab
+
+**Ideas** · medium · unassigned · child of [ADM-080](#adm-080)
+
+Tab lists Colliers offices. Designer shows Edit on each office (no Delete). Company add / edit / delete belong on Manage Addresses ([ADM-060](#adm-060)). Do not copy a second office-edit screen here unless we decide this tab is the admin edit path.
+
+Acceptance criteria:
+
+- Office Addresses lists the same Colliers offices used on customize, shipping, and Manage Addresses.
+- Adding or deleting company offices is not done from this tab. If office Edit stays, it must update the same records as ADM-064, not a second list.
+
+Notes: ADMIN.md · F-29. Designer names every office "Office Location". Discuss before building.
+
 <a id="adm-n1"></a>
 ### ADM-N1 — Edit address should fill City / Province / Postal
 
@@ -1394,7 +1724,7 @@ Acceptance criteria:
 - Editing an address prefills City, Province, and Postal Code from the selected record.
 - Saving an edit keeps address fields separate and does not copy the full address into Name or Street.
 
-Notes: ADMIN.md leftovers
+Notes: ADMIN.md · designer issue (do not copy)
 
 <a id="adm-n2"></a>
 ### ADM-N2 — Default country Canada, not United States
@@ -1408,7 +1738,7 @@ Acceptance criteria:
 - The team confirms and records the default country for new addresses.
 - If Canada is approved, new forms default to Canada while existing address countries remain unchanged.
 
-Notes: ADMIN.md leftovers
+Notes: ADMIN.md · designer issue (do not copy)
 
 <a id="adm-n3"></a>
 ### ADM-N3 — Save Draft on empty address form
@@ -1422,7 +1752,7 @@ Acceptance criteria:
 - The team defines whether empty or incomplete address drafts are allowed.
 - The Save Draft control either saves according to the approved rule or is hidden/disabled with clear behavior.
 
-Notes: ADMIN.md leftovers
+Notes: ADMIN.md · designer issue (do not copy)
 
 <a id="adm-n4"></a>
 ### ADM-N4 — Repeat Order should use Colliers offices
@@ -1436,7 +1766,7 @@ Acceptance criteria:
 - Repeat Order presents only approved Colliers office locations.
 - No New Jersey sample address appears in the repeated-order shipping flow.
 
-Notes: ADMIN.md leftovers
+Notes: ADMIN.md · designer issue (do not copy)
 
 <a id="adm-n5"></a>
 ### ADM-N5 — Order preview name and email should match
@@ -1450,7 +1780,7 @@ Acceptance criteria:
 - The order preview name and email match the selected historical order record.
 - Opening previews for different orders never carries over identity data from a previous order.
 
-Notes: ADMIN.md leftovers
+Notes: ADMIN.md · designer issue (do not copy)
 
 ## Shared UI/UX
 

@@ -2,7 +2,7 @@
 
 Use this file to track **admin screens from the designer preview** and turn them into stories. User catalogue / customize / cart / shipping live in [USER.md](USER.md) and follow **this Vue app**, not AI Studio.
 
-Verified in the designer preview on **13 Aug 2026** (`admin` / `123`).
+Verified in the designer preview on **13 Aug 2026** (`admin` / `123`). Address Book on the admin profile rechecked **14 Aug 2026**.
 
 | Layer | Role |
 | --- | --- |
@@ -36,7 +36,7 @@ None of the **screens** are in Vue yet. Each **page** is a tens ticket.
 - [ ] **ADM-010** Admin login and nav — F-12
   - [ ] **ADM-011** Login `admin` / `123`
   - [ ] **ADM-012** Header: ADMIN, Catalogue, Manage Addresses, Manage Titles
-  - [ ] **ADM-013** Profile: Admin Panel, Order History, Log out
+  - [ ] **ADM-013** Profile: Admin Panel, Address Book, Order History, Log out
 - [ ] **ADM-020** Admin Dashboard — F-13
   - [ ] **ADM-021** System Options tiles
   - [ ] **ADM-022** Live address count
@@ -70,14 +70,18 @@ None of the **screens** are in Vue yet. Each **page** is a tens ticket.
   - [ ] **ADM-073** Delete
   - [ ] **ADM-074** Inline edit
   - [ ] **ADM-075** Customize dropdown uses this list
+- [ ] **ADM-080** Address Book (admin) — F-29
+  - [ ] **ADM-081** Address Book from profile menu
+  - [ ] **ADM-082** My Address Book (personal)
+  - [ ] **ADM-083** Office Addresses tab (Edit vs Manage Addresses)
 
-Ticket descriptions live on the RC Web Dev board (`#/rc-web-dev`). Designer leftovers (do not copy as-is): **ADM-N1**–**ADM-N5**.
+Ticket descriptions live on the RC Web Dev board (`#/rc-web-dev`). Designer issues (do not copy as-is): **ADM-N1**–**ADM-N5**.
 
 ---
 
-## Designer leftovers (not Vue tickets yet)
+## Designer issues (do not copy)
 
-Fix or drop in the designer; do not copy as-is.
+Fix or drop in the designer; do not ship these as-is.
 
 | Code | Issue |
 | --- | --- |
