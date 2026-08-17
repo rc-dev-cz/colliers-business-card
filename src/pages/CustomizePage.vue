@@ -1,9 +1,10 @@
 <script setup>
-import { computed, reactive, ref } from 'vue'
+import { computed, onMounted, reactive, ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { getProduct, officeAddresses, jobTitles } from '../data/products'
+import { getProduct, jobTitles } from '../data/products'
 import { useLocale } from '../composables/useLocale'
 import { useCart } from '../composables/useCart'
+import { useAddressBook } from '../composables/useAddressBook'
 import ColliersPageShell from '../layout/ColliersPageShell.vue'
 import CardPreview from '../components/CardPreview.vue'
 
@@ -14,7 +15,12 @@ const props = defineProps({
 const router = useRouter()
 const { t } = useLocale()
 const { addToCart } = useCart()
+const { offices, officesLoading, loadOffices, formatAddressCard, officeLabel } = useAddressBook()
 const product = computed(() => getProduct(props.code))
+
+onMounted(() => {
+  loadOffices()
+})
 
 const NAME_MAX = 30
 const EMAIL_MAX = 30
@@ -131,14 +137,14 @@ function addItemToCart() {
             </div>
             <div>
               <label class="field-label">{{ t('address') }}</label>
-              <select v-model="details.address" class="field-input">
-                <option disabled value="">{{ t('selectAddress') }}</option>
+              <select v-model="details.address" class="field-input" :disabled="officesLoading">
+                <option disabled value="">{{ officesLoading ? t('loading') : t('selectAddress') }}</option>
                 <option
-                  v-for="office in officeAddresses"
-                  :key="office.label"
-                  :value="office.value"
+                  v-for="office in offices"
+                  :key="office.id"
+                  :value="formatAddressCard(office)"
                 >
-                  {{ office.label }}
+                  {{ officeLabel(office) }}
                 </option>
               </select>
             </div>

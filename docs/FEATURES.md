@@ -4,7 +4,7 @@ What this product is and what it can do. Agreed rules: [BUSINESS-RULES.md](BUSIN
 
 This is a **Vue 3 + JavaScript** prototype of the Colliers Partner Portal for **ordering branded business cards**. A **user** picks a card, customizes details, puts it in a **cart**, sets shipping, and confirms an order. An **admin** manages addresses, titles, and dashboard apps.
 
-There is no real backend. Product data is in `src/data/products.js`. Session, cart, and order draft are in `localStorage`. Shipping is **$0.00** because it is already included in the **$63** box fee — do not add a separate shipping calculation. There is **no payment**. Intended later: port the UI into **Klai Studio**. Do not port RC Web Dev (`src/rc-web-dev/`) — that stays in this Vue app with Cursor and Supabase.
+Office addresses come from FileMaker (`GET /api/addresses`). They are not stored in this repo. Products and titles are still in `src/data/products.js` until those APIs exist. Session, cart, and order draft are in `localStorage`. Shipping is **$0.00** because it is already included in the **$63** box fee — do not add a separate shipping calculation. There is **no payment**. Intended later: port the UI into **Klai Studio**. Do not port RC Web Dev (`src/rc-web-dev/`) — that stays in this Vue app with Cursor and Supabase.
 
 **Source of truth**
 

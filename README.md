@@ -2,7 +2,15 @@
 
 Vue 3 + Tailwind + Shoelace prototype of the Colliers Partner Portal for business cards.
 
-**Client preview:** GitHub Pages after you push this repo and enable Pages (Actions).
+**Environments**
+
+| Layer | What it is |
+| --- | --- |
+| **Development** | This Vue repo (`npm run dev`). Cursor + local Vite. |
+| **QA / staging** | The GitHub Pages build. Same app, hosted for the team to click through. |
+| **Klai** | The live FileMaker / Klai Studio app. Final destination. |
+
+Architecture board: after login, Profile → **RC Web Dev** → **Architecture**, or `#/rc-web-dev/architecture`. Same page on QA (GitHub Pages). Checkboxes are per browser; GitHub Pages does not share them.
 
 ## Product docs
 
@@ -48,12 +56,26 @@ GitHub Pages base path defaults to `/colliers-business-card/`. Override with:
 VITE_BASE=/ npm run build
 ```
 
-## GitHub Pages
+## QA / staging (GitHub Pages)
 
 1. Push this repo to GitHub (repo: `colliers-business-card`).
 2. Settings → Pages → Source: **GitHub Actions**.
 3. Push to `main` — workflow `.github/workflows/deploy-pages.yml` builds and deploys.
 4. Share: `https://rc-dev-cz.github.io/colliers-business-card/`
+
+### Supabase on QA (optional)
+
+The Architecture page does not need this. The RC Web Dev **Board** does, if you want ticket sync on GitHub Pages.
+
+Vite bakes `VITE_*` in at **build** time. Do not commit `.env.local`. Add **repository** secrets (not environment secrets on `github-pages` — that job only deploys the already-built files):
+
+1. GitHub repo → **Settings** → **Secrets and variables** → **Actions** → **New repository secret**.
+2. Add these two names, same values as local `.env.local`:
+   - `VITE_SUPABASE_URL`
+   - `VITE_SUPABASE_PUBLISHABLE_KEY` (the publishable / anon key — never `service_role`)
+3. Re-run **Actions** → **Deploy GitHub Pages** → **Run workflow**, or push an empty commit to `main`.
+
+If the secrets are missing, QA still loads. The board uses the bundled ticket seed and will not write to Supabase.
 
 ## localStorage keys
 

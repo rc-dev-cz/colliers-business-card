@@ -9,6 +9,7 @@ const tabs = [
   { name: 'rc-web-dev-board', label: 'Board', to: { name: 'rc-web-dev-board' } },
   { name: 'rc-web-dev-roadmap', label: 'Roadmap', to: { name: 'rc-web-dev-roadmap' } },
   { name: 'rc-web-dev-logs', label: 'Logs', to: { name: 'rc-web-dev-logs' } },
+  { name: 'rc-web-dev-architecture', label: 'Architecture', to: { name: 'rc-web-dev-architecture' } },
 ]
 </script>
 
@@ -31,7 +32,12 @@ const tabs = [
         </router-link>
       </div>
     </div>
-    <button type="button" class="btn-primary" @click="openCreate()">
+    <button
+      v-if="route.name !== 'rc-web-dev-architecture'"
+      type="button"
+      class="btn-primary"
+      @click="openCreate()"
+    >
       Create ticket
     </button>
   </nav>

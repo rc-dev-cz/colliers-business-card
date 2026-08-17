@@ -22,11 +22,7 @@ function defaultOrder() {
     splits: [
       createSplit({
         id: 1,
-        locations: [
-          createLocation('123 Address Street, South Plainfield, NJ 07080', 15),
-          createLocation('7481 Lakeview Court, South Plainfield, NJ 07080', 15),
-          createLocation('7105 Cherry Hill St., Millville, NJ 08332', 15),
-        ],
+        locations: [createLocation('', 1)],
       }),
     ],
   }

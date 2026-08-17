@@ -14,13 +14,14 @@ Do not copy RC Web Dev into `colliers-environment.css` or the Klai port. In this
 
 ## Rule
 
-RC Web Dev always has **three pages**:
+RC Web Dev always has **four pages**:
 
 | Page | URL | What it is |
 | --- | --- | --- |
 | Board | `#/rc-web-dev/board` | Scrum columns. Drag tickets. |
 | Roadmap | `#/rc-web-dev/roadmap` | Progress bar + assigned tickets by category. Unassigned Ideas sit below, grouped by category. |
 | Logs | `#/rc-web-dev/logs` | History of creates, moves, and edits |
+| Architecture | `#/rc-web-dev/architecture` | Order paths, screen track, FileMaker scripts. Checkboxes stay in this browser. |
 
 After login, Profile → rainbow **RC Web Dev**, or open `#/rc-web-dev`. The rainbow user ring lives on RC Web Dev’s own header.
 

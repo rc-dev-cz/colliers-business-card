@@ -22,6 +22,11 @@ function goWebDev() {
   router.push({ name: 'rc-web-dev-board' })
 }
 
+function goAddressBook() {
+  menuOpen.value = false
+  router.push({ name: 'addresses' })
+}
+
 function onLogout() {
   menuOpen.value = false
   logout()
@@ -120,7 +125,14 @@ function onLogout() {
             <div class="border-b border-gray-100 px-3 pb-2 text-sm text-gray-600">{{ userEmail || 'demo' }}</div>
             <button
               type="button"
-              class="web-dev-menu mx-2 mt-2 w-[calc(100%-1rem)] rounded-md px-3 py-2 text-left text-sm font-semibold text-gray-900"
+              class="w-full px-3 py-2 text-left text-sm text-gray-800 hover:bg-gray-50"
+              @click="goAddressBook"
+            >
+              {{ t('addressBook') }}
+            </button>
+            <button
+              type="button"
+              class="web-dev-menu mx-2 mt-1 w-[calc(100%-1rem)] rounded-md px-3 py-2 text-left text-sm font-semibold text-gray-900"
               @click="goWebDev"
             >
               RC Web Dev

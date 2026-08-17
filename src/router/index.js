@@ -5,6 +5,7 @@ import DetailsPage from '../pages/DetailsPage.vue'
 import CustomizePage from '../pages/CustomizePage.vue'
 import ShippingPage from '../pages/ShippingPage.vue'
 import ConfirmedPage from '../pages/ConfirmedPage.vue'
+import AddressBookPage from '../pages/AddressBookPage.vue'
 import LoginPage from '../pages/LoginPage.vue'
 import SignupPage from '../pages/SignupPage.vue'
 import ForgotPage from '../pages/ForgotPage.vue'
@@ -20,6 +21,7 @@ const router = createRouter({
     { path: '/customize/:code', name: 'customize', component: CustomizePage, props: true },
     { path: '/shipping', name: 'shipping', component: ShippingPage },
     { path: '/confirmed', name: 'confirmed', component: ConfirmedPage },
+    { path: '/addresses', name: 'addresses', component: AddressBookPage },
     // RC Web Dev is internal (Cursor + Vue + Supabase). Do not port to Klai.
     { path: '/admin-work', redirect: { name: 'rc-web-dev-roadmap' } },
     { path: '/user-work', redirect: { name: 'rc-web-dev-roadmap' } },
@@ -32,6 +34,7 @@ const router = createRouter({
         { path: 'board', name: 'rc-web-dev-board', component: () => import('../rc-web-dev/pages/RcWebDevPage.vue') },
         { path: 'roadmap', name: 'rc-web-dev-roadmap', component: () => import('../rc-web-dev/pages/RcWebDevRoadmapPage.vue') },
         { path: 'logs', name: 'rc-web-dev-logs', component: () => import('../rc-web-dev/pages/RcWebDevLogsPage.vue') },
+        { path: 'architecture', name: 'rc-web-dev-architecture', component: () => import('../rc-web-dev/pages/RcWebDevArchitecturePage.vue') },
       ],
     },
     { path: '/dev', redirect: { name: 'rc-web-dev-board' } },

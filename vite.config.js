@@ -18,4 +18,14 @@ export default defineConfig({
       },
     }),
   ],
+  server: {
+    // Same-origin proxy so the browser does not hang on cross-origin API calls in local Vite.
+    proxy: {
+      '/api': {
+        target: 'https://colliers-dev-rc.clientportal.cloud',
+        changeOrigin: true,
+        secure: true,
+      },
+    },
+  },
 })
