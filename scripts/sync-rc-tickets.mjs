@@ -1,5 +1,5 @@
 /**
- * Push docs/devTracker.json tickets into Supabase rc_tickets (incl. parentId in source).
+ * Push docs/devTracker.json tickets into Supabase rc_tickets (incl. relatedIds in source).
  * Usage: node scripts/sync-rc-tickets.mjs
  */
 import { readFileSync } from 'node:fs'
@@ -50,22 +50,17 @@ function asCriteria(value) {
 function encodeSource(ticket) {
   const notes = ticket.notes || ''
   const acceptanceCriteria = asCriteria(ticket.acceptanceCriteria)
-  const parentId = ticket.parentId || null
+  const relatedIds = Array.isArray(ticket.relatedIds) ? ticket.relatedIds.filter(Boolean) : []
   const blocked = Boolean(ticket.blocked)
   const blockedReason = blocked ? String(ticket.blockedReason || '') : ''
-  const estimatedHours = Number(ticket.estimatedHours) || 0
-  const dueDate = ticket.dueDate ? String(ticket.dueDate) : ''
-  const needsPack =
-    acceptanceCriteria.length || parentId || blocked || estimatedHours || dueDate
+  const needsPack = acceptanceCriteria.length || relatedIds.length || blocked
   if (!needsPack) return notes
   return JSON.stringify({
     notes,
     acceptanceCriteria,
-    parentId,
+    relatedIds,
     blocked,
     blockedReason,
-    estimatedHours,
-    dueDate,
   })
 }
 
@@ -86,7 +81,7 @@ function ticketToRow(ticket) {
     assignee: ticket.assignee || '',
     priority: ticket.priority || 'medium',
     fresh: Boolean(ticket.fresh),
-    review: ticket.review || '',
+    review: ['new', 'updated', 'in-progress'].includes(ticket.review) ? ticket.review : '',
     updated_at: new Date().toISOString(),
   }
 }
@@ -101,7 +96,7 @@ if (!url || !key) {
 
 const tracker = JSON.parse(readFileSync(resolve(root, 'docs/devTracker.json'), 'utf8'))
 const tickets = tracker.tickets || []
-const withParent = tickets.filter((t) => t.parentId).length
+const withRelated = tickets.filter((t) => Array.isArray(t.relatedIds) && t.relatedIds.length).length
 
 const supabase = createClient(url, key)
 const rows = tickets.map(ticketToRow)
@@ -119,4 +114,4 @@ for (let i = 0; i < rows.length; i += chunkSize) {
   console.log(`Upserted ${ok}/${rows.length}`)
 }
 
-console.log(`Done. ${rows.length} tickets synced (${withParent} with parentId).`)
+console.log(`Done. ${rows.length} tickets synced (${withRelated} with relatedIds).`)

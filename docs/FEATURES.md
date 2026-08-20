@@ -2,9 +2,9 @@
 
 What this product is and what it can do. Agreed rules: [BUSINESS-RULES.md](BUSINESS-RULES.md). Status lives in [BACKLOG.md](BACKLOG.md). Use cases live in [TESTING.md](TESTING.md).
 
-This is a **Vue 3 + JavaScript** prototype of the Colliers Partner Portal for **ordering branded business cards**. A **user** picks a card, customizes details, puts it in a **cart**, sets shipping, and confirms an order. An **admin** manages addresses, titles, and dashboard apps.
+This is a **Vue 3 + JavaScript** prototype of the Colliers Partner Portal for **ordering branded business cards**. A **Vue 2 Options API** port of the product pages is in `colliers-vue2/` for Clay / Klai. A **user** picks a card, customizes details, puts it in a **cart**, sets shipping, and confirms an order. An **admin** manages addresses, titles, and dashboard apps.
 
-Office addresses come from FileMaker (`GET /api/addresses`). They are not stored in this repo. Products and titles are still in `src/data/products.js` until those APIs exist. Session, cart, and order draft are in `localStorage`. Shipping is **$0.00** because it is already included in the **$63** box fee — do not add a separate shipping calculation. There is **no payment**. Intended later: port the UI into **Klai Studio**. Do not port RC Web Dev (`src/rc-web-dev/`) — that stays in this Vue app with Cursor and Supabase.
+Office addresses come from FileMaker (`GET /api/addresses`). They are not stored in this repo. Products and titles are still in `src/data/products.js` until **DEV-107** and **DEV-109**. Personal addresses and order history are Vue 2 localStorage until **DEV-106** and **DEV-108**. Preview login is not FileMaker until **DEV-110**. Session, cart, and order draft are in `localStorage`. Shipping is **$0.00** because it is already included in the **$63** box fee — do not add a separate shipping calculation. There is **no payment**. Intended later: port the UI into **Klai Studio**. Do not port RC Web Dev (`src/rc-web-dev/`) — that stays in this Vue app with Cursor and Supabase.
 
 **Source of truth**
 
@@ -29,7 +29,7 @@ Preview login (`demo` / any email in Vue) is for designer and us only. It is **n
 
 **Cards** (3 products) → Details → Customize (Vue) → Cart → Shipping → Review → Confirmed.
 
-Profile (still to discuss): Address Book (F-29) and this user's Order History (F-30). Admin also has Address Book on the profile menu (ADM-080). Not admin Manage Addresses.
+Profile: Address Book (F-29) is QA. This user's Order History (F-30) is QA in Vue 2 localStorage (`colliers-vue2/`). Admin also has Address Book on the profile menu (ADM-080). Company offices are created on Manage Addresses (F-14), not on Address Book.
 
 ## Cards
 
@@ -75,19 +75,19 @@ F-10 — Ship-to addresses: add/remove location, select a saved location, qty on
 
 F-11 — Order confirmed: success screen; cart and order draft cleared. Review before confirm is F-27. User Order History is F-30.
 
-F-29 — Address Book: personal ship-to addresses plus a view of Colliers offices. Profile menu for the user and for admin. Not admin Manage Addresses (F-14). Still to discuss. Tickets: USR-080–USR-089, ADM-080–ADM-083.
+F-29 — Address Book: personal ship-to addresses (demo user and admin can add / edit / delete their own) plus a view of Colliers offices. Profile menu for the user and for admin. Only admin creates company offices, on Manage Addresses (F-14). Tickets: USR-080–USR-089, ADM-080–ADM-083, ADM-060–ADM-067.
 
-F-30 — User Order History: this user's past orders. Profile menu. Not admin Order History (F-16). Still to discuss. Tickets: USR-090–USR-097.
+F-30 — User Order History: this user's past orders. Profile menu. Vue 2 stores them in localStorage (`colliers-vue2/`). Not admin Order History (F-16). Tickets: USR-090–USR-098.
 
-## Admin (designer only; not in this Vue repo)
+## Admin
 
-Work checklist: [ADMIN.md](ADMIN.md). User order-flow stories: [USER.md](USER.md).
+Work checklist: [ADMIN.md](ADMIN.md). User order-flow stories: [USER.md](USER.md). Admin login, nav, dashboard tiles, and Address Book live in the Vue 2 app. Manage Addresses, Manage Titles, Order History, Invoice History, and Reporting are stubs.
 
 F-12 — Admin login: `admin` / `123`. Nav: ADMIN, Catalogue, Manage Addresses, Manage Titles. Profile: Admin Panel, Address Book, Order History, Log out.
 
-F-13 — Admin Dashboard: System Options (Order History, Invoice History, Reporting, Manage Addresses, Manage Titles). No Total Orders / Pending Approvals / Active Users tiles.
+F-13 — Admin Dashboard: System Options (Order History, Invoice History, Reporting, Manage Addresses, Manage Titles). Vue 2 tiles are in; live counts are still open. Designer 19 Aug 2026 showed 22 addresses and 32 titles. No Total Orders / Pending Approvals / Active Users tiles.
 
-F-14 — Manage Addresses: list; add and edit via structured address form; remove. Edit Supplier Details is gone.
+F-14 — Manage Addresses: list; add and edit via structured address form; remove. Designer 19 Aug 2026: one-line add on the list, hover Edit/Remove, structured form on Edit. Do not copy US default or empty postal. Edit Supplier Details is gone.
 
 F-15 — Manage Titles: list of designations (PMP, LEED AP, and others); add; delete; inline edit.
 
@@ -95,9 +95,9 @@ F-16 / F-17 / F-18 — Admin Order History, Invoice History, and Reporting are r
 
 ## Language and theme
 
-F-19 — Dark theme is **not built**. Vue is light only.
+F-19 — Dark theme is **out of scope** for this version. Vue is light only.
 
-F-20 — Remove the footer English/Français dropdown. Language belongs in the **navbar only** (`EN` / `FR` on `AppHeader.vue`). The footer control in `AppFooter.vue` is a duplicate (designer has it too). Do not treat footer language as a feature.
+F-20 — Remove the footer English/Français dropdown. Language belongs in the **navbar only** (`EN` / `FR` on `AppHeader.vue`). Vue 2 footer is done. Vue 3 `AppFooter.vue` and the designer still have the duplicate.
 
 F-22 — Navbar EN/FR: switches site chrome (for example Add to Cart → Ajouter au panier).
 

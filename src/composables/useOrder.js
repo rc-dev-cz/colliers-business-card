@@ -13,7 +13,7 @@ function createSplit({ id = Date.now(), itemIds = [], locations = null } = {}) {
   return {
     id,
     itemIds: [...itemIds],
-    locations: locations ? locations.map((loc) => ({ ...loc })) : [createLocation()],
+    locations: locations ? locations.map((loc) => ({ ...loc })) : [],
   }
 }
 
@@ -22,7 +22,7 @@ function defaultOrder() {
     splits: [
       createSplit({
         id: 1,
-        locations: [createLocation('', 1)],
+        locations: [],
       }),
     ],
   }
@@ -35,11 +35,13 @@ function normalizeOrder(raw) {
       createSplit({
         id: split.id ?? index + 1,
         itemIds: Array.isArray(split.itemIds) ? split.itemIds.map(String) : [],
-        locations: (split.locations || []).map((loc) => ({
-          id: loc.id || createLocation().id,
-          address: loc.address || '',
-          qty: Number(loc.qty) > 0 ? Number(loc.qty) : 1,
-        })),
+        locations: (split.locations || [])
+          .map((loc) => ({
+            id: loc.id || createLocation().id,
+            address: loc.address || '',
+            qty: Number(loc.qty) > 0 ? Number(loc.qty) : 1,
+          }))
+          .filter((loc) => String(loc.address || '').trim()),
       }),
     ),
   }
@@ -95,18 +97,19 @@ export function useOrder() {
     return (split.itemIds || []).map((id) => byId.get(String(id))).filter(Boolean)
   }
 
-  function splitOrder() {
-    // Empty group: no cards, one blank location (USR-057)
-    order.splits.push(createSplit({ locations: [createLocation('', 1)] }))
+  function splitOrder(newItemIds = []) {
+    order.splits.push(
+      createSplit({
+        itemIds: Array.isArray(newItemIds) ? newItemIds.map(String) : [],
+        locations: [],
+      }),
+    )
   }
 
   function removeSplit(index) {
-    if (order.splits.length <= 1) return
+    if (order.splits.length <= 1) return []
     const [removed] = order.splits.splice(index, 1)
-    const target = order.splits[0]
-    ;(removed.itemIds || []).forEach((id) => {
-      if (!target.itemIds.includes(id)) target.itemIds.push(id)
-    })
+    return (removed.itemIds || []).map(String)
   }
 
   function assignItem(split, itemId) {
@@ -131,7 +134,9 @@ export function useOrder() {
   }
 
   function addLocation(split, address = '', qty = 1) {
-    split.locations.push(createLocation(address, qty))
+    const trimmed = String(address || '').trim()
+    if (!trimmed) return
+    split.locations.push(createLocation(trimmed, qty))
   }
 
   function removeLocation(split, index) {

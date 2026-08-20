@@ -28,7 +28,7 @@ const FIELD_LABEL = {
   assignee: 'Assigned',
   blocked: 'Blocked',
   notes: 'Notes',
-  acceptanceCriteria: 'Acceptance criteria',
+  relatedIds: 'Related',
 }
 
 const { tickets, logs, merged } = useDevBoard()
@@ -160,7 +160,7 @@ function closeTicket() {
     v-if="!logs.length"
     class="rounded-lg border border-dashed border-gray-200 bg-white px-4 py-10 text-center text-sm text-gray-500"
   >
-    Nothing logged yet. Creating a ticket, dragging it on the board, checking it on the roadmap, or editing it will show up here.
+    Nothing logged yet. The board cards are the ticket list from the repo. This page only records what happens after that — create, drag, roadmap check, or edit.
   </p>
 
   <p

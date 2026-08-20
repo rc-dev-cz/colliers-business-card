@@ -1,0 +1,86 @@
+import Vue from 'vue'
+import VueRouter from 'vue-router'
+import { isAdmin, isAuthenticated } from './store'
+import LoginPage from './pages/LoginPage.vue'
+import CatalogPage from './pages/CatalogPage.vue'
+import DetailsPage from './pages/DetailsPage.vue'
+import CustomizePage from './pages/CustomizePage.vue'
+import ShippingPage from './pages/ShippingPage.vue'
+import ReviewPage from './pages/ReviewPage.vue'
+import ConfirmedPage from './pages/ConfirmedPage.vue'
+import AddressBookPage from './pages/AddressBookPage.vue'
+import OrderHistoryPage from './pages/OrderHistoryPage.vue'
+import AdminDashboardPage from './pages/admin/AdminDashboardPage.vue'
+import AdminStubPage from './pages/admin/AdminStubPage.vue'
+
+Vue.use(VueRouter)
+
+const adminMeta = { admin: true }
+
+const router = new VueRouter({
+  mode: 'hash',
+  routes: [
+    { path: '/login', name: 'login', component: LoginPage, meta: { public: true } },
+    { path: '/', name: 'catalog', component: CatalogPage },
+    { path: '/details/:code', name: 'details', component: DetailsPage, props: true },
+    { path: '/customize/:code', name: 'customize', component: CustomizePage, props: true },
+    { path: '/shipping', name: 'shipping', component: ShippingPage },
+    { path: '/addresses', name: 'addresses', component: AddressBookPage },
+    { path: '/history', name: 'history', component: OrderHistoryPage },
+    { path: '/review', name: 'review', component: ReviewPage },
+    { path: '/confirmed', name: 'confirmed', component: ConfirmedPage },
+    { path: '/admin', name: 'admin', component: AdminDashboardPage, meta: adminMeta },
+    {
+      path: '/admin/addresses',
+      name: 'admin-addresses',
+      component: AdminStubPage,
+      meta: { admin: true, titleKey: 'manageAddresses', ticket: 'ADM-060' },
+    },
+    {
+      path: '/admin/titles',
+      name: 'admin-titles',
+      component: AdminStubPage,
+      meta: { admin: true, titleKey: 'manageTitles', ticket: 'ADM-070' },
+    },
+    {
+      path: '/admin/orders',
+      name: 'admin-orders',
+      component: AdminStubPage,
+      meta: { admin: true, titleKey: 'orderHistory', ticket: 'ADM-030' },
+    },
+    {
+      path: '/admin/invoices',
+      name: 'admin-invoices',
+      component: AdminStubPage,
+      meta: { admin: true, titleKey: 'invoiceHistory', ticket: 'ADM-040' },
+    },
+    {
+      path: '/admin/reporting',
+      name: 'admin-reporting',
+      component: AdminStubPage,
+      meta: { admin: true, titleKey: 'reporting', ticket: 'ADM-050' },
+    },
+    { path: '*', redirect: '/' },
+  ],
+  scrollBehavior: function () {
+    return { x: 0, y: 0 }
+  },
+})
+
+router.beforeEach(function (to, from, next) {
+  if (!to.meta.public && !isAuthenticated()) {
+    next({ name: 'login' })
+    return
+  }
+  if (to.meta.public && isAuthenticated() && to.name === 'login') {
+    next({ name: 'catalog' })
+    return
+  }
+  if (to.meta.admin && !isAdmin()) {
+    next({ name: 'catalog' })
+    return
+  }
+  next()
+})
+
+export default router

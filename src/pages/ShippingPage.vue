@@ -1,18 +1,20 @@
 <script setup>
-import { computed, onBeforeUnmount, watch } from 'vue'
+import { computed, onBeforeUnmount, onMounted, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import Sortable from 'sortablejs'
 import { products, getProduct } from '../data/products'
 import { useLocale } from '../composables/useLocale'
 import { useCart } from '../composables/useCart'
 import { useOrder } from '../composables/useOrder'
+import { useAddressBook } from '../composables/useAddressBook'
 import { productNameKey } from '../i18n/messages'
+import { buildAddressOptionGroups, isKnownAddress } from '../helpers/shippingAddressOptions'
 import ColliersPageShell from '../layout/ColliersPageShell.vue'
 import LocationDrawer from '../components/LocationDrawer.vue'
 
 const router = useRouter()
 const { t } = useLocale()
-const { cart, openLocationPicker, locationTarget, removeLine: removeCartLine } = useCart()
+const { cart, openLocationPicker, locationTarget, removeLine: removeCartLine, cloneLine } = useCart()
 const {
   order,
   syncCartAssignments,
@@ -25,6 +27,24 @@ const {
   addLocation,
   removeLocation,
 } = useOrder()
+const { personalAddresses, offices, loadOffices, formatAddressLine, officeLabel } = useAddressBook()
+
+const addressGroups = computed(() =>
+  buildAddressOptionGroups(
+    personalAddresses.value,
+    offices.value,
+    formatAddressLine,
+    officeLabel,
+  ),
+)
+
+onMounted(() => {
+  loadOffices()
+})
+
+function addressIsKnown(address) {
+  return isKnownAddress(address, addressGroups.value)
+}
 
 const sortableInstances = new Set()
 
@@ -128,8 +148,8 @@ function onLocationSelect(addresses) {
   })
 }
 
-function onAddLocation(split) {
-  addLocation(split)
+function onAddLocation(splitIndex) {
+  pickLocation(splitIndex)
 }
 
 function changeProduct(line, code) {
@@ -140,12 +160,25 @@ function changeProduct(line, code) {
   line.price = product.price
 }
 
+function onSplitOrder(splitIndex) {
+  const source = order.splits[splitIndex]
+  const newItemIds = (source?.itemIds || [])
+    .map((id) => cloneLine(id))
+    .filter(Boolean)
+  splitOrder(newItemIds)
+}
+
+function onRemoveSplit(splitIndex) {
+  const ids = removeSplit(splitIndex)
+  ids.forEach((id) => removeCartLine(id))
+}
+
 function onMoveLine(lineId, splitId) {
   moveItem(lineId, splitId)
 }
 
 function splitLabel(index) {
-  return `${t('shipping')} ${index + 1}`
+  return `${t('shippingGroup')} ${index + 1}`
 }
 </script>
 
@@ -251,21 +284,10 @@ function splitLabel(index) {
                 </button>
               </li>
             </ul>
-            <div class="mt-4 flex flex-wrap items-center justify-between gap-2">
-              <button type="button" class="btn-primary text-sm" @click="splitOrder">
-                {{ t('splitOrder') }}
-              </button>
-              <button
-                v-if="order.splits.length > 1"
-                type="button"
-                class="text-sm text-gray-500 hover:text-red-600"
-                @click="removeSplit(splitIndex)"
-              >
-                {{ t('removeSplit') }}
-              </button>
+            <div class="mt-4">
               <button
                 type="button"
-                class="ml-auto text-sm text-colliers-primary hover:underline"
+                class="text-sm text-colliers-primary hover:underline"
                 @click="addItem(split)"
               >
                 + {{ t('addItem') }}
@@ -275,7 +297,11 @@ function splitLabel(index) {
 
           <section class="p-4 sm:p-6">
             <h2 class="mb-4 text-lg font-semibold text-gray-900">{{ t('shipToAddress') }}</h2>
+            <p v-if="!split.locations.length" class="py-4 text-sm text-gray-500">
+              {{ t('noShipToAddresses') }}
+            </p>
             <ul
+              v-else
               :ref="(el) => setupLocationSortable(el, splitIndex)"
               class="space-y-3"
             >
@@ -299,12 +325,36 @@ function splitLabel(index) {
                     <circle cx="8" cy="14" r="1.5" />
                   </svg>
                 </div>
-                <input
+                <select
                   v-model="loc.address"
-                  type="text"
                   class="field-input min-w-0 flex-1"
-                  :placeholder="t('enterAddress')"
-                />
+                >
+                  <option value="" disabled>{{ t('selectShipToAddress') }}</option>
+                  <optgroup v-if="addressGroups.personal.length" :label="t('myAddressBook')">
+                    <option
+                      v-for="opt in addressGroups.personal"
+                      :key="opt.value"
+                      :value="opt.value"
+                    >
+                      {{ opt.label }}
+                    </option>
+                  </optgroup>
+                  <optgroup v-if="addressGroups.offices.length" :label="t('officeAddresses')">
+                    <option
+                      v-for="opt in addressGroups.offices"
+                      :key="opt.value"
+                      :value="opt.value"
+                    >
+                      {{ opt.label }}
+                    </option>
+                  </optgroup>
+                  <optgroup
+                    v-if="loc.address && !addressIsKnown(loc.address)"
+                    :label="t('savedAddress')"
+                  >
+                    <option :value="loc.address">{{ loc.address }}</option>
+                  </optgroup>
+                </select>
                 <input
                   v-model.number="loc.qty"
                   type="number"
@@ -320,23 +370,31 @@ function splitLabel(index) {
                 </button>
               </li>
             </ul>
-            <div class="mt-4 flex flex-wrap gap-2">
+            <div class="mt-4">
               <button
                 type="button"
                 class="rounded border border-gray-300 bg-white px-3 py-2 text-sm hover:bg-gray-50"
-                @click="onAddLocation(split)"
+                @click="onAddLocation(splitIndex)"
               >
                 + {{ t('addLocation') }}
               </button>
-              <button
-                type="button"
-                class="rounded border border-gray-300 bg-white px-3 py-2 text-sm hover:bg-gray-50"
-                @click="pickLocation(splitIndex)"
-              >
-                {{ t('selectLocation') }}
-              </button>
             </div>
           </section>
+        </div>
+        <div
+          class="flex flex-wrap items-center gap-3 border-t border-gray-200 bg-gray-50 px-4 py-4 sm:px-6"
+        >
+          <button type="button" class="btn-primary text-sm" @click="onSplitOrder(splitIndex)">
+            {{ t('splitOrder') }}
+          </button>
+          <button
+            v-if="order.splits.length > 1"
+            type="button"
+            class="text-sm text-gray-500 hover:text-red-600"
+            @click="onRemoveSplit(splitIndex)"
+          >
+            {{ t('removeSplit') }}
+          </button>
         </div>
       </div>
     </div>

@@ -1,29 +1,20 @@
 import { supabase } from './supabaseClient'
-import { categoryToEpic, asCriteria, normalizeCategory, statusToRow } from '../data/devTracker'
+import { asCriteria, asRelatedIds, relatedIdsFromRecord, categoryToEpic, normalizeCategory, statusToRow } from '../data/devTracker'
 
 function encodeSource(ticket) {
   const notes = ticket.notes || ''
   const acceptanceCriteria = asCriteria(ticket.acceptanceCriteria)
-  const parentId = ticket.parentId || null
+  const relatedIds = asRelatedIds(ticket.relatedIds, ticket.id)
   const blocked = Boolean(ticket.blocked)
   const blockedReason = blocked ? String(ticket.blockedReason || '') : ''
-  const estimatedHours = Number(ticket.estimatedHours) || 0
-  const dueDate = ticket.dueDate ? String(ticket.dueDate) : ''
-  const needsPack =
-    acceptanceCriteria.length ||
-    parentId ||
-    blocked ||
-    estimatedHours ||
-    dueDate
+  const needsPack = acceptanceCriteria.length || relatedIds.length || blocked
   if (!needsPack) return notes
   return JSON.stringify({
     notes,
     acceptanceCriteria,
-    parentId,
+    relatedIds,
     blocked,
     blockedReason,
-    estimatedHours,
-    dueDate,
   })
 }
 
@@ -33,23 +24,22 @@ function decodeSource(raw) {
     try {
       const parsed = JSON.parse(source)
       if (parsed && typeof parsed === 'object') {
-        const hasParentKey = Object.prototype.hasOwnProperty.call(parsed, 'parentId')
+        const hasRelatedKey = Object.prototype.hasOwnProperty.call(parsed, 'relatedIds')
+        const hasLegacyParent = Object.prototype.hasOwnProperty.call(parsed, 'parentId')
         const hasBlockedKey = Object.prototype.hasOwnProperty.call(parsed, 'blocked')
-        const hasHoursKey = Object.prototype.hasOwnProperty.call(parsed, 'estimatedHours')
-        const hasDueKey = Object.prototype.hasOwnProperty.call(parsed, 'dueDate')
+        const relatedIds =
+          hasRelatedKey || hasLegacyParent ? relatedIdsFromRecord(parsed) : undefined
         return {
           notes: String(parsed.notes || ''),
           acceptanceCriteria: asCriteria(parsed.acceptanceCriteria),
-          parentId: hasParentKey ? parsed.parentId || null : undefined,
+          relatedIds,
           blocked: hasBlockedKey ? Boolean(parsed.blocked) : undefined,
           blockedReason: hasBlockedKey
             ? parsed.blocked
               ? String(parsed.blockedReason || '')
               : ''
             : undefined,
-          estimatedHours: hasHoursKey ? Number(parsed.estimatedHours) || 0 : undefined,
-          dueDate: hasDueKey ? (parsed.dueDate ? String(parsed.dueDate) : '') : undefined,
-          hasMeta: hasParentKey || hasBlockedKey || hasHoursKey || hasDueKey,
+          hasMeta: hasRelatedKey || hasLegacyParent || hasBlockedKey,
         }
       }
     } catch {
@@ -59,11 +49,9 @@ function decodeSource(raw) {
   return {
     notes: source,
     acceptanceCriteria: [],
-    parentId: undefined,
+    relatedIds: undefined,
     blocked: undefined,
     blockedReason: undefined,
-    estimatedHours: undefined,
-    dueDate: undefined,
     hasMeta: false,
   }
 }
@@ -102,13 +90,11 @@ export function rowToTicket(row) {
     review: row.review || '',
     reviewedAt: row.updated_at || '',
   }
-  // Only overlay hierarchy/meta when source was packed — old plain-note rows leave seed values alone.
+  // Only overlay meta when source was packed — old plain-note rows leave seed values alone.
   if (packed.hasMeta) {
-    ticket.parentId = packed.parentId
+    ticket.relatedIds = packed.relatedIds
     ticket.blocked = packed.blocked
     ticket.blockedReason = packed.blockedReason
-    ticket.estimatedHours = packed.estimatedHours
-    ticket.dueDate = packed.dueDate
   }
   return ticket
 }

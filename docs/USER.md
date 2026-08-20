@@ -22,7 +22,7 @@ This flow is already in **this Vue app**. Do not copy customize from AI Studio.
 | `[ ]` | Not started in Vue |
 | `[x]` | Done in Vue |
 
-**Stories:** epic **USR**, then one story per page (`USR-010`, `USR-020`, …) with children (`USR-011`). Parent is in parentheses.
+**Stories:** epic **USR**, then one story per page (`USR-010`, `USR-020`, …) with related tickets (`USR-011`). Related ids are in the ticket index.
 
 ---
 
@@ -41,9 +41,9 @@ Each **page** is a tens ticket. Children are the pieces of that page.
   - [x] **USR-023** Materials / brand notes
 - [x] **USR-030** Customize card `(CustomizePage.vue)` — F-05
   - [x] **USR-031** Live preview
-  - [ ] **USR-032** Full name (max 50, two lines) — Vue still max 30
+  - [ ] **USR-032** Full name (max 50, two lines) — Ready. Vue still max 30
   - [x] **USR-033** Designation dropdown (one per card)
-  - [ ] **USR-034** Email (max 40) — Vue still max 30
+  - [ ] **USR-034** Email (max 40) — Ready. Vue still max 30
   - [x] **USR-035** Mobile phone Canadian +1
   - [x] **USR-036** Office address dropdown
   - [x] **USR-037** Company and website locked
@@ -62,33 +62,34 @@ Each **page** is a tens ticket. Children are the pieces of that page.
   - [x] **USR-053** Shipping $0, no payment (included in the $63 box fee)
   - [x] **USR-054** Split Order — F-09
   - [x] **USR-055** Cannot remove the last split
-  - [ ] **USR-056** Move cards between shipping groups — F-25
-  - [ ] **USR-057** Split Order creates an empty group — F-26
-  - [ ] **USR-058** Colliers offices, not NJ samples — F-28
+  - [x] **USR-056** Move cards between shipping groups — F-25
+  - [x] **USR-057** Split Order creates an empty group — F-26
+  - [x] **USR-058** Colliers offices, not NJ samples — F-28
 - [x] **USR-060** Order confirmed `(ConfirmedPage.vue)` — F-11
   - [x] **USR-061** Success screen
   - [x] **USR-062** Clear cart and order draft
-  - [ ] **USR-063** Order review before confirm — F-27
+  - [x] **USR-063** Order review before confirm — F-27
 - [x] **USR-070** Header language `(AppHeader.vue)` — F-22
   - [x] **USR-071** Navbar EN/FR
-- [ ] **USR-080** Address Book — F-29 (admin: ADM-080)
-  - [ ] **USR-081** Address Book from profile menu
-  - [ ] **USR-082** My Address Book (personal list)
-  - [ ] **USR-083** Office Addresses tab (view only)
-  - [ ] **USR-084** Search addresses
-  - [ ] **USR-085** Add a personal address
-  - [ ] **USR-086** Edit a personal address
-  - [ ] **USR-087** Delete a personal address
-  - [ ] **USR-088** Canada address fields (Province / Postal)
-  - [ ] **USR-089** Shipping can use personal Address Book entries
-- [ ] **USR-090** Order History — F-30
-  - [ ] **USR-091** Order History from profile menu
-  - [ ] **USR-092** Order History table (this user's orders)
-  - [ ] **USR-093** Search own orders
-  - [ ] **USR-094** Filter own orders by status
-  - [ ] **USR-095** View order card preview
-  - [ ] **USR-096** Repeat Order
-  - [ ] **USR-097** Confirmed orders appear in history
+- [x] **USR-080** Address Book — F-29 (admin: ADM-080). Done. Demo user can create personal addresses; offices are view-only.
+  - [x] **USR-081** Address Book from profile menu
+  - [x] **USR-082** My Address Book (personal list; user can add / edit / delete)
+  - [x] **USR-083** Office Addresses tab (view only)
+  - [x] **USR-084** Search addresses
+  - [x] **USR-085** Add a personal address (not a Colliers office)
+  - [x] **USR-086** Edit a personal address
+  - [x] **USR-087** Delete a personal address
+  - [x] **USR-088** Canada address fields (Province / Postal)
+  - [x] **USR-089** Shipping can use personal Address Book entries
+- [x] **USR-090** Order History — F-30. Vue 2 localStorage in `colliers-vue2/`.
+  - [x] **USR-091** Order History from profile menu
+  - [x] **USR-092** Order History table (this user's orders)
+  - [x] **USR-093** Search own orders
+  - [x] **USR-094** Filter own orders by status
+  - [x] **USR-095** View order card preview
+  - [x] **USR-096** Repeat Order
+  - [x] **USR-097** Confirmed orders appear in history
+  - [x] **USR-098** Order Details sheet
 
 Ticket descriptions live on the RC Web Dev board (`#/rc-web-dev`). This file is the checklist.
 
@@ -98,4 +99,4 @@ Ticket descriptions live on the RC Web Dev board (`#/rc-web-dev`). This file is 
 
 Email max is **40** ([IDEA-01](TICKETS.md#idea-01) closed). Vue still uses 30 until [USR-034](TICKETS.md#usr-034).
 
-Footer English/Français is **F-20**. Dark theme is **F-19**. Automated tests are **F-21**. Agreed rules: [BUSINESS-RULES.md](BUSINESS-RULES.md).
+Footer English/Français is **F-20** (Vue 2 done; Vue 3 still has it). Dark theme is **F-19** (out of scope). Automated tests are **F-21**. Agreed rules: [BUSINESS-RULES.md](BUSINESS-RULES.md).

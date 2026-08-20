@@ -1,6 +1,6 @@
 <script setup>
 import { computed, ref } from 'vue'
-import { CATEGORIES, PRIORITY_LABEL, PRIORITY_PILL, READY_STATUS, categoryTheme, childrenOf, isAssigned, showsReview, sortByPriority } from '../data/devTracker'
+import { CATEGORIES, PRIORITY_LABEL, PRIORITY_PILL, READY_STATUS, categoryTheme, isAssigned, relatedClusters, showsReview, sortByPriority } from '../data/devTracker'
 import { useDevBoard } from '../composables/useDevBoard'
 import TicketModal from '../components/TicketModal.vue'
 
@@ -28,15 +28,11 @@ const percent = computed(() => (total.value ? Math.round((completed.value / tota
 function categoryNodes(list) {
   return CATEGORIES.map((category) => {
     const inCategory = list.filter((ticket) => ticket.category === category)
-    const ids = new Set(inCategory.map((ticket) => ticket.id))
-    const childIds = new Set(
-      inCategory.filter((ticket) => ticket.parentId && ids.has(ticket.parentId)).map((ticket) => ticket.id),
-    )
-    const roots = sortByPriority(inCategory.filter((ticket) => !childIds.has(ticket.id)))
-    const nodes = roots.map((ticket) => ({
-      ticket,
-      children: childrenOf(inCategory, ticket.id),
-    }))
+    const { clusters, singles } = relatedClusters(inCategory)
+    const nodes = [
+      ...clusters.map((tickets) => ({ tickets, clustered: true })),
+      ...singles.map((ticket) => ({ tickets: [ticket], clustered: false })),
+    ]
     return { category, nodes, count: inCategory.length, tickets: inCategory }
   }).filter((group) => group.nodes.length)
 }
@@ -159,62 +155,41 @@ function toggleIdeaGroup(category) {
     </button>
 
     <ul v-show="isGroupOpen(group.category)" class="divide-y divide-gray-100 border-t border-gray-100">
-      <li v-for="node in group.nodes" :key="node.ticket.id" class="px-4 py-2.5 sm:px-5">
-        <div class="flex items-start gap-3">
-          <input
-            :id="node.ticket.id"
-            type="checkbox"
-            class="mt-1 h-4 w-4 rounded border-gray-300 text-colliers-primary focus:ring-colliers-primary"
-            :checked="isDone(node.ticket)"
-            @change="toggle(node.ticket.id)"
-          />
-          <div class="min-w-0 flex-1">
-            <button type="button" class="flex w-full flex-wrap items-center gap-2 text-left" @click="openTicket(node.ticket.id)">
-              <span
-                v-if="showsReview(node.ticket)"
-                class="review-bounce h-1.5 w-1.5 shrink-0 rounded-full bg-sky-500"
-                aria-hidden="true"
-              />
-              <span class="font-mono text-sm font-semibold text-colliers-primary">{{ node.ticket.id }}</span>
-              <span class="text-sm font-medium text-gray-900">{{ node.ticket.title }}</span>
-              <span class="rounded-full px-2 py-0.5 text-[10px] font-semibold" :class="STATUS_PILL[node.ticket.status]">
-                {{ node.ticket.status }}
-              </span>
-              <span
-                class="ml-auto rounded-full px-1.5 py-0.5 text-[10px] font-semibold leading-none"
-                :class="PRIORITY_PILL[node.ticket.priority] || PRIORITY_PILL.medium"
-              >
-                {{ PRIORITY_LABEL[node.ticket.priority] || 'Medium' }}
-              </span>
-            </button>
-          </div>
-        </div>
-
-        <ul v-if="node.children.length" class="mt-2 space-y-2 border-l-2 border-gray-200 pl-3">
-          <li v-for="child in node.children" :key="child.id" class="flex items-start gap-3">
+      <li v-for="(node, nodeIndex) in group.nodes" :key="node.tickets[0].id + '-' + nodeIndex" class="px-4 py-2.5 sm:px-5">
+        <div
+          class="space-y-2"
+          :class="node.clustered ? 'rounded-md bg-white/70 p-2 ring-1 ring-black/5' : ''"
+        >
+          <div v-for="ticket in node.tickets" :key="ticket.id" class="flex items-start gap-3">
             <input
-              :id="child.id"
+              :id="ticket.id"
               type="checkbox"
               class="mt-1 h-4 w-4 rounded border-gray-300 text-colliers-primary focus:ring-colliers-primary"
-              :checked="isDone(child)"
-              @change="toggle(child.id)"
+              :checked="isDone(ticket)"
+              @change="toggle(ticket.id)"
             />
             <div class="min-w-0 flex-1">
-              <button type="button" class="flex w-full flex-wrap items-center gap-2 text-left" @click="openTicket(child.id)">
+              <button type="button" class="flex w-full flex-wrap items-center gap-2 text-left" @click="openTicket(ticket.id)">
                 <span
-                  v-if="showsReview(child)"
+                  v-if="showsReview(ticket)"
                   class="review-bounce h-1.5 w-1.5 shrink-0 rounded-full bg-sky-500"
                   aria-hidden="true"
                 />
-                <span class="font-mono text-sm font-semibold text-colliers-primary">{{ child.id }}</span>
-                <span class="text-sm text-gray-900">{{ child.title }}</span>
-                <span class="rounded-full px-2 py-0.5 text-[10px] font-semibold" :class="STATUS_PILL[child.status]">
-                  {{ child.status }}
+                <span class="font-mono text-sm font-semibold text-colliers-primary">{{ ticket.id }}</span>
+                <span class="text-sm font-medium text-gray-900">{{ ticket.title }}</span>
+                <span class="rounded-full px-2 py-0.5 text-[10px] font-semibold" :class="STATUS_PILL[ticket.status]">
+                  {{ ticket.status }}
+                </span>
+                <span
+                  class="ml-auto rounded-full px-1.5 py-0.5 text-[10px] font-semibold leading-none"
+                  :class="PRIORITY_PILL[ticket.priority] || PRIORITY_PILL.medium"
+                >
+                  {{ PRIORITY_LABEL[ticket.priority] || 'Medium' }}
                 </span>
               </button>
             </div>
-          </li>
-        </ul>
+          </div>
+        </div>
       </li>
     </ul>
   </section>
@@ -247,22 +222,25 @@ function toggleIdeaGroup(category) {
           <span class="ml-auto text-xs tabular-nums opacity-70">{{ group.count }}</span>
         </button>
         <ul v-show="isIdeaGroupOpen(group.category)" class="divide-y divide-gray-100 border-t border-gray-100">
-          <li v-for="node in group.nodes" :key="node.ticket.id" class="px-4 py-2.5 sm:px-5">
-            <button type="button" class="flex w-full flex-wrap items-center gap-2 text-left" @click="openTicket(node.ticket.id)">
-              <span class="font-mono text-sm font-semibold text-colliers-primary">{{ node.ticket.id }}</span>
-              <span class="text-sm font-medium text-gray-900">{{ node.ticket.title }}</span>
-              <span class="rounded-full px-2 py-0.5 text-[10px] font-semibold" :class="STATUS_PILL[node.ticket.status]">
-                {{ node.ticket.status }}
-              </span>
-            </button>
-            <ul v-if="node.children.length" class="mt-2 space-y-2 border-l-2 border-gray-200 pl-3">
-              <li v-for="child in node.children" :key="child.id">
-                <button type="button" class="flex w-full flex-wrap items-center gap-2 text-left" @click="openTicket(child.id)">
-                  <span class="font-mono text-sm font-semibold text-colliers-primary">{{ child.id }}</span>
-                  <span class="text-sm text-gray-900">{{ child.title }}</span>
-                </button>
-              </li>
-            </ul>
+          <li v-for="(node, nodeIndex) in group.nodes" :key="node.tickets[0].id + '-' + nodeIndex" class="px-4 py-2.5 sm:px-5">
+            <div
+              class="space-y-2"
+              :class="node.clustered ? 'rounded-md bg-white/70 p-2 ring-1 ring-black/5' : ''"
+            >
+              <button
+                v-for="ticket in node.tickets"
+                :key="ticket.id"
+                type="button"
+                class="flex w-full flex-wrap items-center gap-2 text-left"
+                @click="openTicket(ticket.id)"
+              >
+                <span class="font-mono text-sm font-semibold text-colliers-primary">{{ ticket.id }}</span>
+                <span class="text-sm font-medium text-gray-900">{{ ticket.title }}</span>
+                <span class="rounded-full px-2 py-0.5 text-[10px] font-semibold" :class="STATUS_PILL[ticket.status]">
+                  {{ ticket.status }}
+                </span>
+              </button>
+            </div>
           </li>
         </ul>
       </section>

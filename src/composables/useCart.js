@@ -88,6 +88,21 @@ export function useCart() {
     line.quantity = Math.max(1, Number(quantity) || 1)
   }
 
+  function cloneLine(id) {
+    const line = cart.value.find((item) => String(item.id) === String(id))
+    if (!line) return null
+    const clone = {
+      id: uid(),
+      code: line.code,
+      language: line.language,
+      quantity: line.quantity,
+      price: line.price,
+      details: { ...(line.details || {}) },
+    }
+    cart.value.push(clone)
+    return clone.id
+  }
+
   function removeLine(id) {
     cart.value = cart.value.filter((item) => item.id !== id)
   }
@@ -118,6 +133,7 @@ export function useCart() {
     addToCart,
     updateQty,
     removeLine,
+    cloneLine,
     clearCart,
     openLocationPicker,
     closeLocationPicker,

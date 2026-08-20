@@ -5,12 +5,15 @@ import {
   READY_STATUS,
   STATUSES,
   asCriteria,
+  asRelatedIds,
+  relatedIdsFromRecord,
   nextCustomId,
   normalizeAssignee,
   normalizeCategory,
   normalizeCustomTicket,
   normalizeReview,
   normalizeStatus,
+  relatedKey,
   reviewFromLog,
   tickets as seedTickets,
 } from '../data/devTracker'
@@ -21,37 +24,28 @@ import {
   upsertRcTicket,
   deleteRcTicket,
 } from '../lib/rcTicketsApi'
-import { SUPABASE_SYNC } from '../lib/supabaseClient'
+import { SUPABASE_SYNC, supabase } from '../lib/supabaseClient'
+import { clearTicketLocalStorage } from '../../composables/useStorage'
 
-try {
-  localStorage.removeItem('colliers.devTrackerV4')
-} catch {
-  /* ignore */
-}
-
-const REMOVED_KEY = 'colliers.rcDeletedTicketIds'
-
-function loadRemovedIds() {
-  try {
-    const raw = JSON.parse(localStorage.getItem(REMOVED_KEY) || '[]')
-    return Array.isArray(raw) ? raw.filter((id) => typeof id === 'string') : []
-  } catch {
-    return []
-  }
-}
+clearTicketLocalStorage()
 
 const statusById = ref({})
 const editsById = ref({})
 const customById = ref({})
 const logs = ref([])
+const ticketsReady = ref(!(SUPABASE_SYNC && supabase))
 const creating = ref(false)
 const focusId = ref('')
 const highlightId = ref('')
 const persistError = ref('')
 const lastSavedById = ref({})
-const removedIds = ref(loadRemovedIds())
+const removedIds = ref([])
 let logSeq = 0
 const seedIds = new Set(seedTickets.map((ticket) => ticket.id))
+
+function setLogs(list) {
+  logs.value = list.slice(0, LOG_LIMIT)
+}
 
 const tickets = computed(() => {
   const hidden = new Set(removedIds.value)
@@ -78,7 +72,7 @@ function latestLogFor(id) {
 function merged(ticket) {
   const edits = editsById.value[ticket.id] || {}
   const next = { ...ticket, id: ticket.id }
-  // Skip undefined overlays so incomplete remote rows cannot wipe seed parentId / meta.
+  // Skip undefined overlays so incomplete remote rows cannot wipe seed relatedIds / meta.
   for (const [key, value] of Object.entries(edits)) {
     if (value !== undefined) next[key] = value
   }
@@ -87,12 +81,11 @@ function merged(ticket) {
   next.category = normalizeCategory(next.category || next.epic)
   next.assignee = normalizeAssignee(next.assignee)
   next.fresh = Boolean(next.fresh)
-  next.parentId = next.parentId || null
+  next.relatedIds = relatedIdsFromRecord(next, ticket.id)
+  delete next.parentId
   next.acceptanceCriteria = asCriteria(next.acceptanceCriteria)
   next.blocked = Boolean(next.blocked)
   next.blockedReason = next.blocked ? String(next.blockedReason || '') : ''
-  next.estimatedHours = Number(next.estimatedHours) || 0
-  next.dueDate = next.dueDate ? String(next.dueDate) : ''
   next.notes = next.notes == null ? '' : String(next.notes)
   if (hasClearedReview(ticket.id)) {
     next.review = ''
@@ -156,7 +149,7 @@ async function persistLog(id, ticket, saved) {
   if (!entry) return
   await insertRcTicketLog(entry)
   const remoteLogs = await fetchRcTicketLogs(LOG_LIMIT)
-  if (remoteLogs.length) logs.value = remoteLogs
+  if (remoteLogs.length) setLogs(remoteLogs)
 }
 
 function persistTicket(id) {
@@ -201,22 +194,14 @@ async function hydrateFromSupabase() {
       if (seedIds.has(ticket.id)) {
         nextStatus[ticket.id] = normalizeStatus(ticket.status)
         const edit = {
-          title: ticket.title,
-          description: ticket.description,
-          category: ticket.category,
-          notes: ticket.notes,
           origin: ticket.origin,
           assignee: ticket.assignee,
           priority: ticket.priority,
-          acceptanceCriteria: ticket.acceptanceCriteria,
           fresh: ticket.fresh,
         }
-        // Only apply meta when remote packed it — otherwise keep seed parent/blocked/hours/due.
-        if (ticket.parentId !== undefined) edit.parentId = ticket.parentId
+        // Git seed owns relatedIds for known tickets. Remote parentId rows must not hide it.
         if (ticket.blocked !== undefined) edit.blocked = ticket.blocked
         if (ticket.blockedReason !== undefined) edit.blockedReason = ticket.blockedReason
-        if (ticket.estimatedHours !== undefined) edit.estimatedHours = ticket.estimatedHours
-        if (ticket.dueDate !== undefined) edit.dueDate = ticket.dueDate
         nextEdits[ticket.id] = edit
         if (ticket.review === '') {
           nextEdits[ticket.id].review = ''
@@ -231,20 +216,7 @@ async function hydrateFromSupabase() {
     customById.value = nextCustom
     statusById.value = nextStatus
     editsById.value = nextEdits
-    if (remoteLogs.length) {
-      if (!logs.value.length) logs.value = remoteLogs
-      else {
-        const seen = new Set(
-          logs.value.map((item) => `${item.ticketId}|${item.type}|${item.from}|${item.to}|${item.at}`),
-        )
-        const extra = remoteLogs.filter(
-          (item) => !seen.has(`${item.ticketId}|${item.type}|${item.from}|${item.to}|${item.at}`),
-        )
-        logs.value = [...logs.value, ...extra]
-          .sort((a, b) => String(b.at).localeCompare(String(a.at)))
-          .slice(0, LOG_LIMIT)
-      }
-    }
+    if (remoteLogs.length) setLogs(remoteLogs)
     captureAllSaved()
   } catch (error) {
     persistError.value = error?.message || 'Could not load tickets from the database.'
@@ -254,11 +226,18 @@ async function hydrateFromSupabase() {
 
 let hydrateStarted = false
 
-export function hydrateDevBoard() {
-  if (!USE_SUPABASE) return
+export async function hydrateDevBoard() {
   if (hydrateStarted) return
   hydrateStarted = true
-  hydrateFromSupabase()
+  if (!USE_SUPABASE || !supabase) {
+    ticketsReady.value = true
+    return
+  }
+  try {
+    await hydrateFromSupabase()
+  } finally {
+    ticketsReady.value = true
+  }
 }
 
 export function useDevBoard() {
@@ -276,7 +255,25 @@ export function useDevBoard() {
       ...entry,
     }
     if (!item.assignee) item.assignee = ticket?.assignee || ''
-    logs.value = [item, ...logs.value].slice(0, LOG_LIMIT)
+    setLogs([item, ...logs.value])
+  }
+
+  function syncRelatedLinks(id, previousIds, nextIds) {
+    const previous = new Set(previousIds)
+    const next = new Set(nextIds)
+    for (const otherId of next) {
+      if (previous.has(otherId)) continue
+      const other = findTicket(otherId)
+      if (!other) continue
+      const ids = asRelatedIds(other.relatedIds, otherId)
+      if (!ids.includes(id)) patchStored(otherId, { relatedIds: [...ids, id] })
+    }
+    for (const otherId of previous) {
+      if (next.has(otherId)) continue
+      const other = findTicket(otherId)
+      if (!other) continue
+      patchStored(otherId, { relatedIds: asRelatedIds(other.relatedIds, otherId).filter((item) => item !== id) })
+    }
   }
 
   function patchStored(id, patch) {
@@ -300,7 +297,7 @@ export function useDevBoard() {
     patchStored(id, { assignee: saved.assignee })
     const idx = logs.value.findIndex((item) => item.ticketId === id && item.type === 'moved')
     if (idx !== -1) {
-      logs.value = logs.value.filter((_, index) => index !== idx)
+      setLogs(logs.value.filter((_, index) => index !== idx))
     }
   }
 
@@ -337,6 +334,11 @@ export function useDevBoard() {
     const ticket = findTicket(id)
     const fromStatus = statusById.value[id] || ticket?.status
     if (!fromStatus || fromStatus === toStatus) return ticket
+    if (toStatus === 'Ideas') {
+      patchStored(id, { assignee: '' })
+    } else if (!normalizeAssignee(ticket?.assignee)) {
+      patchStored(id, { assignee: DEFAULT_ASSIGNEE })
+    }
     statusById.value = { ...statusById.value, [id]: toStatus }
     clearFresh(id)
     setReview(id, toStatus === 'In progress' ? 'in-progress' : 'updated')
@@ -348,19 +350,6 @@ export function useDevBoard() {
       to: toStatus,
     })
     return findTicket(id)
-  }
-
-  function setReadyToWork(id, ready) {
-    const ticket = findTicket(id)
-    if (!ticket) return null
-    if (ready) {
-      if (ticket.status !== 'Ideas') return ticket
-      patchStored(id, { assignee: ticket.assignee || DEFAULT_ASSIGNEE })
-      return setStatus(id, READY_STATUS)
-    }
-    if (ticket.status !== READY_STATUS) return ticket
-    patchStored(id, { assignee: '' })
-    return setStatus(id, 'Ideas')
   }
 
   function openCreate() {
@@ -409,11 +398,9 @@ export function useDevBoard() {
     if (fields.assignee != null) patch.assignee = fields.assignee
     if (fields.category != null) patch.category = normalizeCategory(fields.category)
     if (fields.acceptanceCriteria != null) patch.acceptanceCriteria = asCriteria(fields.acceptanceCriteria)
-    if (fields.parentId !== undefined) patch.parentId = fields.parentId || null
+    if (fields.relatedIds !== undefined) patch.relatedIds = asRelatedIds(fields.relatedIds, id)
     if (fields.blocked != null) patch.blocked = Boolean(fields.blocked)
     if (fields.blockedReason != null) patch.blockedReason = String(fields.blockedReason)
-    if (fields.estimatedHours != null) patch.estimatedHours = Number(fields.estimatedHours) || 0
-    if (fields.dueDate != null) patch.dueDate = String(fields.dueDate)
     if (fields.notes != null) patch.notes = String(fields.notes)
     if (fields.origin != null) patch.origin = fields.origin
     if (fields.fresh != null) patch.fresh = Boolean(fields.fresh)
@@ -458,6 +445,13 @@ export function useDevBoard() {
           changes.push({ field: 'acceptanceCriteria', from, to })
         }
       }
+      if (patch.relatedIds !== undefined && relatedKey(patch.relatedIds) !== relatedKey(current.relatedIds)) {
+        changes.push({
+          field: 'relatedIds',
+          from: relatedKey(current.relatedIds) || 'None',
+          to: relatedKey(patch.relatedIds) || 'None',
+        })
+      }
     }
 
     if (changes.length) {
@@ -465,7 +459,11 @@ export function useDevBoard() {
       patch.reviewedAt = new Date().toISOString()
     }
 
+    const previousRelated = current ? asRelatedIds(current.relatedIds, id) : []
     patchStored(id, patch)
+    if (patch.relatedIds) {
+      syncRelatedLinks(id, previousRelated, patch.relatedIds)
+    }
 
     if (changes.length) {
       addLog({
@@ -487,16 +485,21 @@ export function useDevBoard() {
   async function removeTicket(id) {
     if (!id) return
     persistError.value = ''
+    const current = findTicket(id)
+    const related = current ? asRelatedIds(current.relatedIds, id) : []
+    if (current) syncRelatedLinks(id, related, [])
     if (USE_SUPABASE) {
+      for (const otherId of related) {
+        try {
+          await persistTicket(otherId)
+        } catch {
+          /* keep going so the ticket can still be removed */
+        }
+      }
       await deleteRcTicket(id)
     }
     if (!removedIds.value.includes(id)) {
       removedIds.value = [...removedIds.value, id]
-      try {
-        localStorage.setItem(REMOVED_KEY, JSON.stringify(removedIds.value))
-      } catch {
-        /* ignore */
-      }
     }
     if (customById.value[id]) {
       const next = { ...customById.value }
@@ -518,20 +521,20 @@ export function useDevBoard() {
       delete next[id]
       lastSavedById.value = next
     }
-    logs.value = logs.value.filter((item) => item.ticketId !== id)
+    setLogs(logs.value.filter((item) => item.ticketId !== id))
   }
 
   return {
     statusById,
     tickets,
     logs,
+    ticketsReady,
     creating,
     focusId,
     highlightId,
     persistError,
     merged,
     setStatus,
-    setReadyToWork,
     approveTicket,
     openCreate,
     closeCreate,

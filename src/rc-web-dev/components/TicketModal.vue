@@ -2,7 +2,6 @@
 import { computed, onBeforeUnmount, reactive, ref, watch } from 'vue'
 import {
   ASSIGNEE_LABEL,
-  ASSIGNEES,
   CATEGORIES,
   DEFAULT_ASSIGNEE,
   PRIORITY_LABEL,
@@ -12,11 +11,12 @@ import {
   REVIEW_PILL,
   STATUS_COLUMNS,
   categoryTheme,
-  childrenOf,
   criteriaKey,
   normalizeAssignee,
+  relatedKey,
   showsReview,
   asCriteria,
+  asRelatedIds,
 } from '../data/devTracker'
 import { useDevBoard } from '../composables/useDevBoard'
 import TicketCriteriaList from './TicketCriteriaList.vue'
@@ -35,16 +35,13 @@ const props = defineProps({
 })
 
 const emit = defineEmits(['close', 'open', 'saved', 'deleted'])
-const { tickets, merged, updateTicket, approveTicket, setReadyToWork, persistTicket, setAcceptanceCriteria, hasUnsaved, revertUnsaved, removeTicket } =
+const { tickets, merged, updateTicket, approveTicket, persistTicket, setAcceptanceCriteria, hasUnsaved, revertUnsaved, removeTicket } =
   useDevBoard()
 const editing = ref(false)
 const error = ref('')
 const saving = ref(false)
 const confirmingDelete = ref(false)
 const deleting = ref(false)
-const isIdea = computed(() => props.ticket?.status === 'Ideas')
-const isReady = computed(() => props.ticket?.status === READY_STATUS)
-const canReadyToggle = computed(() => isIdea.value || isReady.value)
 
 const form = reactive({
   title: '',
@@ -52,7 +49,8 @@ const form = reactive({
   priority: 'medium',
   assignee: DEFAULT_ASSIGNEE,
   category: 'Technical',
-  parentId: '',
+  relatedIds: [],
+  relatedPick: '',
   blocked: false,
   blockedReason: '',
   notes: '',
@@ -67,16 +65,19 @@ const column = computed(() =>
 
 const initials = computed(() => (editing.value ? form.assignee : props.ticket?.assignee) || '?')
 
-const children = computed(() => (props.ticket ? childrenOf(all.value, props.ticket.id) : []))
-
-const parent = computed(() => {
-  const id = props.ticket?.parentId
-  if (!id) return null
-  return all.value.find((item) => item.id === id) || null
+const relatedTickets = computed(() => {
+  if (!props.ticket) return []
+  const ids = new Set(asRelatedIds(props.ticket.relatedIds, props.ticket.id))
+  return all.value.filter((item) => ids.has(item.id))
 })
 
-const parentOptions = computed(() =>
-  all.value.filter((item) => !item.parentId && item.id !== props.ticket?.id),
+const relatedFormTickets = computed(() => {
+  const ids = new Set(form.relatedIds)
+  return all.value.filter((item) => ids.has(item.id))
+})
+
+const relatedOptions = computed(() =>
+  all.value.filter((item) => item.id !== props.ticket?.id && !form.relatedIds.includes(item.id)),
 )
 
 const dirty = computed(() => {
@@ -86,9 +87,8 @@ const dirty = computed(() => {
     form.title.trim() !== (ticket.title || '') ||
     form.description.trim() !== (ticket.description || '') ||
     form.priority !== (ticket.priority || 'medium') ||
-    form.assignee !== normalizeAssignee(ticket.assignee) ||
     form.category !== (ticket.category || 'Technical') ||
-    (form.parentId || '') !== (ticket.parentId || '') ||
+    relatedKey(form.relatedIds) !== relatedKey(ticket.relatedIds) ||
     form.blocked !== Boolean(ticket.blocked) ||
     form.blockedReason.trim() !== (ticket.blockedReason || '') ||
     form.notes.trim() !== (ticket.notes || '') ||
@@ -115,7 +115,8 @@ function fillForm(ticket) {
   form.priority = ticket.priority || 'medium'
   form.assignee = normalizeAssignee(ticket.assignee)
   form.category = ticket.category || 'Technical'
-  form.parentId = ticket.parentId || ''
+  form.relatedIds = asRelatedIds(ticket.relatedIds, ticket.id)
+  form.relatedPick = ''
   form.blocked = Boolean(ticket.blocked)
   form.blockedReason = ticket.blockedReason || ''
   form.notes = ticket.notes || ''
@@ -188,13 +189,14 @@ async function saveEdit() {
     error.value = 'Give it a title.'
     return
   }
+  const previousRelated = asRelatedIds(props.ticket.relatedIds, props.ticket.id)
   updateTicket(props.ticket.id, {
     title,
     description: form.description.trim(),
     priority: form.priority,
-    assignee: form.assignee,
+    assignee: DEFAULT_ASSIGNEE,
     category: form.category,
-    parentId: form.parentId || null,
+    relatedIds: [...form.relatedIds],
     blocked: form.blocked,
     blockedReason: form.blockedReason.trim(),
     notes: form.notes.trim(),
@@ -202,7 +204,29 @@ async function saveEdit() {
     fresh: false,
   })
   editing.value = false
-  await persistAndClose()
+  const touched = new Set([props.ticket.id, ...previousRelated, ...form.relatedIds])
+  saving.value = true
+  error.value = ''
+  try {
+    for (const id of touched) await persistTicket(id)
+    emit('saved', props.ticket.id)
+    emit('close')
+  } catch (err) {
+    error.value = err?.message || 'Could not save to the database.'
+  } finally {
+    saving.value = false
+  }
+}
+
+function addRelated() {
+  const id = form.relatedPick
+  if (!id || form.relatedIds.includes(id)) return
+  form.relatedIds = [...form.relatedIds, id]
+  form.relatedPick = ''
+}
+
+function removeRelated(id) {
+  form.relatedIds = form.relatedIds.filter((item) => item !== id)
 }
 
 async function saveTicket() {
@@ -212,11 +236,6 @@ async function saveTicket() {
     return
   }
   await persistAndClose()
-}
-
-function onReadyChange(event) {
-  if (!props.ticket) return
-  setReadyToWork(props.ticket.id, event.target.checked)
 }
 
 function onKey(event) {
@@ -343,19 +362,6 @@ onBeforeUnmount(() => {
             </div>
           </div>
 
-          <label class="block">
-            <span class="mb-1.5 block text-[11px] font-semibold uppercase tracking-[0.14em] text-colliers-primary">Assigned</span>
-            <select
-              v-model="form.assignee"
-              class="w-full rounded-xl border-0 bg-colliers-primary/5 px-3 py-2.5 text-sm text-gray-900 ring-1 ring-colliers-primary/20 focus:outline-none focus:ring-2 focus:ring-colliers-primary"
-            >
-              <option value="">Unassigned</option>
-              <option v-for="person in ASSIGNEES" :key="person" :value="person">
-                {{ ASSIGNEE_LABEL[person] }}
-              </option>
-            </select>
-          </label>
-
           <div>
             <p class="mb-1.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-colliers-primary">Category</p>
             <div class="flex flex-wrap gap-1.5">
@@ -372,18 +378,31 @@ onBeforeUnmount(() => {
             </div>
           </div>
 
-          <label class="block">
-            <span class="mb-1.5 block text-[11px] font-semibold uppercase tracking-[0.14em] text-colliers-primary">Parent</span>
+          <div>
+            <p class="mb-1.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-colliers-primary">Related tickets</p>
+            <div v-if="relatedFormTickets.length" class="mb-2 flex flex-wrap gap-1.5">
+              <button
+                v-for="item in relatedFormTickets"
+                :key="item.id"
+                type="button"
+                class="inline-flex items-center gap-1 rounded-full bg-slate-100 px-2 py-0.5 font-mono text-[11px] font-semibold text-slate-700"
+                @click="removeRelated(item.id)"
+              >
+                {{ item.id }}
+                <span aria-hidden="true">×</span>
+              </button>
+            </div>
             <select
-              v-model="form.parentId"
+              v-model="form.relatedPick"
               class="w-full rounded-xl border-0 bg-colliers-primary/5 px-3 py-2.5 text-sm text-gray-900 ring-1 ring-colliers-primary/20 focus:outline-none focus:ring-2 focus:ring-colliers-primary"
+              @change="addRelated"
             >
-              <option value="">None</option>
-              <option v-for="item in parentOptions" :key="item.id" :value="item.id">
+              <option value="">Add related…</option>
+              <option v-for="item in relatedOptions" :key="item.id" :value="item.id">
                 {{ item.id }} — {{ item.title }}
               </option>
             </select>
-          </label>
+          </div>
 
           <label class="flex items-start gap-3 rounded-xl bg-slate-50 px-3 py-3 ring-1 ring-slate-200">
             <input v-model="form.blocked" type="checkbox" class="mt-0.5 h-4 w-4 rounded border-slate-300 text-colliers-primary focus:ring-colliers-primary" />
@@ -407,31 +426,6 @@ onBeforeUnmount(() => {
           Not saved yet. Save to keep this in the database.
         </p>
 
-        <label
-          v-if="!editing && canReadyToggle"
-          class="mx-6 mt-4 flex cursor-pointer items-start gap-3 rounded-xl px-4 py-3 ring-1 sm:mx-7"
-          :class="isIdea ? 'bg-violet-50 ring-violet-200' : 'bg-amber-50 ring-amber-200'"
-        >
-          <input
-            type="checkbox"
-            class="mt-0.5 h-4 w-4 rounded border-slate-300 text-colliers-primary focus:ring-colliers-primary"
-            :checked="isReady"
-            @change="onReadyChange"
-          />
-          <span class="min-w-0">
-            <span class="block text-sm font-semibold text-slate-900">
-              Ready for development — assign to me
-            </span>
-            <span class="mt-0.5 block text-[13px] leading-5 text-slate-600">
-              {{
-                isIdea
-                  ? "This is an idea. Don't write code yet — check this when the requirement is approved."
-                  : 'Approved and assigned to you. Uncheck to park it back in Ideas.'
-              }}
-            </span>
-          </span>
-        </label>
-
         <p
           v-if="!editing && ticket.blocked"
           class="mx-6 mt-4 rounded-xl bg-rose-50 px-4 py-3 text-sm text-rose-800 ring-1 ring-rose-200 sm:mx-7"
@@ -439,13 +433,20 @@ onBeforeUnmount(() => {
           Blocked{{ ticket.blockedReason ? `: ${ticket.blockedReason}` : '' }}
         </p>
 
-        <p v-if="!editing && parent" class="mt-3 px-6 text-[13px] text-slate-500 sm:px-7">
-          Parent
-          <button type="button" class="ml-1 font-mono font-semibold text-colliers-primary hover:underline" @click="emit('open', parent.id)">
-            {{ parent.id }}
-          </button>
-          {{ parent.title }}
-        </p>
+        <section v-if="!editing && relatedTickets.length" class="mx-6 mt-4 mb-1 sm:mx-7">
+          <p class="text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-400">Related tickets</p>
+          <ul class="mt-2 divide-y divide-slate-100 rounded-xl ring-1 ring-slate-200">
+            <li v-for="item in relatedTickets" :key="item.id">
+              <button type="button" class="flex w-full items-center gap-2 px-3 py-2 text-left hover:bg-slate-50" @click="emit('open', item.id)">
+                <span class="font-mono text-[12px] font-semibold text-colliers-primary">{{ item.id }}</span>
+                <span class="min-w-0 flex-1 truncate text-sm text-slate-800">{{ item.title }}</span>
+                <span class="rounded-full px-2 py-0.5 text-[10px] font-semibold" :class="STATUS_PILL[item.status]">
+                  {{ item.status }}
+                </span>
+              </button>
+            </li>
+          </ul>
+        </section>
 
         <section class="mx-6 mt-5 rounded-xl bg-gradient-to-br from-slate-50 to-white p-4 ring-1 ring-slate-200/80 sm:mx-7">
           <label v-if="editing" class="block">
@@ -479,21 +480,6 @@ onBeforeUnmount(() => {
             class="mt-2 w-full resize-none border-0 bg-transparent p-0 text-[14px] leading-6 text-slate-700 placeholder:text-slate-400 focus:outline-none focus:ring-0"
           />
           <p v-else class="mt-2 whitespace-pre-wrap text-[14px] leading-6 text-slate-600">{{ ticket.notes }}</p>
-        </section>
-
-        <section v-if="children.length" class="mx-6 mt-4 mb-1 sm:mx-7">
-          <p class="text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-400">Children</p>
-          <ul class="mt-2 divide-y divide-slate-100 rounded-xl ring-1 ring-slate-200">
-            <li v-for="child in children" :key="child.id">
-              <button type="button" class="flex w-full items-center gap-2 px-3 py-2 text-left hover:bg-slate-50" @click="emit('open', child.id)">
-                <span class="font-mono text-[12px] font-semibold text-colliers-primary">{{ child.id }}</span>
-                <span class="min-w-0 flex-1 truncate text-sm text-slate-800">{{ child.title }}</span>
-                <span class="rounded-full px-2 py-0.5 text-[10px] font-semibold" :class="STATUS_PILL[child.status]">
-                  {{ child.status }}
-                </span>
-              </button>
-            </li>
-          </ul>
         </section>
 
         <div

@@ -284,8 +284,8 @@ Use this section when adding tickets. Do **not** create a second ticket for a ru
 | Colliers offices on shipping | [USR-058](TICKETS.md#usr-058) | Not in the PDF; keep |
 | Order review before confirm | [USR-063](TICKETS.md#usr-063) | Section 7 / OR-01 |
 | Remove footer language | [F-20](TICKETS.md#f-20) | UI-02 |
-| User Address Book | [USR-080](TICKETS.md#usr-080) | Designer user profile. Still to discuss. Not ADM-060 |
-| User Order History | [USR-090](TICKETS.md#usr-090) | Designer user profile. Still to discuss. Not ADM-030 |
+| User Address Book | [USR-080](TICKETS.md#usr-080) | Demo user and admin can create personal addresses. Only admin creates offices (ADM-060) |
+| User Order History | [USR-090](TICKETS.md#usr-090) | Vue 2 localStorage in colliers-vue2/. Details sheet is USR-098. Not ADM-030 |
 
 ### Limits and wording (updated)
 
@@ -298,7 +298,7 @@ Use this section when adding tickets. Do **not** create a second ticket for a ru
 
 ### Out of this guide — keep the tickets, do not treat as V2 rules
 
-Order History, Invoice History, Reporting, Dark theme, user Address Book, and user Order History stay on the board. The PDF lists order history / reporting as **not covered**, not as cancelled. User Address Book and user Order History are still to discuss.
+Order History, Invoice History, Reporting, Dark theme, user Address Book, and user Order History stay on the board. The PDF lists order history / reporting as **not covered**, not as cancelled. Vue 2 Address Book and Order History live in `colliers-vue2/` localStorage until FileMaker APIs exist.
 
 ### Backlog F-codes
 

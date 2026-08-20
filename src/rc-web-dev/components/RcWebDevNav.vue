@@ -9,7 +9,7 @@ const tabs = [
   { name: 'rc-web-dev-board', label: 'Board', to: { name: 'rc-web-dev-board' } },
   { name: 'rc-web-dev-roadmap', label: 'Roadmap', to: { name: 'rc-web-dev-roadmap' } },
   { name: 'rc-web-dev-logs', label: 'Logs', to: { name: 'rc-web-dev-logs' } },
-  { name: 'rc-web-dev-architecture', label: 'Architecture', to: { name: 'rc-web-dev-architecture' } },
+  { name: 'rc-web-dev-architecture', label: 'Delivery', to: { name: 'rc-web-dev-architecture' } },
 ]
 </script>
 
@@ -33,9 +33,9 @@ const tabs = [
       </div>
     </div>
     <button
-      v-if="route.name !== 'rc-web-dev-architecture'"
+      v-if="route.name === 'rc-web-dev-board'"
       type="button"
-      class="btn-primary"
+      class="inline-flex items-center rounded-md bg-colliers-primary px-3 py-1.5 text-sm font-medium text-white hover:bg-colliers-primary-hover"
       @click="openCreate()"
     >
       Create ticket

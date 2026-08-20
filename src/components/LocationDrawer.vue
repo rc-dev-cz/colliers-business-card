@@ -1,17 +1,18 @@
 <script setup>
 import { ref, watch } from 'vue'
+import { useRouter } from 'vue-router'
 import { useLocale } from '../composables/useLocale'
 import { useCart } from '../composables/useCart'
 import { useAddressBook } from '../composables/useAddressBook'
 
 const emit = defineEmits(['select'])
+const router = useRouter()
 const { t } = useLocale()
 const { locationOpen, closeLocationPicker } = useCart()
-const { offices, officesLoading, officesError, loadOffices, formatAddressLine, officeLabel } =
+const { personalAddresses, offices, officesLoading, officesError, loadOffices, formatAddressLine, officeLabel } =
   useAddressBook()
 const drawer = ref(null)
 const selected = ref([])
-const newAddress = ref('')
 
 watch(locationOpen, async (open) => {
   await customElements.whenDefined('sl-drawer')
@@ -19,7 +20,6 @@ watch(locationOpen, async (open) => {
   if (!el) return
   if (open) {
     selected.value = []
-    newAddress.value = ''
     loadOffices()
     el.show()
   } else {
@@ -35,16 +35,14 @@ function toggle(addr) {
   }
 }
 
-function addNew() {
-  const value = newAddress.value.trim()
-  if (!value) return
-  selected.value = [...selected.value, value]
-  newAddress.value = ''
-}
-
 function done() {
   emit('select', selected.value)
   closeLocationPicker()
+}
+
+function goToAddressBook() {
+  closeLocationPicker()
+  router.push({ name: 'addresses' })
 }
 
 function onAfterHide() {
@@ -59,11 +57,31 @@ function onAfterHide() {
     style="--size: min(420px, 100vw)"
     @sl-after-hide="onAfterHide"
   >
-    <div slot="label" class="text-lg font-semibold">{{ t('selectOrAddLocation') }}</div>
+    <div slot="label" class="text-lg font-semibold">{{ t('selectLocation') }}</div>
 
     <div class="space-y-6">
       <div>
-        <h3 class="mb-3 font-semibold text-gray-900">{{ t('savedAddresses') }}</h3>
+        <h3 class="mb-3 font-semibold text-gray-900">{{ t('myAddressBook') }}</h3>
+        <p v-if="!personalAddresses.length" class="text-sm text-gray-500">
+          {{ t('noPersonalAddresses') }}
+        </p>
+        <ul v-else class="space-y-2">
+          <li v-for="row in personalAddresses" :key="row.id">
+            <label class="flex cursor-pointer items-start gap-2 text-sm text-gray-700">
+              <input
+                type="checkbox"
+                class="mt-1 h-4 w-4 rounded border-gray-300 text-colliers-primary focus:ring-colliers-primary"
+                :checked="selected.includes(formatAddressLine(row))"
+                @change="toggle(formatAddressLine(row))"
+              />
+              <span>{{ officeLabel(row) }}</span>
+            </label>
+          </li>
+        </ul>
+      </div>
+
+      <div>
+        <h3 class="mb-3 font-semibold text-gray-900">{{ t('officeAddresses') }}</h3>
         <p v-if="officesLoading" class="text-sm text-gray-500">{{ t('loading') }}</p>
         <p v-else-if="officesError" class="text-sm text-red-600">{{ officesError }}</p>
         <ul v-else class="space-y-2">
@@ -81,19 +99,12 @@ function onAfterHide() {
         </ul>
       </div>
 
-      <div class="text-center text-sm text-gray-400">{{ t('or') }}</div>
-
-      <div>
-        <h3 class="mb-2 font-semibold text-gray-900">{{ t('addNewAddress') }}</h3>
-        <div class="flex gap-2">
-          <input
-            v-model="newAddress"
-            type="text"
-            class="field-input"
-            :placeholder="t('enterFullAddress')"
-          />
-          <button type="button" class="btn-primary shrink-0 px-3" @click="addNew">{{ t('add') }}</button>
-        </div>
+      <div class="border-t border-gray-100 pt-4 text-center">
+        <p class="text-sm text-gray-400">{{ t('or') }}</p>
+        <p class="mt-2 text-sm text-gray-600">{{ t('manageAddressesInBook') }}</p>
+        <button type="button" class="btn-outline mt-3 w-full" @click="goToAddressBook">
+          {{ t('goToAddressBook') }}
+        </button>
       </div>
     </div>
 

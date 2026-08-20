@@ -339,7 +339,6 @@ onBeforeUnmount(() => {
             :key="ticket.id"
             :data-ticket-id="ticket.id"
             class="min-w-0"
-            :class="{ 'ticket-child': ticket.parentId }"
             @click="openTicket(ticket)"
           >
             <TicketCard
@@ -387,17 +386,21 @@ onBeforeUnmount(() => {
             class="epic-list flex min-w-0 flex-col gap-2 p-1.5"
           >
             <div
-              v-for="ticket in group.tickets"
-              :key="ticket.id"
-              :data-ticket-id="ticket.id"
+              v-for="row in group.rows"
+              :key="row.ticket.id"
+              :data-ticket-id="row.ticket.id"
               class="min-w-0"
-              :class="{ 'ticket-child': ticket.parentId }"
-              @click="openTicket(ticket)"
+              :class="{
+                'ticket-related': row.clustered,
+                'ticket-related-start': row.clusterStart,
+                'ticket-related-end': row.clusterEnd,
+              }"
+              @click="openTicket(row.ticket)"
             >
               <TicketCard
-                :ticket="ticket"
-                :moved="moved?.id === ticket.id"
-                :vars="cardStyle(ticket, column)"
+                :ticket="row.ticket"
+                :moved="moved?.id === row.ticket.id"
+                :vars="cardStyle(row.ticket, column)"
               />
             </div>
           </div>

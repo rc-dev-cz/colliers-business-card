@@ -81,14 +81,86 @@ export function statusToRow(status) {
   return STATUSES.includes(status) ? status : 'Ideas'
 }
 
-export function childrenOf(list, id) {
-  return list.filter((ticket) => ticket.parentId === id)
+export function asRelatedIds(value, selfId) {
+  if (!Array.isArray(value)) return []
+  const seen = new Set()
+  const next = []
+  for (const item of value) {
+    const id = String(item || '').trim()
+    if (!id || id === selfId || seen.has(id)) continue
+    seen.add(id)
+    next.push(id)
+  }
+  return next
 }
 
-export function estimatedHoursFor(ticket, list) {
-  const kids = childrenOf(list, ticket.id)
-  if (!kids.length) return Number(ticket.estimatedHours) || 0
-  return kids.reduce((total, child) => total + (Number(child.estimatedHours) || 0), 0)
+/** relatedIds, plus a one-way map from old saved parentId rows. */
+export function relatedIdsFromRecord(record, selfId) {
+  const related = asRelatedIds(record?.relatedIds, selfId)
+  const legacy = record?.parentId ? String(record.parentId).trim() : ''
+  if (legacy && legacy !== selfId && !related.includes(legacy)) related.push(legacy)
+  return related
+}
+
+function relatedRoot(parent, id) {
+  let current = id
+  while (parent.get(current) !== current) {
+    parent.set(current, parent.get(parent.get(current)))
+    current = parent.get(current)
+  }
+  return current
+}
+
+/** Group related tickets that appear in this list. Cross-column related stay on the sheet only. */
+export function relatedClusters(list) {
+  const byId = new Map(list.map((ticket) => [ticket.id, ticket]))
+  const parent = new Map(list.map((ticket) => [ticket.id, ticket.id]))
+  for (const ticket of list) {
+    for (const id of asRelatedIds(ticket.relatedIds, ticket.id)) {
+      if (!byId.has(id)) continue
+      const left = relatedRoot(parent, ticket.id)
+      const right = relatedRoot(parent, id)
+      if (left !== right) parent.set(left, right)
+    }
+  }
+  const buckets = new Map()
+  for (const ticket of list) {
+    const root = relatedRoot(parent, ticket.id)
+    if (!buckets.has(root)) buckets.set(root, [])
+    buckets.get(root).push(ticket)
+  }
+  const clusters = []
+  const singles = []
+  for (const group of buckets.values()) {
+    const sorted = sortByPriority(group)
+    if (sorted.length > 1) clusters.push(sorted)
+    else singles.push(sorted[0])
+  }
+  clusters.sort((a, b) => a[0].id.localeCompare(b[0].id))
+  return { clusters, singles: sortByPriority(singles) }
+}
+
+export function orderTicketsWithRelated(list) {
+  const { clusters, singles } = relatedClusters(list)
+  const rows = []
+  for (const cluster of clusters) {
+    cluster.forEach((ticket, index) => {
+      rows.push({
+        ticket,
+        clustered: true,
+        clusterStart: index === 0,
+        clusterEnd: index === cluster.length - 1,
+      })
+    })
+  }
+  for (const ticket of singles) {
+    rows.push({ ticket, clustered: false, clusterStart: false, clusterEnd: false })
+  }
+  return rows
+}
+
+export function relatedKey(ids) {
+  return asRelatedIds(ids).slice().sort().join(',')
 }
 
 /** CZ = Carlos Zabaleta. KC = Kevin Collins. MS = Mayank Shail. */
@@ -198,10 +270,11 @@ export function groupTicketsByCategory(list) {
     const category = CATEGORIES.includes(ticket.category) ? ticket.category : 'Technical'
     buckets.get(category).push(ticket)
   }
-  return CATEGORIES.map((category) => ({
-    category,
-    tickets: sortByPriority(buckets.get(category)),
-  })).filter((group) => group.tickets.length)
+  return CATEGORIES.map((category) => {
+    const tickets = sortByPriority(buckets.get(category))
+    const { clusters, singles } = relatedClusters(tickets)
+    return { category, tickets, clusters, singles, rows: orderTicketsWithRelated(tickets) }
+  }).filter((group) => group.tickets.length)
 }
 
 export function splitFresh(list) {
@@ -235,14 +308,10 @@ export function criteriaKey(list) {
     .join('\n')
 }
 
-function asHours(value) {
-  const hours = Number(value)
-  return Number.isFinite(hours) && hours > 0 ? hours : 0
-}
-
 function fromJsonTicket(ticket) {
   const status = normalizeStatus(ticket.status)
   const blocked = Boolean(ticket.blocked)
+  const relatedIds = relatedIdsFromRecord(ticket, ticket.id)
   return {
     id: ticket.id,
     title: String(ticket.title || 'Untitled').trim() || 'Untitled',
@@ -252,11 +321,9 @@ function fromJsonTicket(ticket) {
     priority: ['high', 'medium', 'low'].includes(ticket.priority) ? ticket.priority : 'medium',
     assignee: normalizeAssignee(ticket.assignee),
     acceptanceCriteria: asCriteria(ticket.acceptanceCriteria),
-    parentId: ticket.parentId || null,
+    relatedIds,
     blocked,
     blockedReason: blocked ? String(ticket.blockedReason || '') : '',
-    estimatedHours: asHours(ticket.estimatedHours),
-    dueDate: ticket.dueDate ? String(ticket.dueDate) : '',
     notes: String(ticket.notes || ticket.source || ''),
     origin: ticket.origin || 'docs',
     fresh: Boolean(ticket.fresh),
@@ -361,11 +428,9 @@ export function normalizeCustomTicket(ticket, id) {
     priority: ['high', 'medium', 'low'].includes(ticket.priority) ? ticket.priority : 'medium',
     assignee: normalizeAssignee(ticket.assignee),
     acceptanceCriteria: asCriteria(ticket.acceptanceCriteria),
-    parentId: ticket.parentId || null,
+    relatedIds: relatedIdsFromRecord(ticket, id),
     blocked,
     blockedReason: blocked ? String(ticket.blockedReason || '') : '',
-    estimatedHours: asHours(ticket.estimatedHours),
-    dueDate: ticket.dueDate ? String(ticket.dueDate) : '',
     notes: String(ticket.notes || ''),
     origin: ticket.origin || 'now',
     fresh: Boolean(ticket.fresh),
