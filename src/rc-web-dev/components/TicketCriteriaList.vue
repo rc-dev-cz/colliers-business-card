@@ -1,193 +1,88 @@
-<script setup>
-import { computed, nextTick, ref } from 'vue'
-import { asCriteria } from '../data/devTracker'
-
-const props = defineProps({
-  modelValue: { type: Array, default: () => [] },
-  editing: { type: Boolean, default: false },
-})
-
-const emit = defineEmits(['update:modelValue'])
-
-const adding = ref(false)
-const draftNew = ref('')
-const editingIndex = ref(-1)
-const draftEdit = ref('')
-const inputEl = ref(null)
-
-const items = computed(() => asCriteria(props.modelValue))
-
-function bindInput(el) {
-  if (el) inputEl.value = el
-}
-
-function focusInput() {
-  nextTick(() => inputEl.value?.focus())
-}
-
-function commit(list) {
-  emit('update:modelValue', asCriteria(list))
-}
-
-function reset() {
-  adding.value = false
-  draftNew.value = ''
-  editingIndex.value = -1
-  draftEdit.value = ''
-}
-
-function startAdd() {
-  editingIndex.value = -1
-  draftEdit.value = ''
-  adding.value = true
-  draftNew.value = ''
-  focusInput()
-}
-
-function saveNew() {
-  const text = draftNew.value.trim()
-  if (!text) {
-    adding.value = false
-    return
-  }
-  commit([...items.value, { text, done: false }])
-  draftNew.value = ''
-  adding.value = false
-}
-
-function startEdit(index) {
-  adding.value = false
-  editingIndex.value = index
-  draftEdit.value = items.value[index]?.text || ''
-  focusInput()
-}
-
-function saveEdit() {
-  const index = editingIndex.value
-  if (index < 0) return
-  const text = draftEdit.value.trim()
-  const next = [...items.value]
-  if (!text) next.splice(index, 1)
-  else next[index] = { ...next[index], text }
-  commit(next)
-  editingIndex.value = -1
-  draftEdit.value = ''
-}
-
-function remove(index) {
-  commit(items.value.filter((_, i) => i !== index))
-  if (editingIndex.value === index) {
-    editingIndex.value = -1
-    draftEdit.value = ''
-  }
-}
-
-function toggle(index) {
-  const next = [...items.value]
-  next[index] = { ...next[index], done: !next[index].done }
-  commit(next)
-}
-
-defineExpose({ reset })
-</script>
-
 <template>
   <section class="rounded-xl p-4 ring-1 ring-slate-200/80">
     <p class="text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-400">Acceptance criteria</p>
     <ul class="mt-3 space-y-2">
-      <li
-        v-for="(item, index) in items"
-        :key="index"
-        class="flex items-start gap-2 rounded-lg bg-slate-50 px-3 py-2 ring-1 ring-slate-200/80"
-      >
-        <label class="flex min-w-0 flex-1 cursor-pointer items-start gap-2">
-          <input
-            type="checkbox"
-            class="mt-1 h-4 w-4 shrink-0 rounded border-slate-300 text-colliers-primary focus:ring-colliers-primary"
-            :checked="item.done"
-            :aria-label="item.done ? 'Mark as not done' : 'Mark as done'"
-            @change="toggle(index)"
-          />
-          <span
-            v-if="!(editing && editingIndex === index)"
-            class="min-w-0 flex-1 text-[14px] leading-6"
-            :class="item.done ? 'text-slate-400 line-through' : 'text-slate-700'"
-          >
-            {{ item.text }}
-          </span>
-        </label>
-        <input
-          v-if="editing && editingIndex === index"
-          :ref="bindInput"
-          v-model="draftEdit"
-          type="text"
-          class="min-w-0 flex-1 rounded-md border-0 bg-white px-2 py-1 text-[14px] leading-6 text-slate-700 ring-1 ring-colliers-primary/30 focus:outline-none focus:ring-2 focus:ring-colliers-primary"
-          @keydown.enter.prevent="saveEdit"
-        />
-        <span v-if="editing" class="flex shrink-0 items-center gap-1">
-          <template v-if="editingIndex === index">
-            <button
-              type="button"
-              class="rounded-md bg-colliers-primary px-2 py-1 text-[12px] font-semibold text-white hover:bg-colliers-primary-hover"
-              @click="saveEdit"
-            >
-              Done
-            </button>
-            <button type="button" class="rounded-md px-2 py-1 text-[12px] font-medium text-slate-600 hover:bg-white" @click="reset">
-              Cancel
-            </button>
-          </template>
-          <template v-else>
-            <button
-              type="button"
-              class="rounded-md px-2 py-1 text-[12px] font-semibold text-colliers-primary hover:bg-white"
-              @click="startEdit(index)"
-            >
-              Edit
-            </button>
-            <button
-              type="button"
-              class="rounded-md px-2 py-1 text-[12px] font-semibold text-rose-700 hover:bg-rose-50"
-              @click="remove(index)"
-            >
-              Delete
-            </button>
-          </template>
-        </span>
+      <li v-for="(item, index) in items" :key="index" class="flex items-start gap-2 rounded-lg bg-slate-50 px-3 py-2 ring-1 ring-slate-200/80">
+        <input type="checkbox" class="mt-1 h-4 w-4" :checked="item.done" @change="toggle(index)">
+        <input v-if="editing && editingIndex === index" ref="inputEl" v-model="draftEdit" class="min-w-0 flex-1 rounded-md px-2 py-1 ring-1 ring-colliers-primary/30" @keydown.enter.prevent="saveEdit">
+        <span v-else class="min-w-0 flex-1 text-sm" :class="item.done ? 'text-slate-400 line-through' : 'text-slate-700'">{{ item.text }}</span>
+        <template v-if="editing">
+          <button v-if="editingIndex === index" type="button" class="text-xs font-semibold text-colliers-primary" @click="saveEdit">Done</button>
+          <button v-else type="button" class="text-xs font-semibold text-colliers-primary" @click="startEdit(index)">Edit</button>
+          <button type="button" class="text-xs font-semibold text-rose-700" @click="remove(index)">Delete</button>
+        </template>
       </li>
-      <li
-        v-if="editing && adding"
-        class="flex items-start gap-2 rounded-lg bg-white px-3 py-2 ring-1 ring-colliers-primary/30"
-      >
-        <span class="mt-1.5 h-4 w-4 shrink-0 rounded border border-slate-200" aria-hidden="true" />
-        <input
-          :ref="bindInput"
-          v-model="draftNew"
-          type="text"
-          placeholder="What must be true?"
-          class="min-w-0 flex-1 rounded-md border-0 bg-slate-50 px-2 py-1 text-[14px] leading-6 text-slate-700 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-colliers-primary"
-          @keydown.enter.prevent="saveNew"
-        />
-        <button
-          type="button"
-          class="rounded-md bg-colliers-primary px-2 py-1 text-[12px] font-semibold text-white hover:bg-colliers-primary-hover"
-          @click="saveNew"
-        >
-          Add
-        </button>
-        <button type="button" class="rounded-md px-2 py-1 text-[12px] font-medium text-slate-600 hover:bg-slate-50" @click="reset">
-          Cancel
-        </button>
+      <li v-if="editing && adding" class="flex gap-2 rounded-lg bg-white px-3 py-2 ring-1 ring-colliers-primary/30">
+        <input ref="inputEl" v-model="draftNew" class="min-w-0 flex-1 rounded-md px-2 py-1" placeholder="What must be true?" @keydown.enter.prevent="saveNew">
+        <button type="button" class="text-xs font-semibold text-colliers-primary" @click="saveNew">Add</button>
+        <button type="button" class="text-xs text-slate-600" @click="reset">Cancel</button>
       </li>
     </ul>
     <p v-if="!items.length && !adding" class="mt-3 text-sm text-slate-400">None yet.</p>
-    <button
-      v-if="editing && !adding"
-      type="button"
-      class="mt-3 inline-flex items-center rounded-md px-2.5 py-1.5 text-[12px] font-semibold text-colliers-primary ring-1 ring-colliers-primary/25 hover:bg-colliers-primary/5"
-      @click="startAdd"
-    >
-      Add
-    </button>
+    <button v-if="editing && !adding" type="button" class="mt-3 text-xs font-semibold text-colliers-primary" @click="startAdd">Add</button>
   </section>
 </template>
+
+<script>
+import { asCriteria } from '../data/devTracker'
+
+export default {
+  name: 'TicketCriteriaList',
+  model: { prop: 'modelValue', event: 'update:modelValue' },
+  props: {
+    modelValue: { type: Array, default: function () { return [] } },
+    editing: { type: Boolean, default: false },
+  },
+  data: function () {
+    return { adding: false, draftNew: '', editingIndex: -1, draftEdit: '' }
+  },
+  computed: {
+    items: function () { return asCriteria(this.modelValue) },
+  },
+  methods: {
+    focusInput: function () {
+      this.$nextTick(() => {
+        const input = Array.isArray(this.$refs.inputEl) ? this.$refs.inputEl[0] : this.$refs.inputEl
+        if (input) input.focus()
+      })
+    },
+    commit: function (list) { this.$emit('update:modelValue', asCriteria(list)) },
+    reset: function () {
+      this.adding = false
+      this.draftNew = ''
+      this.editingIndex = -1
+      this.draftEdit = ''
+    },
+    startAdd: function () {
+      this.reset()
+      this.adding = true
+      this.focusInput()
+    },
+    saveNew: function () {
+      const text = this.draftNew.trim()
+      if (text) this.commit(this.items.concat({ text: text, done: false }))
+      this.reset()
+    },
+    startEdit: function (index) {
+      this.adding = false
+      this.editingIndex = index
+      this.draftEdit = (this.items[index] && this.items[index].text) || ''
+      this.focusInput()
+    },
+    saveEdit: function () {
+      const next = this.items.slice()
+      const text = this.draftEdit.trim()
+      if (!text) next.splice(this.editingIndex, 1)
+      else next.splice(this.editingIndex, 1, Object.assign({}, next[this.editingIndex], { text: text }))
+      this.commit(next)
+      this.reset()
+    },
+    remove: function (index) { this.commit(this.items.filter((_, i) => i !== index)) },
+    toggle: function (index) {
+      const next = this.items.slice()
+      next.splice(index, 1, Object.assign({}, next[index], { done: !next[index].done }))
+      this.commit(next)
+    },
+  },
+}
+</script>

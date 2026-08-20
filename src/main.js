@@ -1,13 +1,14 @@
-import { createApp } from 'vue'
+import Vue from 'vue'
 import App from './App.vue'
 import router from './router'
+import { bindRouter } from './adapters/nav'
 import './styles/main.css'
 
-// Shoelace components used in drawers
-import '@shoelace-style/shoelace/dist/themes/light.css'
-import '@shoelace-style/shoelace/dist/components/drawer/drawer.js'
+bindRouter(router)
 
-import { setBasePath } from '@shoelace-style/shoelace/dist/utilities/base-path.js'
-setBasePath('https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.20.1/cdn/')
-
-createApp(App).use(router).mount('#app')
+new Vue({
+  router: router,
+  render: function (h) {
+    return h(App)
+  },
+}).$mount('#app')

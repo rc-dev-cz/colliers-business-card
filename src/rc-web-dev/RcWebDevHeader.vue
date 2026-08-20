@@ -1,24 +1,3 @@
-<script setup>
-import { ref } from 'vue'
-import { useRouter } from 'vue-router'
-import { useAuth } from '../composables/useAuth'
-
-const router = useRouter()
-const { userEmail, logout } = useAuth()
-const menuOpen = ref(false)
-
-function goPortal() {
-  menuOpen.value = false
-  router.push({ name: 'catalog' })
-}
-
-function onLogout() {
-  menuOpen.value = false
-  logout()
-  router.push({ name: 'login' })
-}
-</script>
-
 <template>
   <header class="rc-web-dev-header">
     <div class="mx-auto flex h-14 w-full items-center justify-between px-4 sm:h-16 sm:px-6">
@@ -40,7 +19,7 @@ function onLogout() {
           v-if="menuOpen"
           class="absolute right-0 z-30 mt-2 w-52 overflow-hidden rounded-md border border-gray-200 bg-white py-2 shadow-lg"
         >
-          <div class="border-b border-gray-100 px-3 pb-2 text-sm text-gray-600">{{ userEmail || 'demo' }}</div>
+          <div class="border-b border-gray-100 px-3 pb-2 text-sm text-gray-600">{{ email || 'demo' }}</div>
           <button
             type="button"
             class="mt-1 w-full px-3 py-2 text-left text-sm text-gray-800 hover:bg-gray-50"
@@ -60,3 +39,30 @@ function onLogout() {
     </div>
   </header>
 </template>
+
+<script>
+import { logout, userEmail } from '../store'
+
+export default {
+  name: 'RcWebDevHeader',
+  data: function () {
+    return { menuOpen: false }
+  },
+  computed: {
+    email: function () {
+      return userEmail()
+    },
+  },
+  methods: {
+    goPortal: function () {
+      this.menuOpen = false
+      this.$router.push({ name: 'catalog' })
+    },
+    onLogout: function () {
+      this.menuOpen = false
+      logout()
+      this.$router.push({ name: 'login' })
+    },
+  },
+}
+</script>

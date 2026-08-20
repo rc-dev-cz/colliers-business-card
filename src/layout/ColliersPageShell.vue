@@ -1,24 +1,29 @@
-<script setup>
-import AppHeader from '../components/AppHeader.vue'
-import AppFooter from '../components/AppFooter.vue'
-import CartDrawer from '../components/CartDrawer.vue'
-</script>
-
 <template>
   <div class="colliers-page">
     <div class="colliers-right-column">
-      <AppHeader />
+      <app-header></app-header>
       <div class="colliers-right-body">
         <main
           id="main"
           class="colliers-main flex flex-col py-6 sm:py-10"
           tabindex="-1"
         >
-          <slot />
+          <slot></slot>
         </main>
-        <AppFooter />
+        <app-footer></app-footer>
       </div>
     </div>
-    <CartDrawer />
+    <cart-drawer></cart-drawer>
   </div>
 </template>
+
+<script>
+import AppHeader from '../components/AppHeader.vue'
+import AppFooter from '../components/AppFooter.vue'
+import CartDrawer from '../components/CartDrawer.vue'
+
+export default {
+  name: 'ColliersPageShell',
+  components: { AppHeader, AppFooter, CartDrawer },
+}
+</script>

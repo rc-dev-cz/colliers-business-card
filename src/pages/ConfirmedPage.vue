@@ -1,28 +1,5 @@
-<script setup>
-import { onMounted } from 'vue'
-import { useRouter } from 'vue-router'
-import { useLocale } from '../composables/useLocale'
-import { useCart } from '../composables/useCart'
-import { useOrder } from '../composables/useOrder'
-import ColliersPageShell from '../layout/ColliersPageShell.vue'
-
-const router = useRouter()
-const { t } = useLocale()
-const { clearCart } = useCart()
-const { clearOrder } = useOrder()
-
-onMounted(() => {
-  clearCart()
-  clearOrder()
-})
-
-function backToCatalog() {
-  router.push({ name: 'catalog' })
-}
-</script>
-
 <template>
-  <ColliersPageShell>
+  <colliers-page-shell>
     <div class="mx-auto flex max-w-xl flex-col items-center py-16 text-center sm:py-24">
       <div class="mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-green-100 text-green-600">
         <svg class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -31,9 +8,29 @@ function backToCatalog() {
       </div>
       <h1 class="mb-4 text-3xl font-bold text-gray-900">{{ t('orderConfirmed') }}</h1>
       <p class="mb-8 text-gray-600">{{ t('thankYou') }}</p>
-      <button type="button" class="btn-primary" @click="backToCatalog">
-        {{ t('returnToCatalog') }}
-      </button>
+      <app-button @click="backToCatalog">{{ t('returnToCatalog') }}</app-button>
     </div>
-  </ColliersPageShell>
+  </colliers-page-shell>
 </template>
+
+<script>
+import ColliersPageShell from '../layout/ColliersPageShell.vue'
+import AppButton from '../components/AppButton.vue'
+import { t, clearCart, clearOrder } from '../store'
+import { go } from '../adapters/nav'
+
+export default {
+  name: 'ConfirmedPage',
+  components: { ColliersPageShell, AppButton },
+  mounted: function () {
+    clearCart()
+    clearOrder()
+  },
+  methods: {
+    t: t,
+    backToCatalog: function () {
+      go('catalog')
+    },
+  },
+}
+</script>

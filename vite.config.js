@@ -1,5 +1,5 @@
 import { defineConfig } from 'vite'
-import vue from '@vitejs/plugin-vue'
+import vue from '@vitejs/plugin-vue2'
 
 // Local: `/` — GitHub Pages production: `/colliers-business-card/`
 // Override anytime with VITE_BASE=...
@@ -9,17 +9,13 @@ const base =
 
 export default defineConfig({
   base,
-  plugins: [
-    vue({
-      template: {
-        compilerOptions: {
-          isCustomElement: (tag) => tag.startsWith('sl-'),
-        },
-      },
-    }),
-  ],
+  plugins: [vue()],
+  test: {
+    environment: 'jsdom',
+    globals: false,
+  },
   server: {
-    // Same-origin proxy so the browser does not hang on cross-origin API calls in local Vite.
+    port: 5173,
     proxy: {
       '/api': {
         target: 'https://colliers-dev-rc.clientportal.cloud',

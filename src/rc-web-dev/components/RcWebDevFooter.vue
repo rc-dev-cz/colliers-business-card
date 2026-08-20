@@ -7,6 +7,12 @@
   </footer>
 </template>
 
+<script>
+export default {
+  name: 'RcWebDevFooter',
+}
+</script>
+
 <style scoped>
 .web-dev-credit-line {
   margin: 0;

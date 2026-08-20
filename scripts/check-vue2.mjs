@@ -108,5 +108,5 @@ if (errors.length) {
   process.exit(1)
 }
 
-console.log('Vue 2 check passed (colliers-vue2)')
+console.log('Vue 2 check passed')
 

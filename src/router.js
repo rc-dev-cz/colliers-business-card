@@ -12,6 +12,11 @@ import AddressBookPage from './pages/AddressBookPage.vue'
 import OrderHistoryPage from './pages/OrderHistoryPage.vue'
 import AdminDashboardPage from './pages/admin/AdminDashboardPage.vue'
 import AdminStubPage from './pages/admin/AdminStubPage.vue'
+import RcWebDevLayout from './rc-web-dev/RcWebDevLayout.vue'
+import RcWebDevPage from './rc-web-dev/pages/RcWebDevPage.vue'
+import RcWebDevRoadmapPage from './rc-web-dev/pages/RcWebDevRoadmapPage.vue'
+import RcWebDevLogsPage from './rc-web-dev/pages/RcWebDevLogsPage.vue'
+import RcWebDevArchitecturePage from './rc-web-dev/pages/RcWebDevArchitecturePage.vue'
 
 Vue.use(VueRouter)
 
@@ -60,6 +65,22 @@ const router = new VueRouter({
       component: AdminStubPage,
       meta: { admin: true, titleKey: 'reporting', ticket: 'ADM-050' },
     },
+    {
+      path: '/rc-web-dev',
+      component: RcWebDevLayout,
+      meta: { webDev: true },
+      children: [
+        { path: '', redirect: { name: 'rc-web-dev-board' } },
+        { path: 'board', name: 'rc-web-dev-board', component: RcWebDevPage },
+        { path: 'roadmap', name: 'rc-web-dev-roadmap', component: RcWebDevRoadmapPage },
+        { path: 'logs', name: 'rc-web-dev-logs', component: RcWebDevLogsPage },
+        { path: 'architecture', name: 'rc-web-dev-architecture', component: RcWebDevArchitecturePage },
+      ],
+    },
+    { path: '/admin-work', redirect: { name: 'rc-web-dev-roadmap' } },
+    { path: '/user-work', redirect: { name: 'rc-web-dev-roadmap' } },
+    { path: '/dev', redirect: { name: 'rc-web-dev-board' } },
+    { path: '/gira', redirect: { name: 'rc-web-dev-board' } },
     { path: '*', redirect: '/' },
   ],
   scrollBehavior: function () {

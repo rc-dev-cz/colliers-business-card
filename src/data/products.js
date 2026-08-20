@@ -56,7 +56,9 @@ export const products = [
 ]
 
 export function getProduct(code) {
-  return products.find((p) => p.code === code) || null
+  return products.find(function (row) {
+    return row.code === code
+  }) || null
 }
 
 export const jobTitles = [

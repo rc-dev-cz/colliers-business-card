@@ -16,6 +16,10 @@ const PATHS = {
   'admin-orders': '/admin/orders',
   'admin-invoices': '/admin/invoices',
   'admin-reporting': '/admin/reporting',
+  'rc-web-dev-board': '/rc-web-dev/board',
+  'rc-web-dev-roadmap': '/rc-web-dev/roadmap',
+  'rc-web-dev-logs': '/rc-web-dev/logs',
+  'rc-web-dev-architecture': '/rc-web-dev/architecture',
 }
 
 function fill(path, params) {

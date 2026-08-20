@@ -1,34 +1,7 @@
-<script setup>
-import { computed } from 'vue'
-import { useRouter } from 'vue-router'
-import { getProduct, defaultCardDetails } from '../data/products'
-import { useLocale } from '../composables/useLocale'
-import { productNameKey } from '../i18n/messages'
-import ColliersPageShell from '../layout/ColliersPageShell.vue'
-import CardPreview from '../components/CardPreview.vue'
-
-const props = defineProps({
-  code: { type: String, required: true },
-})
-
-const router = useRouter()
-const { t } = useLocale()
-const product = computed(() => getProduct(props.code))
-const name = computed(() => (product.value ? t(productNameKey(product.value.code)) : ''))
-
-function back() {
-  router.push({ name: 'catalog' })
-}
-
-function customize() {
-  router.push({ name: 'customize', params: { code: props.code } })
-}
-</script>
-
 <template>
-  <ColliersPageShell>
-    <div v-if="!product" class="py-20 text-center text-gray-500">Product not found</div>
-    <template v-else>
+  <colliers-page-shell>
+    <div v-if="!product" class="py-20 text-center text-gray-500">{{ t('productNotFound') }}</div>
+    <div v-else>
       <button type="button" class="mb-6 inline-flex items-center gap-1 text-sm text-gray-600 hover:text-gray-900" @click="back">
         <span aria-hidden="true">‹</span> {{ t('back') }}
       </button>
@@ -36,7 +9,7 @@ function customize() {
       <div class="flex flex-col gap-10 lg:flex-row lg:gap-12">
         <div class="w-full lg:max-w-[480px]">
           <div class="rounded-lg bg-gray-100 p-4 sm:p-6">
-            <CardPreview :details="defaultCardDetails" />
+            <card-preview :details="defaultCardDetails"></card-preview>
           </div>
           <div class="mt-6 space-y-4 text-[15px]">
             <div>
@@ -92,15 +65,7 @@ function customize() {
             </div>
 
             <div
-              v-for="row in [
-                { label: t('language'), value: t(product.languageKey) },
-                { label: t('packaging'), value: product.packaging },
-                { label: t('productType'), value: t('printOnDemand') },
-                { label: t('minOrderQty'), value: product.minQty },
-                { label: t('status'), value: t('active') },
-                { label: t('longDescription'), value: product.longDescription || '—' },
-                { label: t('dateAdded'), value: product.dateAdded },
-              ]"
+              v-for="row in specRows"
               :key="row.label"
               class="flex flex-col border-b border-gray-200 py-2 sm:flex-row sm:justify-between"
             >
@@ -109,14 +74,64 @@ function customize() {
             </div>
           </div>
 
-          <button type="button" class="btn-primary mt-8 w-full sm:w-auto sm:min-w-[240px]" @click="customize">
+          <app-button class="mt-8 w-full sm:w-auto sm:min-w-[240px]" @click="customize">
             {{ t('customize') }}
-          </button>
+          </app-button>
 
           <p class="mt-6 text-xs italic leading-relaxed text-gray-500">{{ t('salesFinal') }}</p>
           <p class="mt-2 text-xs italic leading-relaxed text-gray-500">{{ t('salesDigital') }}</p>
         </div>
       </div>
-    </template>
-  </ColliersPageShell>
+    </div>
+  </colliers-page-shell>
 </template>
+
+<script>
+import ColliersPageShell from '../layout/ColliersPageShell.vue'
+import CardPreview from '../components/CardPreview.vue'
+import AppButton from '../components/AppButton.vue'
+import { defaultCardDetails, getProduct } from '../data/products'
+import { productNameKey } from '../i18n/messages'
+import { t } from '../store'
+import { go } from '../adapters/nav'
+
+export default {
+  name: 'DetailsPage',
+  components: { ColliersPageShell, CardPreview, AppButton },
+  props: {
+    code: { type: String, required: true },
+  },
+  data: function () {
+    return { defaultCardDetails: defaultCardDetails }
+  },
+  computed: {
+    product: function () {
+      return getProduct(this.code)
+    },
+    name: function () {
+      return this.product ? t(productNameKey(this.product.code)) : ''
+    },
+    specRows: function () {
+      if (!this.product) return []
+      return [
+        { label: t('language'), value: t(this.product.languageKey) },
+        { label: t('packaging'), value: this.product.packaging },
+        { label: t('productType'), value: t('printOnDemand') },
+        { label: t('minOrderQty'), value: this.product.minQty },
+        { label: t('status'), value: t('active') },
+        { label: t('longDescription'), value: this.product.longDescription || '—' },
+        { label: t('dateAdded'), value: this.product.dateAdded },
+      ]
+    },
+  },
+  methods: {
+    t: t,
+    back: function () {
+      go('catalog')
+    },
+    customize: function () {
+      go('customize', { code: this.code })
+    },
+  },
+}
+</script>

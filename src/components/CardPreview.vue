@@ -1,28 +1,3 @@
-<script setup>
-import { computed } from 'vue'
-
-const props = defineProps({
-  details: {
-    type: Object,
-    default: () => ({}),
-  },
-})
-
-const name = computed(() => props.details.name || 'Hubert Blaine\nWolfeschlegelstein')
-const title = computed(() => props.details.title || 'Associate | Canada')
-const company = computed(() => props.details.company || 'Colliers')
-const address = computed(
-  () =>
-    props.details.address ||
-    '181 Bay Street\nSuite 1400\nToronto, ON M5J 2T3',
-)
-const email = computed(
-  () => props.details.email || 'hubert.wolfe@colliers.com',
-)
-const phone = computed(() => props.details.phone || '+1 416 555-1234')
-const website = computed(() => props.details.website || 'colliers.com/canada')
-</script>
-
 <template>
   <div
     class="relative aspect-[1.75/1] w-full overflow-hidden rounded-md border border-gray-200 bg-[#EEEEEE] font-sans text-[#4A4A4A] shadow-sm"
@@ -36,9 +11,9 @@ const website = computed(() => props.details.website || 'colliers.com/canada')
             style="font-size: min(5.5cqw, 32px)"
           >Colliers</span>
         </div>
-        <div class="w-full bg-[#00A9E0]" style="height: min(1cqw, 4px)" />
-        <div class="w-full bg-[#FFD100]" style="height: min(1cqw, 4px)" />
-        <div class="w-full bg-[#E35205]" style="height: min(1cqw, 4px)" />
+        <div class="w-full bg-[#00A9E0]" style="height: min(1cqw, 4px)"></div>
+        <div class="w-full bg-[#FFD100]" style="height: min(1cqw, 4px)"></div>
+        <div class="w-full bg-[#E35205]" style="height: min(1cqw, 4px)"></div>
       </div>
     </div>
 
@@ -46,7 +21,7 @@ const website = computed(() => props.details.website || 'colliers.com/canada')
       class="absolute left-[42%] right-[4%] top-[14%] text-[#25408F]"
       style="font-size: min(4.2cqw, 22px)"
     >
-      <div class="line-clamp-2 break-words font-bold leading-[1.15] [overflow-wrap:anywhere] whitespace-pre-line">{{ name }}</div>
+      <div class="line-clamp-2 break-words font-bold leading-[1.15] whitespace-pre-line">{{ name }}</div>
       <div class="mt-[4%] leading-[1.3] text-[#4A4A4A]" style="font-size: min(2.6cqw, 13px)">
         <div>{{ title }}</div>
         <div>{{ company }}</div>
@@ -69,3 +44,40 @@ const website = computed(() => props.details.website || 'colliers.com/canada')
     </div>
   </div>
 </template>
+
+<script>
+export default {
+  name: 'CardPreview',
+  props: {
+    details: {
+      type: Object,
+      default: function () {
+        return {}
+      },
+    },
+  },
+  computed: {
+    name: function () {
+      return this.details.name || 'Hubert Blaine\nWolfeschlegelstein'
+    },
+    title: function () {
+      return this.details.title || 'Associate | Canada'
+    },
+    company: function () {
+      return this.details.company || 'Colliers'
+    },
+    address: function () {
+      return this.details.address || '181 Bay Street\nSuite 1400\nToronto, ON M5J 2T3'
+    },
+    email: function () {
+      return this.details.email || 'hubert.wolfe@colliers.com'
+    },
+    phone: function () {
+      return this.details.phone || '+1 416 555-1234'
+    },
+    website: function () {
+      return this.details.website || 'colliers.com/canada'
+    },
+  },
+}
+</script>

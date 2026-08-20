@@ -1,19 +1,3 @@
-<script setup>
-import { computed } from 'vue'
-import { PRIORITY_LABEL, PRIORITY_PILL, showsReview, assigneeAvatarClass } from '../data/devTracker'
-
-const props = defineProps({
-  ticket: { type: Object, required: true },
-  moved: { type: Boolean, default: false },
-  vars: { type: Object, default: () => ({}) },
-})
-
-const label = computed(() => PRIORITY_LABEL[props.ticket.priority] || 'Medium')
-const pill = computed(() => PRIORITY_PILL[props.ticket.priority] || PRIORITY_PILL.medium)
-const initials = computed(() => props.ticket.assignee || '?')
-const avatarClass = computed(() => assigneeAvatarClass(props.ticket.assignee))
-</script>
-
 <template>
   <div
     class="ticket-card min-w-0 cursor-grab rounded-md border border-gray-200 bg-white px-3 py-2 shadow-sm select-none hover:shadow-md active:cursor-grabbing"
@@ -54,3 +38,33 @@ const avatarClass = computed(() => assigneeAvatarClass(props.ticket.assignee))
     </div>
   </div>
 </template>
+
+<script>
+import { PRIORITY_LABEL, PRIORITY_PILL, showsReview, assigneeAvatarClass } from '../data/devTracker'
+
+export default {
+  name: 'TicketCard',
+  props: {
+    ticket: { type: Object, required: true },
+    moved: { type: Boolean, default: false },
+    vars: { type: Object, default: function () { return {} } },
+  },
+  computed: {
+    label: function () {
+      return PRIORITY_LABEL[this.ticket.priority] || 'Medium'
+    },
+    pill: function () {
+      return PRIORITY_PILL[this.ticket.priority] || PRIORITY_PILL.medium
+    },
+    initials: function () {
+      return this.ticket.assignee || '?'
+    },
+    avatarClass: function () {
+      return assigneeAvatarClass(this.ticket.assignee)
+    },
+  },
+  methods: {
+    showsReview: showsReview,
+  },
+}
+</script>

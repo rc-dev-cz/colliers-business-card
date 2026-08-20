@@ -1,39 +1,3 @@
-<script setup>
-import { computed, ref } from 'vue'
-import { useRouter } from 'vue-router'
-import { useLocale } from '../composables/useLocale'
-import { useCart } from '../composables/useCart'
-import { useAuth } from '../composables/useAuth'
-
-const router = useRouter()
-const { locale, setLocale, t } = useLocale()
-const { count, openCart } = useCart()
-const { userEmail, logout } = useAuth()
-const menuOpen = ref(false)
-
-const badge = computed(() => (count.value > 0 ? String(count.value) : ''))
-
-function goCatalog() {
-  router.push({ name: 'catalog' })
-}
-
-function goWebDev() {
-  menuOpen.value = false
-  router.push({ name: 'rc-web-dev-board' })
-}
-
-function goAddressBook() {
-  menuOpen.value = false
-  router.push({ name: 'addresses' })
-}
-
-function onLogout() {
-  menuOpen.value = false
-  logout()
-  router.push({ name: 'login' })
-}
-</script>
-
 <template>
   <header class="colliers-site-header">
     <div class="mx-auto flex h-[64px] w-full max-w-6xl items-center justify-between px-4 sm:h-[72px] sm:px-6 lg:px-8">
@@ -53,18 +17,43 @@ function onLogout() {
                 Colliers
               </span>
             </span>
-            <span class="block h-[2px] w-full bg-[#00A9E0]" />
-            <span class="block h-[2px] w-full bg-[#FFD100]" />
-            <span class="block h-[2px] w-full bg-[#E31837]" />
+            <span class="block h-[2px] w-full bg-[#00A9E0]"></span>
+            <span class="block h-[2px] w-full bg-[#FFD100]"></span>
+            <span class="block h-[2px] w-full bg-[#E31837]"></span>
           </span>
         </button>
-        <nav class="hidden h-full sm:flex">
+        <span
+          v-if="admin"
+          class="hidden text-xs font-semibold tracking-wide text-gray-500 sm:inline"
+        >
+          {{ t('adminLabel') }}
+        </span>
+        <nav class="hidden h-full min-w-0 sm:flex">
           <button
             type="button"
-            class="flex h-[64px] items-center border-b-[3px] border-colliers-primary px-3 text-sm font-medium text-gray-900 sm:h-[72px] sm:px-4 sm:text-base"
+            class="flex h-[64px] items-center border-b-[3px] px-3 text-sm font-medium sm:h-[72px] sm:px-4 sm:text-base"
+            :class="navClass('catalog')"
             @click="goCatalog"
           >
-            {{ t('catalog') }}
+            {{ admin ? t('catalogue') : t('catalog') }}
+          </button>
+          <button
+            v-if="admin"
+            type="button"
+            class="flex h-[64px] items-center border-b-[3px] px-3 text-sm font-medium sm:h-[72px] sm:px-4 sm:text-base"
+            :class="navClass('admin-addresses')"
+            @click="goNamed('admin-addresses')"
+          >
+            {{ t('manageAddresses') }}
+          </button>
+          <button
+            v-if="admin"
+            type="button"
+            class="flex h-[64px] items-center border-b-[3px] px-3 text-sm font-medium sm:h-[72px] sm:px-4 sm:text-base"
+            :class="navClass('admin-titles')"
+            @click="goNamed('admin-titles')"
+          >
+            {{ t('manageTitles') }}
           </button>
         </nav>
       </div>
@@ -74,7 +63,7 @@ function onLogout() {
           <button
             type="button"
             class="transition-colors focus:outline-none"
-            :class="locale === 'EN' ? 'font-bold text-colliers-primary' : 'text-gray-500 hover:text-gray-900'"
+            :class="store.locale === 'EN' ? 'font-bold text-colliers-primary' : 'text-gray-500 hover:text-gray-900'"
             @click="setLocale('EN')"
           >
             EN
@@ -83,7 +72,7 @@ function onLogout() {
           <button
             type="button"
             class="transition-colors focus:outline-none"
-            :class="locale === 'FR' ? 'font-bold text-colliers-primary' : 'text-gray-500 hover:text-gray-900'"
+            :class="store.locale === 'FR' ? 'font-bold text-colliers-primary' : 'text-gray-500 hover:text-gray-900'"
             @click="setLocale('FR')"
           >
             FR
@@ -107,11 +96,12 @@ function onLogout() {
           </span>
         </button>
 
-        <div class="relative">
+        <div ref="profileMenu" class="relative">
           <button
             type="button"
             class="flex h-9 w-9 items-center justify-center rounded-full bg-colliers-primary text-white hover:bg-colliers-primary-hover sm:h-11 sm:w-11"
             :aria-label="t('profileMenu')"
+            :aria-expanded="menuOpen ? 'true' : 'false'"
             @click="menuOpen = !menuOpen"
           >
             <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
@@ -122,7 +112,15 @@ function onLogout() {
             v-if="menuOpen"
             class="absolute right-0 z-30 mt-2 w-52 overflow-hidden rounded-md border border-gray-200 bg-white py-2 shadow-lg"
           >
-            <div class="border-b border-gray-100 px-3 pb-2 text-sm text-gray-600">{{ userEmail || 'demo' }}</div>
+            <div class="border-b border-gray-100 px-3 pb-2 text-sm text-gray-600">{{ email || 'demo' }}</div>
+            <button
+              v-if="admin"
+              type="button"
+              class="w-full px-3 py-2 text-left text-sm text-gray-800 hover:bg-gray-50"
+              @click="goNamed('admin')"
+            >
+              {{ t('adminPanel') }}
+            </button>
             <button
               type="button"
               class="w-full px-3 py-2 text-left text-sm text-gray-800 hover:bg-gray-50"
@@ -132,7 +130,14 @@ function onLogout() {
             </button>
             <button
               type="button"
-              class="web-dev-menu mx-2 mt-1 w-[calc(100%-1rem)] rounded-md px-3 py-2 text-left text-sm font-semibold text-gray-900"
+              class="w-full px-3 py-2 text-left text-sm text-gray-800 hover:bg-gray-50"
+              @click="goOrderHistory"
+            >
+              {{ t('orderHistory') }}
+            </button>
+            <button
+              type="button"
+              class="web-dev-menu mt-1 w-full px-3 py-2 text-left text-sm font-medium hover:bg-gray-50"
               @click="goWebDev"
             >
               RC Web Dev
@@ -151,18 +156,122 @@ function onLogout() {
   </header>
 </template>
 
+<script>
+import { store, t, setLocale, openCart, logout, userEmail, isAdmin } from '../store'
+import { cartCount } from '../helpers/cart'
+import { go, currentRouteName } from '../adapters/nav'
+
+export default {
+  name: 'AppHeader',
+  data: function () {
+    return {
+      store: store,
+      menuOpen: false,
+    }
+  },
+  computed: {
+    badge: function () {
+      const count = cartCount(this.store.cart)
+      return count > 0 ? String(count) : ''
+    },
+    email: function () {
+      return userEmail()
+    },
+    admin: function () {
+      return isAdmin()
+    },
+    routeName: function () {
+      return this.$route && this.$route.name ? this.$route.name : currentRouteName()
+    },
+  },
+  mounted: function () {
+    document.addEventListener('click', this.onDocumentClick)
+    document.addEventListener('keydown', this.onDocumentKey)
+  },
+  beforeDestroy: function () {
+    document.removeEventListener('click', this.onDocumentClick)
+    document.removeEventListener('keydown', this.onDocumentKey)
+  },
+  methods: {
+    t: t,
+    setLocale: setLocale,
+    openCart: openCart,
+    navClass: function (name) {
+      return this.routeName === name
+        ? 'border-colliers-primary text-gray-900'
+        : 'border-transparent text-gray-600 hover:text-gray-900'
+    },
+    onDocumentClick: function (event) {
+      if (!this.menuOpen) return
+      const root = this.$refs.profileMenu
+      if (root && root.contains(event.target)) return
+      this.menuOpen = false
+    },
+    onDocumentKey: function (event) {
+      if (event.key === 'Escape') this.menuOpen = false
+    },
+    goCatalog: function () {
+      this.menuOpen = false
+      go('catalog')
+    },
+    goNamed: function (name) {
+      this.menuOpen = false
+      go(name)
+    },
+    goAddressBook: function () {
+      this.menuOpen = false
+      go('addresses')
+    },
+    goOrderHistory: function () {
+      this.menuOpen = false
+      go(this.admin ? 'admin-orders' : 'history')
+    },
+    goWebDev: function () {
+      this.menuOpen = false
+      go('rc-web-dev-board')
+    },
+    onLogout: function () {
+      this.menuOpen = false
+      logout()
+      go('login')
+    },
+  },
+}
+</script>
+
 <style scoped>
-/* Vue prototype only — strip this menu item before the Klai port. */
+/* Internal board entry — exclude when copying product UI into Clay/Klai. */
 .web-dev-menu {
-  background: linear-gradient(
+  background-image: linear-gradient(
     90deg,
-    #fecaca 0%,
-    #fed7aa 16%,
-    #fef08a 33%,
-    #bbf7d0 50%,
-    #bfdbfe 66%,
-    #ddd6fe 83%,
-    #fbcfe8 100%
+    #25408f,
+    #00a9e0,
+    #ffd100,
+    #e31837,
+    #25408f
   );
+  background-size: 220% 100%;
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  animation: web-dev-menu-shine 6s ease-in-out infinite;
+}
+
+@keyframes web-dev-menu-shine {
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .web-dev-menu {
+    animation: none;
+    background: none;
+    color: #25408f;
+  }
 }
 </style>
