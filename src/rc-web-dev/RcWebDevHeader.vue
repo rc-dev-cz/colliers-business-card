@@ -19,7 +19,7 @@
           v-if="menuOpen"
           class="absolute right-0 z-30 mt-2 w-52 overflow-hidden rounded-md border border-gray-200 bg-white py-2 shadow-lg"
         >
-          <div class="border-b border-gray-100 px-3 pb-2 text-sm text-gray-600">{{ email || 'demo' }}</div>
+          <div class="border-b border-gray-100 px-3 pb-2 text-sm text-gray-600">{{ displayName }}</div>
           <button
             type="button"
             class="mt-1 w-full px-3 py-2 text-left text-sm text-gray-800 hover:bg-gray-50"
@@ -51,6 +51,11 @@ export default {
   computed: {
     email: function () {
       return userEmail()
+    },
+    displayName: function () {
+      const email = this.email || 'demo'
+      if (email.indexOf('@') !== -1) return email
+      return email.charAt(0).toUpperCase() + email.slice(1)
     },
   },
   methods: {

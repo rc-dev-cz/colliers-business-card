@@ -112,7 +112,7 @@
             v-if="menuOpen"
             class="absolute right-0 z-30 mt-2 w-52 overflow-hidden rounded-md border border-gray-200 bg-white py-2 shadow-lg"
           >
-            <div class="border-b border-gray-100 px-3 pb-2 text-sm text-gray-600">{{ email || 'demo' }}</div>
+            <div class="border-b border-gray-100 px-3 pb-2 text-sm text-gray-600">{{ displayName }}</div>
             <button
               v-if="admin"
               type="button"
@@ -137,18 +137,21 @@
             </button>
             <button
               type="button"
-              class="web-dev-menu mt-1 w-full px-3 py-2 text-left text-sm font-medium hover:bg-gray-50"
-              @click="goWebDev"
-            >
-              RC Web Dev
-            </button>
-            <button
-              type="button"
               class="mt-1 w-full px-3 py-2 text-left text-sm text-gray-800 hover:bg-gray-50"
               @click="onLogout"
             >
               {{ t('logOut') }}
             </button>
+            <template v-if="admin">
+              <div class="mx-3 my-2 h-px bg-gray-200" role="separator"></div>
+              <button
+                type="button"
+                class="web-dev-menu w-full px-3 py-2 text-left text-sm font-medium hover:bg-gray-50"
+                @click="goWebDev"
+              >
+                RC Web Dev
+              </button>
+            </template>
           </div>
         </div>
       </div>
@@ -176,6 +179,11 @@ export default {
     },
     email: function () {
       return userEmail()
+    },
+    displayName: function () {
+      const email = this.email || 'demo'
+      if (email.indexOf('@') !== -1) return email
+      return email.charAt(0).toUpperCase() + email.slice(1)
     },
     admin: function () {
       return isAdmin()
@@ -224,7 +232,7 @@ export default {
     },
     goOrderHistory: function () {
       this.menuOpen = false
-      go(this.admin ? 'admin-orders' : 'history')
+      go('history')
     },
     goWebDev: function () {
       this.menuOpen = false

@@ -1,18 +1,40 @@
 <template>
-  <div ref="boardScroller" class="board-scroller h-full min-h-0 w-full overflow-x-auto">
-    <div class="flex h-full min-h-0 w-full items-stretch gap-3">
+  <div ref="boardScroller" class="board-scroller">
+    <div class="board-scroller-track">
       <section v-for="column in columns" :key="column.id" class="board-column flex flex-col rounded-lg border" :class="column.lane">
         <header class="flex items-center justify-between px-3 py-2" :class="column.header">
           <h2 class="text-sm font-semibold">{{ column.label || column.id }}</h2>
           <span class="rounded-full bg-white/70 px-2 py-0.5 text-xs font-semibold">{{ column.count }}</span>
         </header>
-        <div :ref="registerColumn" :data-status="column.id" class="board-column-body flex min-h-0 flex-1 flex-col gap-2 overflow-y-auto p-2">
+        <div
+          :ref="registerColumn"
+          :data-status="column.id"
+          class="board-column-body flex min-h-0 flex-1 flex-col gap-2 overflow-y-auto p-2"
+        >
           <template v-for="group in column.groups">
-            <button :key="'h-' + group.category" class="js-epic-heading flex justify-between rounded-md px-2 py-1 text-xs font-semibold" :class="categoryTheme(group.category).heading" @click="toggleGroup(column.id, group.category)">
-              <span>{{ group.category }}</span><span>{{ group.tickets.length }} {{ isGroupOpen(column.id, group.category) ? '▾' : '▸' }}</span>
+            <button
+              :key="'h-' + group.category"
+              class="js-epic-heading flex justify-between rounded-md px-2 py-1 text-xs font-semibold"
+              :class="categoryTheme(group.category).heading"
+              @click="toggleGroup(column.id, group.category)"
+            >
+              <span>{{ group.category }}</span>
+              <span>{{ group.tickets.length }} {{ isGroupOpen(column.id, group.category) ? '▾' : '▸' }}</span>
             </button>
-            <div v-if="isGroupOpen(column.id, group.category)" :key="group.category" :ref="registerColumn" :data-status="column.id" :data-category="group.category" class="flex flex-col gap-2">
-              <div v-for="ticket in group.tickets" :key="ticket.id" :data-ticket-id="ticket.id" @click="openTicket(ticket)">
+            <div
+              v-if="isGroupOpen(column.id, group.category)"
+              :key="group.category"
+              :ref="registerColumn"
+              :data-status="column.id"
+              :data-category="group.category"
+              class="flex flex-col gap-2"
+            >
+              <div
+                v-for="ticket in group.tickets"
+                :key="ticket.id"
+                :data-ticket-id="ticket.id"
+                @click="openTicket(ticket)"
+              >
                 <ticket-card :ticket="ticket"></ticket-card>
               </div>
             </div>
@@ -20,7 +42,13 @@
         </div>
       </section>
     </div>
-    <ticket-modal :ticket="selectedTicket" @close="closeTicket" @open="selectedId = $event" @saved="closeTicket" @deleted="closeTicket"></ticket-modal>
+    <ticket-modal
+      :ticket="selectedTicket"
+      @close="closeTicket"
+      @open="selectedId = $event"
+      @saved="closeTicket"
+      @deleted="closeTicket"
+    ></ticket-modal>
   </div>
 </template>
 
@@ -60,7 +88,15 @@ export default {
     },
   },
   updated: function () { this.pruneSortables() },
-  beforeDestroy: function () { this.destroySortables() },
+  mounted: function () {
+    const scroller = this.$refs.boardScroller
+    if (scroller) scroller.addEventListener('wheel', this.onBoardWheel, { passive: false })
+  },
+  beforeDestroy: function () {
+    const scroller = this.$refs.boardScroller
+    if (scroller) scroller.removeEventListener('wheel', this.onBoardWheel)
+    this.destroySortables()
+  },
   methods: {
     categoryTheme: categoryTheme,
     openTicket: function (ticket) { this.selectedId = ticket.id },
@@ -73,6 +109,25 @@ export default {
     toggleGroup: function (status, category) {
       this.$set(this.collapsed, this.groupKey(status, category), this.isGroupOpen(status, category))
       this.$nextTick(this.pruneSortables)
+    },
+    onBoardWheel: function (event) {
+      const scroller = this.$refs.boardScroller
+      if (!scroller || scroller.scrollWidth <= scroller.clientWidth + 1) return
+      if (Math.abs(event.deltaX) >= Math.abs(event.deltaY)) return
+
+      const columnBody = event.target && event.target.closest
+        ? event.target.closest('.board-column-body')
+        : null
+      if (columnBody && columnBody.scrollHeight > columnBody.clientHeight + 1) {
+        const atTop = columnBody.scrollTop <= 0 && event.deltaY < 0
+        const atBottom =
+          columnBody.scrollTop + columnBody.clientHeight >= columnBody.scrollHeight - 1 &&
+          event.deltaY > 0
+        if (!atTop && !atBottom) return
+      }
+
+      event.preventDefault()
+      scroller.scrollLeft += event.deltaY
     },
     registerColumn: function (el) {
       if (!el || el.__sortable) return

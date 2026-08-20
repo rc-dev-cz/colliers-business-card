@@ -68,7 +68,7 @@ const router = new VueRouter({
     {
       path: '/rc-web-dev',
       component: RcWebDevLayout,
-      meta: { webDev: true },
+      meta: { webDev: true, admin: true },
       children: [
         { path: '', redirect: { name: 'rc-web-dev-board' } },
         { path: 'board', name: 'rc-web-dev-board', component: RcWebDevPage },
@@ -97,7 +97,10 @@ router.beforeEach(function (to, from, next) {
     next({ name: 'catalog' })
     return
   }
-  if (to.meta.admin && !isAdmin()) {
+  const needsAdmin = to.matched.some(function (record) {
+    return record.meta && record.meta.admin
+  })
+  if (needsAdmin && !isAdmin()) {
     next({ name: 'catalog' })
     return
   }

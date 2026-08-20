@@ -7,7 +7,7 @@ This is the one local ticket document. The board seeds from [devTracker.json](de
 ## Snapshot
 
 - **133 tickets**
-- Status: In progress 0 · QA 3 · Ready for development 13 · Ideas 34 · Done 83
+- Status: In progress 0 · QA 27 · Ready for development 13 · Ideas 33 · Done 60
 - Category: Technical 20 · Customer Portal 61 · Admin Portal 47 · Shared UI/UX 3 · Quality Assurance 2
 
 ## Index
@@ -75,25 +75,25 @@ This is the one local ticket document. The board seeds from [devTracker.json](de
 | [USR-063](#usr-063) | Order review before confirm | Done | Customer Portal | CZ | USR-060 |
 | [USR-070](#usr-070) | Header language | Done | Customer Portal | CZ | USR-071 |
 | [USR-071](#usr-071) | Navbar EN/FR | Done | Customer Portal | CZ | USR-070 |
-| [USR-080](#usr-080) | Address Book | Done | Customer Portal | CZ | USR-081, USR-082, USR-083, USR-084, USR-085, USR-086, USR-087, USR-088, USR-089 |
-| [USR-081](#usr-081) | Address Book from profile menu | Done | Customer Portal | CZ | USR-080 |
-| [USR-082](#usr-082) | My Address Book | Done | Customer Portal | CZ | USR-080 |
-| [USR-083](#usr-083) | Office Addresses tab | Done | Customer Portal | CZ | USR-080 |
-| [USR-084](#usr-084) | Search addresses | Done | Customer Portal | CZ | USR-080 |
-| [USR-085](#usr-085) | Add a personal address | Done | Customer Portal | CZ | USR-080 |
-| [USR-086](#usr-086) | Edit a personal address | Done | Customer Portal | CZ | USR-080 |
-| [USR-087](#usr-087) | Delete a personal address | Done | Customer Portal | CZ | USR-080 |
-| [USR-088](#usr-088) | Canada address fields on Address Book | Done | Customer Portal | CZ | USR-080 |
-| [USR-089](#usr-089) | Shipping can use personal Address Book entries | Done | Customer Portal | CZ | USR-080 |
-| [USR-090](#usr-090) | Order History | Done | Customer Portal | CZ | USR-091, USR-092, USR-093, USR-094, USR-095, USR-096, USR-097, USR-098 |
-| [USR-091](#usr-091) | Order History from profile menu | Done | Customer Portal | CZ | USR-090 |
-| [USR-092](#usr-092) | Order History table | Done | Customer Portal | CZ | USR-090 |
-| [USR-093](#usr-093) | Search own orders | Done | Customer Portal | CZ | USR-090 |
-| [USR-094](#usr-094) | Filter own orders by status | Done | Customer Portal | CZ | USR-090 |
-| [USR-095](#usr-095) | View order card preview | Done | Customer Portal | CZ | USR-090 |
-| [USR-096](#usr-096) | Repeat Order | Done | Customer Portal | CZ | USR-090 |
-| [USR-097](#usr-097) | Confirmed orders appear in history | Done | Customer Portal | CZ | USR-090 |
-| [USR-098](#usr-098) | Order Details sheet | Done | Customer Portal | CZ | USR-090 |
+| [USR-080](#usr-080) | Address Book | QA | Customer Portal | CZ | USR-081, USR-082, USR-083, USR-084, USR-085, USR-086, USR-087, USR-088, USR-089 |
+| [USR-081](#usr-081) | Address Book from profile menu | QA | Customer Portal | CZ | USR-080 |
+| [USR-082](#usr-082) | My Address Book | QA | Customer Portal | CZ | USR-080 |
+| [USR-083](#usr-083) | Office Addresses tab | QA | Customer Portal | CZ | USR-080 |
+| [USR-084](#usr-084) | Search addresses | QA | Customer Portal | CZ | USR-080 |
+| [USR-085](#usr-085) | Add a personal address | QA | Customer Portal | CZ | USR-080 |
+| [USR-086](#usr-086) | Edit a personal address | QA | Customer Portal | CZ | USR-080 |
+| [USR-087](#usr-087) | Delete a personal address | QA | Customer Portal | CZ | USR-080 |
+| [USR-088](#usr-088) | Canada address fields on Address Book | QA | Customer Portal | CZ | USR-080 |
+| [USR-089](#usr-089) | Shipping can use personal Address Book entries | QA | Customer Portal | CZ | USR-080 |
+| [USR-090](#usr-090) | Order History | QA | Customer Portal | CZ | USR-091, USR-092, USR-093, USR-094, USR-095, USR-096, USR-097, USR-098 |
+| [USR-091](#usr-091) | Order History from profile menu | QA | Customer Portal | CZ | USR-090 |
+| [USR-092](#usr-092) | Order History table | QA | Customer Portal | CZ | USR-090 |
+| [USR-093](#usr-093) | Search own orders | QA | Customer Portal | CZ | USR-090 |
+| [USR-094](#usr-094) | Filter own orders by status | QA | Customer Portal | CZ | USR-090 |
+| [USR-095](#usr-095) | View order card preview | QA | Customer Portal | CZ | USR-090 |
+| [USR-096](#usr-096) | Repeat Order | QA | Customer Portal | CZ | USR-090 |
+| [USR-097](#usr-097) | Confirmed orders appear in history | QA | Customer Portal | CZ | USR-090 |
+| [USR-098](#usr-098) | Order Details sheet | QA | Customer Portal | CZ | USR-090 |
 | [ADM-001](#adm-001) | Admin scoped from designer | Done | Admin Portal | CZ | — |
 | [ADM-010](#adm-010) | Admin login and nav | Done | Admin Portal | CZ | ADM-011, ADM-012, ADM-013 |
 | [ADM-011](#adm-011) | Admin login admin / 123 | Done | Admin Portal | CZ | ADM-010 |
@@ -132,12 +132,12 @@ This is the one local ticket document. The board seeds from [devTracker.json](de
 | [ADM-073](#adm-073) | Delete title | Ideas | Admin Portal | — | ADM-070 |
 | [ADM-074](#adm-074) | Inline edit title | Ideas | Admin Portal | — | ADM-070 |
 | [ADM-075](#adm-075) | Customize titles come from Manage Titles | Ideas | Admin Portal | — | ADM-070 |
-| [ADM-080](#adm-080) | Address Book (admin) | Done | Admin Portal | CZ | ADM-081, ADM-082, ADM-083 |
-| [ADM-081](#adm-081) | Address Book from admin profile menu | Done | Admin Portal | CZ | ADM-080 |
-| [ADM-082](#adm-082) | Admin My Address Book | Done | Admin Portal | CZ | ADM-080 |
-| [ADM-083](#adm-083) | Admin Office Addresses tab | Done | Admin Portal | CZ | ADM-080 |
+| [ADM-080](#adm-080) | Address Book (admin) | QA | Admin Portal | CZ | ADM-081, ADM-082, ADM-083 |
+| [ADM-081](#adm-081) | Address Book from admin profile menu | QA | Admin Portal | CZ | ADM-080 |
+| [ADM-082](#adm-082) | Admin My Address Book | QA | Admin Portal | CZ | ADM-080 |
+| [ADM-083](#adm-083) | Admin Office Addresses tab | QA | Admin Portal | CZ | ADM-080 |
 | [F-20](#f-20) | Remove footer language dropdown | Done | Shared UI/UX | CZ | — |
-| [F-21](#f-21) | Automated tests | Ideas | Quality Assurance | — | — |
+| [F-21](#f-21) | Automated tests | QA | Quality Assurance | CZ | — |
 | [F-23](#f-23) | Light theme | Done | Shared UI/UX | CZ | — |
 | [F-19](#f-19) | Dark theme | Done | Shared UI/UX | CZ | — |
 | [IDEA-01](#idea-01) | Email character limit decided (40) | Done | Customer Portal | CZ | — |
@@ -1051,6 +1051,8 @@ Notes: USER.md · F-22
 <a id="usr-080"></a>
 ### USR-080 — Address Book
 
+**QA** · medium · CZ
+
 **Done** · medium · CZ
 
 Demo user profile → Address Book. My Address Book is personal ship-to addresses this user can add, edit, and delete. Office Addresses is view-only Colliers offices. Company office create/edit/delete is admin Manage Addresses (ADM-060). Same Address Book page as ADM-080.
@@ -1060,11 +1062,13 @@ Acceptance criteria:
 - A signed-in demo user can open Address Book from the profile menu and see My Address Book and Office Addresses.
 - The user can add, edit, and delete personal addresses. Company office add, edit, and delete stay on ADM-060.
 
-Notes: USER.md · F-29. Demo user can create personal addresses only. Offices are read-only here. Vue 2 stores personal rows in localStorage keyed by session.email until [DEV-106](#dev-106).
+Notes: USER.md · F-29. Demo user can create personal addresses only. Offices are read-only here. Vue 2 stores personal rows in localStorage keyed by session.email until DEV-106.
 
 
 <a id="usr-081"></a>
 #### USR-081 — Address Book from profile menu
+
+**QA** · medium · CZ · child of [USR-080](#usr-080)
 
 **Done** · medium · CZ · child of [USR-080](#usr-080)
 
@@ -1081,6 +1085,8 @@ Notes: USER.md · F-29
 <a id="usr-082"></a>
 #### USR-082 — My Address Book
 
+**QA** · medium · CZ · child of [USR-080](#usr-080)
+
 **Done** · medium · CZ · child of [USR-080](#usr-080)
 
 Tab lists this user’s personal locations (name + address) with New Address, Edit, and Delete. Designer samples: Home Office, Temporary Location.
@@ -1095,6 +1101,8 @@ Notes: USER.md · F-29
 
 <a id="usr-083"></a>
 #### USR-083 — Office Addresses tab
+
+**QA** · medium · CZ · child of [USR-080](#usr-080)
 
 **Done** · medium · CZ · child of [USR-080](#usr-080)
 
@@ -1111,6 +1119,8 @@ Notes: USER.md · F-29. View only for the demo user. Designer names every office
 <a id="usr-084"></a>
 #### USR-084 — Search addresses
 
+**QA** · medium · CZ · child of [USR-080](#usr-080)
+
 **Done** · medium · CZ · child of [USR-080](#usr-080)
 
 Search Addresses filters the active Address Book tab by location name or address text.
@@ -1125,6 +1135,8 @@ Notes: USER.md · F-29
 
 <a id="usr-085"></a>
 #### USR-085 — Add a personal address
+
+**QA** · medium · CZ · child of [USR-080](#usr-080)
 
 **Done** · medium · CZ · child of [USR-080](#usr-080)
 
@@ -1141,6 +1153,8 @@ Notes: USER.md · F-29. Personal create only. Company offices are ADM-062.
 <a id="usr-086"></a>
 #### USR-086 — Edit a personal address
 
+**QA** · medium · CZ · child of [USR-080](#usr-080)
+
 **Done** · medium · CZ · child of [USR-080](#usr-080)
 
 Edit fills the form with the saved personal address, including city / province / postal. Save updates that row.
@@ -1155,6 +1169,8 @@ Notes: USER.md · F-29
 
 <a id="usr-087"></a>
 #### USR-087 — Delete a personal address
+
+**QA** · medium · CZ · child of [USR-080](#usr-080)
 
 **Done** · medium · CZ · child of [USR-080](#usr-080)
 
@@ -1171,6 +1187,8 @@ Notes: USER.md · F-29
 <a id="usr-088"></a>
 #### USR-088 — Canada address fields on Address Book
 
+**QA** · medium · CZ · child of [USR-080](#usr-080)
+
 **Done** · medium · CZ · child of [USR-080](#usr-080)
 
 Designer form uses State and Zip. Colliers Canada should use Province and Postal, with Canada as the default country. Still to discuss.
@@ -1186,6 +1204,8 @@ Notes: USER.md · F-29. Designer issue: State / Zip. Same Canada default discuss
 <a id="usr-089"></a>
 #### USR-089 — Shipping can use personal Address Book entries
 
+**QA** · medium · CZ · child of [USR-080](#usr-080)
+
 **Done** · medium · CZ · child of [USR-080](#usr-080)
 
 Select location on shipping includes the user’s personal addresses as well as Colliers offices. Vue 3 and Vue 2 location drawers show My Address Book then Office Addresses. Offices-not-NJ is USR-058.
@@ -1195,11 +1215,13 @@ Acceptance criteria:
 - Select location on shipping includes this user's personal Address Book entries and Colliers offices.
 - A personal address saved in Address Book can be chosen as a ship-to location without retyping it.
 
-Notes: USER.md · F-29. Related USR-058 (offices, not NJ samples). Do not duplicate USR-058.
+Notes: USER.md · F-29. Related USR-058. Do not duplicate USR-058.
 
 
 <a id="usr-090"></a>
 ### USR-090 — Order History
+
+**QA** · medium · CZ
 
 **Done** · medium · CZ
 
@@ -1212,8 +1234,11 @@ Acceptance criteria:
 
 Notes: USER.md · F-30. colliers-vue2 localStorage. Designer rechecked 19 Aug 2026.
 
+
 <a id="usr-091"></a>
 #### USR-091 — Order History from profile menu
+
+**QA** · medium · CZ · child of [USR-090](#usr-090)
 
 **Done** · medium · CZ · child of [USR-090](#usr-090)
 
@@ -1226,8 +1251,11 @@ Acceptance criteria:
 
 Notes: USER.md · F-30
 
+
 <a id="usr-092"></a>
 #### USR-092 — Order History table
+
+**QA** · medium · CZ · child of [USR-090](#usr-090)
 
 **Done** · medium · CZ · child of [USR-090](#usr-090)
 
@@ -1240,8 +1268,11 @@ Acceptance criteria:
 
 Notes: USER.md · F-30. Quantity is boxes (same as cart), not a second printed-card column. Printed-card count is USR-046.
 
+
 <a id="usr-093"></a>
 #### USR-093 — Search own orders
+
+**QA** · medium · CZ · child of [USR-090](#usr-090)
 
 **Done** · medium · CZ · child of [USR-090](#usr-090)
 
@@ -1254,8 +1285,11 @@ Acceptance criteria:
 
 Notes: USER.md · F-30
 
+
 <a id="usr-094"></a>
 #### USR-094 — Filter own orders by status
+
+**QA** · medium · CZ · child of [USR-090](#usr-090)
 
 **Done** · medium · CZ · child of [USR-090](#usr-090)
 
@@ -1268,8 +1302,11 @@ Acceptance criteria:
 
 Notes: USER.md · F-30. Discuss which statuses we keep.
 
+
 <a id="usr-095"></a>
 #### USR-095 — View order card preview
+
+**QA** · medium · CZ · child of [USR-090](#usr-090)
 
 **Done** · medium · CZ · child of [USR-090](#usr-090)
 
@@ -1282,8 +1319,11 @@ Acceptance criteria:
 
 Notes: USER.md · F-30. Same class of issue as ADM-N5, but this ticket is the user preview.
 
+
 <a id="usr-096"></a>
 #### USR-096 — Repeat Order
+
+**QA** · medium · CZ · child of [USR-090](#usr-090)
 
 **Done** · medium · CZ · child of [USR-090](#usr-090)
 
@@ -1296,8 +1336,11 @@ Acceptance criteria:
 
 Notes: USER.md · F-30. Related USR-058 and USR-089. Do not copy ADM-N4 as a second ticket.
 
+
 <a id="usr-097"></a>
 #### USR-097 — Confirmed orders appear in history
+
+**QA** · medium · CZ · child of [USR-090](#usr-090)
 
 **Done** · medium · CZ · child of [USR-090](#usr-090)
 
@@ -1310,8 +1353,11 @@ Acceptance criteria:
 
 Notes: USER.md · F-30. Confirmation still clears the cart (USR-062) and does not collect payment (USR-053).
 
+
 <a id="usr-098"></a>
 #### USR-098 — Order Details sheet
+
+**QA** · medium · CZ · child of [USR-090](#usr-090)
 
 **Done** · medium · CZ · child of [USR-090](#usr-090)
 
@@ -1324,6 +1370,7 @@ Acceptance criteria:
 - The demo-user sheet does not show an Employee field or other people’s names.
 
 Notes: USER.md · F-30. colliers-vue2 OrderHistoryPage.vue. Quantity is boxes.
+
 
 <a id="idea-01"></a>
 ### IDEA-01 — Email character limit decided (40)
@@ -1884,6 +1931,8 @@ Notes: ADMIN.md · USR-033
 <a id="adm-080"></a>
 ### ADM-080 — Address Book (admin)
 
+**QA** · medium · CZ
+
 **Done** · medium · CZ
 
 Admin profile → Address Book, same page as the demo user (USR-080). Admin can add, edit, and delete their own personal addresses. Office Addresses is the company list; create/edit/delete offices stays on Manage Addresses (ADM-060).
@@ -1899,6 +1948,8 @@ Notes: ADMIN.md · F-29. colliers-vue2/. Same Address Book as the user. Personal
 <a id="adm-081"></a>
 #### ADM-081 — Address Book from admin profile menu
 
+**QA** · medium · CZ · child of [ADM-080](#adm-080)
+
 **Done** · medium · CZ · child of [ADM-080](#adm-080)
 
 Admin profile includes Address Book (with Admin Panel, Order History, and Log out). Menu listing is ADM-013.
@@ -1908,11 +1959,13 @@ Acceptance criteria:
 - Address Book appears in the admin profile menu.
 - Choosing Address Book opens the Address Book page.
 
-Notes: ADMIN.md · F-12 · F-29
+Notes: ADMIN.md · F-12 · F-29. colliers-vue2/
 
 
 <a id="adm-082"></a>
 #### ADM-082 — Admin My Address Book
+
+**QA** · medium · CZ · child of [ADM-080](#adm-080)
 
 **Done** · medium · CZ · child of [ADM-080](#adm-080)
 
@@ -1923,11 +1976,13 @@ Acceptance criteria:
 - My Address Book lists only this admin’s personal addresses, each with a location name and address.
 - The admin can add, edit, and delete personal rows. Colliers offices do not appear on this tab.
 
-Notes: ADMIN.md · F-29. Admin can create personal addresses. Personal add / edit / delete / search / Canada fields follow USR-084–USR-088.
+Notes: ADMIN.md · F-29. colliers-vue2/. Admin can create personal addresses. Personal add / edit / delete / search / Canada fields follow USR-084–USR-088.
 
 
 <a id="adm-083"></a>
 #### ADM-083 — Admin Office Addresses tab
+
+**QA** · medium · CZ · child of [ADM-080](#adm-080)
 
 **Done** · medium · CZ · child of [ADM-080](#adm-080)
 
@@ -1938,7 +1993,7 @@ Acceptance criteria:
 - Office Addresses lists the same Colliers offices used on customize, shipping, and Manage Addresses.
 - Adding, editing, or deleting company offices is not done from this tab.
 
-Notes: ADMIN.md · F-29. View offices. Office CRUD is ADM-060. Designer names every office “Office Location”.
+Notes: ADMIN.md · F-29. colliers-vue2/. View offices. Office CRUD is ADM-060. Designer names every office “Office Location”.
 
 
 <a id="adm-n1"></a>
@@ -2063,13 +2118,14 @@ Notes: BACKLOG.md · V2 says not this version. Closed 19 Aug 2026.
 <a id="f-21"></a>
 ### F-21 — Automated tests
 
-**Ideas** · high · unassigned
+**QA** · high · CZ
 
-No test runner yet. Spec is TESTING.md. Start with P0: TC-01, TC-02, TC-04, TC-05, TC-05b, TC-11, TC-13, TC-21.
+Automated tests via Vitest. Address Book personal-address specs are in; expand toward TESTING.md P0 cases (TC-01+).
 
 Acceptance criteria:
 
 - The project includes a repeatable automated test command with documented setup.
 - The initial suite covers the listed P0 scenarios and reports clear pass or failure results.
 
-Notes: BACKLOG.md · TESTING.md
+Notes: BACKLOG.md · TESTING.md · ADDRESS-BOOK-TESTS.md. Address Book Vitest coverage landed (helpers/store/page). Full P0 suite from TESTING.md still open.
+
