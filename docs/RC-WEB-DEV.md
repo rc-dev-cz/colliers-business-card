@@ -21,7 +21,7 @@ RC Web Dev always has **four pages**:
 | Board | `#/rc-web-dev/board` | Scrum columns. Drag tickets. |
 | Roadmap | `#/rc-web-dev/roadmap` | Progress bar + assigned tickets by category. Unassigned Ideas sit below, grouped by category. |
 | Logs | `#/rc-web-dev/logs` | History of creates, moves, and edits |
-| Delivery | `#/rc-web-dev/architecture` | Page delivery: Development, QA, Approved, Klai. Order paths and FileMaker scripts. Checkboxes stay in this browser. |
+| Delivery | `#/rc-web-dev/architecture` | Five paths + 16 pages with status (Not started → Developed → QA → Approved → Klai). Path status is the bottleneck of its pages. FileMaker scripts. Checkboxes stay in this browser. |
 
 After login, Profile → rainbow **RC Web Dev**, or open `#/rc-web-dev`. The rainbow user ring lives on RC Web Dev’s own header.
 

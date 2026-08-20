@@ -1,46 +1,48 @@
 <template>
-  <div ref="boardScroller" class="board-scroller">
-    <div class="board-scroller-track">
-      <section v-for="column in columns" :key="column.id" class="board-column flex flex-col rounded-lg border" :class="column.lane">
-        <header class="flex items-center justify-between px-3 py-2" :class="column.header">
-          <h2 class="text-sm font-semibold">{{ column.label || column.id }}</h2>
-          <span class="rounded-full bg-white/70 px-2 py-0.5 text-xs font-semibold">{{ column.count }}</span>
-        </header>
-        <div
-          :ref="registerColumn"
-          :data-status="column.id"
-          class="board-column-body flex min-h-0 flex-1 flex-col gap-2 overflow-y-auto p-2"
-        >
-          <template v-for="group in column.groups">
-            <button
-              :key="'h-' + group.category"
-              class="js-epic-heading flex justify-between rounded-md px-2 py-1 text-xs font-semibold"
-              :class="categoryTheme(group.category).heading"
-              @click="toggleGroup(column.id, group.category)"
-            >
-              <span>{{ group.category }}</span>
-              <span>{{ group.tickets.length }} {{ isGroupOpen(column.id, group.category) ? '▾' : '▸' }}</span>
-            </button>
-            <div
-              v-if="isGroupOpen(column.id, group.category)"
-              :key="group.category"
-              :ref="registerColumn"
-              :data-status="column.id"
-              :data-category="group.category"
-              class="flex flex-col gap-2"
-            >
-              <div
-                v-for="ticket in group.tickets"
-                :key="ticket.id"
-                :data-ticket-id="ticket.id"
-                @click="openTicket(ticket)"
+  <div class="board-page">
+    <div ref="boardScroller" class="board-scroller">
+      <div class="board-scroller-track">
+        <section v-for="column in columns" :key="column.id" class="board-column flex flex-col rounded-lg border" :class="column.lane">
+          <header class="flex items-center justify-between px-3 py-2" :class="column.header">
+            <h2 class="text-sm font-semibold">{{ column.label || column.id }}</h2>
+            <span class="rounded-full bg-white/70 px-2 py-0.5 text-xs font-semibold">{{ column.count }}</span>
+          </header>
+          <div
+            :ref="registerColumn"
+            :data-status="column.id"
+            class="board-column-body flex min-h-0 flex-1 flex-col gap-2 overflow-y-auto p-2"
+          >
+            <template v-for="group in column.groups">
+              <button
+                :key="'h-' + group.category"
+                class="js-epic-heading flex justify-between rounded-md px-2 py-1 text-xs font-semibold"
+                :class="categoryTheme(group.category).heading"
+                @click="toggleGroup(column.id, group.category)"
               >
-                <ticket-card :ticket="ticket"></ticket-card>
+                <span>{{ group.category }}</span>
+                <span>{{ group.tickets.length }} {{ isGroupOpen(column.id, group.category) ? '▾' : '▸' }}</span>
+              </button>
+              <div
+                v-if="isGroupOpen(column.id, group.category)"
+                :key="group.category"
+                :ref="registerColumn"
+                :data-status="column.id"
+                :data-category="group.category"
+                class="flex flex-col gap-2"
+              >
+                <div
+                  v-for="ticket in group.tickets"
+                  :key="ticket.id"
+                  :data-ticket-id="ticket.id"
+                  @click="openTicket(ticket)"
+                >
+                  <ticket-card :ticket="ticket"></ticket-card>
+                </div>
               </div>
-            </div>
-          </template>
-        </div>
-      </section>
+            </template>
+          </div>
+        </section>
+      </div>
     </div>
     <ticket-modal
       :ticket="selectedTicket"
@@ -112,22 +114,36 @@ export default {
     },
     onBoardWheel: function (event) {
       const scroller = this.$refs.boardScroller
-      if (!scroller || scroller.scrollWidth <= scroller.clientWidth + 1) return
-      if (Math.abs(event.deltaX) >= Math.abs(event.deltaY)) return
+      if (!scroller) return
 
-      const columnBody = event.target && event.target.closest
-        ? event.target.closest('.board-column-body')
-        : null
-      if (columnBody && columnBody.scrollHeight > columnBody.clientHeight + 1) {
-        const atTop = columnBody.scrollTop <= 0 && event.deltaY < 0
-        const atBottom =
-          columnBody.scrollTop + columnBody.clientHeight >= columnBody.scrollHeight - 1 &&
-          event.deltaY > 0
-        if (!atTop && !atBottom) return
+      // Ticket / create modals must keep native scroll — do not pan the board.
+      if (event.target && event.target.closest && event.target.closest('.ticket-modal-root')) return
+
+      const columnBody =
+        event.target && event.target.closest ? event.target.closest('.board-column-body') : null
+
+      // Trackpad / mouse horizontal gesture → pan the board
+      if (Math.abs(event.deltaX) > Math.abs(event.deltaY)) {
+        if (scroller.scrollWidth > scroller.clientWidth + 1) {
+          event.preventDefault()
+          scroller.scrollLeft += event.deltaX
+        }
+        return
       }
 
-      event.preventDefault()
-      scroller.scrollLeft += event.deltaY
+      // Parent overflow-x creates a scrollport that steals native wheel from
+      // nested column overflow-y. Drive column scroll ourselves.
+      if (columnBody && columnBody.scrollHeight > columnBody.clientHeight + 1) {
+        event.preventDefault()
+        columnBody.scrollTop += event.deltaY
+        return
+      }
+
+      // Empty / short columns: vertical wheel pans sideways so Done stays reachable
+      if (scroller.scrollWidth > scroller.clientWidth + 1) {
+        event.preventDefault()
+        scroller.scrollLeft += event.deltaY
+      }
     },
     registerColumn: function (el) {
       if (!el || el.__sortable) return

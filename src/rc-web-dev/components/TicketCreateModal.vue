@@ -1,6 +1,6 @@
 <template>
-  <div v-if="board.creating" class="fixed inset-0 z-[1100] flex items-center justify-center overflow-y-auto bg-slate-900/45 p-4 backdrop-blur-[2px]" @click.self="closeCreate">
-    <form class="ticket-sheet my-auto w-full max-w-2xl overflow-hidden rounded-2xl bg-white shadow-2xl" @submit.prevent="save">
+  <div v-if="board.creating" class="ticket-modal-root fixed inset-0 z-[1100] flex items-start justify-center overflow-y-auto bg-slate-900/45 p-4 backdrop-blur-[2px] sm:items-center" @click.self="closeCreate">
+    <form class="ticket-sheet my-auto max-h-[min(92vh,56rem)] w-full max-w-2xl overflow-y-auto rounded-2xl bg-white shadow-2xl" @submit.prevent="save">
       <div class="flex items-start justify-between gap-4 px-6 pt-6">
         <div class="min-w-0 flex-1">
           <p class="text-[11px] font-semibold uppercase tracking-[0.14em] text-colliers-primary">New ticket</p>

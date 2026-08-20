@@ -1,6 +1,6 @@
 <template>
-  <div v-if="ticket" class="fixed inset-0 z-[1100] flex items-center justify-center overflow-y-auto bg-slate-900/45 p-4" @click.self="cancelView">
-    <article class="ticket-sheet relative my-auto w-full max-w-2xl overflow-hidden rounded-2xl bg-white shadow-2xl">
+  <div v-if="ticket" class="ticket-modal-root fixed inset-0 z-[1100] flex items-start justify-center overflow-y-auto bg-slate-900/45 p-4 sm:items-center" @click.self="cancelView">
+    <article class="ticket-sheet relative my-auto max-h-[min(92vh,56rem)] w-full max-w-2xl overflow-y-auto rounded-2xl bg-white shadow-2xl">
       <div class="h-1.5" :style="{ background: column.accent }"></div>
       <header class="flex items-start justify-between gap-4 px-6 pt-5">
         <div class="min-w-0 flex-1">

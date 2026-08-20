@@ -5,6 +5,7 @@ export const PATHS = [
     id: 'order',
     label: 'Order a product',
     note: 'User and admin can create and submit a business card order. After login the user lands on Catalogue.',
+    pageIds: ['login', 'catalog', 'details', 'customize', 'cart', 'shipping', 'review', 'confirmed'],
     steps: [
       {
         name: 'Login',
@@ -90,6 +91,7 @@ export const PATHS = [
     id: 'addresses',
     label: 'Address Book',
     note: 'Profile path after login. Vue 2 keeps personal rows in localStorage until DEV-106. Offices come from GET /api/addresses.',
+    pageIds: ['login', 'catalog', 'addressBook'],
     steps: [
       {
         name: 'Login',
@@ -142,6 +144,7 @@ export const PATHS = [
     id: 'order-history',
     label: 'Order History',
     note: 'Profile path. Vue 2 stores this user’s orders in localStorage. View opens Order Details then the card proof. Repeat Order copies the snapshot into the cart.',
+    pageIds: ['login', 'catalog', 'orderHistory'],
     steps: [
       {
         name: 'Login',
@@ -203,6 +206,7 @@ export const PATHS = [
     id: 'admin-addresses',
     label: 'Admin — Manage Addresses',
     note: 'Admin path after login. Admin home is WEB | Admin, not the user Catalogue.',
+    pageIds: ['login', 'dashboard', 'manageAddresses'],
     steps: [
       {
         name: 'Login',
@@ -237,6 +241,7 @@ export const PATHS = [
     id: 'admin-titles',
     label: 'Admin — Manage Titles',
     note: 'Admin path after login. Same Admin home as Manage Addresses, then titles.',
+    pageIds: ['login', 'dashboard', 'manageTitles'],
     steps: [
       {
         name: 'Login',
