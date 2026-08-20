@@ -2,10 +2,14 @@
   <div class="space-y-4 pb-8">
     <section class="rounded-lg border border-gray-200 bg-white p-5 shadow-sm">
       <h1 class="text-xl font-semibold text-gray-900">Delivery</h1>
-      <p class="mt-1 text-sm text-gray-500">Where each page sits: Developed → QA → Approved → Klai.</p>
+      <p class="mt-1 text-sm text-gray-500">Where each page sits: In development → QA → Approved → Klai.</p>
     </section>
 
-    <section class="grid grid-cols-2 gap-3 md:grid-cols-4">
+    <section class="grid grid-cols-2 gap-3 md:grid-cols-5">
+      <div class="rounded-lg border bg-white px-4 py-3">
+        <div class="text-2xl font-semibold text-gray-900">{{ pages.length }}</div>
+        <div class="text-sm text-gray-500">Pages</div>
+      </div>
       <div class="rounded-lg border bg-white px-4 py-3">
         <div class="text-2xl font-semibold text-sky-700">{{ builtCount }}/{{ pages.length }}</div>
         <div class="text-sm text-gray-500">Built</div>
@@ -18,7 +22,7 @@
         <div class="text-2xl font-semibold text-gray-700">{{ notStartedCount }}/{{ pages.length }}</div>
         <div class="text-sm text-gray-500">Not started</div>
       </div>
-      <div class="rounded-lg border bg-white px-4 py-3">
+      <div class="col-span-2 rounded-lg border bg-white px-4 py-3 md:col-span-1">
         <div class="text-2xl font-semibold text-colliers-primary">{{ approvedCount }}/{{ pages.length }}</div>
         <div class="text-sm text-gray-500">Approved</div>
       </div>
@@ -161,7 +165,7 @@ function pageRank (page) {
 function rankLabel (rank) {
   if (rank >= 3) return 'Approved'
   if (rank >= 2) return 'QA'
-  if (rank >= 1) return 'Developed'
+  if (rank >= 1) return 'In development'
   return 'Not started'
 }
 
@@ -206,7 +210,7 @@ export default {
         }
         const parts = []
         if (counts.qa) parts.push(counts.qa + ' QA')
-        if (counts.developed) parts.push(counts.developed + ' developed')
+        if (counts.developed) parts.push(counts.developed + ' in development')
         if (counts.notStarted) parts.push(counts.notStarted + ' not started')
         if (counts.approved) parts.push(counts.approved + ' approved')
         return {
@@ -252,7 +256,7 @@ export default {
     statusClass: function (status) {
       if (status === 'Approved') return 'bg-emerald-100 text-emerald-800'
       if (status === 'QA') return 'bg-amber-100 text-amber-800'
-      if (status === 'Developed') return 'bg-sky-100 text-sky-800'
+      if (status === 'In development') return 'bg-sky-100 text-sky-800'
       if (status === 'In progress') return 'bg-violet-100 text-violet-800'
       return 'bg-gray-100 text-gray-600'
     },

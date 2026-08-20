@@ -4,8 +4,8 @@ export const PATHS = [
   {
     id: 'order',
     label: 'Order a product',
-    note: 'User and admin can create and submit a business card order. After login the user lands on Catalogue.',
-    pageIds: ['login', 'catalog', 'details', 'customize', 'cart', 'shipping', 'review', 'confirmed'],
+    note: 'User and admin can create and submit a business card order. After confirmation the order appears in Profile → Order History.',
+    pageIds: ['login', 'catalog', 'details', 'customize', 'cart', 'shipping', 'review', 'confirmed', 'orderHistory'],
     steps: [
       {
         name: 'Login',
@@ -84,6 +84,15 @@ export const PATHS = [
         dataSource: 'Current reviewed order',
         dataOutput: 'Saved FileMaker order',
         integration: 'POST /api/orders',
+      },
+      {
+        name: 'Order History',
+        roles: ['User', 'Admin'],
+        summary: 'Confirmed order appears in this user’s history',
+        details: ['Own orders only', 'Opened from Profile → Order History', 'Repeat Order and View from the same page'],
+        dataSource: 'Vue 2 localStorage until FileMaker orders',
+        dataOutput: 'Order listed in personal history',
+        integration: 'None — profile localStorage',
       },
     ],
   },
