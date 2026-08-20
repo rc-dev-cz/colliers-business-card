@@ -3,7 +3,7 @@
 Use this note to coordinate **print size, colours, type, and field placement** for the live card preview (and later the PDF proof). It describes what the Vue prototype does today, the real-data problems that layout must survive, and the questions we need answered before we lock the card.
 
 **Audience:** designer + product + print vendor  
-**Source in code:** `src/components/CardPreview.vue` (same layout in `colliers-vue2/`)  
+**Source in code:** `src/components/CardPreview.vue`  
 **Related:** [BUSINESS-RULES.md](BUSINESS-RULES.md) §4 · [USR-031](TICKETS.md#usr-031) live preview · [USR-095](TICKETS.md#usr-095) View Business Card Proof
 
 ---

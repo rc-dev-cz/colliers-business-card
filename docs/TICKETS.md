@@ -282,7 +282,7 @@ Notes: RC Web Dev
 
 **Done** · high · CZ
 
-Replace the Vue 3 runtime and build assumptions with a clean Vue 2-compatible baseline that runs as a standalone browser application and can later be moved into Clay Studio. Lives in `colliers-vue2/`. RC Web Dev stays on Vue 3 in this repo.
+Replace the Vue 3 runtime and build assumptions with a clean Vue 2-compatible baseline that runs as a standalone browser application and can later be moved into Clay Studio. The whole repo is Vue 2 Options API. RC Web Dev also runs on this Vue 2 app for Cursor + GitHub Pages (never port RC to Clay).
 
 Acceptance criteria:
 
@@ -292,7 +292,7 @@ Acceptance criteria:
 - No Vue 3-only bootstrap or component syntax remains, including createApp, script setup, Teleport, or Vue 3-only lifecycle APIs.
 - The README records the supported Node version, install command, development command, test command, and production-build command.
 
-Notes: Foundation for all Vue 2 implementation tickets. colliers-vue2/. Personal-address FileMaker API is DEV-106.
+Notes: Foundation for all Vue 2 implementation tickets. Root Vue 2 app. Personal-address FileMaker API is DEV-106.
 
 
 <a id="dev-101"></a>

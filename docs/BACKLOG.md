@@ -27,21 +27,21 @@ User stories: [USER.md](USER.md). Admin stories: [ADMIN.md](ADMIN.md).
 | F-10 | Ship-to locations | Done (prototype) | USR-050. Add/remove/select location; location qty does not change cart qty. Shipping $0 — included in the $63 box fee |
 | F-11 | Order confirmed | Done (prototype) | USR-060. Clears cart; no payment |
 | F-12 | Admin login | Done (prototype) | ADM-010. Vue 2: `admin` / `123`. Checklist: [ADMIN.md](ADMIN.md) |
-| F-13 | Admin Dashboard | Vue 2 tiles (QA) | ADM-020. Tiles in colliers-vue2/. Live counts still Ideas (ADM-022, ADM-023). Designer 19 Aug: 22 addresses, 32 titles |
-| F-14 | Admin Manage Addresses | Not started (Vue) | ADM-060. **Next take.** Vue 2 stub `#/admin/addresses`. Designer list is one-line add + hover edit; structured form still on Edit |
-| F-15 | Admin Manage Titles | Not started (Vue) | ADM-070. Vue 2 stub `#/admin/titles`. Inline edit in designer |
-| F-16 | Admin order history | Not started (Vue) | ADM-030. Vue 2 stub `#/admin/orders`. User Order History is F-30 |
-| F-17 | Invoice history | Not started (Vue) | ADM-040. Vue 2 stub `#/admin/invoices` |
-| F-18 | Reporting | Not started (Vue) | ADM-050. Vue 2 stub `#/admin/reporting` |
+| F-13 | Admin Dashboard | Vue 2 tiles (QA) | ADM-020. Tiles in `src/pages/admin/`. Live counts still Ideas (ADM-022, ADM-023). Designer 19 Aug: 22 addresses, 32 titles |
+| F-14 | Admin Manage Addresses | Not started (Vue) | ADM-060. **Next take.** Stub `#/admin/addresses`. Designer list is one-line add + hover edit; structured form still on Edit |
+| F-15 | Admin Manage Titles | Not started (Vue) | ADM-070. Stub `#/admin/titles`. Inline edit in designer |
+| F-16 | Admin order history | Not started (Vue) | ADM-030. Stub `#/admin/orders`. User Order History is F-30 |
+| F-17 | Invoice history | Not started (Vue) | ADM-040. Stub `#/admin/invoices` |
+| F-18 | Reporting | Not started (Vue) | ADM-050. Stub `#/admin/reporting` |
 | F-19 | Dark theme | Out of scope | V2: not this version. Closed |
-| F-20 | Remove footer language | Done (Vue 2) | Navbar EN/FR only. Vue 3 footer still has the dropdown; designer still has it |
+| F-20 | Remove footer language | Done | Navbar EN/FR only. Designer may still show a footer control |
 | F-21 | Automated tests | Not started | Spec: [TESTING.md](TESTING.md) |
 | F-22 | Navbar EN/FR | Done (prototype) | USR-10. Header only |
 | F-23 | Light theme | Done (prototype) | Current default |
 | F-24 | Multiple designations | Not started | USR-039. Guide: one or more designations |
 | F-25 | Move cards between shipping groups | Done (prototype) | USR-056. SH-04 |
 | F-26 | Split Order empty group | Done (prototype) | USR-057. SH-02, SH-03 |
-| F-27 | Order review before confirm | Done (Vue 2) | USR-063. Section 7 / OR-01. Vue 3 still has no review route |
+| F-27 | Order review before confirm | Done | USR-063. Section 7 / OR-01. `#/review` |
 | F-28 | Colliers offices on shipping | Done (prototype) | USR-058. Offices API + personal Address Book; NJ seeds gone |
-| F-29 | Address Book | Vue 2 localStorage | USR-080 / ADM-080. colliers-vue2/ personal rows keyed by email until DEV-106. Not admin F-14 |
-| F-30 | User Order History | Vue 2 localStorage | USR-090–USR-098. colliers-vue2/. Not admin F-16 |
+| F-29 | Address Book | localStorage | USR-080 / ADM-080. Personal rows keyed by email until DEV-106. Not admin F-14 |
+| F-30 | User Order History | localStorage | USR-090–USR-098. Not admin F-16 |

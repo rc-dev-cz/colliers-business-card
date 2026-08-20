@@ -13,7 +13,7 @@ Verified in the designer preview on **13 Aug 2026** (`admin` / `123`). Address B
 | **This file** | Admin port checklist + story codes |
 | [TESTING.md](TESTING.md) | Use cases (admin cases still catch up) |
 
-Admin login, nav, dashboard tiles, and Address Book are in the Vue 2 app (`colliers-vue2/`). Address Book on the admin profile is the same page as the user (Done). Manage Addresses, Manage Titles, Order History, Invoice History, and Reporting are still stubs. Designer UI is the **behavior reference**, not a pixel match.
+Admin login, nav, dashboard tiles, and Address Book are in this Vue 2 app. Address Book on the admin profile is the same page as the user (Done). Manage Addresses, Manage Titles, Order History, Invoice History, and Reporting are still stubs. Designer UI is the **behavior reference**, not a pixel match.
 
 ## Status key
 

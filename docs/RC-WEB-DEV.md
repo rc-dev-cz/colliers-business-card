@@ -6,11 +6,11 @@ How RC Dev works on a project. This is **our** place — not a product feature f
 
 ## Isolation
 
-RC Web Dev lives only in this repo, in `src/rc-web-dev/`. Stack: **Cursor** + **this Vue web app**.
+RC Web Dev lives only in this repo, in `src/rc-web-dev/`. Stack: **Cursor** + **this Vue 2 web app** (Options API) + optional Supabase.
 
-Do not port it with the Colliers Partner Portal. When the product UI goes to Klai, leave this folder, these routes, and this file behind.
+Do not port it with the Colliers Partner Portal into Klai / Clay. When the product UI goes to Klai, leave this folder, these routes, Supabase env, and this file behind.
 
-Do not copy RC Web Dev into `colliers-environment.css` or the Klai port. In this Vue app, Profile → rainbow **RC Web Dev** is how we get there while we build.
+Do not copy RC Web Dev into `colliers-environment.css` or the Klai port. In this app, Profile → rainbow **RC Web Dev** is how we get there while we build. The same routes ship on GitHub Pages with the Vue 2 product build.
 
 ## Rule
 
