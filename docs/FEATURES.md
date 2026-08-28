@@ -1,6 +1,6 @@
 # Features
 
-What this product is and what it can do. Agreed rules: [BUSINESS-RULES.md](BUSINESS-RULES.md). Status lives in [BACKLOG.md](BACKLOG.md). Use cases live in [TESTING.md](TESTING.md).
+What this product is and what it can do. Agreed rules: [BUSINESS-RULES.md](BUSINESS-RULES.md). Feature index (F-codes → tickets): [BACKLOG.md](BACKLOG.md). Workflow status: RC Web Dev board / [devTracker.json](devTracker.json). Use cases: [TESTING.md](TESTING.md).
 
 This is a **Vue 2 Options API + JavaScript** app for the Colliers Partner Portal for **ordering branded business cards**. Product pages and the internal **RC Web Dev** board share one Vue 2 build (GitHub Pages). A **user** picks a card, customizes details, puts it in a **cart**, sets shipping, and confirms an order. An **admin** manages addresses, titles, and dashboard apps.
 

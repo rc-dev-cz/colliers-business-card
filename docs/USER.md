@@ -8,7 +8,7 @@ Stories for the **regular user** — the person who orders business cards. Admin
 | --- | --- |
 | [FEATURES.md](FEATURES.md) | What the product is |
 | [BUSINESS-RULES.md](BUSINESS-RULES.md) | Agreed behaviour and test IDs |
-| [BACKLOG.md](BACKLOG.md) | Done / mock / not started |
+| [BACKLOG.md](BACKLOG.md) | F-code feature index → board tickets |
 | **This file** | User order-flow stories |
 | [ADMIN.md](ADMIN.md) | Admin port stories |
 | [TESTING.md](TESTING.md) | Use cases |
@@ -97,6 +97,6 @@ Ticket descriptions live on the RC Web Dev board (`#/rc-web-dev`). This file is 
 
 ## Still an idea (not a Vue story yet)
 
-Email max is **40** ([IDEA-01](TICKETS.md#idea-01) closed). Vue still uses 30 until [USR-034](TICKETS.md#usr-034).
+Email max is **40** (`IDEA-01` closed). Vue still uses 30 until `USR-034`.
 
 Footer English/Français is **F-20** (Vue 2 done; Vue 3 still has it). Dark theme is **F-19** (out of scope). Automated tests are **F-21**. Agreed rules: [BUSINESS-RULES.md](BUSINESS-RULES.md).

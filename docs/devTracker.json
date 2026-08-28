@@ -30,7 +30,7 @@
     },
     {
       "id": "DEV-011",
-      "title": "QA: drag tickets between columns",
+      "title": "Move tickets between columns",
       "description": "Drag a ticket to another column. A shadow follows the cursor and a placeholder shows the drop. The card stays in the new column after refresh.",
       "status": "Done",
       "category": "Technical",
@@ -53,7 +53,7 @@
     },
     {
       "id": "DEV-012",
-      "title": "QA: ticket sheet",
+      "title": "Open and close ticket details",
       "description": "Click a ticket. Sheet opens with status, priority, description, and related links. Close with X, backdrop, or Escape. Related rows open that ticket.",
       "status": "Done",
       "category": "Technical",
@@ -76,7 +76,7 @@
     },
     {
       "id": "DEV-013",
-      "title": "QA: create ticket",
+      "title": "Create ticket",
       "description": "Use Create ticket or + on Ideas. Title, priority, assigned (CZ or KC), category, description. New tickets get an RC-xx id.",
       "status": "QA",
       "category": "Technical",
@@ -99,7 +99,7 @@
     },
     {
       "id": "DEV-014",
-      "title": "QA: roadmap groups",
+      "title": "Group roadmap items",
       "description": "Roadmap is grouped by category and collapsed when a group is already done. Unassigned Ideas sit below, grouped by category, and do not count in the percentage.",
       "status": "Done",
       "category": "Technical",
@@ -145,7 +145,7 @@
     },
     {
       "id": "DEV-016",
-      "title": "Ideas column: headers stay, tickets scroll",
+      "title": "Keep Ideas headers visible while tickets scroll",
       "description": "In Ideas, category headers always stay in the column. An open group’s tickets scroll in the space above the headers below it. No nested column-plus-group scroll. Soft Tailwind tints per category — not solid 600 bars.",
       "status": "QA",
       "category": "Technical",
@@ -190,7 +190,7 @@
     {
       "id": "DEV-030",
       "title": "Persist RC Web Dev tickets in Supabase",
-      "description": "Holding store until FileMaker. Tables rc_tickets and rc_ticket_logs. Create, move, and edit on the board should save there so work survives refresh. Do not run live Supabase commands without asking first (.cursor/rules/supabase-permission.mdc).",
+      "description": "Persist ticket records and ticket logs in Supabase so creating, editing, and moving tickets survives refresh.",
       "status": "QA",
       "category": "Technical",
       "priority": "high",
@@ -201,7 +201,7 @@
       ],
       "blocked": false,
       "blockedReason": "",
-      "notes": "RC Web Dev",
+      "notes": "Temporary persistence layer before FileMaker integration. Tables: rc_tickets and rc_ticket_logs. Database changes require explicit approval.",
       "origin": "now",
       "fresh": false,
       "review": "updated",
@@ -305,7 +305,7 @@
         "Requests expose loading state, prevent duplicate submission where applicable, and surface a recoverable error without clearing valid user state.",
         "No credential, server URL, FileMaker file name, or production record identifier is hardcoded in a component."
       ],
-      "notes": "Mike can implement FileMaker scripts against these contracts while Carlos builds the Vue 2 front end.",
+      "notes": "Defines integration contracts for FileMaker implementation and the Vue 2 application.",
       "blocked": false,
       "blockedReason": "",
       "origin": "now",
@@ -376,9 +376,9 @@
     {
       "id": "DEV-106",
       "title": "FileMaker personal-addresses API",
-      "description": "Mike / FileMaker: session-scoped personal addresses for the signed-in user. Vue 2 keeps personal rows in localStorage until this exists. Same JSON shape as GET /api/addresses (success, count, data[]). Do not call these endpoints from Vue 2 until they are live. Offices stay on /api/addresses.",
+      "description": "Provide session-scoped personal-address management for the signed-in user. Use the same response shape and address fields as the office-address API. Office addresses remain available through /api/addresses.",
       "status": "Ideas",
-      "category": "Technical",
+      "category": "FileMaker",
       "priority": "high",
       "assignee": "",
       "acceptanceCriteria": [
@@ -388,7 +388,7 @@
       ],
       "blocked": false,
       "blockedReason": "",
-      "notes": "colliers-vue2 adapters/profileStorage.js · DEV-103. Related USR-080.",
+      "notes": "Dependencies: DEV-103 and USR-080.",
       "origin": "docs",
       "fresh": false,
       "review": "",
@@ -404,9 +404,9 @@
     {
       "id": "DEV-110",
       "title": "FileMaker login API",
-      "description": "Mike / FileMaker: real Partner Portal login. Vue preview still accepts demo / any email and admin / 123 in the browser. Adapter contract: POST /api/login.",
+      "description": "Provide authenticated Partner Portal sign-in through POST /api/login.",
       "status": "Ideas",
-      "category": "Technical",
+      "category": "FileMaker",
       "priority": "high",
       "assignee": "",
       "acceptanceCriteria": [
@@ -415,7 +415,7 @@
       ],
       "blocked": false,
       "blockedReason": "",
-      "notes": "Delivery · WEB | Auth | Login. Preview login is not a product feature.",
+      "notes": "Dependencies: DEV-103 and ADM-011.",
       "origin": "docs",
       "fresh": false,
       "review": "updated",
@@ -428,9 +428,9 @@
     {
       "id": "DEV-109",
       "title": "FileMaker titles API",
-      "description": "Mike / FileMaker: designations used on Customize and Admin Manage Titles. Vue still uses jobTitles in products.js. Adapter contract: GET / POST / PATCH / DELETE /api/titles.",
+      "description": "Provide designation records used by card customization and Manage Titles through GET, POST, PATCH, and DELETE /api/titles.",
       "status": "Ideas",
-      "category": "Technical",
+      "category": "FileMaker",
       "priority": "high",
       "assignee": "",
       "acceptanceCriteria": [
@@ -439,7 +439,7 @@
       ],
       "blocked": false,
       "blockedReason": "",
-      "notes": "Delivery · WEB | Titles | *. Related ADM-070, USR-033.",
+      "notes": "Dependencies: DEV-103, ADM-070, and USR-033.",
       "origin": "docs",
       "fresh": false,
       "review": "updated",
@@ -453,9 +453,9 @@
     {
       "id": "DEV-108",
       "title": "FileMaker orders API",
-      "description": "Mike / FileMaker: create an order on confirm and load this user’s order history. Vue 2 confirm is a mock submit; history is localStorage. Adapter contracts: POST /api/orders and GET /api/orders.",
+      "description": "Provide order creation on confirmation and order retrieval for user and admin order history through POST /api/orders and GET /api/orders.",
       "status": "Ideas",
-      "category": "Technical",
+      "category": "FileMaker",
       "priority": "high",
       "assignee": "",
       "acceptanceCriteria": [
@@ -464,7 +464,7 @@
       ],
       "blocked": false,
       "blockedReason": "",
-      "notes": "Delivery · WEB | Orders | Create / Load. Related USR-060, USR-090, ADM-030.",
+      "notes": "Dependencies: DEV-103, USR-060, USR-090, and ADM-030.",
       "origin": "docs",
       "fresh": false,
       "review": "updated",
@@ -478,9 +478,9 @@
     {
       "id": "DEV-107",
       "title": "FileMaker products API",
-      "description": "Mike / FileMaker: catalogue products for English, Bilingual, and French business cards. Vue still reads src/data/products.js (and colliers-vue2). Adapter contract is GET /api/products.",
+      "description": "Provide catalogue products for English, Bilingual, and French business cards through GET /api/products.",
       "status": "Ideas",
-      "category": "Technical",
+      "category": "FileMaker",
       "priority": "high",
       "assignee": "",
       "acceptanceCriteria": [
@@ -489,7 +489,7 @@
       ],
       "blocked": false,
       "blockedReason": "",
-      "notes": "Delivery · WEB | Products | Load. colliers-vue2 adapters still mock this.",
+      "notes": "Dependencies: DEV-103 and USR-010.",
       "origin": "docs",
       "fresh": false,
       "review": "updated",
@@ -714,7 +714,7 @@
     {
       "id": "USR-030",
       "title": "Customize card",
-      "description": "Vue customize is ahead of the designer. Do not copy AI Studio customize.",
+      "description": "Provide the business-card customization page and its supported customization controls.",
       "status": "Done",
       "category": "Customer Portal",
       "priority": "medium",
@@ -768,7 +768,7 @@
     {
       "id": "USR-032",
       "title": "Full name (max 50, two lines)",
-      "description": "Name field max 50 characters, two lines on the card. Vue still caps at 30.",
+      "description": "Allow full names of up to 50 characters and render valid long names on no more than two lines.",
       "status": "Ready for development",
       "category": "Customer Portal",
       "priority": "medium",
@@ -814,7 +814,7 @@
     {
       "id": "USR-034",
       "title": "Email (max 40)",
-      "description": "Email max 40. Vue still caps at 30. Limit decided in IDEA-01.",
+      "description": "Allow email entry of up to 40 characters and reflect the entered value in the card preview.",
       "status": "Ready for development",
       "category": "Customer Portal",
       "priority": "medium",
@@ -825,7 +825,7 @@
       ],
       "blocked": false,
       "blockedReason": "",
-      "notes": "USER.md · BUSINESS-RULES.md section 4",
+      "notes": "Source: BUSINESS-RULES.md section 4.",
       "origin": "docs",
       "fresh": false,
       "review": "updated",
@@ -929,7 +929,7 @@
     {
       "id": "USR-039",
       "title": "Allow users to select multiple designations",
-      "description": "One or more designations from the available list. Selected values appear below the field and on the preview. A selected designation can be removed. Vue still allows one.",
+      "description": "Allow one or more designations to be selected, displayed on the card preview, and removed before continuing.",
       "status": "Ideas",
       "category": "Customer Portal",
       "priority": "medium",
@@ -1207,7 +1207,7 @@
       ],
       "blocked": false,
       "blockedReason": "",
-      "notes": "USER.md. Do not add a shipping-cost calculation. The $63 box fee already includes shipping.",
+      "notes": "The $63 box fee includes shipping. No separate shipping-cost calculation or payment step is required.",
       "origin": "docs",
       "fresh": false,
       "review": "",
@@ -1310,8 +1310,8 @@
     },
     {
       "id": "USR-058",
-      "title": "Colliers offices on shipping, not NJ samples",
-      "description": "Shipping locations are Colliers offices from GET /api/addresses plus the user’s personal Address Book. NJ sample seeds (South Plainfield / Millville) are gone. Personal rows are USR-089.",
+      "title": "Use approved addresses in shipping",
+      "description": "Shipping locations include approved Colliers offices and the signed-in user’s personal saved addresses. Sample New Jersey addresses are not available.",
       "status": "Done",
       "category": "Customer Portal",
       "priority": "medium",
@@ -1322,7 +1322,7 @@
       ],
       "blocked": false,
       "blockedReason": "",
-      "notes": "USER.md · F-28. Designer 19 Aug 2026 offices are Canadian. Do not duplicate USR-089.",
+      "notes": "Dependencies: USR-089.",
       "origin": "docs",
       "fresh": false,
       "review": "updated",
@@ -1405,7 +1405,7 @@
     {
       "id": "USR-063",
       "title": "Order review before confirm",
-      "description": "Review products, quantities, shipping groups, and addresses before submit. Vue 2 has ReviewPage at #/review. Vue 3 still has no review route (shipping → confirmed). Clay target is Vue 2.",
+      "description": "Provide a review step showing products, box quantities, shipping groups, and addresses before the order is submitted.",
       "status": "Done",
       "category": "Customer Portal",
       "priority": "medium",
@@ -1485,7 +1485,7 @@
       ],
       "blocked": false,
       "blockedReason": "",
-      "notes": "USER.md · F-29. Demo user can create personal addresses only. Offices are read-only here. Vue 2 stores personal rows in localStorage keyed by session.email until DEV-106.",
+      "notes": "USER.md · F-29. Demo user can create personal addresses only. Offices are read-only here. Vue 2 stores personal rows in localStorage keyed by session.email until DEV-106. Designer sync 28 Aug 2026: designer #/address-book is personal addresses only (no Office tab). Vue keeps My Address Book + Office Addresses tabs (USR-083). Button copy differs (+ New Address vs Add New Address) — CSS only, not a new page.",
       "origin": "docs",
       "fresh": false,
       "review": "updated",
@@ -1505,7 +1505,7 @@
     {
       "id": "USR-081",
       "title": "Address Book from profile menu",
-      "description": "User profile menu includes Address Book (with Order History and Log out). Vue 2 profile has Address Book, Order History, and Log out. Vue 3 RC Web Dev profile still has RC Web Dev and Log out plus Address Book.",
+      "description": "Add Address Book to the signed-in user’s profile menu and open the shared Address Book page from that entry.",
       "status": "QA",
       "category": "Customer Portal",
       "priority": "medium",
@@ -1528,7 +1528,7 @@
     {
       "id": "USR-082",
       "title": "My Address Book",
-      "description": "Tab lists this user’s personal locations (name + address) with New Address, Edit, and Delete. Designer samples: Home Office, Temporary Location.",
+      "description": "List the current user’s personal locations by name and address, with actions to create, edit, and delete them.",
       "status": "QA",
       "category": "Customer Portal",
       "priority": "medium",
@@ -1551,7 +1551,7 @@
     {
       "id": "USR-083",
       "title": "Office Addresses tab",
-      "description": "Tab lists Colliers offices used on customize and shipping. Demo user can view them only. Office create/edit/delete is admin Manage Addresses (ADM-060). Do not copy designer Edit on the user demo.",
+      "description": "List approved Colliers offices used in customization and shipping. The user can view offices but cannot create, edit, or delete them from this page.",
       "status": "QA",
       "category": "Customer Portal",
       "priority": "medium",
@@ -1562,7 +1562,7 @@
       ],
       "blocked": false,
       "blockedReason": "",
-      "notes": "USER.md · F-29. View only for the demo user. Designer names every office “Office Location” and offers Edit — do not copy.",
+      "notes": "Office management is ADM-060.",
       "origin": "docs",
       "fresh": false,
       "review": "updated",
@@ -1665,8 +1665,8 @@
     },
     {
       "id": "USR-088",
-      "title": "Canada address fields on Address Book",
-      "description": "Designer form uses State and Zip. Colliers Canada should use Province and Postal, with Canada as the default country. Still to discuss.",
+      "title": "Use Canadian address fields in Address Book",
+      "description": "Use City, Province, and Postal Code labels in personal-address forms, with Canada as the default country.",
       "status": "QA",
       "category": "Customer Portal",
       "priority": "medium",
@@ -1677,7 +1677,7 @@
       ],
       "blocked": false,
       "blockedReason": "",
-      "notes": "USER.md · F-29. Designer issue: State / Zip. Same Canada default discussion as ADM-N2, but this ticket is the user form.",
+      "notes": "Applies to personal Address Book forms.",
       "origin": "docs",
       "fresh": false,
       "review": "updated",
@@ -1700,7 +1700,7 @@
       ],
       "blocked": false,
       "blockedReason": "",
-      "notes": "USER.md · F-29. Related USR-058. Do not duplicate USR-058.",
+      "notes": "Dependencies: USR-058 and DEV-106.",
       "origin": "docs",
       "fresh": false,
       "review": "updated",
@@ -1712,18 +1712,18 @@
     {
       "id": "USR-090",
       "title": "Order History",
-      "description": "The user can see their own past business-card orders. Vue 2 stores this user’s history in localStorage. Designer admin Order History still has Employee and Back to Dashboard — do not copy those on the user page. Not admin Order History (ADM-030).",
+      "description": "Provide an Order History page where a signed-in user can view only their own business-card orders.",
       "status": "QA",
       "category": "Customer Portal",
       "priority": "medium",
       "assignee": "CZ",
       "acceptanceCriteria": [
         "A signed-in user can open Order History and see only their own orders.",
-        "This page is not the admin Order History for all employees (ADM-030). Do not copy Back to Dashboard as a user dashboard."
+        "The user Order History does not expose employee-level or organization-wide order data."
       ],
       "blocked": false,
       "blockedReason": "",
-      "notes": "USER.md · F-30. colliers-vue2 localStorage. Designer rechecked 19 Aug 2026.",
+      "notes": "Scope: user order history only. Admin order history is ADM-030.",
       "origin": "docs",
       "fresh": false,
       "review": "updated",
@@ -1742,7 +1742,7 @@
     {
       "id": "USR-091",
       "title": "Order History from profile menu",
-      "description": "User profile menu includes Order History. Vue profile has RC Web Dev and Log out only.",
+      "description": "Provide an Order History entry in the regular-user profile menu that opens the user Order History page.",
       "status": "QA",
       "category": "Customer Portal",
       "priority": "medium",
@@ -1765,7 +1765,7 @@
     {
       "id": "USR-092",
       "title": "Order History table",
-      "description": "Table of this user's orders: order id, card / cardholder, box quantity, date, status, actions. Designer shows an Employee column and other people's names — that is admin-shaped. A user sees only their orders.",
+      "description": "List the signed-in user’s orders with order ID, card or cardholder, box quantity, date, status, and actions.",
       "status": "QA",
       "category": "Customer Portal",
       "priority": "medium",
@@ -1776,7 +1776,7 @@
       ],
       "blocked": false,
       "blockedReason": "",
-      "notes": "USER.md · F-30. Quantity is boxes (same as cart), not a second printed-card column. Printed-card count is USR-046.",
+      "notes": "Quantity is measured in boxes. Printed-card count is USR-046.",
       "origin": "docs",
       "fresh": false,
       "review": "updated",
@@ -1788,7 +1788,7 @@
     {
       "id": "USR-093",
       "title": "Search own orders",
-      "description": "Search filters this user's Order History by cardholder name or order id. Designer label is Search by Name…",
+      "description": "Filter the signed-in user’s Order History by cardholder name or order ID.",
       "status": "QA",
       "category": "Customer Portal",
       "priority": "medium",
@@ -1811,18 +1811,19 @@
     {
       "id": "USR-094",
       "title": "Filter own orders by status",
-      "description": "Filter this user's orders by status. Designer options: All Statuses, Delivered, Shipped, Processing. Status set still to discuss.",
+      "description": "Filter the signed-in user’s Order History by an approved order status, including an all-statuses option.",
       "status": "QA",
       "category": "Customer Portal",
       "priority": "medium",
       "assignee": "CZ",
       "acceptanceCriteria": [
         "The user can filter their orders by status, including an all-statuses option.",
-        "Changing the filter updates the table to matching orders only."
+        "Changing the filter updates the table to matching orders only.",
+        "The supported status values are defined before implementation and used consistently in the filter and order data."
       ],
       "blocked": false,
       "blockedReason": "",
-      "notes": "USER.md · F-30. Discuss which statuses we keep.",
+      "notes": "Dependencies: USR-090.",
       "origin": "docs",
       "fresh": false,
       "review": "updated",
@@ -1834,7 +1835,7 @@
     {
       "id": "USR-095",
       "title": "View order card preview",
-      "description": "View opens a preview of the business card on that order. Preview name, email, phone, and office must match the stored order. Designer issue: Alex Johnson with hubert.wolfeschlegelstein@… — do not copy.",
+      "description": "Open a business-card preview for the selected order. The preview must match the stored name, email, phone, and office.",
       "status": "QA",
       "category": "Customer Portal",
       "priority": "medium",
@@ -1845,7 +1846,7 @@
       ],
       "blocked": false,
       "blockedReason": "",
-      "notes": "USER.md · F-30. Same class of issue as ADM-N5, but this ticket is the user preview.",
+      "notes": "Dependencies: USR-090.",
       "origin": "docs",
       "fresh": false,
       "review": "updated",
@@ -1857,7 +1858,7 @@
     {
       "id": "USR-096",
       "title": "Repeat Order",
-      "description": "Repeat Order recreates the cart and shipping draft from that order so the user can review and submit again. Designer Repeat Order still fills NJ sample streets. Offices-not-NJ is USR-058.",
+      "description": "Recreate the cart and shipping draft from a selected historical order so the user can review and submit it again. Use only approved Colliers offices or the user’s saved addresses.",
       "status": "QA",
       "category": "Customer Portal",
       "priority": "medium",
@@ -1868,7 +1869,7 @@
       ],
       "blocked": false,
       "blockedReason": "",
-      "notes": "USER.md · F-30. Related USR-058 and USR-089. Do not copy ADM-N4 as a second ticket.",
+      "notes": "Dependencies: USR-058 and USR-089.",
       "origin": "docs",
       "fresh": false,
       "review": "updated",
@@ -1880,7 +1881,7 @@
     {
       "id": "USR-097",
       "title": "Confirmed orders appear in history",
-      "description": "After a successful confirmation, the order appears in this user's Order History. Designer list is mock; Place Order did not add a row.",
+      "description": "Add a successfully confirmed order to the signed-in user’s Order History.",
       "status": "QA",
       "category": "Customer Portal",
       "priority": "medium",
@@ -1903,7 +1904,7 @@
     {
       "id": "USR-098",
       "title": "Order Details sheet",
-      "description": "View on Order History opens an Order Details sheet: order id, date, status, item, box quantity, total, ship-to, and a View Business Card Proof link. Designer also shows Employee — do not copy that on the demo-user sheet. Card proof itself is USR-095.",
+      "description": "Open an Order Details sheet for the selected user order with order ID, date, status, item, box quantity, total, ship-to address, and a link to the stored card preview.",
       "status": "QA",
       "category": "Customer Portal",
       "priority": "medium",
@@ -1915,7 +1916,7 @@
       ],
       "blocked": false,
       "blockedReason": "",
-      "notes": "USER.md · F-30. colliers-vue2 OrderHistoryPage.vue. Quantity is boxes.",
+      "notes": "Dependencies: USR-095. Quantity is measured in boxes.",
       "origin": "docs",
       "fresh": false,
       "review": "updated",
@@ -2019,7 +2020,7 @@
     {
       "id": "ADM-013",
       "title": "Admin profile menu",
-      "description": "Profile: Admin Panel, Address Book, Order History, Log out. Address Book page work is ADM-080. Admin Order History is the ADM-030 stub.",
+      "description": "Profile: Admin Panel, Address Book, Order History, Log out. Address Book: ADM-080. Admin Order History: ADM-030 (#/admin/orders).",
       "status": "Done",
       "category": "Admin Portal",
       "priority": "medium",
@@ -2042,7 +2043,7 @@
     {
       "id": "ADM-020",
       "title": "Admin Dashboard",
-      "description": "Vue 2 Admin Dashboard with System Options tiles. Designer 19 Aug 2026: Order History, Invoice History, Reporting, Manage Addresses (22 addresses configured), Manage Titles (32 titles configured). No Total Orders / Pending Approvals / Active Users tiles. Live counts are ADM-022 and ADM-023.",
+      "description": "Provide an Admin Dashboard with System Options for Order History, Invoice History, Reporting, Manage Addresses, and Manage Titles. Live counts are handled separately.",
       "status": "Done",
       "category": "Admin Portal",
       "priority": "medium",
@@ -2053,7 +2054,7 @@
       ],
       "blocked": false,
       "blockedReason": "",
-      "notes": "ADMIN.md · F-13. colliers-vue2/ #/admin. Rechecked designer 19 Aug 2026.",
+      "notes": "Dependencies: ADM-022 and ADM-023.",
       "origin": "docs",
       "fresh": false,
       "review": "updated",
@@ -2067,7 +2068,7 @@
     {
       "id": "ADM-021",
       "title": "System Options tiles",
-      "description": "Vue 2 tiles: Order History, Invoice History, Reporting, Manage Addresses, Manage Titles. Tiles open the matching admin routes (stubs until those tens tickets).",
+      "description": "Vue 2 tiles: Order History, Invoice History, Reporting, Manage Addresses, Manage Titles. Each tile opens its admin route with live counts on addresses/titles.",
       "status": "Done",
       "category": "Admin Portal",
       "priority": "medium",
@@ -2090,21 +2091,21 @@
     {
       "id": "ADM-022",
       "title": "Live address count",
-      "description": "Dashboard address count. Designer 19 Aug 2026 still showed 22 addresses configured.",
-      "status": "Ideas",
+      "description": "Display the current number of configured Colliers office addresses on the Admin Dashboard.",
+      "status": "Done",
       "category": "Admin Portal",
       "priority": "medium",
-      "assignee": "",
+      "assignee": "CZ",
       "acceptanceCriteria": [
         "The Manage Addresses tile displays the current number of active office addresses.",
         "The count updates after an address is added or removed."
       ],
       "blocked": false,
       "blockedReason": "",
-      "notes": "ADMIN.md. Vue 2 tile currently shows —. Count needs ADM-060.",
+      "notes": "Dependency: ADM-060.",
       "origin": "docs",
       "fresh": false,
-      "review": "",
+      "review": "updated",
       "reviewedAt": "",
       "relatedIds": [
         "ADM-020"
@@ -2113,21 +2114,21 @@
     {
       "id": "ADM-023",
       "title": "Live title count",
-      "description": "Dashboard title count. Designer 19 Aug 2026 still showed 32 titles configured.",
-      "status": "Ideas",
+      "description": "Display the current number of configured designations on the Admin Dashboard.",
+      "status": "Done",
       "category": "Admin Portal",
       "priority": "medium",
-      "assignee": "",
+      "assignee": "CZ",
       "acceptanceCriteria": [
         "The Manage Titles tile displays the current number of available designations.",
         "The count updates after a designation is added or deleted."
       ],
       "blocked": false,
       "blockedReason": "",
-      "notes": "ADMIN.md. Vue 2 tile currently shows —. Count needs ADM-070.",
+      "notes": "Dependency: ADM-070.",
       "origin": "docs",
       "fresh": false,
-      "review": "",
+      "review": "updated",
       "reviewedAt": "",
       "relatedIds": [
         "ADM-020"
@@ -2136,21 +2137,21 @@
     {
       "id": "ADM-030",
       "title": "Order History",
-      "description": "Own screen in the designer. Vue 2 has a stub route (#/admin/orders). Mock data when built.",
-      "status": "Ideas",
+      "description": "Provide an admin Order History screen with a readable table, search, status filtering, order preview, and repeat-order actions.",
+      "status": "QA",
       "category": "Admin Portal",
       "priority": "medium",
-      "assignee": "",
+      "assignee": "CZ",
       "acceptanceCriteria": [
         "The Order History screen lists available orders in a readable table.",
         "Search, status filtering, viewing, and repeat-order actions work on the displayed records."
       ],
       "blocked": false,
       "blockedReason": "",
-      "notes": "ADMIN.md · F-16. Stub only until this ticket is built.",
+      "notes": "Vue #/admin/orders implemented 28 Aug 2026. Portal-wide order list, search, status filter, card proof. ADM-035 Repeat Order from admin still open.",
       "origin": "docs",
       "fresh": false,
-      "review": "",
+      "review": "updated",
       "reviewedAt": "",
       "relatedIds": [
         "ADM-031",
@@ -2165,10 +2166,10 @@
       "id": "ADM-031",
       "title": "Order History table",
       "description": "Columns: Order ID, Employee, Item, Quantity, Date, Status.",
-      "status": "Ideas",
+      "status": "QA",
       "category": "Admin Portal",
       "priority": "medium",
-      "assignee": "",
+      "assignee": "CZ",
       "acceptanceCriteria": [
         "Each row shows Order ID, Employee, Item, Quantity, Date, and Status.",
         "Column values belong to the same order and remain readable at supported screen sizes."
@@ -2178,7 +2179,7 @@
       "notes": "ADMIN.md",
       "origin": "docs",
       "fresh": false,
-      "review": "",
+      "review": "updated",
       "reviewedAt": "",
       "relatedIds": [
         "ADM-030"
@@ -2188,10 +2189,10 @@
       "id": "ADM-032",
       "title": "Search orders by name",
       "description": "Search the order table by employee name.",
-      "status": "Ideas",
+      "status": "QA",
       "category": "Admin Portal",
       "priority": "medium",
-      "assignee": "",
+      "assignee": "CZ",
       "acceptanceCriteria": [
         "Entering an employee name filters the table to matching orders.",
         "Clearing the search restores the full order list and no-match searches show a clear empty state."
@@ -2201,7 +2202,7 @@
       "notes": "ADMIN.md",
       "origin": "docs",
       "fresh": false,
-      "review": "",
+      "review": "updated",
       "reviewedAt": "",
       "relatedIds": [
         "ADM-030"
@@ -2211,10 +2212,10 @@
       "id": "ADM-033",
       "title": "Filter orders by status",
       "description": "Filter: All / Delivered / Shipped / Processing.",
-      "status": "Ideas",
+      "status": "QA",
       "category": "Admin Portal",
       "priority": "medium",
-      "assignee": "",
+      "assignee": "CZ",
       "acceptanceCriteria": [
         "All, Delivered, Shipped, and Processing filters return only the expected orders.",
         "Changing or clearing the filter updates results without altering the underlying order data."
@@ -2224,7 +2225,7 @@
       "notes": "ADMIN.md",
       "origin": "docs",
       "fresh": false,
-      "review": "",
+      "review": "updated",
       "reviewedAt": "",
       "relatedIds": [
         "ADM-030"
@@ -2233,21 +2234,22 @@
     {
       "id": "ADM-034",
       "title": "View order card preview",
-      "description": "View opens a business card preview modal. Designer issue: name/email mismatch (ADM-N5).",
-      "status": "Ideas",
+      "description": "Open a business-card preview for the selected admin order. The preview must match that order’s name, email, product, and customization details.",
+      "status": "QA",
       "category": "Admin Portal",
       "priority": "medium",
-      "assignee": "",
+      "assignee": "CZ",
       "acceptanceCriteria": [
         "View opens a preview for the selected order row.",
-        "The preview name, email, product, and customization match that exact order."
+        "The preview name, email, product, and customization match that exact order.",
+        "Opening previews for different orders never carries over identity data from a previous order."
       ],
       "blocked": false,
       "blockedReason": "",
       "notes": "ADMIN.md",
       "origin": "docs",
       "fresh": false,
-      "review": "",
+      "review": "updated",
       "reviewedAt": "",
       "relatedIds": [
         "ADM-030"
@@ -2256,21 +2258,21 @@
     {
       "id": "ADM-035",
       "title": "Repeat Order",
-      "description": "Repeat Order puts that item in the cart and goes to shipping. Designer issue: NJ samples (ADM-N4).",
-      "status": "Ideas",
+      "description": "Add the selected historical card and quantity to the current cart, then open shipping with approved Colliers office locations and no sample addresses.",
+      "status": "QA",
       "category": "Admin Portal",
       "priority": "medium",
-      "assignee": "",
+      "assignee": "CZ",
       "acceptanceCriteria": [
         "Repeat Order adds the selected historical card and quantity to the current cart.",
-        "The user is taken to shipping with Colliers office locations and no New Jersey sample data."
+        "Shipping uses approved Colliers office locations and no sample address data."
       ],
       "blocked": false,
       "blockedReason": "",
       "notes": "ADMIN.md",
       "origin": "docs",
       "fresh": false,
-      "review": "",
+      "review": "updated",
       "reviewedAt": "",
       "relatedIds": [
         "ADM-030"
@@ -2279,11 +2281,11 @@
     {
       "id": "ADM-036",
       "title": "Order History from profile menu",
-      "description": "Admin profile Order History already opens the Vue 2 stub (#/admin/orders). Same screen as ADM-030 once that page is built.",
-      "status": "Ideas",
+      "description": "Open the admin Order History screen from the admin profile menu.",
+      "status": "QA",
       "category": "Admin Portal",
       "priority": "medium",
-      "assignee": "",
+      "assignee": "CZ",
       "acceptanceCriteria": [
         "Order History in the profile menu opens the same Order History screen used elsewhere.",
         "The screen retains the same table, search, filters, and row actions regardless of entry point."
@@ -2293,7 +2295,7 @@
       "notes": "ADMIN.md. Shortcut exists; table/search/filters are ADM-030.",
       "origin": "docs",
       "fresh": false,
-      "review": "",
+      "review": "updated",
       "reviewedAt": "",
       "relatedIds": [
         "ADM-030"
@@ -2302,21 +2304,21 @@
     {
       "id": "ADM-040",
       "title": "Invoice History",
-      "description": "Own screen in the designer. Vue 2 has a stub route (#/admin/invoices). Mock data when built.",
-      "status": "Ideas",
+      "description": "Provide an admin Invoice History screen with invoice records and download actions.",
+      "status": "QA",
       "category": "Admin Portal",
       "priority": "medium",
-      "assignee": "",
+      "assignee": "CZ",
       "acceptanceCriteria": [
         "The Invoice History screen displays the available invoice records.",
         "Users can identify invoice status and download an available invoice from its row."
       ],
       "blocked": false,
       "blockedReason": "",
-      "notes": "ADMIN.md · F-17. Stub only until this ticket is built.",
+      "notes": "Vue #/admin/invoices implemented 28 Aug 2026. Mock invoice table + download alert until FileMaker.",
       "origin": "docs",
       "fresh": false,
-      "review": "",
+      "review": "updated",
       "reviewedAt": "",
       "relatedIds": [
         "ADM-041",
@@ -2327,10 +2329,10 @@
       "id": "ADM-041",
       "title": "Invoice table",
       "description": "Columns: Invoice ID, Date, Department, Amount, Status (Paid / Pending / Overdue).",
-      "status": "Ideas",
+      "status": "QA",
       "category": "Admin Portal",
       "priority": "medium",
-      "assignee": "",
+      "assignee": "CZ",
       "acceptanceCriteria": [
         "Each invoice row shows Invoice ID, Date, Department, Amount, and Status.",
         "Status is limited to the approved Paid, Pending, or Overdue values."
@@ -2340,7 +2342,7 @@
       "notes": "ADMIN.md",
       "origin": "docs",
       "fresh": false,
-      "review": "",
+      "review": "updated",
       "reviewedAt": "",
       "relatedIds": [
         "ADM-040"
@@ -2350,10 +2352,10 @@
       "id": "ADM-042",
       "title": "Download invoice",
       "description": "Download action on an invoice row.",
-      "status": "Ideas",
+      "status": "QA",
       "category": "Admin Portal",
       "priority": "medium",
-      "assignee": "",
+      "assignee": "CZ",
       "acceptanceCriteria": [
         "Selecting Download retrieves the invoice associated with that row.",
         "The downloaded file opens successfully and contains the matching invoice identifier and amount."
@@ -2363,7 +2365,7 @@
       "notes": "ADMIN.md",
       "origin": "docs",
       "fresh": false,
-      "review": "",
+      "review": "updated",
       "reviewedAt": "",
       "relatedIds": [
         "ADM-040"
@@ -2372,21 +2374,21 @@
     {
       "id": "ADM-050",
       "title": "Reporting",
-      "description": "Own screen in the designer. Vue 2 has a stub route (#/admin/reporting). Mock data when built.",
-      "status": "Ideas",
+      "description": "Provide an admin Reporting screen with monthly spend, recent activity, department spend, and export actions.",
+      "status": "QA",
       "category": "Admin Portal",
       "priority": "medium",
-      "assignee": "",
+      "assignee": "CZ",
       "acceptanceCriteria": [
         "The Reporting screen displays monthly spend, recent activity, and department spend sections.",
         "Displayed totals are consistent across sections for the same reporting period."
       ],
       "blocked": false,
       "blockedReason": "",
-      "notes": "ADMIN.md · F-18. Stub only until this ticket is built.",
+      "notes": "Vue #/admin/reporting implemented 28 Aug 2026. Mock spend, activity, department sections + export alert.",
       "origin": "docs",
       "fresh": false,
-      "review": "",
+      "review": "updated",
       "reviewedAt": "",
       "relatedIds": [
         "ADM-051",
@@ -2399,10 +2401,10 @@
       "id": "ADM-051",
       "title": "Monthly Spend Overview",
       "description": "Reporting: monthly spend overview.",
-      "status": "Ideas",
+      "status": "QA",
       "category": "Admin Portal",
       "priority": "medium",
-      "assignee": "",
+      "assignee": "CZ",
       "acceptanceCriteria": [
         "Monthly Spend Overview shows a labelled value for each available month.",
         "The values and period labels match the reporting data source."
@@ -2412,7 +2414,7 @@
       "notes": "ADMIN.md",
       "origin": "docs",
       "fresh": false,
-      "review": "",
+      "review": "updated",
       "reviewedAt": "",
       "relatedIds": [
         "ADM-050"
@@ -2422,10 +2424,10 @@
       "id": "ADM-052",
       "title": "Recent Activity",
       "description": "Reporting: recent activity list.",
-      "status": "Ideas",
+      "status": "QA",
       "category": "Admin Portal",
       "priority": "medium",
-      "assignee": "",
+      "assignee": "CZ",
       "acceptanceCriteria": [
         "Recent Activity lists the latest relevant order or administrative events.",
         "Each entry shows enough information to identify the event and when it occurred."
@@ -2435,7 +2437,7 @@
       "notes": "ADMIN.md",
       "origin": "docs",
       "fresh": false,
-      "review": "",
+      "review": "updated",
       "reviewedAt": "",
       "relatedIds": [
         "ADM-050"
@@ -2445,10 +2447,10 @@
       "id": "ADM-053",
       "title": "Spend by Department",
       "description": "Reporting: spend by department.",
-      "status": "Ideas",
+      "status": "QA",
       "category": "Admin Portal",
       "priority": "medium",
-      "assignee": "",
+      "assignee": "CZ",
       "acceptanceCriteria": [
         "Spend by Department shows each department and its corresponding total.",
         "Department totals reconcile with the overall spend for the selected period."
@@ -2458,7 +2460,7 @@
       "notes": "ADMIN.md",
       "origin": "docs",
       "fresh": false,
-      "review": "",
+      "review": "updated",
       "reviewedAt": "",
       "relatedIds": [
         "ADM-050"
@@ -2468,10 +2470,10 @@
       "id": "ADM-054",
       "title": "Export Data",
       "description": "Generate Custom Report / Export Data.",
-      "status": "Ideas",
+      "status": "QA",
       "category": "Admin Portal",
       "priority": "medium",
-      "assignee": "",
+      "assignee": "CZ",
       "acceptanceCriteria": [
         "The user can generate a report using the available report controls.",
         "Export Data downloads a readable file containing the currently selected reporting data."
@@ -2481,7 +2483,7 @@
       "notes": "ADMIN.md",
       "origin": "docs",
       "fresh": false,
-      "review": "",
+      "review": "updated",
       "reviewedAt": "",
       "relatedIds": [
         "ADM-050"
@@ -2490,8 +2492,8 @@
     {
       "id": "ADM-060",
       "title": "Manage Addresses",
-      "description": "Admin-only screen to create, edit, and remove Colliers office addresses. Designer 19 Aug 2026: list is one-line “Enter new address…” plus hover Edit/Remove; Edit still opens the structured form. Not the profile Address Book (ADM-080 / USR-080). Do not rebuild Edit Supplier Details.",
-      "status": "Ready for development",
+      "description": "Provide an admin-only screen to create, edit, and remove Colliers office addresses. It is separate from the personal Address Book.",
+      "status": "QA",
       "category": "Admin Portal",
       "priority": "medium",
       "assignee": "CZ",
@@ -2501,7 +2503,7 @@
       ],
       "blocked": false,
       "blockedReason": "",
-      "notes": "ADMIN.md · F-14. Only admin creates company offices. Personal addresses stay on Address Book. Vue 2 stub at #/admin/addresses.",
+      "notes": "Vue #/admin/addresses implemented 28 Aug 2026. Offices persist in localStorage until FileMaker. Related ADM-061–067.",
       "origin": "docs",
       "fresh": false,
       "review": "updated",
@@ -2520,7 +2522,7 @@
       "id": "ADM-061",
       "title": "List office addresses",
       "description": "List of office addresses on Manage Addresses.",
-      "status": "Ready for development",
+      "status": "QA",
       "category": "Admin Portal",
       "priority": "medium",
       "assignee": "CZ",
@@ -2542,8 +2544,8 @@
     {
       "id": "ADM-062",
       "title": "Add address",
-      "description": "Admin adds a Colliers office. Designer list has a one-line add field; Vue should open the structured New Address form (ADM-065), not store a single unparsed line. Demo users cannot add offices.",
-      "status": "Ready for development",
+      "description": "Allow an admin to create a Colliers office address through the structured New Address form. Personal-address creation remains in Address Book.",
+      "status": "QA",
       "category": "Admin Portal",
       "priority": "medium",
       "assignee": "CZ",
@@ -2553,7 +2555,7 @@
       ],
       "blocked": false,
       "blockedReason": "",
-      "notes": "ADMIN.md. Company office create. Personal create is USR-085 / ADM-082.",
+      "notes": "Dependencies: ADM-065 and ADM-066.",
       "origin": "docs",
       "fresh": false,
       "review": "updated",
@@ -2566,7 +2568,7 @@
       "id": "ADM-063",
       "title": "Remove address",
       "description": "Remove an office from the list.",
-      "status": "Ready for development",
+      "status": "QA",
       "category": "Admin Portal",
       "priority": "medium",
       "assignee": "CZ",
@@ -2588,18 +2590,19 @@
     {
       "id": "ADM-064",
       "title": "Edit address",
-      "description": "Edit opens Update Existing Address (ADM-065). Designer issue: fields do not fill (ADM-N1).",
-      "status": "Ready for development",
+      "description": "Open the structured Update Address form for the selected office address, with all saved fields prefilled and kept in their respective fields.",
+      "status": "QA",
       "category": "Admin Portal",
       "priority": "medium",
       "assignee": "CZ",
       "acceptanceCriteria": [
-        "Edit opens the selected address with every existing field prefilled correctly.",
-        "Saving changes updates that record without creating a duplicate address."
+        "Edit opens the Update Address form for the selected address.",
+        "Address Name, Street, City, Province, Postal Code, and Country are prefilled from the selected record.",
+        "Saving preserves the separation of address fields and updates only the selected record."
       ],
       "blocked": false,
       "blockedReason": "",
-      "notes": "ADMIN.md",
+      "notes": "Dependency: ADM-065.",
       "origin": "docs",
       "fresh": false,
       "review": "updated",
@@ -2611,18 +2614,19 @@
     {
       "id": "ADM-065",
       "title": "New / edit address form",
-      "description": "Required: Address Name, Street, City, Province, Postal, Country. Designer 19 Aug 2026 still uses State/ZIP labels and Save Draft. Do not copy US default (ADM-N2) or empty postal on edit (ADM-N1).",
-      "status": "Ready for development",
+      "description": "Provide one structured form for creating and editing office addresses with Address Name, Street, City, Province, Postal Code, and Country. New addresses default to Canada.",
+      "status": "QA",
       "category": "Admin Portal",
       "priority": "medium",
       "assignee": "CZ",
       "acceptanceCriteria": [
-        "The form includes Address Name, Street, City, Province, Postal Code, and Country as required fields.",
-        "Invalid or missing required values prevent final submission and display field-level guidance."
+        "The form contains Address Name, Street, City, Province, Postal Code, and Country fields.",
+        "New address forms default Country to Canada, while editing preserves the saved country value.",
+        "Edit mode loads every saved address field into its matching form control."
       ],
       "blocked": false,
       "blockedReason": "",
-      "notes": "ADMIN.md. Designer rechecked 19 Aug 2026.",
+      "notes": "Used by ADM-062 and ADM-064.",
       "origin": "docs",
       "fresh": false,
       "review": "updated",
@@ -2634,18 +2638,19 @@
     {
       "id": "ADM-066",
       "title": "Address form actions",
-      "description": "Save Draft, Add New Address / Update Address, Back to Addresses. Designer still has Save Draft on the structured form (ADM-N3).",
-      "status": "Ready for development",
+      "description": "Provide Save, Update, and Back to Addresses actions for the structured office-address form. Incomplete or empty forms cannot create a saved address.",
+      "status": "QA",
       "category": "Admin Portal",
       "priority": "medium",
       "assignee": "CZ",
       "acceptanceCriteria": [
-        "Back to Addresses returns without unintentionally saving changes.",
-        "Add/Update saves valid data, while Save Draft preserves an incomplete record only when draft behavior is supported."
+        "New records use Save and existing records use Update.",
+        "Back to Addresses returns to the address list without saving changes.",
+        "An empty or incomplete form cannot create a saved address and shows clear validation."
       ],
       "blocked": false,
       "blockedReason": "",
-      "notes": "ADMIN.md",
+      "notes": "Dependency: ADM-065.",
       "origin": "docs",
       "fresh": false,
       "review": "updated",
@@ -2657,8 +2662,8 @@
     {
       "id": "ADM-067",
       "title": "Customize and shipping use admin addresses",
-      "description": "Customize and shipping already load Colliers offices from GET /api/addresses; shipping also includes personal Address Book (USR-089). After Manage Addresses exists, office add/edit/remove must show up in customize, shipping, and the Office Addresses tab. NJ sample seeds are gone (USR-058).",
-      "status": "Ready for development",
+      "description": "Load managed Colliers offices in customization, shipping, and the Office Addresses view. Shipping also includes the signed-in user’s saved personal addresses.",
+      "status": "QA",
       "category": "Admin Portal",
       "priority": "medium",
       "assignee": "CZ",
@@ -2680,21 +2685,21 @@
     {
       "id": "ADM-070",
       "title": "Manage Titles",
-      "description": "Own screen. Vue 2 has a stub route (#/admin/titles). List designations (PMP, LEED AP, …). Add, delete, inline edit.",
-      "status": "Ideas",
+      "description": "Admin screen to list, add, edit, and delete designations used on Customize. Vue route #/admin/titles.",
+      "status": "QA",
       "category": "Admin Portal",
       "priority": "medium",
-      "assignee": "",
+      "assignee": "CZ",
       "acceptanceCriteria": [
         "Manage Titles lists existing designations and provides add, edit, and delete actions.",
         "Saved title changes are reflected in the customization designation control."
       ],
       "blocked": false,
       "blockedReason": "",
-      "notes": "ADMIN.md · F-15 · BUSINESS-RULES.md calls this Manage Designations. Stub only until this ticket is built.",
+      "notes": "Vue #/admin/titles implemented 28 Aug 2026. Titles persist in localStorage until DEV-109.",
       "origin": "docs",
       "fresh": false,
-      "review": "",
+      "review": "updated",
       "reviewedAt": "",
       "relatedIds": [
         "ADM-071",
@@ -2708,10 +2713,10 @@
       "id": "ADM-071",
       "title": "List designations",
       "description": "List of titles / designations.",
-      "status": "Ideas",
+      "status": "QA",
       "category": "Admin Portal",
       "priority": "medium",
-      "assignee": "",
+      "assignee": "CZ",
       "acceptanceCriteria": [
         "Each active designation appears once in the list.",
         "The list updates immediately after a successful add, edit, or delete action."
@@ -2721,7 +2726,7 @@
       "notes": "ADMIN.md",
       "origin": "docs",
       "fresh": false,
-      "review": "",
+      "review": "updated",
       "reviewedAt": "",
       "relatedIds": [
         "ADM-070"
@@ -2731,10 +2736,10 @@
       "id": "ADM-072",
       "title": "Add title",
       "description": "Add a designation to the list.",
-      "status": "Ideas",
+      "status": "QA",
       "category": "Admin Portal",
       "priority": "medium",
-      "assignee": "",
+      "assignee": "CZ",
       "acceptanceCriteria": [
         "A non-empty unique designation can be added successfully.",
         "Blank or duplicate values are rejected with a clear message."
@@ -2744,7 +2749,7 @@
       "notes": "ADMIN.md",
       "origin": "docs",
       "fresh": false,
-      "review": "",
+      "review": "updated",
       "reviewedAt": "",
       "relatedIds": [
         "ADM-070"
@@ -2754,10 +2759,10 @@
       "id": "ADM-073",
       "title": "Delete title",
       "description": "Remove a designation.",
-      "status": "Ideas",
+      "status": "QA",
       "category": "Admin Portal",
       "priority": "medium",
-      "assignee": "",
+      "assignee": "CZ",
       "acceptanceCriteria": [
         "Deleting a designation requires confirmation and removes the selected value.",
         "Deleting one designation does not remove or modify any other designation."
@@ -2767,7 +2772,7 @@
       "notes": "ADMIN.md",
       "origin": "docs",
       "fresh": false,
-      "review": "",
+      "review": "updated",
       "reviewedAt": "",
       "relatedIds": [
         "ADM-070"
@@ -2777,10 +2782,10 @@
       "id": "ADM-074",
       "title": "Inline edit title",
       "description": "Pencil → inline field → save (check) or cancel (X).",
-      "status": "Ideas",
+      "status": "QA",
       "category": "Admin Portal",
       "priority": "medium",
-      "assignee": "",
+      "assignee": "CZ",
       "acceptanceCriteria": [
         "The pencil action changes only the selected row into an editable field.",
         "Save commits the edited value and Cancel restores the original value without changes."
@@ -2790,7 +2795,7 @@
       "notes": "ADMIN.md",
       "origin": "docs",
       "fresh": false,
-      "review": "",
+      "review": "updated",
       "reviewedAt": "",
       "relatedIds": [
         "ADM-070"
@@ -2800,10 +2805,10 @@
       "id": "ADM-075",
       "title": "Customize titles come from Manage Titles",
       "description": "Customize job-title dropdown is hardcoded in products.js. After ADM-070, use this list.",
-      "status": "Ideas",
+      "status": "QA",
       "category": "Admin Portal",
       "priority": "medium",
-      "assignee": "",
+      "assignee": "CZ",
       "acceptanceCriteria": [
         "The customization designation control loads active values from Manage Titles.",
         "Added, edited, or deleted titles are reflected without changing existing saved cart items."
@@ -2813,7 +2818,7 @@
       "notes": "ADMIN.md · USR-033",
       "origin": "docs",
       "fresh": false,
-      "review": "",
+      "review": "updated",
       "reviewedAt": "",
       "relatedIds": [
         "ADM-070"
@@ -2870,7 +2875,7 @@
     {
       "id": "ADM-082",
       "title": "Admin My Address Book",
-      "description": "Tab lists this admin’s personal locations with New Address, Edit, and Delete. Same behaviour as USR-082. Designer samples: Home Office, Temporary Location.",
+      "description": "List the signed-in admin’s personal locations by name and address, with actions to create, edit, and delete them.",
       "status": "QA",
       "category": "Admin Portal",
       "priority": "medium",
@@ -2881,7 +2886,7 @@
       ],
       "blocked": false,
       "blockedReason": "",
-      "notes": "ADMIN.md · F-29. colliers-vue2/. Admin can create personal addresses. Personal add / edit / delete / search / Canada fields follow USR-084–USR-088.",
+      "notes": "Personal address behavior follows USR-084 through USR-088.",
       "origin": "docs",
       "fresh": false,
       "review": "updated",
@@ -2893,7 +2898,7 @@
     {
       "id": "ADM-083",
       "title": "Admin Office Addresses tab",
-      "description": "Tab lists Colliers offices for the admin Address Book. View the company list here. Do not create, edit, or delete offices from this tab — that is Manage Addresses (ADM-060). Designer Edit on offices is not a second office-edit screen.",
+      "description": "List approved Colliers offices in the admin Address Book. Office creation, editing, and deletion are handled only in Manage Addresses.",
       "status": "QA",
       "category": "Admin Portal",
       "priority": "medium",
@@ -2904,7 +2909,7 @@
       ],
       "blocked": false,
       "blockedReason": "",
-      "notes": "ADMIN.md · F-29. colliers-vue2/. View offices. Office CRUD is ADM-060. Designer names every office “Office Location”.",
+      "notes": "Office management is ADM-060.",
       "origin": "docs",
       "fresh": false,
       "review": "updated",
@@ -2916,7 +2921,7 @@
     {
       "id": "F-20",
       "title": "Remove footer language dropdown",
-      "description": "Language belongs in the navbar EN/FR only. Vue 2 footer has no language dropdown. Vue 3 AppFooter still has English/Français. Designer 19 Aug 2026 still has the footer control.",
+      "description": "Provide language switching through the navbar EN/FR control only; the footer does not display a language control.",
       "status": "Done",
       "category": "Shared UI/UX",
       "priority": "medium",
@@ -2927,7 +2932,7 @@
       ],
       "blocked": false,
       "blockedReason": "",
-      "notes": "BACKLOG.md · FEATURES.md · BUSINESS-RULES.md UI-02. colliers-vue2 footer is done; Vue 3 still has the duplicate.",
+      "notes": "Dependency: USR-071.",
       "origin": "docs",
       "fresh": false,
       "review": "updated",
@@ -3021,7 +3026,7 @@
     {
       "id": "IDEA-03",
       "title": "Port UI into Klai Studio",
-      "description": "Intended later. Same standalone layout markers in colliers-environment.css.",
+      "description": "Move the completed standalone Vue 2 interface into Klai Studio after the migration entry criteria are satisfied.",
       "status": "Ideas",
       "category": "Technical",
       "priority": "low",
@@ -3045,7 +3050,7 @@
       "id": "ADM-N1",
       "title": "Edit address should fill City / Province / Postal",
       "description": "Designer issue, rechecked 19 Aug 2026: Edit now fills City and Province (Burlington / Ontario). Address Name stays empty. Postal stays empty even when the list line has a postal code. Street is the street line only, not the whole address. Do not copy as-is. Ship with ADM-065.",
-      "status": "Ready for development",
+      "status": "Done",
       "category": "Admin Portal",
       "priority": "medium",
       "assignee": "CZ",
@@ -3055,7 +3060,7 @@
       ],
       "blocked": false,
       "blockedReason": "",
-      "notes": "ADMIN.md · designer issue (do not copy). Rechecked 19 Aug 2026.",
+      "notes": "ADMIN.md · designer issue (do not copy). Rechecked 19 Aug 2026. Shipped in Vue Manage Addresses 28 Aug 2026.",
       "origin": "docs",
       "fresh": false,
       "review": "updated",
@@ -3066,7 +3071,7 @@
       "id": "ADM-N2",
       "title": "Default country Canada, not United States",
       "description": "New/edit Colliers address forms must default to Canada. Designer 19 Aug 2026 still showed United States on a Burlington ON office. Do not copy. Ship with ADM-065.",
-      "status": "Ready for development",
+      "status": "Done",
       "category": "Admin Portal",
       "priority": "medium",
       "assignee": "CZ",
@@ -3076,7 +3081,7 @@
       ],
       "blocked": false,
       "blockedReason": "",
-      "notes": "ADMIN.md · designer issue (do not copy). Rechecked 19 Aug 2026.",
+      "notes": "ADMIN.md · designer issue (do not copy). Rechecked 19 Aug 2026. Shipped in Vue Manage Addresses 28 Aug 2026.",
       "origin": "docs",
       "fresh": false,
       "review": "updated",
@@ -3087,7 +3092,7 @@
       "id": "ADM-N3",
       "title": "Save Draft on empty address form",
       "description": "Designer 19 Aug 2026 still has Save Draft on the structured address form. Decide the rule before porting (save incomplete, disable, or drop the control). Ship with ADM-066.",
-      "status": "Ready for development",
+      "status": "Done",
       "category": "Admin Portal",
       "priority": "low",
       "assignee": "CZ",
@@ -3097,7 +3102,7 @@
       ],
       "blocked": false,
       "blockedReason": "",
-      "notes": "ADMIN.md · designer issue (do not copy). Rechecked 19 Aug 2026.",
+      "notes": "ADMIN.md · designer issue (do not copy). Rechecked 19 Aug 2026. Shipped in Vue Manage Addresses 28 Aug 2026.",
       "origin": "docs",
       "fresh": false,
       "review": "updated",

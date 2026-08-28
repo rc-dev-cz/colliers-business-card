@@ -27,6 +27,7 @@ const EPIC_FROM_CATEGORY = {
   'Admin Portal': 'Admin',
   'Shared UI/UX': 'Polish',
   'Quality Assurance': 'Tests',
+  FileMaker: 'fmp',
   Technical: 'Dev',
 }
 

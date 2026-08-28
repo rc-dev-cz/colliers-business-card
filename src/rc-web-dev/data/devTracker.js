@@ -1,4 +1,4 @@
-/** Ticket list from docs/devTracker.json. Helpers stay in this file. */
+/** Editable ticket backlog: docs/devTracker.json. Helpers stay in this file. */
 import trackerData from '../../../docs/devTracker.json'
 export const READY_STATUS = 'Ready for development'
 
@@ -9,6 +9,7 @@ export const CATEGORIES = [
   'Admin Portal',
   'Shared UI/UX',
   'Quality Assurance',
+  'FileMaker',
   'Technical',
 ]
 
@@ -17,6 +18,7 @@ const CATEGORY_FROM_LEGACY = {
   Admin: 'Admin Portal',
   Polish: 'Shared UI/UX',
   Tests: 'Quality Assurance',
+  fmp: 'FileMaker',
   Dev: 'Technical',
   Later: 'Technical',
 }
@@ -26,6 +28,7 @@ const EPIC_FROM_CATEGORY = {
   'Admin Portal': 'Admin',
   'Shared UI/UX': 'Polish',
   'Quality Assurance': 'Tests',
+  FileMaker: 'fmp',
   Technical: 'Dev',
 }
 
@@ -50,6 +53,11 @@ export const CATEGORY_THEME = {
     block: 'border-lime-200 bg-lime-50',
     heading: 'text-lime-800 hover:bg-lime-100',
     chip: 'bg-lime-100 text-lime-800',
+  },
+  FileMaker: {
+    block: 'border-orange-200 bg-orange-50',
+    heading: 'text-orange-800 hover:bg-orange-100',
+    chip: 'bg-orange-100 text-orange-800',
   },
   Technical: {
     block: 'border-indigo-200 bg-indigo-50',

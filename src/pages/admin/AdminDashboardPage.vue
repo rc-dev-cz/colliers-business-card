@@ -21,21 +21,30 @@
 
 <script>
 import ColliersPageShell from '../../layout/ColliersPageShell.vue'
-import { t } from '../../store'
+import { t, store, loadOffices, loadTitles } from '../../store'
 import { go } from '../../adapters/nav'
 
 export default {
   name: 'AdminDashboardPage',
   components: { ColliersPageShell },
+  mounted: function () {
+    loadOffices()
+    loadTitles()
+  },
   computed: {
     tiles: function () {
+      const addressCount = this.store.offices.length
+      const titleCount = this.store.titles.length
       return [
         { titleKey: 'orderHistory', subtitle: t('viewPastOrders'), to: 'admin-orders' },
         { titleKey: 'invoiceHistory', subtitle: t('manageBilling'), to: 'admin-invoices' },
         { titleKey: 'reporting', subtitle: t('viewAnalytics'), to: 'admin-reporting' },
-        { titleKey: 'manageAddresses', subtitle: '—', to: 'admin-addresses' },
-        { titleKey: 'manageTitles', subtitle: '—', to: 'admin-titles' },
+        { titleKey: 'manageAddresses', subtitle: String(addressCount), to: 'admin-addresses' },
+        { titleKey: 'manageTitles', subtitle: String(titleCount), to: 'admin-titles' },
       ]
+    },
+    store: function () {
+      return store
     },
   },
   methods: {

@@ -1,312 +1,159 @@
-# Business card preview — designer briefing
+# Business card preview — true-size pivot
 
-Use this note to coordinate **print size, colours, type, and field placement** for the live card preview (and later the PDF proof). It describes what the Vue prototype does today, the real-data problems that layout must survive, and the questions we need answered before we lock the card.
-
-**Audience:** designer + product + print vendor  
-**Source in code:** `src/components/CardPreview.vue`  
-**Related:** [BUSINESS-RULES.md](BUSINESS-RULES.md) §4 · [USR-031](TICKETS.md#usr-031) live preview · [USR-095](TICKETS.md#usr-095) View Business Card Proof
-
----
-
-## What we need from this conversation
-
-The on-screen preview is a **stand-in for the printed card**. It is not yet a print-ready PDF. If the preview lies about size, colour, or overflow, people will approve a card that cannot print.
-
-Please treat this as a layout spec, not a UI polish pass. We need:
-
-1. Physical size (trim / bleed / safe area).
-2. Confirmed Colliers colours and fonts for **print**.
-3. A placement map for every item, including overflow rules.
-4. How **real emails** and **mobile numbers** behave when they are long.
-5. Whether English / French / Bilingual cards share one layout or need three.
+**Status:** Product pivot (Aug 2026)  
+**Audience:** product + design + engineering  
+**Source in code today:** `src/components/CardPreview.vue` (responsive stand-in only)  
+**Related:** [BUSINESS-RULES.md](BUSINESS-RULES.md) §4 · `USR-031` live preview · `USR-095` View order card preview
 
 ---
 
-## Current prototype (what we built)
+## The pivot
 
-The preview is a landscape rectangle at **aspect 1.75 : 1** (same ratio as a 3.5″ × 2″ North American card). Positions are **percentages of the card**, so the layout scales on the Customize, Details, and catalogue tiles.
+We are changing what “preview the card” means.
 
-```
-┌─────────────────────────────────────────────────────────────┐
-│  [Colliers logo block]     NAME  (max 2 lines, bold, navy)  │
-│   navy + 3 colour bars     Title | Canada                   │
-│                            Colliers                         │
-│                            CA Lic. 02328392   ← placeholder │
-│                                                             │
-│  Office address            email@colliers.com  ← truncated  │
-│  (2–3 lines)               Mobile: +1 416 555-1234          │
-│                            colliers.com/canada              │
-└─────────────────────────────────────────────────────────────┘
-```
+**Before:** A scaled CSS recreation that fills the layout column. Useful for “does my name/email show up,” weak for “will this feel like the real card.”
+
+**Now:** A **true-size virtual preview** — the on-screen card is meant to match a real Colliers card you can **put on the screen** and compare. That physical overlay is the product insight. If the digital card and the printed one line up (or nearly line up), the preview earned its keep.
+
+This is not AR and not a camera feature in v1. It is **print-sized on glass**: hold your existing card against the display and see the customized front at the same footprint.
+
+---
+
+## Why this is the goal
+
+1. **Trust before order** — People already know what a business card feels like. Matching that size is more convincing than a large mock in a form column.
+2. **Layout honesty** — Overflow, type size, and margins only make sense at ~3.5″ × 2″. A stretched preview hides problems emails and long names will hit in print.
+3. **Simple “wow”** — No new hardware. Phone or laptop + any physical card (Colliers sample, old card, or a credit card for calibration) is enough to get the idea.
+
+The responsive tile preview can stay for catalogue / cart chrome. **Customize, proof, and “view card” are where true-size matters.**
+
+---
+
+## What we want to build
+
+### Core experience
+
+| Piece | Intent |
+| --- | --- |
+| **True-size stage** | Card rendered at physical trim (default target: **3.5″ × 2″** / 89 × 51 mm) on a calm surface, not stretched to the column. |
+| **Place-your-card affordance** | Clear “lay a real card here” silhouette or corner marks so the gesture is obvious. |
+| **Live data** | Same fields as today: name, title(s), company, licence (if real), office, email, mobile, website — matching the order (`USR-031`, `USR-095`). |
+| **Optional calibrate** | One-time (or per device) slider / “match this to a credit card” so CSS inches track the real screen PPI. Without this, “3.5in” in CSS is often wrong. |
+| **Front first** | Front only until design locks the back. |
+
+### Explicitly later (not this pivot)
+
+- Camera / AR overlay on a desk
+- Print-ready PDF with bleed and crop marks (may still be vendor-owned)
+- Pixel-perfect brand artwork until design delivers locked art
+
+### Modes vs current component
+
+| Context | Preview mode |
+| --- | --- |
+| Catalogue tile, cart row | Keep **fluid** aspect `1.75 : 1` (current `CardPreview.vue`) |
+| Customize | **True-size** primary; fluid optional if space is tight (mobile) |
+| Order proof / USR-095 | **True-size** |
+
+---
+
+## Technical reality (so we do not over-promise)
+
+Browsers treat `1in` as **96 CSS px**, not a measured inch on every panel. Retina, Windows scaling, and phone density all lie.
+
+So the pivot has two layers:
+
+1. **Nominal true-size** — `width: 3.5in; height: 2in` (or equivalent mm). Good enough for many desktop monitors; wrong on many phones without help.
+2. **Calibrated true-size** — User aligns a known object (credit card ~85.6 × 54 mm, or a printed Colliers card) to on-screen guides; we store a device scale factor (localStorage). That is what makes “put it on the screen” reliable.
+
+v1 can ship nominal + a short “this may not match every screen” note. Calibration is the upgrade that makes the gesture trustworthy.
+
+---
+
+## Success criteria
+
+Someone with a printed Colliers card (or any 3.5″ × 2″ card) can:
+
+1. Open Customize or View card preview.
+2. See an on-screen card at roughly real size with a place-here cue.
+3. Lay their card on the glass and see the footprints match within a small tolerance (after calibration on that device).
+4. Confirm their **own** name / email / phone / office on that footprint — no demo mismatch.
+
+If we cannot get within a usable tolerance on common laptop screens after calibration, the pivot failed and we fall back to “large faithful mock + PDF proof.”
+
+---
+
+## Open product questions
+
+- [ ] Confirm **trim** is 3.5″ × 2″ (if not, true-size is wrong — same as before).
+- [ ] Is true-size the **default** on Customize, or behind a “Actual size” control?
+- [ ] Do we **calibrate** in v1, or ship nominal inches first?
+- [ ] Calibration object: Colliers sample card, any business card, or credit card?
+- [ ] Mobile: true-size often **wider than the viewport** — scroll stage, pinch-zoom, or “rotate / use desktop for actual size”?
+- [ ] Does **USR-095** “View Business Card Proof” become this experience, a vendor PDF, or both?
+
+---
+
+## Still needed from design (unchanged problems)
+
+True-size does not remove the layout briefing. It makes the answers more urgent: at real size, long emails and names fail visibly.
+
+Keep answering:
+
+1. Bleed / safe area and official colours / fonts for print.
+2. Placement map for every field.
+3. **Email overflow** — wrap, shrink, or raise the 40-char limit (never approve an ellipsis that print cannot print).
+4. Mobile label + format; licence line real or demo; EN / FR / Bilingual — one layout or three.
+5. Front vs back; who generates the print file.
+
+### Field map (current prototype)
 
 | Zone | Position (of card) | Content today |
 | --- | --- | --- |
-| Logo | Left 6.5%, top 12%, width 25.5% | “Colliers” wordmark on navy, then cyan / yellow / orange bars |
-| Identity | Left 42%, right 4%, top 14% | Name, title, company, licence line |
-| Address | Bottom 13%, left 6.5%, right 57% | Selected Colliers office, multiline |
-| Contact | Bottom 13%, left 42%, right 4% | Email, mobile, website |
+| Logo | Left 6.5%, top 12%, width 25.5% | Colliers wordmark on navy + cyan / yellow / orange bars |
+| Identity | Left 42%, right 4%, top 14% | Name, title, company, licence placeholder |
+| Address | Bottom 13%, left 6.5%, right 57% | Selected office |
+| Contact | Bottom 13%, left 42%, right 4% | Email (truncated today), mobile, website |
 
-This is a **best-effort recreation**. It is not locked brand artwork. Do not assume the logo mark, bar heights, or type sizes match print.
+Full colour / type / overflow checklists and the email stress set remain the designer handoff; true-size is how we **review** those mocks, not a replacement for them.
 
----
+### Suggested stress set (design at real trim)
 
-## Size
+| # | Name | Email | Why |
+| --- | --- | --- | --- |
+| 1 | Jane Doe | `jane.doe@colliers.com` | Short |
+| 2 | Christopher Montgomery | `christopher.montgomery@colliers.com` | Typical long Colliers email |
+| 3 | Hubert Blaine Wolfeschlegelstein | `hubert.wolfeschlegelstein@colliers.com` | Max name + max email |
+| 4 | Marie-Claire Jean-Baptiste | `marie-claire.jean-baptiste@colliers.com` | Hyphens; may exceed 40 |
 
-### What we assume
-
-| | Prototype | Typical NA card (to confirm) |
-| --- | --- | --- |
-| Ratio | 1.75 : 1 | 3.5″ × 2″ (89 × 51 mm) |
-| Screen chrome | Rounded corners + grey border | Print has neither |
-| Bleed | None | Usually 0.125″ / 3 mm |
-| Safe area | Roughly 6.5% inset | Usually 0.125″ inside trim |
-
-### Please confirm
-
-- [ ] **Trim size** in inches and mm (front). Is the back the same size?
-- [ ] **Bleed** and **safe / type area**. How close may text sit to the edge?
-- [ ] **Orientation** — landscape only, or is a portrait version ever used?
-- [ ] **Screen vs print** — should the web preview be the exact print art (including bleed crop marks), or a simplified “what it will look like” card?
-- [ ] **PDF proof** ([USR-095](TICKETS.md#usr-095)) — same art as the live preview, or a separate print PDF from the vendor?
-- [ ] **Stock** — details page says premium 16pt, matte or glossy. Does finish change colour appearance enough that we should preview it?
-
-If trim is **not** 3.5″ × 2″, the 1.75 : 1 preview is wrong and we should change it.
+Use **matching** name + email. Plus the longest real office from Manage Addresses.
 
 ---
 
-## Colours
-
-Values used in the prototype. These are **screen hex**, not print (CMYK / Pantone).
-
-| Role | Hex today | Where |
-| --- | --- | --- |
-| Card background | `#EEEEEE` | Full card |
-| Name | `#25408F` | Identity |
-| Body text | `#4A4A4A` | Title, address, email, phone, website |
-| Logo field | `#24418A` | Wordmark background (slightly different from name navy) |
-| Stripe cyan | `#00A9E0` | Logo bar |
-| Stripe yellow | `#FFD100` | Logo bar |
-| Stripe orange | `#E35205` | Logo bar |
-| Wordmark | `#FFFFFF` | “Colliers” on the logo |
-
-App chrome also uses `#25408F` as Colliers primary (`tailwind.config.js`).
-
-### Please confirm
-
-- [ ] Official **print** swatches (Pantone and/or CMYK) for navy, cyan, yellow, orange, grey, and background.
-- [ ] Should name navy and logo navy be **the same** colour? Today they are `#25408F` vs `#24418A`.
-- [ ] Is the card background **light grey** `#EEEEEE`, **white**, or a brand off-white?
-- [ ] Any rules we must not break (minimum contrast, no tints of brand colours, no extra colours)?
-- [ ] English / French / Bilingual — same colours, or does bilingual use a different treatment?
-
----
-
-## Type
-
-| Element | Prototype today |
-| --- | --- |
-| Name | Sans, bold, ~4.2% of card width, max 2 lines, wraps |
-| Title / company / licence | Sans, ~2.6% of card width |
-| Address / email / phone / website | Same body size |
-| Logo wordmark | Serif, white |
-| Body font on screen | Inter / Open Sans / Helvetica / Arial |
-
-### Please confirm
-
-- [ ] **Print fonts** (family, weight) for name, body, and the Colliers wordmark. Screen webfonts will not match print.
-- [ ] **Point sizes** on the 3.5″ × 2″ card (name, body, wordmark).
-- [ ] **Line height** and tracking.
-- [ ] Minimum type size for print (we should not shrink email below this).
-
----
-
-## Field map — what goes on the card
-
-Locked vs editable comes from [BUSINESS-RULES.md](BUSINESS-RULES.md) §4.
-
-| Item | Source | Limit / format today | On the card today | Open |
-| --- | --- | --- | --- | --- |
-| Full name | User | Guide: **50 characters**, 2 lines. Vue still caps at 30 ([USR-032](TICKETS.md#usr-032)) | Top right, navy, wraps to 2 lines | Line break: auto, or user-controlled? |
-| Designation / title | Dropdown | One today; **one or more** later ([USR-039](TICKETS.md#usr-039)) | Under the name | Where do extra designations go? Same line, stacked, abbreviations? |
-| Company | Locked | Always **Colliers** | Under title | Confirm it always prints |
-| Licence | Hardcoded | `CA Lic. 02328392` | Under company | Real field? Per person? Hide if empty? |
-| Office address | Office list | 2 lines from FileMaker (street; city + province + postal) | Bottom left | 3-line offices? Suite on its own line? |
-| **Email** | User | Guide: **40 characters**, “fits on one line”. Vue still 30 ([USR-034](TICKETS.md#usr-034)) | Bottom right, **CSS truncate (ellipsis)** | See [Email](#email--this-is-the-main-risk) |
-| **Mobile** | User | Canadian **+1** + 10 digits, formatted `+1 416 555-1234` | `Mobile: {number}` | See [Mobile](#mobile-number) |
-| Website | Locked | Always **colliers.com/canada** | Under mobile | Confirm URL and whether `https://` prints |
-| Logo | Brand | Not user-editable | Top left | Official mark / clear space |
-
-The preview **must** show the same name, email, phone, and office as the order. Do not pair a short demo name with a long unrelated email ([USR-095](TICKETS.md#usr-095), [ADM-N5](TICKETS.md#adm-n5)).
-
----
-
-## Email — this is the main risk
-
-We should print the **real work email**, not a shortened stand-in. Colliers addresses are usually `firstname.lastname@colliers.com`. That string is often longer than a 3.5″ card line at body size.
-
-### Why 40 characters is tight
-
-`@colliers.com` is already **13** characters. That leaves **27** for the local part under the current 40-character rule.
-
-| Example | Characters | Fits in 40? |
-| --- | --- | --- |
-| `jane.doe@colliers.com` | 21 | Yes |
-| `carlos.zabaleta@colliers.com` | 27 | Yes |
-| `christopher.montgomery@colliers.com` | 34 | Yes |
-| `jean-francois.tremblay@colliers.com` | 34 | Yes |
-| `hubert.wolfeschlegelstein@colliers.com` | 40 | Exactly — current stress name |
-| `firstname.middlename.lastname@colliers.com` | often 40+ | **No** |
-
-Today the preview **cuts with an ellipsis** (`truncate`). That is wrong for a printed card: the user would approve `christopher.montgome…` and the printer would not know the rest.
-
-### Please decide (pick one overflow rule)
-
-1. **Wrap to 2 lines** — keep the full address, smaller block.
-2. **Shrink type** until it fits one line — down to a minimum point size you set.
-3. **Raise the field limit** above 40 **and** wrap/shrink so print never ellipsizes.
-4. **Ellipsis on screen only** — never on the PDF/print file (we do not recommend this unless print is a different pipeline).
-
-Also:
-
-- [ ] Is **40 characters** still the product max, or should we raise it for real Colliers emails?
-- [ ] All-lowercase vs preserve what the user types?
-- [ ] Must email stay on **one line**, or may it wrap?
-- [ ] If it wraps, does mobile / website shift down, or is the contact block a fixed height?
-
-**Ask the designer to mock these three emails on the real card size** (not a desktop mockup):
-
-1. `jane.doe@colliers.com`
-2. `christopher.montgomery@colliers.com`
-3. `hubert.wolfeschlegelstein@colliers.com`
-
----
-
-## Mobile number
-
-Prototype format: **`Mobile: +1 416 555-1234`**
-
-That prefix + number is long enough to collide with a wrapped email in the same column.
-
-### Please confirm
-
-- [ ] Label: always **Mobile**, **Mobile:**, **T**, **C**, or no label?
-- [ ] **French card / French UI:** `Mobile`, `Cellulaire`, `Portable`, or icon only? Today the word “Mobile” is hardcoded English on every product.
-- [ ] Format on print: `+1 416 555-1234` vs `416.555.1234` vs `(416) 555-1234`?
-- [ ] Country code: always **+1**, or omit for Canadian cards?
-- [ ] Is this the **only** phone? No office / fax / direct line?
-- [ ] If email wraps to two lines, does mobile stay on the next line, or move?
-
----
-
-## Name, designations, address
-
-### Name
-
-Guide: max **50 characters**, **two lines** on the card. Stress string in the prototype:
-
-```
-Hubert Blaine
-Wolfeschlegelstein
-```
-
-- [ ] Auto-wrap at a character count, or a dedicated “line 2” in the form?
-- [ ] If the name is short, does the title move up, or stay pinned?
-- [ ] Preferred line break for hyphenated or multi-part names?
-
-### Designations (later: more than one)
-
-Examples: `PMP`, `LEED AP`, plus the job title (`Associate | Canada`).
-
-- [ ] Is “Associate | Canada” a **job title**, a **designation**, or both? The form label is Title; the guide says Designation.
-- [ ] Two or three designations: same line with commas / pipes, or stacked under the name?
-- [ ] Maximum designations that still fit?
-
-### Licence
-
-- [ ] Is `CA Lic. 02328392` real brand content, a California licence, or leftover demo text?
-- [ ] Per employee, per office, or omitted for Canada cards?
-- [ ] If omitted, does the block collapse?
-
-### Office address
-
-Printed as two lines from FileMaker, for example:
-
-```
-181 Bay Street, Suite 1400
-Toronto, ON M5J 2T3
-```
-
-- [ ] Confirm line split (suite on line 1 vs its own line).
-- [ ] Longest office we must support (please send 2–3 real long offices).
-- [ ] Country line (`Canada`) — print it or not?
-
----
-
-## Three products, one layout?
-
-Catalogue has **English**, **French**, and **Bilingual** cards. The prototype uses **one layout** for all three.
-
-- [ ] Same front for all three products?
-- [ ] Bilingual: both languages on the **front**, or EN front / FR back?
-- [ ] French card: French labels (`Mobile` → ?) and French title list?
-- [ ] Website: always `colliers.com/canada`, or a French URL on the French card?
-
----
-
-## Front / back / proof
-
-- [ ] What is on the **back**? Logo only, empty, or more contact info?
-- [ ] Does the user preview **front only**, or both sides?
-- [ ] For “View Business Card Proof”, do we show this preview, or a vendor PDF?
-- [ ] Who generates print files — us from this layout, or the print partner from our field dump?
-
----
-
-## Suggested test set (please design against these)
-
-Use **matching** name + email (do not mix a short name with someone else’s long email).
-
-| # | Name | Email | Phone | Why |
-| --- | --- | --- | --- | --- |
-| 1 | Jane Doe | `jane.doe@colliers.com` | `+1 416 555-1234` | Short / happy path |
-| 2 | Christopher Montgomery | `christopher.montgomery@colliers.com` | `+1 514 555-0199` | Typical long Colliers email, one line |
-| 3 | Hubert Blaine Wolfeschlegelstein | `hubert.wolfeschlegelstein@colliers.com` | `+1 604 555-0100` | Max name (2 lines) + max email (40) |
-| 4 | Marie-Claire Jean-Baptiste | `marie-claire.jean-baptiste@colliers.com` | `+1 418 555-0142` | Hyphens; email may exceed 40 |
-| 5 | Two designations | same as #1 + `PMP` + `LEED AP` | same | Future [USR-039](TICKETS.md#usr-039) |
-
-Plus the **longest real office address** from Manage Addresses.
-
----
-
-## What to send us back
-
-A short written answer is enough. Ideal attachments:
-
-1. **Artboard** at real trim size (3.5″ × 2″ or whatever you confirm), with bleed and safe area.
-2. **Placement map** (named layers or a labelled PNG): name, title, designations, licence, address, email, mobile, website, logo.
-3. **Overflow rules** in one sentence each for name, email, mobile, address, extra designations.
-4. **Colour** (Pantone/CMYK) and **type** (family, weight, pt size).
-5. **Three email mocks** from the test set above.
-6. Note on **EN / FR / Bilingual** — one layout or three.
+## Proposed build order
+
+1. **Doc + alignment** — this pivot (done). Confirm trim and Customize UX with product.
+2. **True-size stage** — Customize (and proof modal): card at 3.5″ × 2″ + place-here outline; keep fluid `CardPreview` for tiles.
+3. **Calibration** — credit-card or business-card aligner; persist scale per browser.
+4. **Layout lock** — apply designer art, overflow rules, drop ellipsis on email.
+5. **Proof path** — wire `USR-095` to the same true-size view (and/or vendor PDF when available).
 
 ---
 
 ## Decision log
 
-Fill this in after the review. Dev will follow this table, not the prototype, once it is signed.
-
 | Topic | Decision | Date |
 | --- | --- | --- |
+| Preview product goal | **True-size / place-card-on-screen** (not only fluid CSS mock) | 2026-08-24 |
 | Trim size | | |
+| Nominal vs calibrated v1 | | |
+| True-size default on Customize | | |
+| Mobile behaviour when card &gt; viewport | | |
+| USR-095 = true-size UI vs vendor PDF | | |
 | Bleed / safe area | | |
-| Background colour | | |
-| Navy (name vs logo) | | |
-| Print fonts + pt sizes | | |
 | Email: wrap / shrink / limit | | |
 | Email character max | 40 until changed | |
 | Mobile label + format | | |
 | Licence line | | |
-| Extra designations | | |
 | EN / FR / Bilingual layout | | |
 | Front vs back | | |
-| Screen preview vs print PDF | | |

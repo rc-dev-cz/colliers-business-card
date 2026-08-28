@@ -298,11 +298,11 @@ export const PAGES = [
   { id: 'addressBook', section: 'Profile', name: 'Address Book', weight: 8, dev: true, qa: true, approved: false, klai: false },
   { id: 'orderHistory', section: 'Profile', name: 'Order History', weight: 8, dev: true, qa: true, approved: false, klai: false },
   { id: 'dashboard', section: 'Admin', name: 'Admin Home', weight: 4, dev: true, qa: true, approved: false, klai: false },
-  { id: 'manageAddresses', section: 'Admin', name: 'Manage Addresses', weight: 9, dev: false, qa: false, approved: false, klai: false },
-  { id: 'manageTitles', section: 'Admin', name: 'Manage Titles', weight: 6, dev: false, qa: false, approved: false, klai: false },
-  { id: 'adminOrders', section: 'Admin', name: 'Admin Order History', weight: 7, dev: false, qa: false, approved: false, klai: false },
-  { id: 'invoices', section: 'Admin', name: 'Invoice History', weight: 6, dev: false, qa: false, approved: false, klai: false },
-  { id: 'reporting', section: 'Admin', name: 'Reporting', weight: 7, dev: false, qa: false, approved: false, klai: false },
+  { id: 'manageAddresses', section: 'Admin', name: 'Manage Addresses', weight: 9, dev: true, qa: false, approved: false, klai: false },
+  { id: 'manageTitles', section: 'Admin', name: 'Manage Titles', weight: 6, dev: true, qa: false, approved: false, klai: false },
+  { id: 'adminOrders', section: 'Admin', name: 'Admin Order History', weight: 7, dev: true, qa: false, approved: false, klai: false },
+  { id: 'invoices', section: 'Admin', name: 'Invoice History', weight: 6, dev: true, qa: false, approved: false, klai: false },
+  { id: 'reporting', section: 'Admin', name: 'Reporting', weight: 7, dev: true, qa: false, approved: false, klai: false },
 ]
 
 export const SCRIPTS = [

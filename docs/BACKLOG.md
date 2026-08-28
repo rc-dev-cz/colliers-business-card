@@ -1,47 +1,42 @@
 # Backlog
 
-Status of the features in [FEATURES.md](FEATURES.md). Agreed rules: [BUSINESS-RULES.md](BUSINESS-RULES.md). Automated cases: [TESTING.md](TESTING.md).
+F-code feature index for [FEATURES.md](FEATURES.md). Agreed rules: [BUSINESS-RULES.md](BUSINESS-RULES.md). Automated cases: [TESTING.md](TESTING.md).
 
-| Status | Meaning |
-| --- | --- |
-| Done (prototype) | Works in this Vue preview as intended |
-| Mock | Screen exists; behavior is fake |
-| Not started | Not in this Vue repo, or not built yet |
-| Out of scope | Not this product |
+This is **not** the workflow backlog. Editable ticket status lives in [devTracker.json](devTracker.json) (RC Web Dev board). The **Ticket** column is the board id.
 
 Do not add an Account feature. Preview login, signup, and forgot-password are preview-only — not listed here.
 
 User stories: [USER.md](USER.md). Admin stories: [ADMIN.md](ADMIN.md).
 
-| ID | Feature | Status | Notes |
+| ID | Feature | Ticket | Notes |
 | --- | --- | --- | --- |
-| F-01 | Business Card English | Done (prototype) | USR-011. SKU `BCAD-PL-ENG`, $63/box, 250/box |
-| F-02 | Business Card Bilingual | Done (prototype) | USR-012. SKU `BCAD-PL-BIL`, $63/box, 250/box |
-| F-03 | Business Card French | Done (prototype) | USR-013. SKU `BCAD-PL-FR`, $63/box, 250/box |
-| F-04 | Card details page | Done (prototype) | USR-020. Pricing tiers, packaging, brand notes |
-| F-05 | Customize card (Vue) | Done (prototype) | USR-030. Vue still name/email max 30; guide is 50/40 (USR-032, USR-034) |
-| F-06 | Cart add and combine | Done (prototype) | USR-040. Same details combine; different name or title stay separate cart items |
-| F-07 | Cart badge icon | Done (prototype) | USR-043. Red number on the header cart icon = total quantity |
-| F-08 | Clear cart | Done (prototype) | USR-044 |
-| F-09 | Shipping splits | Done (prototype) | USR-054. Split Order; cannot remove the last split |
-| F-10 | Ship-to locations | Done (prototype) | USR-050. Add/remove/select location; location qty does not change cart qty. Shipping $0 — included in the $63 box fee |
-| F-11 | Order confirmed | Done (prototype) | USR-060. Clears cart; no payment |
-| F-12 | Admin login | Done (prototype) | ADM-010. Vue 2: `admin` / `123`. Checklist: [ADMIN.md](ADMIN.md) |
-| F-13 | Admin Dashboard | Vue 2 tiles (QA) | ADM-020. Tiles in `src/pages/admin/`. Live counts still Ideas (ADM-022, ADM-023). Designer 19 Aug: 22 addresses, 32 titles |
-| F-14 | Admin Manage Addresses | Not started (Vue) | ADM-060. **Next take.** Stub `#/admin/addresses`. Designer list is one-line add + hover edit; structured form still on Edit |
-| F-15 | Admin Manage Titles | Not started (Vue) | ADM-070. Stub `#/admin/titles`. Inline edit in designer |
-| F-16 | Admin order history | Not started (Vue) | ADM-030. Stub `#/admin/orders`. User Order History is F-30 |
-| F-17 | Invoice history | Not started (Vue) | ADM-040. Stub `#/admin/invoices` |
-| F-18 | Reporting | Not started (Vue) | ADM-050. Stub `#/admin/reporting` |
-| F-19 | Dark theme | Out of scope | V2: not this version. Closed |
-| F-20 | Remove footer language | Done | Navbar EN/FR only. Designer may still show a footer control |
-| F-21 | Automated tests | Not started | Spec: [TESTING.md](TESTING.md) |
-| F-22 | Navbar EN/FR | Done (prototype) | USR-10. Header only |
-| F-23 | Light theme | Done (prototype) | Current default |
-| F-24 | Multiple designations | Not started | USR-039. Guide: one or more designations |
-| F-25 | Move cards between shipping groups | Done (prototype) | USR-056. SH-04 |
-| F-26 | Split Order empty group | Done (prototype) | USR-057. SH-02, SH-03 |
-| F-27 | Order review before confirm | Done | USR-063. Section 7 / OR-01. `#/review` |
-| F-28 | Colliers offices on shipping | Done (prototype) | USR-058. Offices API + personal Address Book; NJ seeds gone |
-| F-29 | Address Book | localStorage | USR-080 / ADM-080. Personal rows keyed by email until DEV-106. Not admin F-14 |
-| F-30 | User Order History | localStorage | USR-090–USR-098. Not admin F-16 |
+| F-01 | Business Card English | `USR-011` | SKU `BCAD-PL-ENG`, $63/box, 250/box |
+| F-02 | Business Card Bilingual | `USR-012` | SKU `BCAD-PL-BIL`, $63/box, 250/box |
+| F-03 | Business Card French | `USR-013` | SKU `BCAD-PL-FR`, $63/box, 250/box |
+| F-04 | Card details page | `USR-020` | Pricing tiers, packaging, brand notes |
+| F-05 | Customize card (Vue) | `USR-030` | Name/email max still 30 in Vue; guide is 50/40 (`USR-032`, `USR-034`) |
+| F-06 | Cart add and combine | `USR-040` | Same details combine; different name or title stay separate |
+| F-07 | Cart badge icon | `USR-043` | Red number on the header cart icon = total quantity |
+| F-08 | Clear cart | `USR-044` | |
+| F-09 | Shipping splits | `USR-054` | Split Order; cannot remove the last split |
+| F-10 | Ship-to locations | `USR-050` | Location qty does not change cart qty. Shipping $0 in the $63 box fee |
+| F-11 | Order confirmed | `USR-060` | Clears cart; no payment |
+| F-12 | Admin login | `ADM-010` | Vue 2: `admin` / `123`. Checklist: [ADMIN.md](ADMIN.md) |
+| F-13 | Admin Dashboard | `ADM-020` | Tiles Done. Live counts still Ideas (`ADM-022`, `ADM-023`) |
+| F-14 | Admin Manage Addresses | `ADM-060` | `#/admin/addresses` |
+| F-15 | Admin Manage Titles | `ADM-070` | `#/admin/titles` |
+| F-16 | Admin order history | `ADM-030` | `#/admin/orders`. User history is F-30 |
+| F-17 | Invoice history | `ADM-040` | `#/admin/invoices` |
+| F-18 | Reporting | `ADM-050` | `#/admin/reporting` |
+| F-19 | Dark theme | — | Out of scope (V2). Closed |
+| F-20 | Remove footer language | `F-20` | Navbar EN/FR only |
+| F-21 | Automated tests | `F-21` | Spec: [TESTING.md](TESTING.md) |
+| F-22 | Navbar EN/FR | `USR-071` | Header only |
+| F-23 | Light theme | — | Current default |
+| F-24 | Multiple designations | `USR-039` | Guide: one or more designations |
+| F-25 | Move cards between shipping groups | `USR-056` | SH-04 |
+| F-26 | Split Order empty group | `USR-057` | SH-02, SH-03 |
+| F-27 | Order review before confirm | `USR-063` | Section 7 / OR-01. `#/review` |
+| F-28 | Colliers offices on shipping | `USR-058` | Offices API + personal Address Book; NJ seeds gone |
+| F-29 | Address Book | `USR-080` | Also `ADM-080`. Personal rows until `DEV-106`. Not admin F-14 |
+| F-30 | User Order History | `USR-090` | `USR-090`–`USR-098`. Not admin F-16 |

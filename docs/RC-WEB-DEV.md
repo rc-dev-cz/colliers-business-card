@@ -36,7 +36,7 @@ Only tickets with someone **assigned** count on the roadmap and in the percentag
 
 ## Ticket schema
 
-Git source of truth: [TICKETS.md](TICKETS.md) — the one document with every ticket. The board seeds from [devTracker.json](devTracker.json) (imported by `src/rc-web-dev/data/devTracker.js`). When tickets change, update **both** files. Supabase is not the source of truth.
+**Editable source of truth:** [devTracker.json](devTracker.json) — imported by `src/rc-web-dev/data/devTracker.js`. Edit tickets there only. Supabase `rc_tickets` is an optional runtime overlay (board Save across browsers); not git truth. When they disagree, reseed from the JSON (or clear the table and reload).
 
 | Field | Meaning |
 | --- | --- |
@@ -44,7 +44,7 @@ Git source of truth: [TICKETS.md](TICKETS.md) — the one document with every ti
 | `title` | Short name |
 | `description` | What we are building |
 | `status` | Workflow column |
-| `category` | Customer Portal, Admin Portal, Shared UI/UX, Quality Assurance, Technical |
+| `category` | Customer Portal, Admin Portal, Shared UI/UX, Quality Assurance, FileMaker, Technical |
 | `priority` | high / medium / low |
 | `assignee` | CZ, KC, or empty |
 | `acceptanceCriteria` | List of testable lines |
@@ -70,7 +70,7 @@ Click a ticket to open it. **Edit ticket** changes the fields above. Drag a tick
 
 Create, move, or edit a ticket and it gets a bouncing blue mark plus **Updated** or **In progress**. Click the pill on the open ticket to clear it. A move keeps the ticket’s category.
 
-If `.env.local` has Supabase keys, the board waits for `rc_tickets` before it paints, then writes on Save. There is no ticket localStorage. Drag stays in the browser until you Save that ticket. Related links for git tickets stay with the seed. Cart, session, and locale still use localStorage. The nav pill shows **Supabase on** / **off** / **down**. Ask before running any live Supabase command from the agent.
+If `.env.local` has Supabase keys, the board waits for `rc_tickets` before it paints, then writes on Save. There is no ticket localStorage. Drag stays in the browser until you Save that ticket. Related links for git tickets stay with the seed. Cart, session, and locale still use localStorage. The nav pill shows **Supabase on** / **off** / **down**. Ask before running any live Supabase command from the agent. When JSON and Supabase disagree, reseed from [devTracker.json](devTracker.json) — Supabase is not the source of truth.
 
 Sync stores title, status, assignee, notes, acceptance criteria, **related ids**, and blocked in `rc_tickets` (meta fields live inside the `source` JSON). Logs stay in the browser until log sync lands.
 
@@ -87,9 +87,8 @@ Creates, column moves (board drag or roadmap checkbox), and ticket edits are wri
 | File | Owner |
 | --- | --- |
 | `docs/BUSINESS-RULES.md` | Agreed product behaviour and test IDs (V2) |
-| `docs/FEATURES.md`, `BACKLOG.md`, `USER.md`, `ADMIN.md`, `TESTING.md` | The product (what goes to Klai) |
-| `docs/TICKETS.md` | **The** ticket document (git source of truth) |
-| `docs/devTracker.json` | Board seed — keep in lockstep with TICKETS.md |
+| `docs/FEATURES.md`, `BACKLOG.md`, `USER.md`, `ADMIN.md`, `TESTING.md` | The product (what goes to Klai). BACKLOG is an F-code feature index that points at board tickets — not a second workflow backlog |
+| `docs/devTracker.json` | **Only** editable ticket backlog (board source of truth) |
 | `docs/RC-WEB-DEV.md` | How RC Dev works (this Vue app only) |
 
 When we start a new project, copy `src/rc-web-dev/`, the `#/rc-web-dev` routes, and this file. Do not copy them into Klai.

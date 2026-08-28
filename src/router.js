@@ -11,7 +11,11 @@ import ConfirmedPage from './pages/ConfirmedPage.vue'
 import AddressBookPage from './pages/AddressBookPage.vue'
 import OrderHistoryPage from './pages/OrderHistoryPage.vue'
 import AdminDashboardPage from './pages/admin/AdminDashboardPage.vue'
-import AdminStubPage from './pages/admin/AdminStubPage.vue'
+import ManageAddressesPage from './pages/admin/ManageAddressesPage.vue'
+import ManageTitlesPage from './pages/admin/ManageTitlesPage.vue'
+import AdminOrderHistoryPage from './pages/admin/AdminOrderHistoryPage.vue'
+import AdminInvoicesPage from './pages/admin/AdminInvoicesPage.vue'
+import AdminReportingPage from './pages/admin/AdminReportingPage.vue'
 import RcWebDevLayout from './rc-web-dev/RcWebDevLayout.vue'
 import RcWebDevPage from './rc-web-dev/pages/RcWebDevPage.vue'
 import RcWebDevRoadmapPage from './rc-web-dev/pages/RcWebDevRoadmapPage.vue'
@@ -38,32 +42,32 @@ const router = new VueRouter({
     {
       path: '/admin/addresses',
       name: 'admin-addresses',
-      component: AdminStubPage,
-      meta: { admin: true, titleKey: 'manageAddresses', ticket: 'ADM-060' },
+      component: ManageAddressesPage,
+      meta: adminMeta,
     },
     {
       path: '/admin/titles',
       name: 'admin-titles',
-      component: AdminStubPage,
-      meta: { admin: true, titleKey: 'manageTitles', ticket: 'ADM-070' },
+      component: ManageTitlesPage,
+      meta: adminMeta,
     },
     {
       path: '/admin/orders',
       name: 'admin-orders',
-      component: AdminStubPage,
-      meta: { admin: true, titleKey: 'orderHistory', ticket: 'ADM-030' },
+      component: AdminOrderHistoryPage,
+      meta: adminMeta,
     },
     {
       path: '/admin/invoices',
       name: 'admin-invoices',
-      component: AdminStubPage,
-      meta: { admin: true, titleKey: 'invoiceHistory', ticket: 'ADM-040' },
+      component: AdminInvoicesPage,
+      meta: adminMeta,
     },
     {
       path: '/admin/reporting',
       name: 'admin-reporting',
-      component: AdminStubPage,
-      meta: { admin: true, titleKey: 'reporting', ticket: 'ADM-050' },
+      component: AdminReportingPage,
+      meta: adminMeta,
     },
     {
       path: '/rc-web-dev',

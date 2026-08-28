@@ -17,11 +17,11 @@ Delivery board: after login, Profile → **RC Web Dev** → **Delivery**, or `#/
 - [docs/BUSINESS-RULES.md](docs/BUSINESS-RULES.md) — agreed product behaviour and test IDs
 - [docs/CARD-PREVIEW.md](docs/CARD-PREVIEW.md) — designer briefing for card size, colours, and field placement
 - [docs/FEATURES.md](docs/FEATURES.md) — what the product is and what it can do
-- [docs/BACKLOG.md](docs/BACKLOG.md) — done / mock / not started
+- [docs/BACKLOG.md](docs/BACKLOG.md) — F-code feature index (points at board tickets)
 - [docs/USER.md](docs/USER.md) — user order-flow stories
 - [docs/ADMIN.md](docs/ADMIN.md) — admin port checklist and story codes
 - [docs/TESTING.md](docs/TESTING.md) — use cases (cart, shipping, admin, theme)
-- [docs/TICKETS.md](docs/TICKETS.md) — RC Web Dev tickets (the local ticket list)
+- [docs/devTracker.json](docs/devTracker.json) — **only** editable RC Web Dev ticket backlog (board source of truth)
 - [docs/RC-WEB-DEV.md](docs/RC-WEB-DEV.md) — how the internal board works (not Klai)
 
 ## Stack

@@ -24,6 +24,9 @@ import {
   saveOrderHistory,
 } from './adapters/profileStorage'
 import { createPersonalRecord } from './helpers/addressBook'
+import { createOfficeRecord, loadManagedOffices, saveManagedOffices } from './helpers/officeAdmin'
+import { loadManagedTitles, saveManagedTitles } from './helpers/titleAdmin'
+import { loadAllPortalOrders } from './helpers/adminData'
 import { buildHistoryRecord, nextOrderId } from './helpers/orderHistory'
 import { getProduct, products } from './data/products.js'
 
@@ -44,6 +47,7 @@ export const store = Vue.observable({
   titles: [],
   personalAddresses: [],
   orderHistory: [],
+  adminOrders: [],
   submitting: false,
   submitError: '',
 })
@@ -366,20 +370,103 @@ export function clearOrder() {
   persistOrder()
 }
 
+export function getOffice(id) {
+  return (
+    store.offices.find(function (row) {
+      return String(row.id) === String(id)
+    }) || null
+  )
+}
+
+export function addOffice(fields) {
+  const next = createOfficeRecord(fields)
+  store.offices.push(next)
+  saveManagedOffices(store.offices)
+  return next
+}
+
+export function updateOffice(id, fields) {
+  const index = store.offices.findIndex(function (row) {
+    return String(row.id) === String(id)
+  })
+  if (index === -1) return
+  Vue.set(
+    store.offices,
+    index,
+    createOfficeRecord(Object.assign({}, store.offices[index], fields || {}, { id: store.offices[index].id })),
+  )
+  saveManagedOffices(store.offices)
+}
+
+export function deleteOffice(id) {
+  const index = store.offices.findIndex(function (row) {
+    return String(row.id) === String(id)
+  })
+  if (index === -1) return
+  store.offices.splice(index, 1)
+  saveManagedOffices(store.offices)
+}
+
+export function addTitle(label) {
+  const trimmed = String(label || '').trim()
+  if (!trimmed) return false
+  if (store.titles.indexOf(trimmed) !== -1) return false
+  store.titles.push(trimmed)
+  saveManagedTitles(store.titles)
+  return true
+}
+
+export function updateTitle(index, label) {
+  const trimmed = String(label || '').trim()
+  if (!trimmed || index < 0 || index >= store.titles.length) return false
+  store.titles.splice(index, 1, trimmed)
+  saveManagedTitles(store.titles)
+  return true
+}
+
+export function deleteTitle(index) {
+  if (index < 0 || index >= store.titles.length) return
+  store.titles.splice(index, 1)
+  saveManagedTitles(store.titles)
+}
+
+export function loadAdminOrders() {
+  replaceList(store.adminOrders, loadAllPortalOrders())
+  return store.adminOrders
+}
+
 export async function loadOffices(force) {
   if (store.offices.length && !force) return store.offices
   store.officesLoading = true
   store.officesError = ''
-  const result = await fetchOffices()
-  store.offices = result.data
-  store.officesSource = result.source
-  store.officesError = result.source === 'mock' ? '' : result.error
-  store.officesLoading = false
+  const managed = loadManagedOffices()
+  if (managed.length && !force) {
+    store.offices = managed
+    store.officesSource = 'local'
+    store.officesLoading = false
+  } else {
+    const result = await fetchOffices()
+    store.offices = result.data.length ? result.data.map(createOfficeRecord) : managed
+    store.officesSource = result.source
+    store.officesError = result.source === 'mock' ? '' : result.error
+    saveManagedOffices(store.offices)
+    store.officesLoading = false
+  }
   if (!store.titles.length) {
-    const titles = await fetchTitles()
-    store.titles = titles.data
+    store.titles = loadManagedTitles()
   }
   return store.offices
+}
+
+export async function loadTitles(force) {
+  if (store.titles.length && !force) return store.titles
+  store.titles = loadManagedTitles()
+  if (!store.titles.length) {
+    const titles = await fetchTitles()
+    store.titles = titles.data.slice()
+    saveManagedTitles(store.titles)
+  }
+  return store.titles
 }
 
 export async function confirmSubmit() {

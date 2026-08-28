@@ -4,7 +4,7 @@ Version 2 · August 2026
 
 This is the markdown of the agreed **Business Rules & Testing Guide** (PDF, 14 Aug 2026). It is the product-rules reference for review, development, and testing.
 
-Product stories stay in [USER.md](USER.md) and [ADMIN.md](ADMIN.md). Status stays in [BACKLOG.md](BACKLOG.md). RC Web Dev tickets stay in [TICKETS.md](TICKETS.md).
+Product stories stay in [USER.md](USER.md) and [ADMIN.md](ADMIN.md). Workflow status lives on the RC Web Dev board — editable backlog [devTracker.json](devTracker.json). [BACKLOG.md](BACKLOG.md) is an F-code feature index that points at those tickets, not a second status board.
 
 ---
 
@@ -269,31 +269,31 @@ Use this section when adding tickets. Do **not** create a second ticket for a ru
 | Cannot remove last split | USR-055 | Done |
 | Header EN/FR | USR-070, USR-071 | Done |
 | Light theme | F-23 | Done |
-| Manage Addresses | ADM-060 | Ideas (not in Vue) |
-| Manage Designations / Titles | ADM-070 | Ideas (not in Vue) |
-| Admin Dashboard | ADM-020 | Ideas (not in Vue) |
+| Manage Addresses | ADM-060 | Ready (Vue stub `#/admin/addresses`) |
+| Manage Designations / Titles | ADM-070 | Ideas (Vue stub `#/admin/titles`) |
+| Admin Dashboard | ADM-020 | Done (Vue tiles; live counts ADM-022/023 still Ideas) |
 
 ### Already ticketed as Ideas — reuse these, do not duplicate
 
 | Guide | Ticket | Notes |
 | --- | --- | --- |
-| One or more designations | [USR-039](TICKETS.md#usr-039) | Vue still allows one title |
-| Printed-card count (qty × 250) | [USR-046](TICKETS.md#usr-046) | Needed for PR-01 / PR-02 |
-| Move a card between shipping groups | [USR-056](TICKETS.md#usr-056) | SH-04 |
-| Split Order creates an empty group | [USR-057](TICKETS.md#usr-057) | SH-02, SH-03 |
-| Colliers offices on shipping | [USR-058](TICKETS.md#usr-058) | Not in the PDF; keep |
-| Order review before confirm | [USR-063](TICKETS.md#usr-063) | Section 7 / OR-01 |
-| Remove footer language | [F-20](TICKETS.md#f-20) | UI-02 |
-| User Address Book | [USR-080](TICKETS.md#usr-080) | Demo user and admin can create personal addresses. Only admin creates offices (ADM-060) |
-| User Order History | [USR-090](TICKETS.md#usr-090) | Vue 2 localStorage in colliers-vue2/. Details sheet is USR-098. Not ADM-030 |
+| One or more designations | `USR-039` | Vue still allows one title |
+| Printed-card count (qty × 250) | `USR-046` | Needed for PR-01 / PR-02 |
+| Move a card between shipping groups | `USR-056` | SH-04 |
+| Split Order creates an empty group | `USR-057` | SH-02, SH-03 |
+| Colliers offices on shipping | `USR-058` | Not in the PDF; keep |
+| Order review before confirm | `USR-063` | Section 7 / OR-01 |
+| Remove footer language | `F-20` | UI-02 |
+| User Address Book | `USR-080` | Demo user and admin can create personal addresses. Only admin creates offices (ADM-060) |
+| User Order History | `USR-090` | Vue 2 localStorage in colliers-vue2/. Details sheet is USR-098. Not ADM-030 |
 
 ### Limits and wording (updated)
 
 | Ticket | Change |
 | --- | --- |
-| USR-032 | Reopened to Ideas. Full name max **50**. Vue still 30. |
+| USR-032 | Ready for development. Full name max **50**. Vue still 30. |
 | USR-033 | Still Done (one designation today). Multiple is USR-039. |
-| USR-034 | Reopened to Ideas. Email max **40**. Vue still 30. |
+| USR-034 | Ready for development. Email max **40**. Vue still 30. |
 | IDEA-01 | Closed (Done). Guide is **40**, not 20 or 30. |
 
 ### Out of this guide — keep the tickets, do not treat as V2 rules
@@ -302,4 +302,4 @@ Order History, Invoice History, Reporting, Dark theme, user Address Book, and us
 
 ### Backlog F-codes
 
-[BACKLOG.md](BACKLOG.md) includes F-24–F-30 for the Ideas above. Do not invent new F-codes for the same work.
+[BACKLOG.md](BACKLOG.md) maps F-24–F-30 to board tickets. Do not invent new F-codes for the same work. Track status on the board / in [devTracker.json](devTracker.json).
