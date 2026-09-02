@@ -1,0 +1,552 @@
+{
+    "currentLang": "en",
+    "env": {
+        "logoURL": "https://ucarecdn.com/b9e7ff3a-9338-449a-87e6-c029b26b9854/",
+        "siderbar": "users"
+    },
+    "header": {
+        "activeNav": "catalog",
+        "cartCount": 2,
+        "displayName": "Demo User",
+        "labels": {
+            "addressBook": "Address Book",
+            "catalog": "Catalog",
+            "logOut": "Log out",
+            "orderHistory": "Order History",
+            "profileMenu": "Profile menu",
+            "shoppingCart": "Shopping cart"
+        },
+        "locale": "en",
+        "menuOpen": false
+    },
+    "i18n": {
+        "dict": {
+            "label_addToCart": {
+                "en": "Add to Cart",
+                "fr": "Ajouter au panier"
+            },
+            "label_colliers_actions": {
+                "en": "Actions",
+                "fr": "Actions"
+            },
+            "label_colliers_address": {
+                "en": "Address",
+                "fr": "Adresse"
+            },
+            "label_colliers_cancel": {
+                "en": "Cancel",
+                "fr": "Annuler"
+            },
+            "label_colliers_confirmDeleteAddress": {
+                "en": "Delete this personal address?",
+                "fr": "Supprimer cette adresse personnelle ?"
+            },
+            "label_colliers_edit": {
+                "en": "Edit",
+                "fr": "Modifier"
+            },
+            "label_colliers_editAddress": {
+                "en": "Edit address",
+                "fr": "Modifier l'adresse"
+            },
+            "label_colliers_locationName": {
+                "en": "Location name",
+                "fr": "Nom du lieu"
+            },
+            "label_colliers_locationNickname": {
+                "en": "Location nickname",
+                "fr": "Surnom du lieu"
+            },
+            "label_colliers_newAddress": {
+                "en": "New address",
+                "fr": "Nouvelle adresse"
+            },
+            "label_colliers_noPersonalAddresses": {
+                "en": "No personal addresses yet. Add one with + New Address.",
+                "fr": "Aucune adresse personnelle. Ajoutez-en une avec + Nouvelle adresse."
+            },
+            "label_colliers_searchAddresses": {
+                "en": "Search addresses",
+                "fr": "Rechercher des adresses"
+            },
+            "label_dialogue_ItemBeingAddedToCart": {
+                "en": "Item being added to cart. Please wait.",
+                "fr": "Article en cours d'ajout au panier. S'il vous plaît, attendez."
+            },
+            "label_dialogue_SalesOrderBeingCreated": {
+                "en": "Order is being created. Please wait.",
+                "fr": "La commande est en cours de création. S'il vous plaît, attendez."
+            },
+            "label_dialogue_addressSaved": {
+                "en": "Address Saved",
+                "fr": "Adresse enregistrée"
+            },
+            "label_dialogue_addressUpdated": {
+                "en": "Address Updated",
+                "fr": "Adresse mise à jour"
+            },
+            "label_dialogue_cartCheckHasCompleted": {
+                "en": "We have received you order submission. If you need to make changes, please reply to email confirmation. \r\rCheck your inbox for an email from brewhouse@raymentcollins.com. \r\rSubject Line will include - \"Sleeman East Order Confirmation\"",
+                "fr": "Nous avons bien reçu votre commande. Si vous devez apporter des modifications, veuillez répondre à l'e-mail de confirmation.\r\rConsultez votre boîte de réception pour un e-mail de brewhouse@raymentcollins.com.\r\rLa ligne d'objet inclura - \"Confirmation de commande Sleeman East\""
+            },
+            "label_dialogue_cartConfirmOrderRequest": {
+                "en": "Your about to confirm you order request",
+                "fr": "Vous êtes sur le point de confirmer votre demande de commande"
+            },
+            "label_dialogue_cartHasNoItems": {
+                "en": "There are 0 Items in your cart. Add an item and then checkout",
+                "fr": "Il y a 0 articles dans votre panier. Ajouter un article, puis passer à la caisse"
+            },
+            "label_dialogue_cartIsEmpty": {
+                "en": "You do not have any items in your cart.",
+                "fr": "Vous n'avez aucun article dans votre panier."
+            },
+            "label_dialogue_cartOrderReadyForPreview": {
+                "en": "Order is ready for preview",
+                "fr": "La commande est prête pour l'aperçu"
+            },
+            "label_dialogue_statusCheckCompleted": {
+                "en": "Status check completed",
+                "fr": "Vérification de l'état terminée"
+            },
+            "label_general_activeCartItems": {
+                "en": "Active Cart Items",
+                "fr": "Articles actifs du panier"
+            },
+            "label_general_activeCartPreview": {
+                "en": "Cart",
+                "fr": "Panier"
+            },
+            "label_general_addNewAddress": {
+                "en": "Add New Address",
+                "fr": "Ajouter une nouvelle adresse"
+            },
+            "label_general_address1": {
+                "en": "Street",
+                "fr": "Rue"
+            },
+            "label_general_address2": {
+                "en": "Unit",
+                "fr": "Unité"
+            },
+            "label_general_addressBook": {
+                "en": "Address Book",
+                "fr": "Carnet d'adresses"
+            },
+            "label_general_addressDetails": {
+                "en": "Address Details",
+                "fr": "Détails de l'adresse"
+            },
+            "label_general_brand": {
+                "en": "Brand",
+                "fr": "Marque"
+            },
+            "label_general_cartItemCount": {
+                "en": "Cart Item Count",
+                "fr": "Nombre d'articles du panier"
+            },
+            "label_general_catalogue": {
+                "en": "Catalogue",
+                "fr": "Catalogue"
+            },
+            "label_general_checkStatus": {
+                "en": "Check Status",
+                "fr": "Vérifier l'état"
+            },
+            "label_general_checkouItems": {
+                "en": "Checkout Items",
+                "fr": "Commander des articles"
+            },
+            "label_general_city": {
+                "en": "City",
+                "fr": "Ville"
+            },
+            "label_general_close": {
+                "en": "Close",
+                "fr": "Fermer"
+            },
+            "label_general_closeMenu": {
+                "en": "Close Menu",
+                "fr": "Fermer le menu"
+            },
+            "label_general_code": {
+                "en": "Code",
+                "fr": "Code"
+            },
+            "label_general_contact": {
+                "en": "Contact",
+                "fr": "Contact"
+            },
+            "label_general_contactName": {
+                "en": "Contact Name",
+                "fr": "Nom du contact"
+            },
+            "label_general_costCentre": {
+                "en": "Cost Centre",
+                "fr": "Centre de coûts"
+            },
+            "label_general_country": {
+                "en": "Country",
+                "fr": "Pays"
+            },
+            "label_general_delete": {
+                "en": "Delete",
+                "fr": "Supprimer"
+            },
+            "label_general_deleteThisAddress": {
+                "en": "Delete this Address",
+                "fr": "Supprimer cette adresse"
+            },
+            "label_general_description": {
+                "en": "Description",
+                "fr": "Description"
+            },
+            "label_general_email": {
+                "en": "Email",
+                "fr": "E-mail"
+            },
+            "label_general_eventDate": {
+                "en": "Event Date",
+                "fr": "Date de l'événement"
+            },
+            "label_general_firstName": {
+                "en": "First Name",
+                "fr": "Prénom"
+            },
+            "label_general_foundCount": {
+                "en": "Found Count",
+                "fr": "Compte trouvé"
+            },
+            "label_general_goback": {
+                "en": "Go Back to Previous Layout",
+                "fr": "Revenir à la mise en page précédente"
+            },
+            "label_general_inventoryUpdate": {
+                "en": "Inventory update in progress. Please wait",
+                "fr": "Mise à jour de l'inventaire en cours. S'il vous plaît, attendez"
+            },
+            "label_general_itemAddedToCart": {
+                "en": "Item Added to Cart",
+                "fr": "Article ajouté au panier"
+            },
+            "label_general_itemRemovedCart": {
+                "en": "Item Removed from Cart",
+                "fr": "Article supprimé du panier"
+            },
+            "label_general_largerPreview": {
+                "en": "Larger Preview",
+                "fr": "Aperçu plus grand"
+            },
+            "label_general_lastName": {
+                "en": "Last Name",
+                "fr": "Nom de famille"
+            },
+            "label_general_login": {
+                "en": "Login",
+                "fr": "Connexion"
+            },
+            "label_general_logout": {
+                "en": "Logout",
+                "fr": "Se déconnecter"
+            },
+            "label_general_mailingAddress": {
+                "en": "Mailing Address",
+                "fr": "Adresse postale"
+            },
+            "label_general_myAccount": {
+                "en": "My Account",
+                "fr": "Mon compte"
+            },
+            "label_general_name": {
+                "en": "Name",
+                "fr": "Nom"
+            },
+            "label_general_next": {
+                "en": "Next",
+                "fr": "Suivant"
+            },
+            "label_general_note": {
+                "en": "Note",
+                "fr": "Note"
+            },
+            "label_general_onEmptyCatalogueView": {
+                "en": "Use the SEARCH button to load Catalogue Items on this page.",
+                "fr": "Utilisez le bouton RECHERCHER pour charger les éléments du catalogue sur cette page."
+            },
+            "label_general_order": {
+                "en": "Order",
+                "fr": "Commande"
+            },
+            "label_general_orderCheckoutPreview": {
+                "en": "Order Checkout - Preview",
+                "fr": "Paiement de la commande - Aperçu"
+            },
+            "label_general_orderHistory": {
+                "en": "Order History",
+                "fr": "Historique des commandes"
+            },
+            "label_general_orderTotal": {
+                "en": "Order Total",
+                "fr": "Total de la commande"
+            },
+            "label_general_other": {
+                "en": "Other",
+                "fr": "Autre"
+            },
+            "label_general_password01": {
+                "en": "Enter New Password",
+                "fr": "Entrez un nouveau mot de passe"
+            },
+            "label_general_password02": {
+                "en": "Re-type new password",
+                "fr": "Re-taper le nouveau mot de passe"
+            },
+            "label_general_passwordReset": {
+                "en": "Reset Password",
+                "fr": "réinitialiser le mot de passe"
+            },
+            "label_general_phone": {
+                "en": "Phone",
+                "fr": "Téléphone"
+            },
+            "label_general_placeOrder": {
+                "en": "Place Order",
+                "fr": "Passer la commande"
+            },
+            "label_general_popover": {
+                "en": "Popover",
+                "fr": "Popover"
+            },
+            "label_general_postalcode": {
+                "en": "Postal Code",
+                "fr": "Code Postal"
+            },
+            "label_general_previous": {
+                "en": "Previous",
+                "fr": "Précédent"
+            },
+            "label_general_province": {
+                "en": "Province",
+                "fr": "Province"
+            },
+            "label_general_quantity": {
+                "en": "Quantity",
+                "fr": "Quantité"
+            },
+            "label_general_rebateReference": {
+                "en": "Rebate Reference",
+                "fr": "Référence de remise"
+            },
+            "label_general_recipient": {
+                "en": "Recipient Name",
+                "fr": "Nom du destinataire"
+            },
+            "label_general_refreshShippingRate": {
+                "en": "Refresh Shipping Rate",
+                "fr": "Actualiser le tarif d'expédition"
+            },
+            "label_general_remove": {
+                "en": "Remove",
+                "fr": "Retirer"
+            },
+            "label_general_salesOrder": {
+                "en": "Sales Order",
+                "fr": "Bon de commande"
+            },
+            "label_general_save": {
+                "en": "Save",
+                "fr": "Sauvegarder"
+            },
+            "label_general_selectFromAddressBook": {
+                "en": "Select from Address Book",
+                "fr": "Sélectionner dans le carnet d'adresses"
+            },
+            "label_general_shipping": {
+                "en": "Shipping",
+                "fr": "Expédition"
+            },
+            "label_general_shippingAddress": {
+                "en": "Shipping Address",
+                "fr": "adresse de livraison"
+            },
+            "label_general_shippingCost": {
+                "en": "Shipping and Handling Fee",
+                "fr": "Frais d'expédition et de manutention"
+            },
+            "label_general_shippingRateDisclaimer": {
+                "en": "Shipping and Handling costs will be added when order is being processed.",
+                "fr": "Les frais d'expédition et de manutention seront ajoutés lors du traitement de la commande."
+            },
+            "label_general_shippingRateDisclaimerBackup": {
+                "en": "",
+                "fr": ""
+            },
+            "label_general_showMyCartItems": {
+                "en": "Show My Cart Items",
+                "fr": "Afficher les articles de mon panier"
+            },
+            "label_general_status": {
+                "en": "Status",
+                "fr": "Statut"
+            },
+            "label_general_subTotal": {
+                "en": "Sub Total",
+                "fr": "Sous-total"
+            },
+            "label_general_support": {
+                "en": "Sleeman East Order Portal - Contact Support at brewhouse@raymentcollins.com",
+                "fr": "Portail de commande de Sleeman East - Contactez le support à brewhouse@raymentcollins.com"
+            },
+            "label_general_username": {
+                "en": "Username",
+                "fr": "Nom d'utilisateur"
+            },
+            "label_general_view": {
+                "en": "View",
+                "fr": "Voir"
+            },
+            "label_helloWorld": {
+                "en": "Hello World",
+                "fr": "Bonjour le monde"
+            },
+            "label_home_header01": {
+                "en": "Sleeman East",
+                "fr": "Sleeman Est"
+            },
+            "label_home_header02": {
+                "en": "If you have any issues or questions please contact support at brewhouse@raymentcollins.com",
+                "fr": "Si vous avez des problèmes ou des questions, veuillez contacter le support à l'adresse brewhouse@raymentcollins.com"
+            },
+            "label_home_message": {
+                "en": "This application is used to help manage a catalogue of items available for your staff to order from. It is designed to allow staff to get things done quickly. It can be rapidly updated to allow for fine tuning to better meet the needs of your staff members that will be tasked to use this solution.",
+                "fr": "Cette application est utilisée pour vous aider à gérer un catalogue d'articles disponibles pour vos employés. Elle est conçue pour permettre au personnel de travailler rapidement. Elle peut être rapidement mise à jour pour permettre un réglage précis afin de mieux répondre aux besoins des membres de votre personnel qui seront chargés d'utiliser cette solution."
+            },
+            "label_loadEN": {
+                "en": "Load [English]",
+                "fr": "Charger [Anglais]"
+            },
+            "label_loadFR": {
+                "en": "Load [French]",
+                "fr": "Charger [Français]"
+            },
+            "label_navDisclaimerBrowserBackButton": {
+                "en": "Brewhouse West 2.0 - Demo Site",
+                "fr": "Brewhouse West 2.0 - Site de démonstration"
+            },
+            "label_navDisclaimerBrowserBackButtonBACKUP": {
+                "en": "",
+                "fr": ""
+            },
+            "label_navMenu": {
+                "en": "Menu",
+                "fr": "Menu"
+            },
+            "label_navSearch": {
+                "en": "Search",
+                "fr": "Recherche"
+            },
+            "label_removeFromCart": {
+                "en": "Remove from Cart",
+                "fr": "Supprimer du panier"
+            },
+            "label_slider_home_introduction_line1": {
+                "en": "Welcome to the Sleeman East Order Portal",
+                "fr": "Bienvenue sur le portail de commande de Sleeman East"
+            },
+            "label_slider_home_introduction_line2": {
+                "en": "This is the revamped Print Credit App...renamed Sleeman East.\r\rWe have kept the functionality of Print Credits as is.\r\rWHAT'S NEW:\r\r- Simple Design Template Ordering.\r\r- Simpler Static POS Ordering.\r\r- Ability to favourite items. Right now, it is an option for Design Template catalogue items.",
+                "fr": "Il s'agit de l'application Print Credit remaniée... renommée Sleeman East\r\r Nous avons conservé la fonctionnalité des crédits d’impression telle quelle.\r\r QUOI DE NEUF\r\r - Commande de modèles de conception simple\r - Commande POS statique simplifiée\r\r Autres nouvelles fonctionnalités :\r - Possibilité de mettre des articles en favoris. Actuellement, il s'agit d'une option pour les articles du catalogue de modèles de conception."
+            },
+            "label_slider_home_shipping_line1": {
+                "en": "MANAGING SHIPPING RETURNS",
+                "fr": "GESTION DES RETOURS D'EXPÉDITION"
+            },
+            "label_slider_home_shipping_line2": {
+                "en": "Steps: \r\r1. Call the number on the INSTRUCTIONS sheet.\r\r2. Use the supplied RETURN LABELS.\r\r3. Schedule the Pickup/Dropoff with the carrier.\r\r4. Check your email for notifications regarding Rental Due Dates.",
+                "fr": "Pas:\r\r1. Appelez le numéro sur la feuille d'INSTRUCTIONS.\r\r2. Utilisez les ÉTIQUETTES DE RETOUR fournies.\r\r3. Planifiez le ramassage/dépôt avec le transporteur.\r\r4. Vérifiez votre e-mail pour les notifications concernant les dates d'échéance de location."
+            },
+            "label_status_available": {
+                "en": "Available",
+                "fr": "Disponible"
+            },
+            "label_status_notAvailable": {
+                "en": "Not Available",
+                "fr": "Pas disponible"
+            },
+            "label_status_temporaryHold": {
+                "en": "Temporary Out of Stock",
+                "fr": "Rupture de stock temporaire"
+            },
+            "label_status_temporaryHoldMyself": {
+                "en": "Temporary Out of Stock (Special)",
+                "fr": "Rupture de stock temporaire (spécial)"
+            },
+            "label_tooltip_catalogueStatus": {
+                "en": "This is the current availability status of this Catalogue Item",
+                "fr": "Il s'agit de l'état de disponibilité actuel de cet article de catalogue"
+            },
+            "label_tooltip_checkCatalogueItemStatus": {
+                "en": "Click to refresh/update the Availability status of this Item. 99% of the time it is up to date.",
+                "fr": "Cliquez pour actualiser/mettre à jour l'état de disponibilité de cet article. 99% du temps, il est à jour."
+            },
+            "label_tooltip_goBackToHome": {
+                "en": "Go back to the home page",
+                "fr": "Retournez à la page d'accueil"
+            },
+            "label_tooltip_viewCatalogueDetail": {
+                "en": "Click to view the details of this Catalogue Item",
+                "fr": "Cliquez pour voir les détails de cet article du catalogue"
+            },
+            "label_tooltip_viewMyCart": {
+                "en": "Click to view your active cart. Add a Shipping Address and Confirm Your Order.",
+                "fr": "Cliquez pour voir votre panier actif. Ajoutez une adresse de livraison et confirmez votre commande."
+            },
+            "label_viewAsDetail": {
+                "en": "View As Detail",
+                "fr": "Afficher en détail"
+            },
+            "label_viewAsGrid": {
+                "en": "View As Grid",
+                "fr": "Afficher sous forme de grille"
+            },
+            "label_viewAsList": {
+                "en": "View As List",
+                "fr": "Afficher en tant que liste"
+            },
+            "label_viewCatalogue": {
+                "en": "Catalogue",
+                "fr": "Catalogue"
+            },
+            "label_viewHome": {
+                "en": "Main Page",
+                "fr": "Page d'accueil"
+            },
+            "label_viewMyAccount": {
+                "en": "View My Account",
+                "fr": "Voir mon compte"
+            },
+            "placeholder_search_nameAndAddress": {
+                "en": "Search by name or address",
+                "fr": "Rechercher par nom ou adresse"
+            }
+        },
+        "langDefault": "en",
+        "langSelected": "en",
+        "languages": [{
+            "id": "en",
+            "name": "English"
+        }, {
+            "id": "fr",
+            "name": "French"
+        }]
+    },
+    "showDropDown": false,
+    "showDropDownMenu": false,
+    "showSubMenu": false,
+    "user": {
+        "nameFirst": "Alicia",
+        "nameFull": "Alicia Jones",
+        "nameInitials": "AJ",
+        "nameLast": "Jones"
+    }
+}
