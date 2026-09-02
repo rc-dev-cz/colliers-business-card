@@ -69,6 +69,66 @@
                 "en": "Search addresses",
                 "fr": "Rechercher des adresses"
             },
+            "label_colliers_action": {
+                "en": "Action",
+                "fr": "Action"
+            },
+            "label_colliers_allStatuses": {
+                "en": "All Statuses",
+                "fr": "Tous les statuts"
+            },
+            "label_colliers_cardholder": {
+                "en": "Cardholder",
+                "fr": "Titulaire"
+            },
+            "label_colliers_date": {
+                "en": "Date",
+                "fr": "Date"
+            },
+            "label_colliers_item": {
+                "en": "Item",
+                "fr": "Article"
+            },
+            "label_colliers_noOrders": {
+                "en": "No orders match your search.",
+                "fr": "Aucune commande ne correspond à votre recherche."
+            },
+            "label_colliers_orderDetails": {
+                "en": "Order Details",
+                "fr": "Détails de la commande"
+            },
+            "label_colliers_orderId": {
+                "en": "Order ID",
+                "fr": "N° de commande"
+            },
+            "label_colliers_qty": {
+                "en": "Qty",
+                "fr": "Qté"
+            },
+            "label_colliers_repeatOrder": {
+                "en": "Repeat Order",
+                "fr": "Commander à nouveau"
+            },
+            "label_colliers_searchOrders": {
+                "en": "Search orders",
+                "fr": "Rechercher des commandes"
+            },
+            "label_colliers_statusDelivered": {
+                "en": "Delivered",
+                "fr": "Livrée"
+            },
+            "label_colliers_statusProcessing": {
+                "en": "Processing",
+                "fr": "En traitement"
+            },
+            "label_colliers_statusShipped": {
+                "en": "Shipped",
+                "fr": "Expédiée"
+            },
+            "placeholder_colliers_searchOrderByName": {
+                "en": "Search by Name...",
+                "fr": "Rechercher par nom..."
+            },
             "label_dialogue_ItemBeingAddedToCart": {
                 "en": "Item being added to cart. Please wait.",
                 "fr": "Article en cours d'ajout au panier. S'il vous plaît, attendez."

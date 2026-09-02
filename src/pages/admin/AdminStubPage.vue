@@ -1,19 +1,22 @@
 <template>
   <colliers-page-shell>
     <div class="mx-auto w-full max-w-5xl">
-      <h1 class="text-3xl font-bold text-gray-900 sm:text-4xl">{{ t(titleKey) }}</h1>
-      <p class="mt-3 text-sm text-gray-500">{{ t('adminStubHint') }} {{ ticket }}.</p>
+      <admin-page-header
+        :title="t(titleKey)"
+        :subtitle="t('adminStubHint') + ' ' + ticket + '.'"
+      ></admin-page-header>
     </div>
   </colliers-page-shell>
 </template>
 
 <script>
 import ColliersPageShell from '../../layout/ColliersPageShell.vue'
+import AdminPageHeader from '../../components/AdminPageHeader.vue'
 import { t } from '../../store'
 
 export default {
   name: 'AdminStubPage',
-  components: { ColliersPageShell },
+  components: { ColliersPageShell, AdminPageHeader },
   computed: {
     titleKey: function () {
       return (this.$route.meta && this.$route.meta.titleKey) || 'adminDashboard'

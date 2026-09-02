@@ -6,7 +6,7 @@
           <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
         </svg>
       </div>
-      <h1 class="mb-4 text-3xl font-bold text-gray-900">{{ t('orderConfirmed') }}</h1>
+      <h1 class="colliers-page-title mb-4">{{ t('orderConfirmed') }}</h1>
       <p class="mb-8 text-gray-600">{{ t('thankYou') }}</p>
       <app-button @click="backToCatalog">{{ t('returnToCatalog') }}</app-button>
     </div>

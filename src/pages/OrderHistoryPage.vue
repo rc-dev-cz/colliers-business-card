@@ -1,26 +1,33 @@
 <template>
   <colliers-page-shell>
-    <div class="mx-auto w-full max-w-5xl">
-      <div class="mb-6 flex flex-col gap-4 sm:mb-8 sm:flex-row sm:items-center sm:justify-between">
-        <h1 class="text-3xl font-bold text-gray-900 sm:text-4xl">{{ t('orderHistory') }}</h1>
+    <div class="mx-auto w-full" :class="fromAdmin ? 'max-w-6xl' : 'max-w-5xl'">
+      <admin-page-header v-if="fromAdmin" :title="t('orderHistory')"></admin-page-header>
+      <div v-else class="colliers-page-intro">
+        <h1 class="colliers-page-title">{{ t('orderHistory') }}</h1>
       </div>
 
       <div class="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
-        <div class="flex flex-col gap-3 border-b border-gray-100 p-4 sm:flex-row sm:items-center sm:justify-end sm:p-5">
-          <label class="sr-only" for="order-search">{{ t('searchOrders') }}</label>
-          <text-field
-            id="order-search"
-            class="w-full sm:max-w-xs"
-            :value="search"
-            :placeholder="t('searchByName')"
-            @input="search = $event"
-          ></text-field>
-          <select-field
-            class="w-full sm:w-48"
-            :value="statusFilter"
-            :options="statusOptions"
-            @input="statusFilter = $event"
-          ></select-field>
+        <div
+          class="flex flex-col gap-3 border-b border-gray-100 p-4 sm:flex-row sm:items-center sm:p-5"
+          :class="fromAdmin ? 'sm:justify-between' : 'sm:justify-end'"
+        >
+          <h2 v-if="fromAdmin" class="text-base font-semibold text-gray-900">{{ t('recentOrders') }}</h2>
+          <div class="flex w-full flex-col gap-3 sm:w-auto sm:flex-row sm:items-center">
+            <label class="sr-only" for="order-search">{{ t('searchOrders') }}</label>
+            <search-field
+              id="order-search"
+              class="w-full sm:w-64"
+              :value="search"
+              :placeholder="t('searchByName')"
+              @input="search = $event"
+            ></search-field>
+            <select-field
+              class="w-full sm:w-48"
+              :value="statusFilter"
+              :options="statusOptions"
+              @input="statusFilter = $event"
+            ></select-field>
+          </div>
         </div>
 
         <div class="overflow-x-auto">
@@ -28,7 +35,7 @@
             <thead class="border-b border-gray-200 bg-gray-50 text-xs font-medium uppercase tracking-wide text-gray-500">
               <tr>
                 <th class="px-4 py-3">{{ t('orderId') }}</th>
-                <th class="px-4 py-3">{{ t('cardholder') }}</th>
+                <th class="px-4 py-3">{{ personColumnLabel }}</th>
                 <th class="px-4 py-3">{{ t('item') }}</th>
                 <th class="px-4 py-3">{{ t('qty') }}</th>
                 <th class="px-4 py-3">{{ t('date') }}</th>
@@ -38,19 +45,17 @@
             </thead>
             <tbody>
               <tr v-if="!filteredOrders.length">
-                <td colspan="7" class="px-4 py-10 text-center text-gray-500">
-                  {{ t('noOrders') }}
-                </td>
+                <td colspan="7" class="px-4 py-10 text-center text-gray-500">{{ t('noOrders') }}</td>
               </tr>
               <tr
                 v-for="row in filteredOrders"
-                :key="row.id"
+                :key="rowKey(row)"
                 class="border-b border-gray-100 last:border-0"
               >
                 <td class="px-4 py-3 font-medium text-colliers-primary">{{ row.id }}</td>
                 <td class="px-4 py-3 text-gray-800">{{ cardholderName(row) }}</td>
                 <td class="px-4 py-3 text-gray-700">{{ itemLabel(row, t) }}</td>
-                <td class="px-4 py-3 text-gray-700">{{ boxCount(row) }}</td>
+                <td class="px-4 py-3 text-gray-700">{{ cardCount(row) }}</td>
                 <td class="px-4 py-3 text-gray-700">{{ formatOrderDate(row.date) }}</td>
                 <td class="px-4 py-3">
                   <span
@@ -61,19 +66,11 @@
                   </span>
                 </td>
                 <td class="whitespace-nowrap px-4 py-3 text-right">
-                  <button
-                    type="button"
-                    class="text-colliers-primary hover:underline"
-                    @click="onRepeat(row.id)"
-                  >
+                  <button type="button" class="text-colliers-primary hover:underline" @click="onRepeat(row.id)">
                     {{ t('repeatOrder') }}
                   </button>
                   <span class="mx-2 text-gray-300">|</span>
-                  <button
-                    type="button"
-                    class="text-colliers-primary hover:underline"
-                    @click="openDetails(row)"
-                  >
+                  <button type="button" class="text-colliers-primary hover:underline" @click="openDetails(row)">
                     {{ t('view') }}
                   </button>
                 </td>
@@ -105,7 +102,7 @@
             <span class="font-medium text-gray-900">{{ details.id }}</span>
           </div>
           <div class="flex justify-between gap-4">
-            <span class="text-gray-500">{{ t('date') }}</span>
+            <span class="text-gray-500">{{ detailsDateLabel(details.status) }}</span>
             <span class="text-gray-900">{{ formatOrderDate(details.date) }}</span>
           </div>
           <div class="flex justify-between gap-4">
@@ -118,12 +115,16 @@
             </span>
           </div>
           <div class="flex justify-between gap-4">
+            <span class="text-gray-500">{{ personColumnLabel }}</span>
+            <span class="text-gray-900">{{ cardholderName(details) }}</span>
+          </div>
+          <div class="flex justify-between gap-4">
             <span class="text-gray-500">{{ t('item') }}</span>
             <span class="text-gray-900">{{ itemLabel(details, t) }}</span>
           </div>
           <div class="flex justify-between gap-4">
-            <span class="text-gray-500">{{ t('qty') }}</span>
-            <span class="text-gray-900">{{ boxCount(details) }}</span>
+            <span class="text-gray-500">{{ t('quantity') }}</span>
+            <span class="text-gray-900">{{ cardCount(details) }}</span>
           </div>
           <div class="flex justify-between gap-4">
             <span class="text-gray-500">{{ t('totalCost') }}</span>
@@ -133,7 +134,8 @@
             <div class="mb-1 text-gray-500">{{ t('shipTo') }}</div>
             <p v-for="line in shipToLines(details)" :key="line" class="text-gray-900">{{ line }}</p>
           </div>
-          <div class="border-t border-gray-100 pt-3">
+          <div class="flex justify-between gap-4 border-t border-gray-100 pt-3">
+            <span class="text-gray-500">{{ t('proof') }}</span>
             <button type="button" class="text-colliers-primary hover:underline" @click="proofOpen = true">
               {{ t('viewBusinessCardProof') }}
             </button>
@@ -172,12 +174,13 @@
 <script>
 import ColliersPageShell from '../layout/ColliersPageShell.vue'
 import AppButton from '../components/AppButton.vue'
-import TextField from '../components/TextField.vue'
+import AdminPageHeader from '../components/AdminPageHeader.vue'
+import SearchField from '../components/SearchField.vue'
 import SelectField from '../components/SelectField.vue'
 import CardPreview from '../components/CardPreview.vue'
-import { store, t, repeatOrder } from '../store'
+import { store, t, isAdmin, loadAdminOrders, repeatOrder } from '../store'
 import {
-  boxCount,
+  cardCount,
   cardholderName,
   formatOrderDate,
   itemLabel,
@@ -190,7 +193,7 @@ import { go } from '../adapters/nav'
 
 export default {
   name: 'OrderHistoryPage',
-  components: { ColliersPageShell, AppButton, TextField, SelectField, CardPreview },
+  components: { ColliersPageShell, AppButton, AdminPageHeader, SearchField, SelectField, CardPreview },
   data: function () {
     return {
       store: store,
@@ -201,6 +204,18 @@ export default {
     }
   },
   computed: {
+    fromAdmin: function () {
+      return this.$route.name === 'admin-orders'
+    },
+    showCompanyOrders: function () {
+      return isAdmin()
+    },
+    personColumnLabel: function () {
+      return this.showCompanyOrders ? t('employee') : t('cardholder')
+    },
+    ordersList: function () {
+      return this.showCompanyOrders ? this.store.adminOrders : this.store.orderHistory
+    },
     statusOptions: function () {
       return [
         { value: 'all', label: t('allStatuses') },
@@ -211,21 +226,30 @@ export default {
     },
     filteredOrders: function () {
       const self = this
-      return this.store.orderHistory.filter(function (row) {
+      return this.ordersList.filter(function (row) {
         if (self.statusFilter !== 'all' && row.status !== self.statusFilter) return false
         return matchesOrderSearch(row, self.search)
       })
     },
   },
+  mounted: function () {
+    if (this.showCompanyOrders) loadAdminOrders()
+  },
   methods: {
     t: t,
-    boxCount: boxCount,
+    cardCount: cardCount,
     cardholderName: cardholderName,
     formatOrderDate: formatOrderDate,
     itemLabel: itemLabel,
     orderTotal: orderTotal,
     proofDetails: proofDetails,
     shipToLines: shipToLines,
+    rowKey: function (row) {
+      return row.id + (row.ownerEmail ? '-' + row.ownerEmail : '')
+    },
+    detailsDateLabel: function (status) {
+      return status === 'Delivered' ? t('dateDelivered') : t('date')
+    },
     statusLabel: function (status) {
       if (status === 'Delivered') return t('statusDelivered')
       if (status === 'Shipped') return t('statusShipped')

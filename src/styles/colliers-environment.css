@@ -14,6 +14,10 @@
   --colliers-border: #e5e7eb;
   --colliers-scroll-body-pad-x: 1.5rem;
   --colliers-scroll-body-max-width: 72rem;
+  /* Admin inline nav needs ~1024px viewport (Tailwind lg). See AppHeader.vue */
+  --colliers-admin-nav-min-width: 1024px;
+  --colliers-list-panel-max-height: 600px;
+  --colliers-page-title-color: #0a1a3a;
 }
 
 html,
@@ -59,6 +63,15 @@ body {
   z-index: 20;
 }
 
+.colliers-site-header--admin {
+  background: var(--colliers-primary);
+  border-bottom-color: var(--colliers-primary-hover);
+}
+
+body.colliers-mobile-menu-open {
+  overflow: hidden;
+}
+
 .colliers-right-body {
   flex: 1 1 auto;
   min-height: 0;
@@ -86,6 +99,226 @@ body {
   flex: 0 0 auto;
   width: 100%;
   margin-top: auto;
+}
+
+/* Shared list panels (Manage Addresses, Address Book, Designations, Degrees) */
+.colliers-list-panel {
+  border-radius: 0.5rem;
+  border: 1px solid var(--colliers-border);
+  background: var(--colliers-bg-surface);
+  padding: 1.5rem;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.colliers-list-panel-scroll {
+  max-height: var(--colliers-list-panel-max-height);
+  overflow-y: auto;
+}
+
+/* Viewport-fitted list pages: no page scroll — only the list panel scrolls */
+.colliers-right-body--viewport-list {
+  overflow: hidden;
+}
+
+.colliers-main--viewport-list {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: hidden;
+  padding-bottom: 1.5rem;
+}
+
+.colliers-viewport-list {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-height: 0;
+  width: 100%;
+}
+
+.colliers-viewport-list > :not(.colliers-list-panel--viewport) {
+  flex: 0 0 auto;
+}
+
+.colliers-list-panel--viewport {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.colliers-list-panel--viewport .colliers-list-panel-scroll {
+  flex: 1 1 auto;
+  min-height: 0;
+  max-height: none;
+  overflow-y: auto;
+}
+
+.colliers-list-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  border-radius: 0.375rem;
+  border: 1px solid #f3f4f6;
+  background: #f9fafb;
+  padding: 0.75rem;
+}
+
+.colliers-list-row-body {
+  min-width: 0;
+  flex: 1 1 auto;
+  padding-right: 0.75rem;
+}
+
+.colliers-list-row-title {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #111827;
+}
+
+.colliers-list-row-subtitle {
+  margin-top: 0.125rem;
+  font-size: 0.875rem;
+  color: #374151;
+}
+
+.colliers-list-row-actions {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+/* Page titles — one style across shell pages */
+.colliers-page-title {
+  margin: 0;
+  font-size: 28px;
+  font-weight: 600;
+  line-height: 1.25;
+  color: var(--colliers-page-title-color);
+}
+
+@media (min-width: 640px) {
+  .colliers-page-title {
+    font-size: 1.875rem;
+  }
+}
+
+.colliers-page-title--center {
+  width: 100%;
+  text-align: center;
+}
+
+.colliers-page-title--compact {
+  font-size: 1.25rem;
+}
+
+.colliers-page-subtitle {
+  margin: 0.5rem 0 0;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: var(--colliers-text-muted);
+}
+
+.colliers-page-intro {
+  margin-bottom: 2rem;
+}
+
+.colliers-page-header {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.colliers-page-header__main {
+  min-width: 0;
+}
+
+.colliers-page-header__actions {
+  display: flex;
+  flex-shrink: 0;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 1rem;
+}
+
+@media (min-width: 640px) {
+  .colliers-page-header {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+}
+
+/* Search input with leading magnifier icon */
+.colliers-search-field {
+  position: relative;
+  width: 100%;
+}
+
+.colliers-search-field__icon {
+  pointer-events: none;
+  position: absolute;
+  left: 0.75rem;
+  top: 50%;
+  width: 1rem;
+  height: 1rem;
+  transform: translateY(-50%);
+  color: #9ca3af;
+}
+
+.colliers-search-field__input {
+  width: 100%;
+  border-radius: 0.25rem;
+  border: 1px solid #d1d5db;
+  background: #fff;
+  padding: 0.625rem 0.75rem 0.625rem 2.5rem;
+  font-size: 14px;
+  line-height: 1.25;
+}
+
+.colliers-search-field__input:focus {
+  border-color: var(--colliers-primary);
+  outline: none;
+  box-shadow: 0 0 0 1px var(--colliers-primary);
+}
+
+/* Admin sub-page back link (designer: top-right, chevron + label) */
+.colliers-back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--colliers-primary);
+  transition: color 0.15s ease;
+}
+
+.colliers-back-link:hover {
+  color: var(--colliers-primary-hover);
+  text-decoration: underline;
+}
+
+.colliers-back-link__icon {
+  width: 1rem;
+  height: 1rem;
+  flex-shrink: 0;
+}
+
+@media (min-width: 768px) {
+  .colliers-list-row-actions--hover {
+    opacity: 0;
+    transition: opacity 0.15s ease;
+  }
+
+  .colliers-list-row:hover .colliers-list-row-actions--hover,
+  .colliers-list-row:focus-within .colliers-list-row-actions--hover {
+    opacity: 1;
+  }
 }
 
 @media (max-width: 767px) {

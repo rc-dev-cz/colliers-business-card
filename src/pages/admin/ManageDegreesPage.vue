@@ -2,19 +2,19 @@
   <colliers-page-shell viewport-list>
     <div class="colliers-viewport-list mx-auto w-full max-w-2xl">
       <admin-page-header
-        :title="t('manageDesignations')"
-        :subtitle="t('manageDesignationsHint')"
+        :title="t('manageDegrees')"
+        :subtitle="t('manageDegreesHint')"
       ></admin-page-header>
 
       <admin-string-list-panel
         viewport-fill
-        :items="store.titles"
-        :placeholder="t('newDesignationPlaceholder')"
-        :empty-label="t('noTitles')"
-        :add-label="t('addDesignation')"
-        :edit-label="t('editDesignation')"
-        :delete-label="t('deleteDesignation')"
-        :confirm-delete-message="t('confirmDeleteTitle')"
+        :items="store.degrees"
+        :placeholder="t('newDegreePlaceholder')"
+        :empty-label="t('noDegrees')"
+        :add-label="t('addDegree')"
+        :edit-label="t('editDegree')"
+        :delete-label="t('deleteDegree')"
+        :confirm-delete-message="t('confirmDeleteDegree')"
         @add="onAdd"
         @update="onUpdate"
         @delete="onDelete"
@@ -27,29 +27,27 @@
 import ColliersPageShell from '../../layout/ColliersPageShell.vue'
 import AdminPageHeader from '../../components/AdminPageHeader.vue'
 import AdminStringListPanel from '../../components/AdminStringListPanel.vue'
-import { store, t, loadTitles, addTitle, updateTitle, deleteTitle } from '../../store'
+import { store, t, loadDegrees, addDegree, updateDegree, deleteDegree } from '../../store'
 
 export default {
-  name: 'ManageTitlesPage',
+  name: 'ManageDegreesPage',
   components: { ColliersPageShell, AdminPageHeader, AdminStringListPanel },
   data: function () {
     return { store: store }
   },
   mounted: function () {
-    loadTitles(true)
+    loadDegrees(true)
   },
   methods: {
     t: t,
     onAdd: function (value) {
-      addTitle(value)
+      addDegree(value)
     },
     onUpdate: function (payload) {
-      const index = this.store.titles.indexOf(payload.oldValue)
-      if (index !== -1) updateTitle(index, payload.newValue)
+      updateDegree(payload.oldValue, payload.newValue)
     },
     onDelete: function (value) {
-      const index = this.store.titles.indexOf(value)
-      if (index !== -1) deleteTitle(index)
+      deleteDegree(value)
     },
   },
 }

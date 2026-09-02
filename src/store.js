@@ -26,6 +26,7 @@ import {
 import { createPersonalRecord } from './helpers/addressBook'
 import { createOfficeRecord, loadManagedOffices, saveManagedOffices } from './helpers/officeAdmin'
 import { loadManagedTitles, saveManagedTitles } from './helpers/titleAdmin'
+import { loadManagedDegrees, saveManagedDegrees } from './helpers/degreeAdmin'
 import { loadAllPortalOrders } from './helpers/adminData'
 import { buildHistoryRecord, nextOrderId } from './helpers/orderHistory'
 import { getProduct, products } from './data/products.js'
@@ -45,6 +46,7 @@ export const store = Vue.observable({
   officesError: '',
   officesSource: 'api',
   titles: [],
+  degrees: [],
   personalAddresses: [],
   orderHistory: [],
   adminOrders: [],
@@ -189,10 +191,18 @@ export function appendConfirmedOrder() {
 }
 
 export function repeatOrder(id) {
-  const record = store.orderHistory.find(function (row) {
-    return row.id === id
-  })
+  const record =
+    store.orderHistory.find(function (row) {
+      return row.id === id
+    }) ||
+    store.adminOrders.find(function (row) {
+      return row.id === id
+    })
   if (!record) return false
+  return loadOrderIntoCart(record)
+}
+
+function loadOrderIntoCart(record) {
   replaceList(
     store.cart,
     (record.cart || []).map(function (line) {
@@ -428,6 +438,39 @@ export function deleteTitle(index) {
   if (index < 0 || index >= store.titles.length) return
   store.titles.splice(index, 1)
   saveManagedTitles(store.titles)
+}
+
+export function addDegree(label) {
+  const trimmed = String(label || '').trim()
+  if (!trimmed) return false
+  if (store.degrees.indexOf(trimmed) !== -1) return false
+  store.degrees.push(trimmed)
+  saveManagedDegrees(store.degrees)
+  return true
+}
+
+export function updateDegree(oldValue, label) {
+  const trimmed = String(label || '').trim()
+  if (!trimmed) return false
+  const index = store.degrees.indexOf(oldValue)
+  if (index === -1) return false
+  if (store.degrees.indexOf(trimmed) !== -1 && store.degrees[index] !== trimmed) return false
+  store.degrees.splice(index, 1, trimmed)
+  saveManagedDegrees(store.degrees)
+  return true
+}
+
+export function deleteDegree(value) {
+  const index = store.degrees.indexOf(value)
+  if (index === -1) return
+  store.degrees.splice(index, 1)
+  saveManagedDegrees(store.degrees)
+}
+
+export function loadDegrees(force) {
+  if (store.degrees.length && !force) return store.degrees
+  store.degrees = loadManagedDegrees()
+  return store.degrees
 }
 
 export function loadAdminOrders() {

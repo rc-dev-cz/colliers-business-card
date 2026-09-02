@@ -23,8 +23,13 @@ function buttonByText(wrapper, text) {
   return null
 }
 
+function buttonByAriaLabel(wrapper, label) {
+  const match = wrapper.find('button[aria-label="' + label + '"]')
+  return match.exists() ? match : null
+}
+
 function setField(wrapper, id, value) {
-  const input = wrapper.find('#' + id + ' input')
+  const input = wrapper.find('#' + id)
   input.element.value = value
   input.trigger('input')
 }
@@ -68,6 +73,19 @@ describe('AddressBookPage', function () {
     await wrapper.vm.$nextTick()
     expect(wrapper.find('[role="dialog"]').exists()).toBe(true)
     expect(wrapper.find('#addr-nickname').exists()).toBe(true)
+    expect(wrapper.text()).toContain('Add Address')
+  })
+
+  it('AB-04b Save with empty required fields shows validation errors', async function () {
+    const wrapper = mountPage()
+    buttonByText(wrapper, '+ New Address').trigger('click')
+    await wrapper.vm.$nextTick()
+    wrapper.find('form').trigger('submit')
+    await wrapper.vm.$nextTick()
+    expect(wrapper.find('[role="dialog"]').exists()).toBe(true)
+    expect(wrapper.text()).toContain('Please complete all required fields.')
+    expect(wrapper.text()).toContain('This field is required.')
+    expect(store.personalAddresses.length).toBe(2)
   })
 
   it('AB-05 Save creates a personal address', async function () {
@@ -80,6 +98,7 @@ describe('AddressBookPage', function () {
     wrapper.find('form').trigger('submit.prevent')
     await wrapper.vm.$nextTick()
     expect(wrapper.find('[role="dialog"]').exists()).toBe(false)
+    expect(wrapper.text()).toContain('Address saved')
     expect(wrapper.text()).toContain('Cabin')
     expect(wrapper.text()).toContain('Banff')
   })
@@ -115,7 +134,7 @@ describe('AddressBookPage', function () {
 
   it('AB-08 Edit opens modal with that row filled', async function () {
     const wrapper = mountPage()
-    buttonByText(wrapper, 'Edit').trigger('click')
+    buttonByAriaLabel(wrapper, 'Edit').trigger('click')
     await wrapper.vm.$nextTick()
     expect(wrapper.find('[role="dialog"]').exists()).toBe(true)
     expect(wrapper.vm.form.addressName).toBe('Home Office')
@@ -125,11 +144,12 @@ describe('AddressBookPage', function () {
 
   it('AB-09 Save on edit updates only that row', async function () {
     const wrapper = mountPage()
-    buttonByText(wrapper, 'Edit').trigger('click')
+    buttonByAriaLabel(wrapper, 'Edit').trigger('click')
     await wrapper.vm.$nextTick()
     setField(wrapper, 'addr-nickname', 'Home')
     wrapper.find('form').trigger('submit.prevent')
     await wrapper.vm.$nextTick()
+    expect(wrapper.text()).toContain('Address updated')
     expect(store.personalAddresses[0].addressName).toBe('Home')
     expect(store.personalAddresses[1].addressName).toBe('Temporary Location')
     expect(wrapper.text()).toContain('Home')
@@ -139,7 +159,7 @@ describe('AddressBookPage', function () {
   it('AB-10 Delete shows confirm', function () {
     const confirmSpy = vi.spyOn(window, 'confirm').mockReturnValue(false)
     const wrapper = mountPage()
-    buttonByText(wrapper, 'Delete').trigger('click')
+    buttonByAriaLabel(wrapper, 'Delete').trigger('click')
     expect(confirmSpy).toHaveBeenCalled()
     expect(String(confirmSpy.mock.calls[0][0])).toContain('Delete this personal address')
   })
@@ -147,7 +167,7 @@ describe('AddressBookPage', function () {
   it('AB-11 Cancel on confirm keeps the row', function () {
     vi.spyOn(window, 'confirm').mockReturnValue(false)
     const wrapper = mountPage()
-    buttonByText(wrapper, 'Delete').trigger('click')
+    buttonByAriaLabel(wrapper, 'Delete').trigger('click')
     expect(store.personalAddresses.length).toBe(2)
     expect(wrapper.text()).toContain('Home Office')
   })
@@ -155,7 +175,7 @@ describe('AddressBookPage', function () {
   it('AB-12 Confirm delete removes the row', async function () {
     vi.spyOn(window, 'confirm').mockReturnValue(true)
     const wrapper = mountPage()
-    buttonByText(wrapper, 'Delete').trigger('click')
+    buttonByAriaLabel(wrapper, 'Delete').trigger('click')
     await wrapper.vm.$nextTick()
     expect(store.personalAddresses.some(function (row) {
       return row.id === TEST_HOME.id
@@ -183,14 +203,14 @@ describe('AddressBookPage', function () {
     const wrapper = mountPage()
     buttonByText(wrapper, 'Office Addresses').trigger('click')
     await wrapper.vm.$nextTick()
-    expect(buttonByText(wrapper, 'Edit')).toBe(null)
+    expect(buttonByAriaLabel(wrapper, 'Edit')).toBe(null)
   })
 
   it('AB-16 cannot delete an office here', async function () {
     const wrapper = mountPage()
     buttonByText(wrapper, 'Office Addresses').trigger('click')
     await wrapper.vm.$nextTick()
-    expect(buttonByText(wrapper, 'Delete')).toBe(null)
+    expect(buttonByAriaLabel(wrapper, 'Delete')).toBe(null)
   })
 
   it('AB-17 Office tab does not create company offices', async function () {

@@ -30,7 +30,7 @@
         </div>
 
         <div class="min-w-0 flex-1">
-          <h1 class="mb-6 text-2xl font-semibold text-gray-900 sm:text-3xl">{{ name }}</h1>
+          <h1 class="colliers-page-title mb-6">{{ name }}</h1>
 
           <div class="space-y-0 text-[14px]">
             <div class="flex flex-col border-b border-gray-200 py-2 sm:flex-row sm:justify-between">

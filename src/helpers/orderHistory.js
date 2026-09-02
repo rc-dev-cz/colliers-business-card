@@ -1,4 +1,5 @@
-import { makeLine } from './cart.js'
+import { makeLine, cartSubtotal } from './cart.js'
+import { getProduct } from '../data/products.js'
 import { snapshotOrder } from './order.js'
 import { productNameKey } from '../i18n/messages.js'
 
@@ -91,14 +92,56 @@ export function seedOrderHistory() {
   ]
 }
 
+export function seedAdminOrderHistory() {
+  const rows = [
+    { id: 'ORD-8472', date: '2026-08-28', status: 'Delivered', employeeName: 'Alex Johnson', ownerEmail: 'alex.johnson@colliers.com', boxes: 2, shipTo: BURLINGTON },
+    { id: 'ORD-8471', date: '2026-08-25', status: 'Shipped', employeeName: 'Samantha Lee', ownerEmail: 'samantha.lee@colliers.com', boxes: 1, shipTo: TORONTO_OFFICE },
+    { id: 'ORD-8465', date: '2026-08-20', status: 'Processing', employeeName: 'Alex Johnson', ownerEmail: 'alex.johnson@colliers.com', boxes: 4, shipTo: TORONTO_OFFICE },
+    { id: 'ORD-8460', date: '2026-08-15', status: 'Delivered', employeeName: 'Alex Johnson', ownerEmail: 'alex.johnson@colliers.com', boxes: 2, shipTo: HOME_OFFICE },
+    { id: 'ORD-8455', date: '2026-08-10', status: 'Delivered', employeeName: 'Samantha Lee', ownerEmail: 'samantha.lee@colliers.com', boxes: 1, shipTo: BURLINGTON },
+  ]
+  return rows.map(function (row) {
+    const record = seedRecord({
+      id: row.id,
+      date: row.date,
+      status: row.status,
+      locationId: 'seed-loc-' + row.id,
+      shipTo: row.shipTo,
+      cart: [
+        {
+          id: 'cart-' + row.id,
+          code: 'BCAD-PL-ENG',
+          language: 'English',
+          quantity: row.boxes,
+          details: { name: row.employeeName, email: row.ownerEmail },
+        },
+      ],
+    })
+    return Object.assign(record, { ownerEmail: row.ownerEmail })
+  })
+}
+
 export function boxCount(record) {
   return (record.cart || []).reduce(function (sum, line) {
     return sum + (Number(line.quantity) || 0)
   }, 0)
 }
 
+export function cardsPerBox(code) {
+  const product = getProduct(code)
+  const packaging = product && product.packaging ? String(product.packaging) : ''
+  const match = packaging.match(/^(\d+)\/BX/i)
+  return match ? Number(match[1]) : 250
+}
+
+export function cardCount(record) {
+  return (record.cart || []).reduce(function (sum, line) {
+    return sum + (Number(line.quantity) || 0) * cardsPerBox(line.code)
+  }, 0)
+}
+
 export function orderTotal(record) {
-  return boxCount(record) * BOX_PRICE
+  return cartSubtotal(record.cart || [])
 }
 
 export function cardholderName(record) {

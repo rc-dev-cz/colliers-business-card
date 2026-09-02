@@ -1,7 +1,7 @@
 <template>
   <colliers-page-shell>
     <div class="mx-auto w-full max-w-5xl">
-      <h1 class="mb-6 text-3xl font-bold text-gray-900 sm:mb-8 sm:text-4xl">{{ t('invoiceHistory') }}</h1>
+      <admin-page-header :title="t('invoiceHistory')"></admin-page-header>
 
       <div class="overflow-x-auto rounded-xl border border-gray-200 bg-white shadow-sm">
         <table class="min-w-full text-left text-sm">
@@ -37,12 +37,13 @@
 
 <script>
 import ColliersPageShell from '../../layout/ColliersPageShell.vue'
+import AdminPageHeader from '../../components/AdminPageHeader.vue'
 import { t } from '../../store'
 import { MOCK_INVOICES } from '../../helpers/adminData'
 
 export default {
   name: 'AdminInvoicesPage',
-  components: { ColliersPageShell },
+  components: { ColliersPageShell, AdminPageHeader },
   data: function () {
     return {
       invoices: MOCK_INVOICES,

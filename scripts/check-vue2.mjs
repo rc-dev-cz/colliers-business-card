@@ -85,7 +85,7 @@ if (order.splits[0].itemIds.indexOf('line-1') === -1) {
   errors.push('new cart lines must land in shipping group 1')
 }
 
-const { nextOrderId, seedOrderHistory, boxCount, orderTotal } = await import('../src/helpers/orderHistory.js')
+const { nextOrderId, seedOrderHistory, seedAdminOrderHistory, boxCount, cardCount, orderTotal } = await import('../src/helpers/orderHistory.js')
 const { profileStorageKey } = await import('../src/helpers/storage.js')
 const { seedPersonalAddresses } = await import('../src/helpers/addressBook.js')
 if (profileStorageKey('addressBook', 'Demo') !== 'addressBook:demo') {
@@ -99,8 +99,16 @@ const seeded = seedOrderHistory()
 if (seeded.length !== 3 || nextOrderId(seeded) !== 'ORD-1004') {
   errors.push('order history seed must expose three demo rows and the next ORD id')
 }
-if (boxCount(seeded[0]) !== 2 || orderTotal(seeded[0]) !== 126) {
-  errors.push('seeded English order must be 2 boxes and $126')
+if (boxCount(seeded[0]) !== 2 || cardCount(seeded[0]) !== 500 || orderTotal(seeded[0]) !== 126) {
+  errors.push('seeded English order must be 2 boxes, 500 cards, and $126')
+}
+const adminSeeded = seedAdminOrderHistory()
+if (
+  adminSeeded.length !== 5 ||
+  cardCount(adminSeeded[0]) !== 500 ||
+  orderTotal(adminSeeded[0]) !== 126
+) {
+  errors.push('admin order seed must expose ORD-8472 as 500 cards and $126')
 }
 
 if (errors.length) {

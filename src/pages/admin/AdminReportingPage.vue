@@ -1,10 +1,11 @@
 <template>
   <colliers-page-shell>
     <div class="mx-auto w-full max-w-5xl">
-      <div class="mb-6 flex flex-col gap-4 sm:mb-8 sm:flex-row sm:items-center sm:justify-between">
-        <h1 class="text-3xl font-bold text-gray-900 sm:text-4xl">{{ t('reporting') }}</h1>
-        <app-button variant="outline" @click="exportData">{{ t('exportData') }}</app-button>
-      </div>
+      <admin-page-header :title="t('reporting')">
+        <template #actions>
+          <app-button variant="outline" @click="exportData">{{ t('exportData') }}</app-button>
+        </template>
+      </admin-page-header>
 
       <section class="mb-8">
         <h2 class="mb-4 text-xl font-bold text-colliers-primary">{{ t('monthlySpendOverview') }}</h2>
@@ -52,12 +53,13 @@
 <script>
 import ColliersPageShell from '../../layout/ColliersPageShell.vue'
 import AppButton from '../../components/AppButton.vue'
+import AdminPageHeader from '../../components/AdminPageHeader.vue'
 import { t } from '../../store'
 import { MOCK_REPORTING } from '../../helpers/adminData'
 
 export default {
   name: 'AdminReportingPage',
-  components: { ColliersPageShell, AppButton },
+  components: { ColliersPageShell, AppButton, AdminPageHeader },
   data: function () {
     return {
       reporting: MOCK_REPORTING,

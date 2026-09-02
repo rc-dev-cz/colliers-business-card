@@ -1,125 +1,77 @@
 <template>
-  <colliers-page-shell>
-    <div class="mx-auto w-full max-w-5xl">
-      <div class="mb-6 flex flex-col gap-4 sm:mb-8 sm:flex-row sm:items-center sm:justify-between">
-        <h1 class="text-3xl font-bold text-gray-900 sm:text-4xl">{{ t('manageAddresses') }}</h1>
-        <app-button class="w-full sm:w-auto" @click="openNew">{{ t('newAddress') }}</app-button>
-      </div>
-
-      <div class="mb-5">
-        <label class="sr-only" for="office-search">{{ t('searchAddresses') }}</label>
-        <text-field
-          id="office-search"
-          :value="search"
-          :placeholder="t('searchAddressesPlaceholder')"
-          @input="search = $event"
-        ></text-field>
-      </div>
+  <colliers-page-shell viewport-list>
+    <div class="colliers-viewport-list mx-auto w-full max-w-2xl">
+      <admin-page-header
+        :title="t('manageAddresses')"
+        :subtitle="t('manageColliersOfficesHint')"
+      ></admin-page-header>
 
       <loading-state v-if="store.officesLoading" :message="t('loading')"></loading-state>
       <error-state v-else-if="store.officesError" :message="store.officesError"></error-state>
-      <div v-else class="overflow-x-auto rounded-md border border-gray-200 bg-white">
-        <table class="min-w-full text-left text-sm">
-          <thead class="border-b border-gray-200 bg-gray-50 text-gray-600">
-            <tr>
-              <th class="px-4 py-3 font-medium">{{ t('locationName') }}</th>
-              <th class="px-4 py-3 font-medium">{{ t('address') }}</th>
-              <th class="px-4 py-3 text-right font-medium">{{ t('actions') }}</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-if="!filteredOffices.length">
-              <td colspan="3" class="px-4 py-10 text-center text-gray-500">
-                {{ t('noOfficeAddresses') }}
-              </td>
-            </tr>
-            <tr
-              v-for="row in filteredOffices"
-              :key="row.id"
-              class="border-b border-gray-100 last:border-0"
-            >
-              <td class="px-4 py-3 font-medium text-gray-900">{{ row.addressName }}</td>
-              <td class="px-4 py-3 text-gray-700">{{ formatAddressLine(row) }}</td>
-              <td class="whitespace-nowrap px-4 py-3 text-right">
-                <button type="button" class="text-colliers-primary hover:underline" @click="openEdit(row.id)">
-                  {{ t('edit') }}
-                </button>
-                <span class="mx-2 text-gray-300">|</span>
-                <button type="button" class="text-red-600 hover:underline" @click="confirmDelete(row.id)">
-                  {{ t('delete') }}
-                </button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+      <div v-else class="colliers-list-panel colliers-list-panel--viewport">
+        <div class="mb-4 flex gap-2">
+          <label class="sr-only" for="quick-office-address">{{ t('enterNewOfficeAddress') }}</label>
+          <input
+            id="quick-office-address"
+            v-model="quickAdd"
+            type="text"
+            class="flex-1 rounded-[4px] border border-gray-300 bg-white px-3 py-2 text-[14px] focus:border-colliers-primary focus:outline-none focus:ring-1 focus:ring-colliers-primary"
+            :placeholder="t('enterNewOfficeAddress')"
+            @keydown.enter.prevent="openNewFromQuick"
+          />
+          <button
+            type="button"
+            class="inline-flex items-center justify-center rounded-[4px] bg-colliers-primary px-4 py-2 text-white transition-colors hover:bg-colliers-primary-hover"
+            :aria-label="t('addOfficeAddress')"
+            @click="openNew"
+          >
+            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+            </svg>
+          </button>
+        </div>
+
+        <div v-if="filteredOffices.length" class="colliers-list-panel-scroll">
+          <ul class="space-y-2">
+          <li
+            v-for="row in filteredOffices"
+            :key="row.id"
+            class="colliers-list-row group"
+          >
+            <span class="colliers-list-row-body text-sm text-gray-800">{{ officeListLabel(row) }}</span>
+            <colliers-list-row-actions
+              :edit-label="t('editOfficeAddress')"
+              :delete-label="t('removeOfficeAddress')"
+              @edit="openEdit(row.id)"
+              @delete="confirmDelete(row.id)"
+            ></colliers-list-row-actions>
+          </li>
+          </ul>
+        </div>
+        <p v-else class="py-8 text-center text-sm italic text-gray-500">
+          {{ t('noOfficeAddresses') }}
+        </p>
       </div>
     </div>
 
-    <div
-      v-if="formOpen"
-      class="fixed inset-0 z-40 flex items-end justify-center bg-black/40 p-0 sm:items-center sm:p-4"
-      role="dialog"
-      aria-modal="true"
-      @click.self="closeForm"
-    >
-      <div class="max-h-[92vh] w-full max-w-xl overflow-y-auto rounded-t-lg bg-white shadow-xl sm:rounded-lg">
-        <div class="flex items-center justify-between border-b border-gray-200 px-5 py-4">
-          <h2 class="text-lg font-semibold text-gray-900">
-            {{ editingId ? t('editAddress') : t('newAddress') }}
-          </h2>
-          <button type="button" class="rounded p-1 text-gray-500 hover:bg-gray-100" @click="closeForm">
-            {{ t('close') }}
-          </button>
-        </div>
-        <form class="space-y-4 px-5 py-5" @submit.prevent="saveForm">
-          <div>
-            <label class="field-label" for="office-name">{{ t('locationNickname') }}</label>
-            <text-field id="office-name" :value="form.addressName" required @input="form.addressName = $event"></text-field>
-          </div>
-          <div>
-            <label class="field-label" for="office-street">{{ t('addressLine1') }}</label>
-            <text-field id="office-street" :value="form.addressStreet" required @input="form.addressStreet = $event"></text-field>
-          </div>
-          <div>
-            <label class="field-label" for="office-street2">{{ t('addressLine2') }}</label>
-            <text-field id="office-street2" :value="form.addressStreet2" @input="form.addressStreet2 = $event"></text-field>
-          </div>
-          <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
-            <div>
-              <label class="field-label" for="office-city">{{ t('city') }}</label>
-              <text-field id="office-city" :value="form.addressCity" required @input="form.addressCity = $event"></text-field>
-            </div>
-            <div>
-              <label class="field-label" for="office-province">{{ t('province') }}</label>
-              <text-field id="office-province" :value="form.addressProvince" @input="form.addressProvince = $event"></text-field>
-            </div>
-          </div>
-          <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
-            <div>
-              <label class="field-label" for="office-postal">{{ t('postalCode') }}</label>
-              <text-field id="office-postal" :value="form.addressPostalZip" @input="form.addressPostalZip = $event"></text-field>
-            </div>
-            <div>
-              <label class="field-label" for="office-country">{{ t('country') }}</label>
-              <text-field id="office-country" :value="form.addressCountry" @input="form.addressCountry = $event"></text-field>
-            </div>
-          </div>
-          <div class="flex flex-col-reverse gap-3 border-t border-gray-100 pt-4 sm:flex-row sm:justify-end">
-            <app-button variant="outline" @click="closeForm">{{ t('backToAddresses') }}</app-button>
-            <app-button html-type="submit">{{ editingId ? t('updateAddress') : t('addAddress') }}</app-button>
-          </div>
-        </form>
-      </div>
-    </div>
+    <office-address-form-modal
+      :open="formOpen"
+      :editing-id="editingId"
+      :initial-form="form"
+      :saving="saving"
+      @close="closeForm"
+      @save="saveForm"
+    ></office-address-form-modal>
   </colliers-page-shell>
 </template>
 
 <script>
 import ColliersPageShell from '../../layout/ColliersPageShell.vue'
-import AppButton from '../../components/AppButton.vue'
-import TextField from '../../components/TextField.vue'
+import AdminPageHeader from '../../components/AdminPageHeader.vue'
 import LoadingState from '../../components/LoadingState.vue'
 import ErrorState from '../../components/ErrorState.vue'
+import OfficeAddressFormModal from '../../components/OfficeAddressFormModal.vue'
+import ColliersListRowActions from '../../components/ColliersListRowActions.vue'
 import {
   store,
   t,
@@ -130,26 +82,24 @@ import {
   getOffice,
 } from '../../store'
 import { emptyOffice } from '../../helpers/officeAdmin'
-import { matchesSearch, formatAddressLine } from '../../helpers/addressBook'
+import { formatAddressLine } from '../../helpers/addressBook'
 
 export default {
   name: 'ManageAddressesPage',
-  components: { ColliersPageShell, AppButton, TextField, LoadingState, ErrorState },
+  components: { ColliersPageShell, AdminPageHeader, LoadingState, ErrorState, OfficeAddressFormModal, ColliersListRowActions },
   data: function () {
     return {
       store: store,
-      search: '',
+      quickAdd: '',
       formOpen: false,
       editingId: null,
       form: emptyOffice(),
+      saving: false,
     }
   },
   computed: {
     filteredOffices: function () {
-      const self = this
-      return this.store.offices.filter(function (row) {
-        return matchesSearch(row, self.search)
-      })
+      return this.store.offices
     },
   },
   mounted: function () {
@@ -158,13 +108,28 @@ export default {
   methods: {
     t: t,
     formatAddressLine: formatAddressLine,
+    officeListLabel: function (row) {
+      const line = formatAddressLine(row)
+      const name = String(row.addressName || '').trim()
+      if (name && name !== line) return name + ' — ' + line
+      return line || name
+    },
     resetForm: function () {
       this.form = emptyOffice()
       this.editingId = null
     },
     openNew: function () {
       this.resetForm()
+      this.prefillFromQuick()
       this.formOpen = true
+    },
+    openNewFromQuick: function () {
+      this.openNew()
+    },
+    prefillFromQuick: function () {
+      const text = String(this.quickAdd || '').trim()
+      if (!text) return
+      this.form.addressStreet = text
     },
     openEdit: function (id) {
       const row = getOffice(id)
@@ -175,23 +140,20 @@ export default {
       this.formOpen = true
     },
     closeForm: function () {
+      if (this.saving) return
       this.formOpen = false
       this.resetForm()
     },
-    saveForm: function () {
-      const payload = {
-        addressName: String(this.form.addressName || '').trim(),
-        addressStreet: String(this.form.addressStreet || '').trim(),
-        addressStreet2: String(this.form.addressStreet2 || '').trim(),
-        addressCity: String(this.form.addressCity || '').trim(),
-        addressProvince: String(this.form.addressProvince || '').trim(),
-        addressPostalZip: String(this.form.addressPostalZip || '').trim(),
-        addressCountry: String(this.form.addressCountry || '').trim() || 'Canada',
-      }
-      if (!payload.addressName || !payload.addressStreet || !payload.addressCity) return
-      if (this.editingId) updateOffice(this.editingId, payload)
-      else addOffice(payload)
-      this.closeForm()
+    saveForm: function (payload) {
+      const self = this
+      this.saving = true
+      setTimeout(function () {
+        if (self.editingId) updateOffice(self.editingId, payload)
+        else addOffice(payload)
+        self.saving = false
+        self.quickAdd = ''
+        self.closeForm()
+      }, 400)
     },
     confirmDelete: function (id) {
       if (window.confirm(t('confirmDeleteOffice'))) deleteOffice(id)

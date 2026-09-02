@@ -1,7 +1,9 @@
 <template>
   <colliers-page-shell>
     <div class="mx-auto w-full max-w-5xl">
-      <h1 class="mb-8 text-3xl font-bold text-gray-900 sm:text-4xl">{{ t('adminDashboard') }}</h1>
+      <div class="colliers-page-intro">
+        <h1 class="colliers-page-title">{{ t('adminDashboard') }}</h1>
+      </div>
       <h2 class="mb-5 text-xl font-bold text-colliers-primary sm:text-2xl">{{ t('systemOptions') }}</h2>
       <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
         <button
@@ -12,7 +14,9 @@
           @click="go(tile.to)"
         >
           <h3 class="text-lg font-semibold text-gray-900">{{ t(tile.titleKey) }}</h3>
-          <p class="mt-1 text-sm font-medium text-colliers-primary">{{ tile.subtitle }}</p>
+          <p class="mt-1 text-sm font-medium text-colliers-primary">
+            {{ tile.subtitleKey ? t(tile.subtitleKey) : tile.count }}
+          </p>
         </button>
       </div>
     </div>
@@ -21,7 +25,7 @@
 
 <script>
 import ColliersPageShell from '../../layout/ColliersPageShell.vue'
-import { t, store, loadOffices, loadTitles } from '../../store'
+import { t, store, loadOffices, loadTitles, loadDegrees } from '../../store'
 import { go } from '../../adapters/nav'
 
 export default {
@@ -30,17 +34,20 @@ export default {
   mounted: function () {
     loadOffices()
     loadTitles()
+    loadDegrees()
   },
   computed: {
     tiles: function () {
       const addressCount = this.store.offices.length
       const titleCount = this.store.titles.length
+      const degreeCount = this.store.degrees.length
       return [
-        { titleKey: 'orderHistory', subtitle: t('viewPastOrders'), to: 'admin-orders' },
-        { titleKey: 'invoiceHistory', subtitle: t('manageBilling'), to: 'admin-invoices' },
-        { titleKey: 'reporting', subtitle: t('viewAnalytics'), to: 'admin-reporting' },
-        { titleKey: 'manageAddresses', subtitle: String(addressCount), to: 'admin-addresses' },
-        { titleKey: 'manageTitles', subtitle: String(titleCount), to: 'admin-titles' },
+        { titleKey: 'orderHistory', subtitleKey: 'viewPastOrders', to: 'admin-orders' },
+        { titleKey: 'invoiceHistory', subtitleKey: 'manageBilling', to: 'admin-invoices' },
+        { titleKey: 'reporting', subtitleKey: 'viewAnalytics', to: 'admin-reporting' },
+        { titleKey: 'manageAddresses', count: addressCount, to: 'admin-addresses' },
+        { titleKey: 'manageDesignations', count: titleCount, to: 'admin-titles' },
+        { titleKey: 'manageDegrees', count: degreeCount, to: 'admin-degrees' },
       ]
     },
     store: function () {

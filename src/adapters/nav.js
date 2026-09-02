@@ -13,6 +13,7 @@ const PATHS = {
   admin: '/admin',
   'admin-addresses': '/admin/addresses',
   'admin-titles': '/admin/titles',
+  'admin-degrees': '/admin/degrees',
   'admin-orders': '/admin/orders',
   'admin-invoices': '/admin/invoices',
   'admin-reporting': '/admin/reporting',

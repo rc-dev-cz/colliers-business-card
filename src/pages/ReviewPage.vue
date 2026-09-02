@@ -4,8 +4,8 @@
       <span aria-hidden="true">‹</span> {{ t('back') }}
     </button>
 
-    <div class="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-      <h1 class="text-3xl font-bold text-gray-900">{{ t('reviewOrder') }}</h1>
+    <div class="colliers-page-header">
+      <h1 class="colliers-page-title">{{ t('reviewOrder') }}</h1>
       <app-button :disabled="!store.cart.length || store.submitting" @click="confirm">
         {{ t('confirmOrder') }}
       </app-button>

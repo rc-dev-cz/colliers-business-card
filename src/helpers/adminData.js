@@ -1,22 +1,7 @@
-import { loadOrderHistory } from '../adapters/profileStorage'
-import { cloneHistoryRecord } from './orderHistory'
-
-const PORTAL_USERS = ['demo', 'admin']
+import { seedAdminOrderHistory } from './orderHistory'
 
 export function loadAllPortalOrders() {
-  const rows = []
-  PORTAL_USERS.forEach(function (email) {
-    loadOrderHistory(email).forEach(function (order) {
-      rows.push(
-        Object.assign(cloneHistoryRecord(order), {
-          ownerEmail: email,
-        }),
-      )
-    })
-  })
-  return rows.sort(function (a, b) {
-    return new Date(b.date).getTime() - new Date(a.date).getTime()
-  })
+  return seedAdminOrderHistory()
 }
 
 export const MOCK_INVOICES = [

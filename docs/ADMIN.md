@@ -4,7 +4,7 @@ Use this file to track **admin screens from the designer preview** and turn them
 
 Verified in the designer preview on **13 Aug 2026** (`admin` / `123`). Address Book on the admin profile rechecked **14 Aug 2026**. Manage Addresses / Dashboard / Order History rechecked **19 Aug 2026**.
 
-**Designer vs Vue sync 28 Aug 2026:** No new pages. Designer `#/address-book` is personal addresses only (single list, “Add New Address”). Vue `#/addresses` keeps **My Address Book + Office Addresses** tabs — behavior reference only; do not drop the Office tab. Manage Addresses is still the next **page build** in Vue (`ADM-060`); designer already has the full screen. Order flow / customize: follow Vue, not designer.
+**Designer vs Vue sync 31 Aug 2026:** Aug 28 designer adds **Manage Degrees/Certifications** (`#/admin/degrees`). Vue renames titles admin screen to **Manage Designations** (nav: **Designations**); blue admin header replaces the ADMIN badge. Vue `#/addresses` keeps **My Address Book + Office Addresses** tabs. Manage Addresses uses list + modal form. Order flow / customize: follow Vue, not designer.
 
 | Layer | Role |
 | --- | --- |
@@ -15,7 +15,7 @@ Verified in the designer preview on **13 Aug 2026** (`admin` / `123`). Address B
 | **This file** | Admin port checklist + story codes |
 | [TESTING.md](TESTING.md) | Use cases (admin cases still catch up) |
 
-Admin login, nav, dashboard tiles, and Address Book are in this Vue 2 app. Address Book on the admin profile is the same page as the user (Done). **Manage Addresses, Manage Titles, Order History, Invoice History, and Reporting** are implemented in Vue 2 (28 Aug 2026). Designer UI is the **behavior reference**, not a pixel match.
+Admin login, nav, dashboard tiles, and Address Book are in this Vue 2 app. Address Book on the admin profile is the same page as the user (Done). **Manage Addresses, Manage Designations, Manage Degrees, Order History, Invoice History, and Reporting** are implemented in Vue 2. Designer UI is the **behavior reference**, not a pixel match.
 
 ## Status key
 
@@ -37,7 +37,7 @@ Admin login, nav, dashboard tiles, and Address Book are in Vue 2. Remaining **sc
 - [x] **ADM-001** Admin scoped from designer — stories in this file, tickets on the board
 - [x] **ADM-010** Admin login and nav — F-12
   - [x] **ADM-011** Login `admin` / `123`
-  - [x] **ADM-012** Header: ADMIN, Catalogue, Manage Addresses, Manage Titles
+  - [x] **ADM-012** Header: Catalogue, Manage Addresses, Designations, Manage Degrees (blue admin bar)
   - [x] **ADM-013** Profile: Admin Panel, Address Book, Order History, Log out
 - [x] **ADM-020** Admin Dashboard — F-13. Tiles in Vue 2; live counts on dashboard (28 Aug 2026).
   - [x] **ADM-021** System Options tiles
@@ -66,12 +66,18 @@ Admin login, nav, dashboard tiles, and Address Book are in Vue 2. Remaining **sc
   - [x] **ADM-065** New / edit form fields
   - [x] **ADM-066** Form actions (Save, Update, Back — no Save Draft)
   - [x] **ADM-067** Customize and shipping use this list
-- [x] **ADM-070** Manage Titles — F-15. `#/admin/titles`
+- [x] **ADM-070** Manage Designations — F-15. `#/admin/titles`
   - [x] **ADM-071** List designations
   - [x] **ADM-072** Add
   - [x] **ADM-073** Delete
   - [x] **ADM-074** Inline edit
   - [x] **ADM-075** Customize dropdown uses this list
+- [x] **ADM-090** Manage Degrees/Certifications — `#/admin/degrees`
+  - [x] **ADM-091** List degrees
+  - [x] **ADM-092** Add
+  - [x] **ADM-093** Delete
+  - [x] **ADM-094** Inline edit
+  - [ ] **ADM-095** Customize card uses degree list (future — designer preview only)
 - [x] **ADM-080** Address Book (admin) — F-29. Done. Same page as the demo user.
   - [x] **ADM-081** Address Book from profile menu
   - [x] **ADM-082** My Address Book (personal; admin can add / edit / delete)

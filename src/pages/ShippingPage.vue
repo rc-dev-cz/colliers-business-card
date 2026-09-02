@@ -4,9 +4,9 @@
       <span aria-hidden="true">‹</span> {{ t('back') }}
     </button>
 
-    <div class="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+    <div class="colliers-page-header">
       <div class="flex flex-wrap items-baseline gap-3">
-        <h1 class="text-3xl font-bold text-gray-900">{{ t('shipping') }}</h1>
+        <h1 class="colliers-page-title">{{ t('shipping') }}</h1>
         <span class="text-sm text-gray-500">{{ t('total') }} {{ count }} {{ t('items') }}</span>
       </div>
       <app-button @click="checkout">{{ t('reviewCheckout') }}</app-button>

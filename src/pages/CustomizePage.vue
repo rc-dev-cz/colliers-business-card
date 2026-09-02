@@ -15,7 +15,7 @@
         </div>
 
         <div class="min-w-0 flex-1">
-          <h1 class="mb-6 text-2xl font-bold text-colliers-primary sm:text-3xl">{{ t('customizeDetails') }}</h1>
+          <h1 class="colliers-page-title mb-6">{{ t('customizeDetails') }}</h1>
           <form class="space-y-4" @submit.prevent="addItemToCart">
             <text-field
               :label="t('fullName')"

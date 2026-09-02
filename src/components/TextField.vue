@@ -2,12 +2,15 @@
   <div>
     <label v-if="label" class="field-label">{{ label }}</label>
     <input
+      :id="id || undefined"
       class="field-input"
       :type="type"
       :value="value"
       :maxlength="maxlength"
       :disabled="disabled"
+      :required="required"
       :placeholder="placeholder"
+      :aria-invalid="error ? 'true' : 'false'"
       @input="onInput"
     />
     <p v-if="hint" class="field-hint">{{ hint }}</p>
@@ -27,6 +30,8 @@ export default {
     placeholder: { type: String, default: '' },
     hint: { type: String, default: '' },
     error: { type: String, default: '' },
+    id: { type: String, default: '' },
+    required: { type: Boolean, default: false },
   },
   methods: {
     onInput: function (event) {

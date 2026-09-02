@@ -13,7 +13,7 @@ import OrderHistoryPage from './pages/OrderHistoryPage.vue'
 import AdminDashboardPage from './pages/admin/AdminDashboardPage.vue'
 import ManageAddressesPage from './pages/admin/ManageAddressesPage.vue'
 import ManageTitlesPage from './pages/admin/ManageTitlesPage.vue'
-import AdminOrderHistoryPage from './pages/admin/AdminOrderHistoryPage.vue'
+import ManageDegreesPage from './pages/admin/ManageDegreesPage.vue'
 import AdminInvoicesPage from './pages/admin/AdminInvoicesPage.vue'
 import AdminReportingPage from './pages/admin/AdminReportingPage.vue'
 import RcWebDevLayout from './rc-web-dev/RcWebDevLayout.vue'
@@ -52,9 +52,15 @@ const router = new VueRouter({
       meta: adminMeta,
     },
     {
+      path: '/admin/degrees',
+      name: 'admin-degrees',
+      component: ManageDegreesPage,
+      meta: adminMeta,
+    },
+    {
       path: '/admin/orders',
       name: 'admin-orders',
-      component: AdminOrderHistoryPage,
+      component: OrderHistoryPage,
       meta: adminMeta,
     },
     {

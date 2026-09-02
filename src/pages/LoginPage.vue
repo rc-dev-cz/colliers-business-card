@@ -11,8 +11,8 @@
 
       <loading-state v-if="loading" :message="t('loading')"></loading-state>
       <div v-else>
-        <h1 class="mb-2 text-xl font-semibold text-gray-900">{{ t('login') }}</h1>
-        <p class="mb-6 text-sm leading-relaxed text-gray-500">{{ t('loginWelcome') }}</p>
+        <h1 class="colliers-page-title colliers-page-title--compact mb-2">{{ t('login') }}</h1>
+        <p class="colliers-page-subtitle mb-6">{{ t('loginWelcome') }}</p>
         <form class="space-y-5" @submit.prevent="submit">
           <text-field :label="t('email')" :value="email" @input="email = $event"></text-field>
           <text-field :label="t('password')" type="password" :value="password" @input="password = $event"></text-field>
