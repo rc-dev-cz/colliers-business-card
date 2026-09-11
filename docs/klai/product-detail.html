@@ -1,0 +1,70 @@
+<div id="product-detail-root" class="colliers-page-root px-4 py-8 sm:px-6 lg:px-8">
+  <div v-if="model.notFound" class="py-20 text-center text-gray-500">{{ BF.i18n('label_colliers_productNotFound') }}</div>
+  <div v-else-if="model.product && model.product.code">
+    <button type="button" class="mb-6 inline-flex items-center gap-1 text-sm text-gray-600 hover:text-gray-900" @click="BF.namedAction('goBack')"><span aria-hidden="true">&lsaquo;</span> {{ BF.i18n('label_colliers_back') }}</button>
+    <div class="flex flex-col gap-10 lg:flex-row lg:gap-12">
+      <div class="w-full lg:max-w-[480px]">
+        <div class="rounded-md border border-gray-200 bg-white p-1 shadow-sm">
+          <bfcomp name="CardPreview" model="card"></bfcomp>
+        </div>
+        <div class="mt-6 space-y-4 text-[15px]">
+          <div>
+            <h3 class="mb-2 font-semibold text-gray-900">{{ BF.i18n('label_colliers_itemsIncluded') }}</h3>
+            <div class="mb-2 italic text-gray-700">{{ BF.i18n('label_colliers_materials') }}</div>
+            <ul class="list-disc space-y-1 pl-5 text-gray-700">
+              <li>{{ BF.i18n('label_colliers_premiumStock') }}</li>
+              <li>{{ BF.i18n('label_colliers_finishOptions') }}</li>
+            </ul>
+          </div>
+          <div>
+            <div class="mb-2 italic text-gray-700">{{ BF.i18n('label_colliers_trainings') }}</div>
+            <ul class="list-disc space-y-1 pl-5 text-gray-700">
+              <li>{{ BF.i18n('label_colliers_brandCompliance') }}</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="min-w-0 flex-1">
+        <h1 class="colliers-page-title mb-6">{{ BF.i18n(model.product.nameKey) }}</h1>
+        <div class="space-y-0 text-[14px]">
+          <div class="flex flex-col border-b border-gray-200 py-2 sm:flex-row sm:justify-between">
+            <span class="w-[200px] shrink-0 font-semibold text-gray-700">{{ BF.i18n('label_colliers_itemNumber') }}</span>
+            <div class="mt-1 flex-1 text-gray-600 sm:mt-0 sm:text-right">{{ model.product.code }}<br />{{ BF.i18n(model.product.nameKey) }}</div>
+          </div>
+          <div class="border-b border-gray-200 py-4">
+            <span class="mb-3 block font-semibold text-gray-700">{{ BF.i18n('label_colliers_price') }}</span>
+            <div class="overflow-x-auto">
+              <table class="min-w-full text-left text-sm">
+                <thead class="bg-[#25408F] text-white">
+                  <tr>
+                    <th class="px-3 py-2 font-medium">{{ BF.i18n('label_colliers_qtyFrom') }}</th>
+                    <th class="px-3 py-2 font-medium">{{ BF.i18n('label_colliers_to') }}</th>
+                    <th class="px-3 py-2 font-medium">{{ BF.i18n('label_colliers_pricePer') }}</th>
+                    <th class="px-3 py-2 font-medium">{{ BF.i18n('label_colliers_unitTotal') }}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr v-for="(tier, i) in model.product.priceTiers" :key="i" class="border-b border-gray-200">
+                    <td class="px-3 py-2">{{ tier.from }} BX</td>
+                    <td class="px-3 py-2">{{ tier.to }}</td>
+                    <td class="px-3 py-2">${{ Number(tier.pricePer).toFixed(2) }} / BX</td>
+                    <td class="px-3 py-2">${{ Number(tier.unitTotal).toFixed(2) }}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div class="flex flex-col border-b border-gray-200 py-2 sm:flex-row sm:justify-between"><span class="w-[200px] shrink-0 font-semibold text-gray-700">{{ BF.i18n('label_colliers_language') }}</span><div class="mt-1 flex-1 text-gray-600 sm:mt-0 sm:text-right">{{ BF.i18n('label_colliers_' + model.product.languageKey) }}</div></div>
+          <div class="flex flex-col border-b border-gray-200 py-2 sm:flex-row sm:justify-between"><span class="w-[200px] shrink-0 font-semibold text-gray-700">{{ BF.i18n('label_colliers_packaging') }}</span><div class="mt-1 flex-1 text-gray-600 sm:mt-0 sm:text-right">{{ model.product.packaging }}</div></div>
+          <div class="flex flex-col border-b border-gray-200 py-2 sm:flex-row sm:justify-between"><span class="w-[200px] shrink-0 font-semibold text-gray-700">{{ BF.i18n('label_colliers_productType') }}</span><div class="mt-1 flex-1 text-gray-600 sm:mt-0 sm:text-right">{{ BF.i18n('label_colliers_printOnDemand') }}</div></div>
+          <div class="flex flex-col border-b border-gray-200 py-2 sm:flex-row sm:justify-between"><span class="w-[200px] shrink-0 font-semibold text-gray-700">{{ BF.i18n('label_colliers_minOrderQty') }}</span><div class="mt-1 flex-1 text-gray-600 sm:mt-0 sm:text-right">{{ model.product.minQty }}</div></div>
+          <div class="flex flex-col border-b border-gray-200 py-2 sm:flex-row sm:justify-between"><span class="w-[200px] shrink-0 font-semibold text-gray-700">{{ BF.i18n('label_colliers_status') }}</span><div class="mt-1 flex-1 text-gray-600 sm:mt-0 sm:text-right">{{ BF.i18n('label_colliers_active') }}</div></div>
+          <div class="flex flex-col border-b border-gray-200 py-2 sm:flex-row sm:justify-between"><span class="w-[200px] shrink-0 font-semibold text-gray-700">{{ BF.i18n('label_colliers_dateAdded') }}</span><div class="mt-1 flex-1 text-gray-600 sm:mt-0 sm:text-right">{{ model.product.dateAdded }}</div></div>
+        </div>
+        <button type="button" class="btn-primary mt-8 w-full sm:w-auto sm:min-w-[240px]" @click="BF.namedAction('goCustomize')">{{ BF.i18n('label_colliers_customize') }}</button>
+        <p class="mt-6 text-xs italic leading-relaxed text-gray-500">{{ BF.i18n('label_colliers_salesFinal') }}</p>
+        <p class="mt-2 text-xs italic leading-relaxed text-gray-500">{{ BF.i18n('label_colliers_salesDigital') }}</p>
+      </div>
+    </div>
+  </div>
+</div>

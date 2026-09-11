@@ -11,6 +11,7 @@ Office addresses come from FileMaker (`GET /api/addresses`). They are not stored
 - **[BUSINESS-RULES.md](BUSINESS-RULES.md)** — agreed product behaviour and test IDs (V2, August 2026)
 - **This Vue repo** — user order flow, especially customize (ahead of the designer). Do not copy customize from AI Studio.
 - **Designer preview** — admin screens only, at a high level. Do not match that UI pixel for pixel.
+- **[klai/BACKEND-NAMING.md](klai/BACKEND-NAMING.md)** — Klai page ↔ route ↔ hook set ↔ FileMaker script naming and data models
 
 Preview login (`demo` / any email in Vue) is for designer and us only. It is **not** a product feature. Signup and forgot-password are preview-only too. Do not list them here.
 

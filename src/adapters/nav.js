@@ -1,13 +1,14 @@
 let router = null
 
+/** Route names and paths aligned with Klai `content.layouts` (see docs/klai/BACKEND-NAMING.md). */
 const PATHS = {
   login: '/login',
   catalog: '/',
-  details: '/details/:code',
-  customize: '/customize/:code',
+  'product-detail': '/product-detail',
+  customize: '/customize',
   shipping: '/shipping',
-  addresses: '/addresses',
-  history: '/history',
+  'address-book': '/address-book',
+  'order-history': '/order-history',
   review: '/review',
   confirmed: '/confirmed',
   admin: '/admin',
@@ -23,6 +24,12 @@ const PATHS = {
   'rc-web-dev-architecture': '/rc-web-dev/architecture',
 }
 
+/** Routes that pass product code as `?code=` (Klai style), not path params. */
+const QUERY_CODE_ROUTES = {
+  'product-detail': true,
+  customize: true,
+}
+
 function fill(path, params) {
   const source = params || {}
   return path.replace(/:([A-Za-z0-9_]+)/g, function (_, key) {
@@ -30,23 +37,36 @@ function fill(path, params) {
   })
 }
 
+function hashFor(name, params) {
+  const source = params || {}
+  const path = PATHS[name] || '/'
+  if (QUERY_CODE_ROUTES[name] && source.code != null && source.code !== '') {
+    return path + '?code=' + encodeURIComponent(source.code)
+  }
+  return fill(path, source)
+}
+
 export function bindRouter(instance) {
   router = instance
 }
 
 export function go(name, params) {
+  const source = params || {}
   const bf = typeof window !== 'undefined' && window.BF && window.BF.router
   if (bf && typeof bf.go === 'function') {
     bf.go(name, params)
     return
   }
   if (router) {
-    router.push({ name: name, params: params })
+    if (QUERY_CODE_ROUTES[name] && source.code != null && source.code !== '') {
+      router.push({ name: name, query: { code: source.code } })
+      return
+    }
+    router.push({ name: name, params: source })
     return
   }
-  const path = PATHS[name] || '/'
   if (typeof window !== 'undefined') {
-    window.location.hash = '#' + fill(path, params)
+    window.location.hash = '#' + hashFor(name, source)
   }
 }
 
@@ -73,7 +93,7 @@ export function currentHashPath() {
 
 export function currentRouteName() {
   if (router && router.currentRoute) return router.currentRoute.name
-  const path = currentHashPath()
+  const path = currentHashPath().split('?')[0]
   if (path === '/' || path === '') return 'catalog'
   const match = Object.keys(PATHS).find(function (name) {
     return PATHS[name] === path

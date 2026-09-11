@@ -8,8 +8,8 @@
 
       <div class="flex flex-col gap-10 lg:flex-row lg:gap-12">
         <div class="w-full lg:max-w-[480px]">
-          <div class="rounded-lg bg-gray-100 p-4 sm:p-6">
-            <card-preview :details="defaultCardDetails"></card-preview>
+          <div class="card-preview-frame">
+            <card-preview :details="{}" :language="product.language"></card-preview>
           </div>
           <div class="mt-6 space-y-4 text-[15px]">
             <div>
@@ -90,7 +90,7 @@
 import ColliersPageShell from '../layout/ColliersPageShell.vue'
 import CardPreview from '../components/CardPreview.vue'
 import AppButton from '../components/AppButton.vue'
-import { defaultCardDetails, getProduct } from '../data/products'
+import { getProduct } from '../data/products'
 import { productNameKey } from '../i18n/messages'
 import { t } from '../store'
 import { go } from '../adapters/nav'
@@ -99,10 +99,7 @@ export default {
   name: 'DetailsPage',
   components: { ColliersPageShell, CardPreview, AppButton },
   props: {
-    code: { type: String, required: true },
-  },
-  data: function () {
-    return { defaultCardDetails: defaultCardDetails }
+    code: { type: String, default: '' },
   },
   computed: {
     product: function () {

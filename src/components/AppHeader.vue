@@ -172,8 +172,8 @@
             <button
               type="button"
               class="w-full px-3 py-2 text-left text-sm"
-              :class="profileMenuClass('addresses')"
-              :aria-current="routeName === 'addresses' ? 'page' : null"
+              :class="profileMenuClass('address-book')"
+              :aria-current="routeName === 'address-book' ? 'page' : null"
               @click="goAddressBook"
             >
               {{ t('addressBook') }}
@@ -181,8 +181,8 @@
             <button
               type="button"
               class="w-full px-3 py-2 text-left text-sm"
-              :class="profileMenuClass('history')"
-              :aria-current="routeName === 'history' ? 'page' : null"
+              :class="profileMenuClass('order-history')"
+              :aria-current="routeName === 'order-history' ? 'page' : null"
               @click="goOrderHistory"
             >
               {{ t('orderHistory') }}
@@ -277,16 +277,16 @@
           <button
             type="button"
             class="colliers-mobile-nav-link"
-            :class="mobileNavClass('addresses')"
-            @click="onMobileNav('addresses')"
+            :class="mobileNavClass('address-book')"
+            @click="onMobileNav('address-book')"
           >
             {{ t('addressBook') }}
           </button>
           <button
             type="button"
             class="colliers-mobile-nav-link"
-            :class="mobileNavClass('history')"
-            @click="onMobileNav('history')"
+            :class="mobileNavClass('order-history')"
+            @click="onMobileNav('order-history')"
           >
             {{ t('orderHistory') }}
           </button>
@@ -431,11 +431,11 @@ export default {
     },
     goAddressBook: function () {
       this.menuOpen = false
-      go('addresses')
+      go('address-book')
     },
     goOrderHistory: function () {
       this.menuOpen = false
-      go('history')
+      go('order-history')
     },
     goWebDev: function () {
       this.menuOpen = false

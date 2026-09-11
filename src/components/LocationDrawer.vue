@@ -106,7 +106,7 @@ export default {
     },
     goToAddressBook: function () {
       closeLocationPicker()
-      go('addresses')
+      go('address-book')
     },
     onClose: function () {
       closeLocationPicker()

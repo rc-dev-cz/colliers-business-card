@@ -72,12 +72,16 @@ export const jobTitles = [
   'Sales Representative | Canada',
 ]
 
+/** Shared catalog placeholder labels — not real contact data. */
 export const defaultCardDetails = {
-  name: 'Hubert Blaine\nWolfeschlegelstein',
-  title: 'Associate | Canada',
-  company: 'Colliers',
-  email: 'hubert.wolfe@colliers.com',
-  phone: '+1 416 555-1234',
-  address: 'Colliers office',
-  website: 'colliers.com/canada',
+  name: 'Full Name',
+  degree: 'Degree/Certification, Additional Credentials',
+  title: 'Title',
+  region: 'Region',
+  specializedTeam: 'Specialized Team',
+  company: 'Colliers Project Leaders',
+  email: 'Email:',
+  phone: 'Phone Number',
+  address: 'Address',
+  website: 'colliersprojectleaders.com',
 }

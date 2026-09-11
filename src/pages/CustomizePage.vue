@@ -9,8 +9,8 @@
       <div class="flex flex-col gap-10 lg:flex-row lg:gap-12">
         <div class="w-full lg:max-w-[480px]">
           <h2 class="mb-4 text-lg font-bold text-colliers-primary">{{ t('cardPreview') }}</h2>
-          <div class="rounded-lg bg-gray-100 p-4 sm:p-6">
-            <card-preview :details="details"></card-preview>
+          <div class="card-preview-frame">
+            <card-preview :details="details" :language="product.language"></card-preview>
           </div>
         </div>
 
@@ -80,7 +80,7 @@ export default {
   name: 'CustomizePage',
   components: { ColliersPageShell, CardPreview, TextField, SelectField, PhoneField, AppButton },
   props: {
-    code: { type: String, required: true },
+    code: { type: String, default: '' },
   },
   data: function () {
     return {

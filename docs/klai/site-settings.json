@@ -65,6 +65,18 @@
                 "en": "No personal addresses yet. Add one with + New Address.",
                 "fr": "Aucune adresse personnelle. Ajoutez-en une avec + Nouvelle adresse."
             },
+            "label_colliers_myAddressBook": {
+                "en": "My Address Book",
+                "fr": "Mon carnet d'adresses"
+            },
+            "label_colliers_officeAddresses": {
+                "en": "Office Addresses",
+                "fr": "Adresses de bureau"
+            },
+            "label_colliers_noOfficeAddresses": {
+                "en": "No office addresses to show.",
+                "fr": "Aucune adresse de bureau à afficher."
+            },
             "label_colliers_searchAddresses": {
                 "en": "Search addresses",
                 "fr": "Rechercher des adresses"
@@ -124,6 +136,22 @@
             "label_colliers_statusShipped": {
                 "en": "Shipped",
                 "fr": "Expédiée"
+            },
+            "label_colliers_contactUs": {
+                "en": "Contact Us",
+                "fr": "Nous contacter"
+            },
+            "label_colliers_securityPrivacy": {
+                "en": "Security / Privacy Policy",
+                "fr": "Politique de sécurité et de confidentialité"
+            },
+            "label_colliers_terms": {
+                "en": "Terms of Use / Copyright",
+                "fr": "Conditions d'utilisation / Droits d'auteur"
+            },
+            "label_colliers_allRights": {
+                "en": "All Rights Reserved",
+                "fr": "Tous droits réservés"
             },
             "placeholder_colliers_searchOrderByName": {
                 "en": "Search by Name...",

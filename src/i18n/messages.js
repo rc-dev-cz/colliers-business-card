@@ -1,9 +1,10 @@
 export const messages = {
   catalog: { EN: 'Catalog', FR: 'Catalogue' },
-  exploreCatalog: { EN: 'Explore Catalog', FR: 'Explorer le catalogue' },
+  exploreCatalog: { EN: 'Explore Catalogue', FR: 'Explorer le catalogue' },
   businessCards: { EN: 'Business Cards', FR: 'Cartes de visite' },
   customize: { EN: 'Customize', FR: 'Personnaliser' },
   details: { EN: 'Details', FR: 'Détails' },
+  pricePerBox: { EN: '${price} / box of 250 cards', FR: '${price} / boîte de 250 cartes' },
   back: { EN: 'Back', FR: 'Retour' },
   cardPreview: { EN: 'Card Preview', FR: 'Aperçu de la carte' },
   customizeDetails: { EN: 'Customize Your Details', FR: 'Personnaliser vos détails' },

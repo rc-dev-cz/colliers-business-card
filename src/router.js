@@ -31,13 +31,42 @@ const router = new VueRouter({
   routes: [
     { path: '/login', name: 'login', component: LoginPage, meta: { public: true } },
     { path: '/', name: 'catalog', component: CatalogPage },
-    { path: '/details/:code', name: 'details', component: DetailsPage, props: true },
-    { path: '/customize/:code', name: 'customize', component: CustomizePage, props: true },
+    {
+      path: '/product-detail',
+      name: 'product-detail',
+      component: DetailsPage,
+      props: function (route) {
+        return { code: route.query.code ? String(route.query.code) : '' }
+      },
+    },
+    {
+      path: '/customize',
+      name: 'customize',
+      component: CustomizePage,
+      props: function (route) {
+        return { code: route.query.code ? String(route.query.code) : '' }
+      },
+    },
     { path: '/shipping', name: 'shipping', component: ShippingPage },
-    { path: '/addresses', name: 'addresses', component: AddressBookPage },
-    { path: '/history', name: 'history', component: OrderHistoryPage },
+    { path: '/address-book', name: 'address-book', component: AddressBookPage },
+    { path: '/order-history', name: 'order-history', component: OrderHistoryPage },
     { path: '/review', name: 'review', component: ReviewPage },
     { path: '/confirmed', name: 'confirmed', component: ConfirmedPage },
+    // Legacy Vue paths → Klai-aligned routes
+    {
+      path: '/details/:code',
+      redirect: function (to) {
+        return { path: '/product-detail', query: { code: to.params.code } }
+      },
+    },
+    {
+      path: '/customize/:code',
+      redirect: function (to) {
+        return { path: '/customize', query: { code: to.params.code } }
+      },
+    },
+    { path: '/addresses', redirect: '/address-book' },
+    { path: '/history', redirect: '/order-history' },
     { path: '/admin', name: 'admin', component: AdminDashboardPage, meta: adminMeta },
     {
       path: '/admin/addresses',

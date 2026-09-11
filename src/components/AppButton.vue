@@ -20,7 +20,10 @@ export default {
   },
   computed: {
     classes: function () {
-      const list = [this.variant === 'outline' ? 'btn-outline' : 'btn-primary']
+      var variantClass = 'btn-primary'
+      if (this.variant === 'outline') variantClass = 'btn-outline'
+      if (this.variant === 'outline-soft') variantClass = 'btn-outline-soft'
+      const list = [variantClass]
       if (this.block) list.push('w-full')
       return list
     },

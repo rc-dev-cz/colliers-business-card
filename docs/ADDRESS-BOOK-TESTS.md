@@ -88,7 +88,7 @@ Today **+ New Address** always shows in the header. Hide it when the Office tab 
 
 | | |
 |---|---|
-| Route | Profile → Addresses (`/addresses`) |
+| Route | Profile → Address Book (`/address-book`) |
 | Code | `src/pages/AddressBookPage.vue`, `src/helpers/addressBook.js`, store personal CRUD |
 | Signed in | Assumed; no auth cases |
 

@@ -1,9 +1,10 @@
 /*
-  COLLIERs ENVIRONMENT CSS
-  Layout geometry for Vue local + later Klai Studio Environment CSS.
-  Tokens + shell markers only — component look stays in Tailwind.
+  Colliers Environment CSS — paste at TOP of Klai Styling tab.
+  Keep existing BF sidebar / .table / heading-reset rules BELOW this block.
+  Source: src/styles/colliers-environment.css + compiled components from src/styles/main.css
 */
 
+/* --- Layer 1: Tokens --- */
 :root {
   --colliers-primary: #25408f;
   --colliers-primary-hover: #1a2e6e;
@@ -14,20 +15,14 @@
   --colliers-border: #e5e7eb;
   --colliers-scroll-body-pad-x: 1.5rem;
   --colliers-scroll-body-max-width: 72rem;
-  /* Admin inline nav needs ~1024px viewport (Tailwind lg). See AppHeader.vue */
-  --colliers-admin-nav-min-width: 1024px;
   --colliers-list-panel-max-height: 600px;
   --colliers-page-title-color: #0a1a3a;
-  /* Catalog product tile — matches ~1 column of the 3-up desktop grid */
-  --colliers-catalog-card-max-width: 24rem;
-}
 
-html,
-body,
-#app,
-#app-root {
-  height: 100%;
-  margin: 0;
+  /* Bridge for existing BF / theme rules */
+  --primary-color: var(--colliers-primary);
+  --background-color: var(--colliers-bg-app);
+  --white-color: var(--colliers-bg-surface);
+  --text-primary: var(--colliers-text);
 }
 
 body {
@@ -36,7 +31,7 @@ body {
   color: var(--colliers-text);
 }
 
-/* Page shell — standalone (no left rail) */
+/* --- Layer 2: Page shell --- */
 .colliers-page {
   display: flex;
   flex-direction: column;
@@ -67,8 +62,7 @@ body {
   flex-direction: column;
 }
 
-.colliers-page-inner,
-.colliers-right-column {
+.colliers-page-inner {
   flex: 1 1 auto;
   min-width: 0;
   min-height: 0;
@@ -104,45 +98,7 @@ body {
   width: 100%;
   background: var(--colliers-bg-surface);
   border-bottom: 1px solid var(--colliers-border);
-}
-
-.colliers-site-header--admin {
-  background: var(--colliers-primary);
-  border-bottom-color: var(--colliers-primary-hover);
-}
-
-body.colliers-mobile-menu-open {
-  overflow: hidden;
-}
-
-.colliers-page-body,
-.colliers-right-body {
-  flex: 1 1 auto;
-  min-height: 0;
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-  overflow-y: auto;
-  overflow-x: hidden;
-}
-
-/* Vue shell: footer is direct child of page body */
-.colliers-page-body > .colliers-site-footer,
-.colliers-right-body > .colliers-site-footer {
-  margin-top: auto;
-}
-
-/* Grow when page is short (footer at bottom); size to content when tall (footer below cards) */
-.colliers-main {
-  width: 100%;
-  max-width: var(--colliers-scroll-body-max-width);
-  margin-left: auto;
-  margin-right: auto;
-  padding-left: var(--colliers-scroll-body-pad-x);
-  padding-right: var(--colliers-scroll-body-pad-x);
-  padding-bottom: 4rem;
-  flex: 1 0 auto;
-  min-height: auto;
+  /* No z-index here — it stacks over Klai editor chrome. Dropdown uses z-30 inline. */
 }
 
 .colliers-site-footer {
@@ -162,100 +118,29 @@ body.colliers-mobile-menu-open {
   margin-bottom: 0;
 }
 
-/* Shared list panels (Manage Addresses, Address Book, Designations, Degrees) */
-.colliers-list-panel {
-  border-radius: 0.5rem;
-  border: 1px solid var(--colliers-border);
-  background: var(--colliers-bg-surface);
-  padding: 1.5rem;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
-}
-
-.colliers-list-panel-scroll {
-  max-height: var(--colliers-list-panel-max-height);
+.colliers-page-body {
+  flex: 1 1 auto;
+  min-height: 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
   overflow-y: auto;
+  overflow-x: hidden;
 }
 
-/* Viewport-fitted list pages: no page scroll — only the list panel scrolls */
+/* Vue shell: footer is direct child of page body */
+.colliers-page-body > .colliers-site-footer {
+  margin-top: auto;
+}
+
 /* Klai stack pages (header + scrollable content + footer): body height locked, middle scrolls */
 .colliers-page-body--stack,
-.colliers-page-body--viewport-list,
-.colliers-right-body--viewport-list {
+.colliers-page-body--viewport-list {
   overflow: hidden;
   background: var(--colliers-bg-app);
 }
 
-.colliers-main--viewport-list {
-  flex: 1 1 auto;
-  min-height: 0;
-  overflow: hidden;
-  padding-bottom: 1.5rem;
-}
-
-.colliers-viewport-list {
-  display: flex;
-  flex-direction: column;
-  flex: 1 1 auto;
-  min-height: 0;
-  width: 100%;
-}
-
-.colliers-viewport-list > :not(.colliers-list-panel--viewport) {
-  flex: 0 0 auto;
-}
-
-.colliers-list-panel--viewport {
-  display: flex;
-  flex-direction: column;
-  flex: 1 1 auto;
-  min-height: 0;
-  overflow: hidden;
-}
-
-.colliers-list-panel--viewport .colliers-list-panel-scroll {
-  flex: 1 1 auto;
-  min-height: 0;
-  max-height: none;
-  overflow-y: auto;
-}
-
-.colliers-list-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 0.75rem;
-  border-radius: 0.375rem;
-  border: 1px solid #f3f4f6;
-  background: #f9fafb;
-  padding: 0.75rem;
-}
-
-.colliers-list-row-body {
-  min-width: 0;
-  flex: 1 1 auto;
-  padding-right: 0.75rem;
-}
-
-.colliers-list-row-title {
-  font-size: 0.875rem;
-  font-weight: 500;
-  color: #111827;
-}
-
-.colliers-list-row-subtitle {
-  margin-top: 0.125rem;
-  font-size: 0.875rem;
-  color: #374151;
-}
-
-.colliers-list-row-actions {
-  display: flex;
-  flex-shrink: 0;
-  align-items: center;
-  gap: 0.25rem;
-}
-
-/* Page titles — one style across shell pages */
+/* --- Page chrome --- */
 .colliers-page-title {
   margin: 0;
   font-size: 28px;
@@ -270,22 +155,6 @@ body.colliers-mobile-menu-open {
   }
 }
 
-.colliers-page-title--center {
-  width: 100%;
-  text-align: center;
-}
-
-.colliers-page-title--compact {
-  font-size: 1.25rem;
-}
-
-.colliers-page-subtitle {
-  margin: 0.5rem 0 0;
-  font-size: 0.875rem;
-  line-height: 1.5;
-  color: var(--colliers-text-muted);
-}
-
 .colliers-page-intro {
   margin-bottom: 2rem;
 }
@@ -298,19 +167,6 @@ body.colliers-mobile-menu-open {
   margin-bottom: 2rem;
 }
 
-.colliers-page-header__main {
-  min-width: 0;
-}
-
-.colliers-page-header__actions {
-  display: flex;
-  flex-shrink: 0;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: flex-end;
-  gap: 1rem;
-}
-
 @media (min-width: 640px) {
   .colliers-page-header {
     flex-direction: row;
@@ -319,7 +175,27 @@ body.colliers-mobile-menu-open {
   }
 }
 
-/* Search input with leading magnifier icon */
+.colliers-page-root {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-height: 0;
+  width: 100%;
+  max-width: 64rem;
+  margin-left: auto;
+  margin-right: auto;
+  padding-top: 1.5rem;
+  padding-bottom: 1.5rem;
+}
+
+@media (min-width: 640px) {
+  .colliers-page-root {
+    padding-top: 2.5rem;
+    padding-bottom: 2.5rem;
+  }
+}
+
+/* --- Search field --- */
 .colliers-search-field {
   position: relative;
   width: 100%;
@@ -352,114 +228,13 @@ body.colliers-mobile-menu-open {
   box-shadow: 0 0 0 1px var(--colliers-primary);
 }
 
-/* Admin sub-page back link (designer: top-right, chevron + label) */
-.colliers-back-link {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.375rem;
-  font-size: 0.875rem;
-  font-weight: 500;
-  color: var(--colliers-primary);
-  transition: color 0.15s ease;
-}
-
-.colliers-back-link:hover {
-  color: var(--colliers-primary-hover);
-  text-decoration: underline;
-}
-
-.colliers-back-link__icon {
-  width: 1rem;
-  height: 1rem;
-  flex-shrink: 0;
-}
-
-@media (min-width: 768px) {
-  .colliers-list-row-actions--hover {
-    opacity: 0;
-    transition: opacity 0.15s ease;
-  }
-
-  .colliers-list-row:hover .colliers-list-row-actions--hover,
-  .colliers-list-row:focus-within .colliers-list-row-actions--hover {
-    opacity: 1;
-  }
-}
-
-@media (max-width: 767px) {
-  :root {
-    --colliers-scroll-body-pad-x: 1rem;
-  }
-}
-
-/* Profile list pages — shared card / table / modal patterns (Vue + Klai) */
-.colliers-page-root {
-  display: flex;
-  flex-direction: column;
-  flex: 1 1 auto;
-  min-height: 0;
-  width: 100%;
-  max-width: 64rem;
-  margin-left: auto;
-  margin-right: auto;
-  padding-top: 1.5rem;
-  padding-bottom: 1.5rem;
-}
-
-@media (min-width: 640px) {
-  .colliers-page-root {
-    padding-top: 2.5rem;
-    padding-bottom: 2.5rem;
-  }
-}
-
+/* --- Content card / tabs / table --- */
 .colliers-content-card {
   overflow: hidden;
   border-radius: 0.75rem;
   border: 1px solid #e5e7eb;
   background: #fff;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
-}
-
-/* Catalog product tiles — keep preview from stretching full width on 1-col / tablet */
-.catalog-product-grid {
-  display: grid;
-  grid-template-columns: 1fr;
-  justify-items: center;
-  gap: 2rem;
-}
-
-@media (min-width: 1024px) {
-  .catalog-product-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-}
-
-@media (min-width: 1280px) {
-  .catalog-product-grid {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
-}
-
-.catalog-product-card {
-  box-sizing: border-box;
-  width: 100%;
-  max-width: var(--colliers-catalog-card-max-width);
-}
-
-/* Shared live preview chrome — caps size so 1-col details/customize don't zoom */
-.card-preview-frame {
-  box-sizing: border-box;
-  width: 100%;
-  max-width: var(--colliers-catalog-card-max-width);
-  margin-left: auto;
-  margin-right: auto;
-  overflow: hidden;
-  border-radius: 0.375rem;
-  border: 1px solid var(--colliers-border);
-  background: #fff;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
-  padding: 0.25rem;
 }
 
 .colliers-card-toolbar {
@@ -563,7 +338,6 @@ body.colliers-mobile-menu-open {
   padding: 0;
   font: inherit;
   cursor: pointer;
-  text-decoration: none;
 }
 
 .colliers-link-action:hover {
@@ -572,10 +346,6 @@ body.colliers-mobile-menu-open {
 
 .colliers-link-action--danger {
   color: #dc2626;
-}
-
-.colliers-link-action--danger:hover {
-  color: #b91c1c;
 }
 
 .colliers-status-badge {
@@ -601,6 +371,7 @@ body.colliers-mobile-menu-open {
   color: #92400e;
 }
 
+/* --- Modals --- */
 .colliers-modal-overlay {
   position: fixed;
   inset: 0;
@@ -634,16 +405,12 @@ body.colliers-mobile-menu-open {
   }
 }
 
-.colliers-modal-panel--md {
-  max-width: 32rem;
+.colliers-modal-panel--xl {
+  max-width: 42rem;
 }
 
 .colliers-modal-panel--lg {
   max-width: 36rem;
-}
-
-.colliers-modal-panel--xl {
-  max-width: 42rem;
 }
 
 .colliers-modal-header {
@@ -674,16 +441,6 @@ body.colliers-mobile-menu-open {
   background: #f3f4f6;
 }
 
-.colliers-status-message {
-  margin-bottom: 1.25rem;
-  border-radius: 0.375rem;
-  border: 1px solid #bbf7d0;
-  background: #f0fdf4;
-  padding: 0.75rem 1rem;
-  font-size: 0.875rem;
-  color: #166534;
-}
-
 .colliers-form-error {
   border-radius: 0.375rem;
   border: 1px solid #fecaca;
@@ -691,4 +448,139 @@ body.colliers-mobile-menu-open {
   padding: 0.75rem 1rem;
   font-size: 0.875rem;
   color: #991b1b;
+}
+
+/* --- Buttons (compiled from Tailwind @layer components) --- */
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.25rem;
+  border: none;
+  background-color: var(--colliers-primary);
+  padding: 0.625rem 1rem;
+  font-size: 15px;
+  font-weight: 500;
+  color: #fff;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.btn-primary:hover {
+  background-color: var(--colliers-primary-hover);
+}
+
+.btn-primary:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.btn-outline {
+  display: inline-flex;
+  width: 100%;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.25rem;
+  border: 1px solid var(--colliers-primary);
+  background: #fff;
+  padding: 0.625rem 1rem;
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--colliers-primary);
+  cursor: pointer;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.btn-outline:hover {
+  background-color: var(--colliers-primary);
+  color: #fff;
+}
+
+@media (min-width: 640px) {
+  .btn-outline {
+    width: auto;
+  }
+}
+
+.btn-primary-sm {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  border-radius: 0.25rem;
+  border: none;
+  background-color: var(--colliers-primary);
+  padding: 0.375rem 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: #fff;
+  cursor: pointer;
+}
+
+.btn-primary-sm:hover {
+  background-color: var(--colliers-primary-hover);
+}
+
+/* --- Form fields --- */
+.field-label {
+  display: block;
+  margin-bottom: 0.375rem;
+  font-size: 14px;
+  color: #374151;
+}
+
+.field-input {
+  width: 100%;
+  border-radius: 0.25rem;
+  border: 1px solid #d1d5db;
+  padding: 0.625rem 0.75rem;
+  font-size: 14px;
+}
+
+.field-input:focus {
+  border-color: var(--colliers-primary);
+  outline: none;
+  box-shadow: 0 0 0 1px var(--colliers-primary);
+}
+
+.field-input:disabled {
+  background: #f3f4f6;
+  color: #6b7280;
+  cursor: not-allowed;
+}
+
+.modal-footer {
+  display: flex;
+  flex-direction: column-reverse;
+  gap: 0.75rem;
+  border-top: 1px solid #e5e7eb;
+  background: #f9fafb;
+  padding: 1rem 1.25rem;
+}
+
+@media (min-width: 640px) {
+  .modal-footer {
+    flex-direction: row;
+    justify-content: flex-end;
+  }
+}
+
+.modal-footer-actions {
+  display: flex;
+  width: 100%;
+  flex-direction: column-reverse;
+  gap: 0.75rem;
+}
+
+@media (min-width: 640px) {
+  .modal-footer-actions {
+    width: auto;
+    flex-direction: row;
+    justify-content: flex-end;
+  }
+}
+
+@media (max-width: 767px) {
+  :root {
+    --colliers-scroll-body-pad-x: 1rem;
+  }
 }

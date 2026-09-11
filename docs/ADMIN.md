@@ -4,7 +4,7 @@ Use this file to track **admin screens from the designer preview** and turn them
 
 Verified in the designer preview on **13 Aug 2026** (`admin` / `123`). Address Book on the admin profile rechecked **14 Aug 2026**. Manage Addresses / Dashboard / Order History rechecked **19 Aug 2026**.
 
-**Designer vs Vue sync 31 Aug 2026:** Aug 28 designer adds **Manage Degrees/Certifications** (`#/admin/degrees`). Vue renames titles admin screen to **Manage Designations** (nav: **Designations**); blue admin header replaces the ADMIN badge. Vue `#/addresses` keeps **My Address Book + Office Addresses** tabs. Manage Addresses uses list + modal form. Order flow / customize: follow Vue, not designer.
+**Designer vs Vue sync 31 Aug 2026:** Aug 28 designer adds **Manage Degrees/Certifications** (`#/admin/degrees`). Vue renames titles admin screen to **Manage Designations** (nav: **Designations**); blue admin header replaces the ADMIN badge. Vue `#/address-book` keeps **My Address Book + Office Addresses** tabs. Manage Addresses uses list + modal form. Order flow / customize: follow Vue, not designer.
 
 | Layer | Role |
 | --- | --- |

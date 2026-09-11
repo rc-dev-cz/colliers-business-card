@@ -1,0 +1,56 @@
+<div id="customize-root" class="colliers-page-root px-4 py-8 sm:px-6 lg:px-8">
+  <div v-if="model.notFound" class="py-20 text-center text-gray-500">{{ BF.i18n('label_colliers_productNotFound') }}</div>
+  <div v-else-if="model.product && model.product.code">
+    <button type="button" class="mb-6 inline-flex items-center gap-1 text-sm text-gray-600 hover:text-gray-900" @click="BF.namedAction('goBack')"><span aria-hidden="true">&lsaquo;</span> {{ BF.i18n('label_colliers_back') }}</button>
+    <div class="flex flex-col gap-10 lg:flex-row lg:gap-12">
+      <div class="w-full lg:max-w-[480px]">
+        <h2 class="mb-4 text-lg font-bold text-[#25408F]">{{ BF.i18n('label_colliers_cardPreview') }}</h2>
+        <div class="rounded-md border border-gray-200 bg-white p-1 shadow-sm">
+          <bfcomp name="CardPreview" model="card"></bfcomp>
+        </div>
+      </div>
+      <div class="min-w-0 flex-1">
+        <h1 class="colliers-page-title mb-6">{{ BF.i18n('label_colliers_customizeDetails') }}</h1>
+        <form class="space-y-4" @submit.prevent="BF.namedAction('addToCart')">
+          <div>
+            <label class="field-label" for="card-name">{{ BF.i18n('label_colliers_fullName') }}</label>
+            <input id="card-name" class="field-input" maxlength="60" :value="model.card.name" @input="model.card.name = $event.target.value; BF.namedAction('syncCardLanguage')" />
+            <p class="mt-1 text-xs text-gray-500">{{ (model.card.name || '').length }}/60 — {{ BF.i18n('label_colliers_fullNameHint') }}</p>
+          </div>
+          <div>
+            <label class="field-label" for="card-title">{{ BF.i18n('label_colliers_title') }}</label>
+            <select id="card-title" class="field-input" v-model="model.card.title">
+              <option value="">{{ BF.i18n('label_colliers_selectTitle') }}</option>
+              <option v-for="opt in model.titleOptions" :key="opt" :value="opt">{{ opt }}</option>
+            </select>
+          </div>
+          <div>
+            <label class="field-label" for="card-email">{{ BF.i18n('label_colliers_email') }}</label>
+            <input id="card-email" type="email" class="field-input" maxlength="80" v-model="model.card.email" />
+          </div>
+          <div>
+            <label class="field-label" for="card-phone">{{ BF.i18n('label_colliers_mobilePhone') }}</label>
+            <input id="card-phone" class="field-input" v-model="model.card.phone" />
+            <p class="mt-1 text-xs text-gray-500">{{ BF.i18n('label_colliers_mobilePhoneHint') }}</p>
+          </div>
+          <div>
+            <label class="field-label" for="card-company">{{ BF.i18n('label_colliers_companyName') }}</label>
+            <input id="card-company" class="field-input" :value="model.card.company" disabled />
+          </div>
+          <div>
+            <label class="field-label" for="card-address">{{ BF.i18n('label_colliers_address') }}</label>
+            <select id="card-address" class="field-input" v-model="model.card.address" :disabled="model.officesLoading">
+              <option value="">{{ model.officesLoading ? BF.i18n('label_colliers_loading') : BF.i18n('label_colliers_selectAddress') }}</option>
+              <option v-for="opt in model.officeOptions" :key="opt.value" :value="opt.value">{{ opt.label }}</option>
+            </select>
+          </div>
+          <div>
+            <label class="field-label" for="card-website">{{ BF.i18n('label_colliers_website') }}</label>
+            <input id="card-website" class="field-input" :value="model.card.website" disabled />
+          </div>
+          <button type="submit" class="btn-primary w-full">{{ BF.i18n('label_addToCart') }}</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

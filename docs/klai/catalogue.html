@@ -1,0 +1,22 @@
+<div id="catalogue-root" class="colliers-page-root px-4 py-8 sm:px-6 lg:px-8">
+  <h1 class="colliers-page-title colliers-page-title--center mb-12 text-center text-[32px] font-medium tracking-tight text-black sm:mb-16 sm:text-[40px]">{{ BF.i18n('label_colliers_exploreCatalog') }}</h1>
+  <h2 class="mb-6 text-2xl font-medium text-[#25408F] sm:text-3xl">{{ BF.i18n('label_colliers_businessCards') }}</h2>
+  <div class="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
+    <article v-for="product in model.products" :key="product.code" class="flex flex-col overflow-hidden rounded-md border border-gray-200 bg-white shadow-sm">
+      <div class="cursor-pointer bg-white p-1" @click="BF.namedAction('goDetails', { code: product.code })">
+        <bfcomp name="CardPreview" :model="product.previewKey"></bfcomp>
+      </div>
+      <div class="flex flex-1 flex-col p-6">
+        <div class="mb-1 cursor-pointer text-[15px] font-bold text-gray-900 hover:text-[#25408F]" @click="BF.namedAction('goDetails', { code: product.code })">{{ BF.i18n(product.nameKey) }}</div>
+        <div class="mb-8 text-[14px] font-normal text-gray-600">{{ product.code }}</div>
+        <div class="mb-6 mt-auto text-[15px] font-bold text-black">{{ BF.i18n('label_colliers_pricePerBox').replace('{price}', String(Math.round(product.price))) }}</div>
+        <button type="button" class="btn-outline w-full" @click="BF.namedAction('goCustomize', { code: product.code })">{{ BF.i18n('label_colliers_customize') }}</button>
+        <div class="mt-3 text-center">
+          <button type="button" class="text-[14px] text-gray-500 hover:text-gray-900" @click="BF.namedAction('goDetails', { code: product.code })">
+            <span class="border-b border-gray-300 pb-0.5 hover:border-gray-900">{{ BF.i18n('label_colliers_details') }}</span>
+          </button>
+        </div>
+      </div>
+    </article>
+  </div>
+</div>
