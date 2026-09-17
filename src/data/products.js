@@ -62,14 +62,14 @@ export function getProduct(code) {
 }
 
 export const jobTitles = [
-  'Associate | Canada',
-  'Senior Associate | Canada',
-  'Vice President | Canada',
-  'Managing Director | Canada',
-  'Director | Canada',
-  'Principal | Canada',
-  'Broker | Canada',
-  'Sales Representative | Canada',
+  'Associate',
+  'Senior Associate',
+  'Vice President',
+  'Managing Director',
+  'Director',
+  'Principal',
+  'Broker',
+  'Sales Representative',
 ]
 
 /** Shared catalog placeholder labels — not real contact data. */

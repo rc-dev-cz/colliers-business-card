@@ -58,18 +58,22 @@ export function formatAddressLine(address) {
 
 export function formatAddressCard(address) {
   if (!address) return ''
-  const line1 = [field(address, 'addressStreet', 'address_street'), field(address, 'addressStreet2', 'address_street2')]
-    .filter(Boolean)
-    .join(', ')
-  const line2 = [
-    field(address, 'addressCity', 'address_city'),
-    [field(address, 'addressProvince', 'address_province'), field(address, 'addressPostalZip', 'address_postal_zip')]
-      .filter(Boolean)
-      .join(' '),
-  ]
-    .filter(Boolean)
-    .join(', ')
-  return [line1, line2].filter(Boolean).join('\n')
+  const street = field(address, 'addressStreet', 'address_street')
+  const street2 = field(address, 'addressStreet2', 'address_street2')
+  const city = field(address, 'addressCity', 'address_city')
+  const province = field(address, 'addressProvince', 'address_province')
+  const postal = field(address, 'addressPostalZip', 'address_postal_zip')
+  const country = field(address, 'addressCountry', 'address_country') || 'Canada'
+
+  // Card layout (matches designer): street, suite, city/province, postal + country
+  const lines = []
+  if (street) lines.push(street)
+  if (street2) lines.push(street2)
+  const cityProvince = [city, province].filter(Boolean).join(', ')
+  if (cityProvince) lines.push(cityProvince)
+  const postalCountry = [postal, country].filter(Boolean).join(' ')
+  if (postalCountry) lines.push(postalCountry)
+  return lines.join('\n')
 }
 
 export function officeLabel(address) {

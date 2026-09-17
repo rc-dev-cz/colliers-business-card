@@ -44,7 +44,7 @@ The responsive tile preview can stay for catalogue / cart chrome. **Customize, p
 ### Explicitly later (not this pivot)
 
 - Camera / AR overlay on a desk
-- Print-ready PDF with bleed and crop marks (may still be vendor-owned)
+- Print-ready PDF with bleed and crop marks — **engine started separately** in [PRINT-PDF.md](PRINT-PDF.md) (Klai `viewPrintPdf`; not this on-screen true-size work)
 - Pixel-perfect brand artwork until design delivers locked art
 
 ### Modes vs current component

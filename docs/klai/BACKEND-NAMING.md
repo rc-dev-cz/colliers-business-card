@@ -4,7 +4,7 @@ Shared reference for frontend and FileMaker: **page name → route → `hookSetN
 
 **Source of truth for hook names:** live Klai Studio when the page exists there; otherwise the **Planned** rows below (from this Cursor/Vue app). FileMaker script names are **convention-derived** from BetterForms (`assistantGuide_fileMaker`), not verified against live FM scripts in this workspace.
 
-Last MCP refresh: 2026-09-11 (read-only).
+Last MCP refresh: 2026-09-11 (print PDF + CardPreview bind fix).
 
 **Status:** Live = in Klai today · Planned = in Cursor/Vue, not in Klai yet.
 
@@ -38,7 +38,7 @@ Bus variables (FileMaker side): `$$BF_Payload`, `$$BF_Model`, `$$BF_Actions`, `$
 | --- | --- | --- | --- | --- | --- | --- |
 | Catalogue | `/` (`default`) | `catalogue` | true | `BF - onFormRequest - catalogue` | Named actions: `goDetails`, `goCustomize` | Live |
 | Product Detail | `/product-detail` | `catalogueitem` | true | `BF - onFormRequest - catalogueitem` | Query `?code=` | Live |
-| Customize | `/customize` | `customize` | true (planned; false in Klai today) | `BF - onFormRequest - customize` | Query `?code=`. Load product/titles/offices on request. Client stubs today (`loadOffices`, `addToCart`) | Live UI |
+| Customize | `/customize` | `customize` | true (planned; false in Klai today) | `BF - onFormRequest - customize` | Query `?code=`. Client stubs (`loadOffices`, `addToCart`). Print PDF: button → `viewPrintPdf` (anchor download; see [PRINT-PDF.md](../PRINT-PDF.md)) | Live UI |
 | Shipping | `/shipping` | `shipping` | true | `BF - onFormRequest - shipping` | Load personal + office addresses. Split/qty mostly client until submit | Planned |
 | Review | `/review` | `review` | false | — | `submit` → create order → `BF - onUtility - review` | Planned |
 | Confirmed | `/confirmed` | `confirmed` | false | — | Display-only after successful `submit` | Planned |
@@ -117,8 +117,8 @@ Shapes the request/utility hooks should put on `$$BF_Model` (Klai `model`). Live
   "email": "",
   "phone": "",
   "address": "",
-  "website": "colliers.com/canada",
-  "company": "Colliers"
+  "website": "colliersprojectleaders.com",
+  "company": "Colliers Project Leaders"
 }
 ```
 
@@ -222,6 +222,7 @@ Shapes the request/utility hooks should put on `$$BF_Model` (Klai `model`). Live
 - **Order History** — turn on `requestHook` + `BF - onFormRequest - orders` when live load is ready (`repeat` utility already exists).
 - **Address Book** — wire `create` / `update` / `delete` utilities; load already uses request hook.
 - **Customize** — turn on `requestHook`; seed product, titles, offices from FM.
+- **Print PDF** — Customize button → `viewPrintPdf` (anchor download). FM base64 → Mark’s Press later ([PRINT-PDF.md](../PRINT-PDF.md)).
 - **Shipping / Review / Confirmed** — Planned pages; order create on Review utility type `submit`.
 - **Admin pages** — Planned hook sets above; confirm names before building scripts.
 - **Catalogue** — confirm live products payload matches `modelDev` shape.

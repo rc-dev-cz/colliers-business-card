@@ -3,18 +3,55 @@
   <div v-else-if="model.product && model.product.code">
     <button type="button" class="mb-6 inline-flex items-center gap-1 text-sm text-gray-600 hover:text-gray-900" @click="BF.namedAction('goBack')"><span aria-hidden="true">&lsaquo;</span> {{ BF.i18n('label_colliers_back') }}</button>
     <div class="flex flex-col gap-10 lg:flex-row lg:gap-12">
-      <div class="w-full lg:max-w-[480px]">
+      <div class="w-full max-w-sm mx-auto lg:mx-0 lg:max-w-[24rem]">
         <h2 class="mb-4 text-lg font-bold text-[#25408F]">{{ BF.i18n('label_colliers_cardPreview') }}</h2>
-        <div class="rounded-md border border-gray-200 bg-white p-1 shadow-sm">
-          <bfcomp name="CardPreview" model="card"></bfcomp>
+        <div class="space-y-4">
+          <div
+            v-for="previewLang in (['Bilingual','Bilingue'].indexOf((model.product && model.product.language) || model.card.language || '') >= 0 ? ['English','French'] : [((model.product && model.product.language) || model.card.language || 'English')])"
+            :key="previewLang"
+            class="card-preview-frame"
+          >
+            <div id="colliersCardPreview" class="relative aspect-[1.75/1] w-full overflow-hidden rounded-md border border-gray-200 bg-white font-sans text-[#4A4A4A] shadow-sm" style="container-type: inline-size">
+              <div class="absolute left-[7.5%] top-[13%] flex w-[34%] items-center gap-[8%]">
+                <div class="inline-flex w-[42%] shrink-0 flex-col overflow-hidden rounded-[2px]">
+                  <img src="https://upload.wikimedia.org/wikipedia/commons/9/91/Colliers_logo.svg" alt="Colliers Logo" class="block h-auto w-full object-contain" />
+                </div>
+                <div class="min-w-0 flex-1 font-sans font-normal leading-[1.08] tracking-tight text-[#24418A]" style="font-size: min(3.35cqw, 22px)">
+                  <template v-if="['French','Français','FR'].indexOf(previewLang) >= 0"><span class="block">Maîtres</span><span class="block">de projets</span></template>
+                  <template v-else><span class="block">Project</span><span class="block">Leaders</span></template>
+                </div>
+              </div>
+              <div class="absolute bottom-[14%] left-[44%] right-[6%] top-[30%] flex flex-col">
+                <div>
+                  <div class="font-bold leading-[1.2] text-[#24418A]" style="font-size: min(3.7cqw, 18px)">
+                    <span class="whitespace-pre-line">{{ (model.card.nameWrapped || model.card.name || '').trim() || (['French','Français','FR'].indexOf(previewLang) >= 0 ? 'Nom complet' : 'Full Name') }}</span><span v-if="(Array.isArray(model.card.degree) ? model.card.degree.length : model.card.degree) || model.card.additionalCredentials" class="align-baseline font-bold" style="font-size: 0.7em">, {{ [ ].concat(Array.isArray(model.card.degree) ? model.card.degree : (model.card.degree ? [model.card.degree] : [])).concat(model.card.additionalCredentials ? [model.card.additionalCredentials] : []).filter(Boolean).join(', ') }}</span>
+                  </div>
+                  <div class="mt-[3.5%] leading-[1.35] text-[#7A7A7A]" style="font-size: min(2.15cqw, 11px)">
+                    <div>{{ ([String(model.card.title || '').split('|')[0].trim(), model.card.region].filter(Boolean).join(' | ')) || (['French','Français','FR'].indexOf(previewLang) >= 0 ? 'Titre | Région' : 'Title | Region') }}</div>
+                    <div class="mt-[2%] min-h-[1.35em]">{{ model.card.specializedTeam || '' }}</div>
+                  </div>
+                </div>
+                <div class="mt-auto pt-[10%] leading-[1.5] text-[#7A7A7A]" style="font-size: min(2.15cqw, 11px)">
+                  <div class="break-words">{{ model.card.email || (['French','Français','FR'].indexOf(previewLang) >= 0 ? 'Courriel:' : 'Email:') }}</div>
+                  <div>Mobile: {{ model.card.phone || (['French','Français','FR'].indexOf(previewLang) >= 0 ? 'Numéro de téléphone' : 'Phone Number') }}</div>
+                  <div>{{ (['French','Français','FR'].indexOf(previewLang) >= 0 ? (model.card.websiteFr || 'colliersprojectleaders.com/fr') : (model.card.website || 'colliersprojectleaders.com')) }}</div>
+                </div>
+              </div>
+              <div class="absolute bottom-[14%] left-[7.5%] right-[58%] whitespace-pre-wrap leading-[1.5] text-[#7A7A7A]" style="font-size: min(2.15cqw, 11px)">{{ model.card.address || (['French','Français','FR'].indexOf(previewLang) >= 0 ? 'Adresse' : 'Address') }}</div>
+            </div>
+          </div>
         </div>
+        <button type="button" class="btn-outline mt-4 w-full" @click="BF.namedAction('viewPrintPdf')">{{ BF.i18n('label_colliers_viewPrintPdf') }}</button>
       </div>
       <div class="min-w-0 flex-1">
-        <h1 class="colliers-page-title mb-6">{{ BF.i18n('label_colliers_customizeDetails') }}</h1>
+        <div class="mb-6 flex items-start justify-between gap-4">
+          <h1 class="colliers-page-title">{{ BF.i18n('label_colliers_customizeDetails') }}</h1>
+          <button type="button" class="shrink-0 text-sm text-gray-500 underline-offset-2 hover:text-gray-800 hover:underline" @click="BF.namedAction('clearDesign')">{{ BF.i18n('label_colliers_clearDesign') }}</button>
+        </div>
         <form class="space-y-4" @submit.prevent="BF.namedAction('addToCart')">
           <div>
             <label class="field-label" for="card-name">{{ BF.i18n('label_colliers_fullName') }}</label>
-            <input id="card-name" class="field-input" maxlength="60" :value="model.card.name" @input="model.card.name = $event.target.value; BF.namedAction('syncCardLanguage')" />
+            <input id="card-name" class="field-input" maxlength="60" v-model="model.card.name" @input="BF.namedAction('wrapCardName')" />
             <p class="mt-1 text-xs text-gray-500">{{ (model.card.name || '').length }}/60 — {{ BF.i18n('label_colliers_fullNameHint') }}</p>
           </div>
           <div>
@@ -25,8 +62,32 @@
             </select>
           </div>
           <div>
+            <label class="field-label">{{ BF.i18n('label_colliers_degreeOptional') }}</label>
+            <div class="field-input max-h-40 overflow-auto p-2">
+              <label v-for="opt in model.degreeOptions" :key="opt" class="mb-1 flex cursor-pointer items-center gap-2 text-sm last:mb-0">
+                <input type="checkbox" :value="opt" v-model="model.card.degree" />
+                <span>{{ opt }}</span>
+              </label>
+            </div>
+            <div v-if="Array.isArray(model.card.degree) && model.card.degree.length" class="mt-2 flex flex-wrap gap-2">
+              <span v-for="d in model.card.degree" :key="d" class="inline-flex items-center gap-1 rounded-md bg-[#E8EEF7] px-2.5 py-1 text-sm text-[#24418A]">{{ d }}</span>
+            </div>
+          </div>
+          <div>
+            <label class="field-label" for="card-credentials">{{ BF.i18n('label_colliers_additionalCredentialsOptional') }}</label>
+            <input id="card-credentials" class="field-input" v-model="model.card.additionalCredentials" />
+          </div>
+          <div>
+            <label class="field-label" for="card-region">{{ BF.i18n('label_colliers_regionOptional') }}</label>
+            <input id="card-region" class="field-input" v-model="model.card.region" />
+          </div>
+          <div>
+            <label class="field-label" for="card-team">{{ BF.i18n('label_colliers_specializedTeamOptional') }}</label>
+            <input id="card-team" class="field-input" v-model="model.card.specializedTeam" />
+          </div>
+          <div>
             <label class="field-label" for="card-email">{{ BF.i18n('label_colliers_email') }}</label>
-            <input id="card-email" type="email" class="field-input" maxlength="80" v-model="model.card.email" />
+            <input id="card-email" type="email" class="field-input" maxlength="50" v-model="model.card.email" />
           </div>
           <div>
             <label class="field-label" for="card-phone">{{ BF.i18n('label_colliers_mobilePhone') }}</label>
@@ -38,7 +99,7 @@
             <input id="card-company" class="field-input" :value="model.card.company" disabled />
           </div>
           <div>
-            <label class="field-label" for="card-address">{{ BF.i18n('label_colliers_address') }}</label>
+            <label class="field-label" for="card-address">{{ BF.i18n('label_colliers_officeLocation') }}</label>
             <select id="card-address" class="field-input" v-model="model.card.address" :disabled="model.officesLoading">
               <option value="">{{ model.officesLoading ? BF.i18n('label_colliers_loading') : BF.i18n('label_colliers_selectAddress') }}</option>
               <option v-for="opt in model.officeOptions" :key="opt.value" :value="opt.value">{{ opt.label }}</option>

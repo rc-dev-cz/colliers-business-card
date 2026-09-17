@@ -1,6 +1,9 @@
-/** Match the Vue 3 prototype limits (USR-032 / USR-034 stay product tickets). */
+/**
+ * Email max: guide USR-034 was 40; set to 50 so full
+ * `@colliersprojectleaders.com` addresses fit (e.g. first.lastname@… = 41).
+ */
 export const NAME_MAX = 30
-export const EMAIL_MAX = 30
+export const EMAIL_MAX = 50
 export const PHONE_DIGITS = 10
 
 export function clipName(value) {
@@ -22,4 +25,16 @@ export function formatCanadianLocal(digits) {
   if (source.length <= 3) return source
   if (source.length <= 6) return source.slice(0, 3) + ' ' + source.slice(3)
   return source.slice(0, 3) + ' ' + source.slice(3, 6) + '-' + source.slice(6)
+}
+
+/** Card preview / PDF: always show Canadian +1 with spaced local number. */
+export function formatCardPhone(value) {
+  if (!value) return ''
+  var cleaned = String(value).replace(/\D/g, '')
+  var local = cleaned
+  if (cleaned.length === 11 && cleaned.charAt(0) === '1') local = cleaned.slice(1)
+  if (local.length === 10) {
+    return '+1 ' + local.slice(0, 3) + ' ' + local.slice(3, 6) + ' ' + local.slice(6)
+  }
+  return String(value)
 }

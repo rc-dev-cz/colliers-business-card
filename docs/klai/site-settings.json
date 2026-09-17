@@ -25,21 +25,105 @@
                 "en": "Add to Cart",
                 "fr": "Ajouter au panier"
             },
+            "label_colliers_action": {
+                "en": "Action",
+                "fr": "Action"
+            },
             "label_colliers_actions": {
                 "en": "Actions",
                 "fr": "Actions"
+            },
+            "label_colliers_active": {
+                "en": "Active",
+                "fr": "Actif"
+            },
+            "label_colliers_addToCart": {
+                "en": "Add to Cart",
+                "fr": "Ajouter au panier"
+            },
+            "label_colliers_additionalCredentialsOptional": {
+                "en": "Additional Credentials (Optional)",
+                "fr": "Informations d'identification supplémentaires (facultatif)"
             },
             "label_colliers_address": {
                 "en": "Address",
                 "fr": "Adresse"
             },
+            "label_colliers_allRights": {
+                "en": "All Rights Reserved",
+                "fr": "Tous droits réservés"
+            },
+            "label_colliers_allStatuses": {
+                "en": "All Statuses",
+                "fr": "Tous les statuts"
+            },
+            "label_colliers_back": {
+                "en": "Back",
+                "fr": "Retour"
+            },
+            "label_colliers_bilingual": {
+                "en": "Bilingual",
+                "fr": "Bilingue"
+            },
+            "label_colliers_brandCompliance": {
+                "en": "Brand guidelines compliance",
+                "fr": "Conformité aux directives de la marque"
+            },
+            "label_colliers_businessCards": {
+                "en": "Business Cards",
+                "fr": "Cartes de visite"
+            },
             "label_colliers_cancel": {
                 "en": "Cancel",
                 "fr": "Annuler"
             },
+            "label_colliers_cardPreview": {
+                "en": "Card Preview",
+                "fr": "Aperçu de la carte"
+            },
+            "label_colliers_cardholder": {
+                "en": "Cardholder",
+                "fr": "Titulaire"
+            },
+            "label_colliers_clearDesign": {
+                "en": "Clear Design",
+                "fr": "Effacer le design"
+            },
+            "label_colliers_companyName": {
+                "en": "Company Name",
+                "fr": "Nom de l'entreprise"
+            },
             "label_colliers_confirmDeleteAddress": {
                 "en": "Delete this personal address?",
                 "fr": "Supprimer cette adresse personnelle ?"
+            },
+            "label_colliers_contactUs": {
+                "en": "Contact Us",
+                "fr": "Nous contacter"
+            },
+            "label_colliers_customize": {
+                "en": "Customize",
+                "fr": "Personnaliser"
+            },
+            "label_colliers_customizeDetails": {
+                "en": "Customize Your Details",
+                "fr": "Personnaliser vos détails"
+            },
+            "label_colliers_date": {
+                "en": "Date",
+                "fr": "Date"
+            },
+            "label_colliers_dateAdded": {
+                "en": "Date Added",
+                "fr": "Date d'ajout"
+            },
+            "label_colliers_degreeOptional": {
+                "en": "Degree/Certification (Optional)",
+                "fr": "Diplôme/Certification (facultatif)"
+            },
+            "label_colliers_details": {
+                "en": "Details",
+                "fr": "Détails"
             },
             "label_colliers_edit": {
                 "en": "Edit",
@@ -49,6 +133,58 @@
                 "en": "Edit address",
                 "fr": "Modifier l'adresse"
             },
+            "label_colliers_email": {
+                "en": "Email",
+                "fr": "Courriel"
+            },
+            "label_colliers_emailHint": {
+                "en": "Fits on one line",
+                "fr": "Sur une seule ligne"
+            },
+            "label_colliers_english": {
+                "en": "English",
+                "fr": "Anglais"
+            },
+            "label_colliers_exploreCatalog": {
+                "en": "Explore Catalogue",
+                "fr": "Explorer le catalogue"
+            },
+            "label_colliers_finishOptions": {
+                "en": "Matte or glossy finish options",
+                "fr": "Options de finition mate ou brillante"
+            },
+            "label_colliers_french": {
+                "en": "French",
+                "fr": "Français"
+            },
+            "label_colliers_fullName": {
+                "en": "Full Name",
+                "fr": "Nom complet"
+            },
+            "label_colliers_fullNameHint": {
+                "en": "2 lines max",
+                "fr": "2 lignes max."
+            },
+            "label_colliers_item": {
+                "en": "Item",
+                "fr": "Article"
+            },
+            "label_colliers_itemNumber": {
+                "en": "Item Number / Description",
+                "fr": "Numéro d'article / Description"
+            },
+            "label_colliers_itemsIncluded": {
+                "en": "Items Included",
+                "fr": "Articles Inclus"
+            },
+            "label_colliers_language": {
+                "en": "Language",
+                "fr": "Langue"
+            },
+            "label_colliers_loading": {
+                "en": "Loading...",
+                "fr": "Chargement..."
+            },
             "label_colliers_locationName": {
                 "en": "Location name",
                 "fr": "Nom du lieu"
@@ -57,53 +193,49 @@
                 "en": "Location nickname",
                 "fr": "Surnom du lieu"
             },
-            "label_colliers_newAddress": {
-                "en": "New address",
-                "fr": "Nouvelle adresse"
+            "label_colliers_materials": {
+                "en": "Materials",
+                "fr": "Matériaux"
             },
-            "label_colliers_noPersonalAddresses": {
-                "en": "No personal addresses yet. Add one with + New Address.",
-                "fr": "Aucune adresse personnelle. Ajoutez-en une avec + Nouvelle adresse."
+            "label_colliers_minOrderQty": {
+                "en": "Min. Order Qty",
+                "fr": "Qté min. de commande"
+            },
+            "label_colliers_mobilePhone": {
+                "en": "Mobile",
+                "fr": "Mobile"
+            },
+            "label_colliers_mobilePhoneHint": {
+                "en": "10-digit Canadian number",
+                "fr": "Numéro canadien à 10 chiffres"
             },
             "label_colliers_myAddressBook": {
                 "en": "My Address Book",
                 "fr": "Mon carnet d'adresses"
             },
-            "label_colliers_officeAddresses": {
-                "en": "Office Addresses",
-                "fr": "Adresses de bureau"
+            "label_colliers_newAddress": {
+                "en": "New address",
+                "fr": "Nouvelle adresse"
             },
             "label_colliers_noOfficeAddresses": {
                 "en": "No office addresses to show.",
                 "fr": "Aucune adresse de bureau à afficher."
             },
-            "label_colliers_searchAddresses": {
-                "en": "Search addresses",
-                "fr": "Rechercher des adresses"
-            },
-            "label_colliers_action": {
-                "en": "Action",
-                "fr": "Action"
-            },
-            "label_colliers_allStatuses": {
-                "en": "All Statuses",
-                "fr": "Tous les statuts"
-            },
-            "label_colliers_cardholder": {
-                "en": "Cardholder",
-                "fr": "Titulaire"
-            },
-            "label_colliers_date": {
-                "en": "Date",
-                "fr": "Date"
-            },
-            "label_colliers_item": {
-                "en": "Item",
-                "fr": "Article"
-            },
             "label_colliers_noOrders": {
                 "en": "No orders match your search.",
                 "fr": "Aucune commande ne correspond à votre recherche."
+            },
+            "label_colliers_noPersonalAddresses": {
+                "en": "No personal addresses yet. Add one with + New Address.",
+                "fr": "Aucune adresse personnelle. Ajoutez-en une avec + Nouvelle adresse."
+            },
+            "label_colliers_officeAddresses": {
+                "en": "Office Addresses",
+                "fr": "Adresses de bureau"
+            },
+            "label_colliers_officeLocation": {
+                "en": "Office Location",
+                "fr": "Lieu de bureau"
             },
             "label_colliers_orderDetails": {
                 "en": "Order Details",
@@ -113,17 +245,105 @@
                 "en": "Order ID",
                 "fr": "N° de commande"
             },
+            "label_colliers_packaging": {
+                "en": "Packaging",
+                "fr": "Emballage"
+            },
+            "label_colliers_premiumStock": {
+                "en": "Premium 16pt cardstock",
+                "fr": "Carton de qualité supérieure 16 pt"
+            },
+            "label_colliers_price": {
+                "en": "Price",
+                "fr": "Prix"
+            },
+            "label_colliers_pricePer": {
+                "en": "PRICE PER",
+                "fr": "PRIX PAR"
+            },
+            "label_colliers_pricePerBox": {
+                "en": "${price} / box of 250 cards",
+                "fr": "${price} / boîte de 250 cartes"
+            },
+            "label_colliers_printOnDemand": {
+                "en": "Print on demand",
+                "fr": "Impression à la demande"
+            },
+            "label_colliers_productBilingual": {
+                "en": "Business Card Bilingual",
+                "fr": "Carte de visite bilingue"
+            },
+            "label_colliers_productEnglish": {
+                "en": "Business Card English",
+                "fr": "Carte de visite anglaise"
+            },
+            "label_colliers_productFrench": {
+                "en": "Business Card French",
+                "fr": "Carte de visite française"
+            },
+            "label_colliers_productNotFound": {
+                "en": "Product not found",
+                "fr": "Produit introuvable"
+            },
+            "label_colliers_productType": {
+                "en": "Product Type",
+                "fr": "Type de produit"
+            },
             "label_colliers_qty": {
                 "en": "Qty",
                 "fr": "Qté"
+            },
+            "label_colliers_qtyFrom": {
+                "en": "QTY FROM",
+                "fr": "QTÉ DE"
+            },
+            "label_colliers_regionOptional": {
+                "en": "Region (Optional)",
+                "fr": "Région (facultatif)"
             },
             "label_colliers_repeatOrder": {
                 "en": "Repeat Order",
                 "fr": "Commander à nouveau"
             },
+            "label_colliers_salesDigital": {
+                "en": "*Online Products & Courses: Digital products and courses are considered final once redeemed; at that point, such products are not eligible for return, exchange, or transfer.",
+                "fr": "*Produits et cours en ligne : Les produits et cours numériques sont considérés comme définitifs une fois échangés ; à ce stade, ces produits ne sont pas admissibles au retour, à l\\"
+            },
+            "label_colliers_salesFinal": {
+                "en": "All sales of products—including but not limited to online products, printed materials, and courses—are final and non-refundable, non-exchangeable, and non-transferable. Returns must be received within seven days of delivery to the purchaser and will be processed pursuant to the following terms:",
+                "fr": "Toutes les ventes de produits – y compris, mais sans s'y limiter, les produits en ligne, les documents imprimés et les cours – sont finales et non remboursables, non échangeables et non transférables. Les retours doivent être reçus dans les sept jours suivant la livraison à l'acheteur et seront traités conformément aux conditions suivantes :"
+            },
+            "label_colliers_searchAddresses": {
+                "en": "Search addresses",
+                "fr": "Rechercher des adresses"
+            },
             "label_colliers_searchOrders": {
                 "en": "Search orders",
                 "fr": "Rechercher des commandes"
+            },
+            "label_colliers_securityPrivacy": {
+                "en": "Security / Privacy Policy",
+                "fr": "Politique de sécurité et de confidentialité"
+            },
+            "label_colliers_selectAddress": {
+                "en": "Select an office address",
+                "fr": "Sélectionner une adresse de bureau"
+            },
+            "label_colliers_selectDegree": {
+                "en": "Search or select degree...",
+                "fr": "Rechercher ou sélectionner un diplôme..."
+            },
+            "label_colliers_selectTitle": {
+                "en": "Select a title",
+                "fr": "Sélectionner un titre"
+            },
+            "label_colliers_specializedTeamOptional": {
+                "en": "Specialized Team (Optional)",
+                "fr": "Équipe spécialisée (facultatif)"
+            },
+            "label_colliers_status": {
+                "en": "Status",
+                "fr": "Statut"
             },
             "label_colliers_statusDelivered": {
                 "en": "Delivered",
@@ -137,25 +357,33 @@
                 "en": "Shipped",
                 "fr": "Expédiée"
             },
-            "label_colliers_contactUs": {
-                "en": "Contact Us",
-                "fr": "Nous contacter"
-            },
-            "label_colliers_securityPrivacy": {
-                "en": "Security / Privacy Policy",
-                "fr": "Politique de sécurité et de confidentialité"
-            },
             "label_colliers_terms": {
                 "en": "Terms of Use / Copyright",
                 "fr": "Conditions d'utilisation / Droits d'auteur"
             },
-            "label_colliers_allRights": {
-                "en": "All Rights Reserved",
-                "fr": "Tous droits réservés"
+            "label_colliers_title": {
+                "en": "Title",
+                "fr": "Titre"
             },
-            "placeholder_colliers_searchOrderByName": {
-                "en": "Search by Name...",
-                "fr": "Rechercher par nom..."
+            "label_colliers_to": {
+                "en": "TO",
+                "fr": "À"
+            },
+            "label_colliers_trainings": {
+                "en": "Trainings",
+                "fr": "Formations"
+            },
+            "label_colliers_unitTotal": {
+                "en": "UNIT TOTAL",
+                "fr": "TOTAL UNITAIRE"
+            },
+            "label_colliers_viewPrintPdf": {
+                "en": "View print PDF",
+                "fr": "Voir le PDF d’impression"
+            },
+            "label_colliers_website": {
+                "en": "Website",
+                "fr": "Site web"
             },
             "label_dialogue_ItemBeingAddedToCart": {
                 "en": "Item being added to cart. Please wait.",
@@ -613,6 +841,10 @@
                 "en": "View My Account",
                 "fr": "Voir mon compte"
             },
+            "placeholder_colliers_searchOrderByName": {
+                "en": "Search by Name...",
+                "fr": "Rechercher par nom..."
+            },
             "placeholder_search_nameAndAddress": {
                 "en": "Search by name or address",
                 "fr": "Rechercher par nom ou adresse"
@@ -620,13 +852,16 @@
         },
         "langDefault": "en",
         "langSelected": "en",
-        "languages": [{
-            "id": "en",
-            "name": "English"
-        }, {
-            "id": "fr",
-            "name": "French"
-        }]
+        "languages": [
+            {
+                "id": "en",
+                "name": "English"
+            },
+            {
+                "id": "fr",
+                "name": "French"
+            }
+        ]
     },
     "showDropDown": false,
     "showDropDownMenu": false,

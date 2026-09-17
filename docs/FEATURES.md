@@ -51,7 +51,7 @@ Never say only “bilingual.” That is the **product name**, not the navbar lan
 F-05 — Customize the card in this repo (`src/pages/CustomizePage.vue`). Do not match the AI Studio customize screen.
 
 - Full name (max 50 characters, two lines on the card)
-- Designation (one or more from the list; Vue still allows one)
+- Designation (one or more from the list; searchable multi-select with pills)
 - Email (max 40 characters)
 - Mobile phone (Canadian +1, formatted)
 - Office address (dropdown)

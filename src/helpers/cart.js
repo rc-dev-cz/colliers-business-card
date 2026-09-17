@@ -12,13 +12,21 @@ export function uid() {
 
 export function makeLine(payload) {
   const product = getProduct(payload.code)
+  const details = Object.assign({}, payload.details || {})
+  if (Array.isArray(details.degree)) {
+    details.degree = details.degree.slice()
+  } else if (details.degree) {
+    details.degree = [details.degree]
+  } else {
+    details.degree = []
+  }
   return {
     id: payload.id || uid(),
     code: payload.code,
     language: payload.language || (product && product.language) || '',
     quantity: payload.quantity || 1,
     price: (product && product.price) || payload.price || 0,
-    details: Object.assign({}, payload.details || {}),
+    details: details,
   }
 }
 
