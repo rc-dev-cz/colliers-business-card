@@ -7,7 +7,8 @@
     "header": {
         "activeNav": "catalog",
         "cartCount": 2,
-        "displayName": "Demo User",
+        "displayName": "Admin User",
+        "role": "admin",
         "labels": {
             "addressBook": "Address Book",
             "catalog": "Catalog",
@@ -17,7 +18,8 @@
             "shoppingCart": "Shopping cart"
         },
         "locale": "en",
-        "menuOpen": false
+        "menuOpen": false,
+        "mobileMenuOpen": false
     },
     "i18n": {
         "dict": {
@@ -37,6 +39,18 @@
                 "en": "Active",
                 "fr": "Actif"
             },
+            "label_colliers_addDegree": {
+                "en": "Add degree",
+                "fr": "Ajouter un diplôme"
+            },
+            "label_colliers_addDesignation": {
+                "en": "Add designation",
+                "fr": "Ajouter une désignation"
+            },
+            "label_colliers_addOfficeAddress": {
+                "en": "Add office address",
+                "fr": "Ajouter une adresse de bureau"
+            },
             "label_colliers_addToCart": {
                 "en": "Add to Cart",
                 "fr": "Ajouter au panier"
@@ -49,6 +63,14 @@
                 "en": "Address",
                 "fr": "Adresse"
             },
+            "label_colliers_addressesConfiguredSuffix": {
+                "en": "addresses configured",
+                "fr": "adresses configurées"
+            },
+            "label_colliers_adminDashboard": {
+                "en": "Admin Dashboard",
+                "fr": "Tableau de bord admin"
+            },
             "label_colliers_allRights": {
                 "en": "All Rights Reserved",
                 "fr": "Tous droits réservés"
@@ -57,9 +79,17 @@
                 "en": "All Statuses",
                 "fr": "Tous les statuts"
             },
+            "label_colliers_amount": {
+                "en": "Amount",
+                "fr": "Montant"
+            },
             "label_colliers_back": {
                 "en": "Back",
                 "fr": "Retour"
+            },
+            "label_colliers_backToDashboard": {
+                "en": "Back to Dashboard",
+                "fr": "Retour au tableau de bord"
             },
             "label_colliers_bilingual": {
                 "en": "Bilingual",
@@ -97,6 +127,18 @@
                 "en": "Delete this personal address?",
                 "fr": "Supprimer cette adresse personnelle ?"
             },
+            "label_colliers_confirmDeleteDegree": {
+                "en": "Remove this degree or certification?",
+                "fr": "Supprimer ce diplôme ou cette certification ?"
+            },
+            "label_colliers_confirmDeleteDesignation": {
+                "en": "Remove this designation?",
+                "fr": "Supprimer cette désignation ?"
+            },
+            "label_colliers_confirmDeleteOffice": {
+                "en": "Remove this Colliers office address?",
+                "fr": "Supprimer cette adresse de bureau Colliers ?"
+            },
             "label_colliers_contactUs": {
                 "en": "Contact Us",
                 "fr": "Nous contacter"
@@ -121,15 +163,51 @@
                 "en": "Degree/Certification (Optional)",
                 "fr": "Diplôme/Certification (facultatif)"
             },
+            "label_colliers_degreesConfiguredSuffix": {
+                "en": "degrees configured",
+                "fr": "diplômes configurés"
+            },
+            "label_colliers_deleteDegree": {
+                "en": "Delete degree",
+                "fr": "Supprimer le diplôme"
+            },
+            "label_colliers_deleteDesignation": {
+                "en": "Delete designation",
+                "fr": "Supprimer la désignation"
+            },
+            "label_colliers_department": {
+                "en": "Department",
+                "fr": "Département"
+            },
+            "label_colliers_designationsConfiguredSuffix": {
+                "en": "designations configured",
+                "fr": "désignations configurées"
+            },
             "label_colliers_details": {
                 "en": "Details",
                 "fr": "Détails"
+            },
+            "label_colliers_download": {
+                "en": "Download",
+                "fr": "Télécharger"
             },
             "label_colliers_edit": {
                 "en": "Edit",
                 "fr": "Modifier"
             },
             "label_colliers_editAddress": {
+                "en": "Edit address",
+                "fr": "Modifier l'adresse"
+            },
+            "label_colliers_editDegree": {
+                "en": "Edit degree",
+                "fr": "Modifier le diplôme"
+            },
+            "label_colliers_editDesignation": {
+                "en": "Edit designation",
+                "fr": "Modifier la désignation"
+            },
+            "label_colliers_editOfficeAddress": {
                 "en": "Edit address",
                 "fr": "Modifier l'adresse"
             },
@@ -141,6 +219,10 @@
                 "en": "Fits on one line",
                 "fr": "Sur une seule ligne"
             },
+            "label_colliers_employee": {
+                "en": "Employee",
+                "fr": "Employé"
+            },
             "label_colliers_english": {
                 "en": "English",
                 "fr": "Anglais"
@@ -148,6 +230,14 @@
             "label_colliers_exploreCatalog": {
                 "en": "Explore Catalogue",
                 "fr": "Explorer le catalogue"
+            },
+            "label_colliers_exportData": {
+                "en": "Export Data",
+                "fr": "Exporter les données"
+            },
+            "label_colliers_exportDataMock": {
+                "en": "Export will be available when FileMaker reporting is connected.",
+                "fr": "L'export sera disponible lorsque les rapports FileMaker seront connectés."
             },
             "label_colliers_finishOptions": {
                 "en": "Matte or glossy finish options",
@@ -165,6 +255,30 @@
                 "en": "2 lines max",
                 "fr": "2 lignes max."
             },
+            "label_colliers_generateCustomReport": {
+                "en": "Generate Custom Report",
+                "fr": "Générer un rapport personnalisé"
+            },
+            "label_colliers_generateCustomReportHint": {
+                "en": "Export detailed analytics in CSV or PDF format for specific date ranges.",
+                "fr": "Exportez des analyses détaillées en CSV ou PDF pour des plages de dates précises."
+            },
+            "label_colliers_invoiceDownloadMock": {
+                "en": "Invoice download is mock data for",
+                "fr": "Le téléchargement de facture est simulé pour"
+            },
+            "label_colliers_invoiceHistory": {
+                "en": "Invoice History",
+                "fr": "Historique des factures"
+            },
+            "label_colliers_invoiceHistoryTileDesc": {
+                "en": "View historical invoices, billing statements, and download PDF receipts for past orders.",
+                "fr": "Consultez les factures, les relevés et téléchargez les reçus PDF des commandes passées."
+            },
+            "label_colliers_invoiceId": {
+                "en": "Invoice ID",
+                "fr": "N° de facture"
+            },
             "label_colliers_item": {
                 "en": "Item",
                 "fr": "Article"
@@ -181,6 +295,10 @@
                 "en": "Language",
                 "fr": "Langue"
             },
+            "label_colliers_lastUpdatedJustNow": {
+                "en": "Last updated: Just now",
+                "fr": "Dernière mise à jour : à l'instant"
+            },
             "label_colliers_loading": {
                 "en": "Loading...",
                 "fr": "Chargement..."
@@ -192,6 +310,46 @@
             "label_colliers_locationNickname": {
                 "en": "Location nickname",
                 "fr": "Surnom du lieu"
+            },
+            "label_colliers_manageAddresses": {
+                "en": "Manage Addresses",
+                "fr": "Gérer les adresses"
+            },
+            "label_colliers_manageAddressesTileDesc": {
+                "en": "Configure global shipping destinations, office locations, and default addresses for business cards.",
+                "fr": "Configurez les destinations d'expédition, les bureaux et les adresses par défaut pour les cartes."
+            },
+            "label_colliers_manageBilling": {
+                "en": "Manage billing",
+                "fr": "Gérer la facturation"
+            },
+            "label_colliers_manageColliersOfficesHint": {
+                "en": "Colliers office locations used on business cards and shipping.",
+                "fr": "Adresses de bureau Colliers utilisées sur les cartes et pour l'expédition."
+            },
+            "label_colliers_manageDegrees": {
+                "en": "Manage Degrees",
+                "fr": "Gérer les diplômes"
+            },
+            "label_colliers_manageDegreesHint": {
+                "en": "Permitted degrees and certifications allowed on business cards.",
+                "fr": "Diplômes et certifications autorisés sur les cartes de visite."
+            },
+            "label_colliers_manageDegreesTileDesc": {
+                "en": "Manage permitted degrees and certifications allowed on business cards.",
+                "fr": "Gérez les diplômes et certifications autorisés sur les cartes de visite."
+            },
+            "label_colliers_manageDesignations": {
+                "en": "Manage Designations",
+                "fr": "Gérer les désignations"
+            },
+            "label_colliers_manageDesignationsHint": {
+                "en": "Designations shown on business cards during customization.",
+                "fr": "Désignations affichées sur les cartes lors de la personnalisation."
+            },
+            "label_colliers_manageDesignationsTileDesc": {
+                "en": "Manage permitted credentials and designations allowed on business cards.",
+                "fr": "Gérez les titres et désignations autorisés sur les cartes de visite."
             },
             "label_colliers_materials": {
                 "en": "Materials",
@@ -209,6 +367,10 @@
                 "en": "10-digit Canadian number",
                 "fr": "Numéro canadien à 10 chiffres"
             },
+            "label_colliers_monthlySpendOverview": {
+                "en": "Monthly Spend Overview",
+                "fr": "Aperçu des dépenses mensuelles"
+            },
             "label_colliers_myAddressBook": {
                 "en": "My Address Book",
                 "fr": "Mon carnet d'adresses"
@@ -216,6 +378,14 @@
             "label_colliers_newAddress": {
                 "en": "New address",
                 "fr": "Nouvelle adresse"
+            },
+            "label_colliers_noDegrees": {
+                "en": "No degrees yet.",
+                "fr": "Aucun diplôme pour le moment."
+            },
+            "label_colliers_noDesignations": {
+                "en": "No designations yet.",
+                "fr": "Aucune désignation pour le moment."
             },
             "label_colliers_noOfficeAddresses": {
                 "en": "No office addresses to show.",
@@ -229,6 +399,10 @@
                 "en": "No personal addresses yet. Add one with + New Address.",
                 "fr": "Aucune adresse personnelle. Ajoutez-en une avec + Nouvelle adresse."
             },
+            "label_colliers_officeAddressFormIntro": {
+                "en": "Please provide the details for the address below.",
+                "fr": "Veuillez fournir les détails de l'adresse ci-dessous."
+            },
             "label_colliers_officeAddresses": {
                 "en": "Office Addresses",
                 "fr": "Adresses de bureau"
@@ -240,6 +414,10 @@
             "label_colliers_orderDetails": {
                 "en": "Order Details",
                 "fr": "Détails de la commande"
+            },
+            "label_colliers_orderHistoryTileDesc": {
+                "en": "Review previous orders, track status, and reorder business cards.",
+                "fr": "Consultez les commandes précédentes, suivez le statut et recommandez des cartes."
             },
             "label_colliers_orderId": {
                 "en": "Order ID",
@@ -297,13 +475,33 @@
                 "en": "QTY FROM",
                 "fr": "QTÉ DE"
             },
+            "label_colliers_recentActivity": {
+                "en": "Recent Activity",
+                "fr": "Activité récente"
+            },
+            "label_colliers_recentOrders": {
+                "en": "Recent Orders",
+                "fr": "Commandes récentes"
+            },
             "label_colliers_regionOptional": {
                 "en": "Region (Optional)",
                 "fr": "Région (facultatif)"
             },
+            "label_colliers_removeOfficeAddress": {
+                "en": "Remove address",
+                "fr": "Supprimer l'adresse"
+            },
             "label_colliers_repeatOrder": {
                 "en": "Repeat Order",
                 "fr": "Commander à nouveau"
+            },
+            "label_colliers_reporting": {
+                "en": "Reporting",
+                "fr": "Rapports"
+            },
+            "label_colliers_reportingTileDesc": {
+                "en": "Generate volume reports, department spend analysis, and export data to CSV/Excel.",
+                "fr": "Générez des rapports de volume, analysez les dépenses par département et exportez en CSV/Excel."
             },
             "label_colliers_salesDigital": {
                 "en": "*Online Products & Courses: Digital products and courses are considered final once redeemed; at that point, such products are not eligible for return, exchange, or transfer.",
@@ -341,6 +539,10 @@
                 "en": "Specialized Team (Optional)",
                 "fr": "Équipe spécialisée (facultatif)"
             },
+            "label_colliers_spendByDepartment": {
+                "en": "Spend by Department",
+                "fr": "Dépenses par département"
+            },
             "label_colliers_status": {
                 "en": "Status",
                 "fr": "Statut"
@@ -349,6 +551,18 @@
                 "en": "Delivered",
                 "fr": "Livrée"
             },
+            "label_colliers_statusOverdue": {
+                "en": "Overdue",
+                "fr": "En retard"
+            },
+            "label_colliers_statusPaid": {
+                "en": "Paid",
+                "fr": "Payée"
+            },
+            "label_colliers_statusPending": {
+                "en": "Pending",
+                "fr": "En attente"
+            },
             "label_colliers_statusProcessing": {
                 "en": "Processing",
                 "fr": "En traitement"
@@ -356,6 +570,10 @@
             "label_colliers_statusShipped": {
                 "en": "Shipped",
                 "fr": "Expédiée"
+            },
+            "label_colliers_systemOptions": {
+                "en": "System Options",
+                "fr": "Options système"
             },
             "label_colliers_terms": {
                 "en": "Terms of Use / Copyright",
@@ -376,6 +594,14 @@
             "label_colliers_unitTotal": {
                 "en": "UNIT TOTAL",
                 "fr": "TOTAL UNITAIRE"
+            },
+            "label_colliers_viewAnalytics": {
+                "en": "View analytics",
+                "fr": "Voir les analyses"
+            },
+            "label_colliers_viewPastOrders": {
+                "en": "View past orders",
+                "fr": "Voir les commandes passées"
             },
             "label_colliers_viewPrintPdf": {
                 "en": "View print PDF",
@@ -840,6 +1066,18 @@
             "label_viewMyAccount": {
                 "en": "View My Account",
                 "fr": "Voir mon compte"
+            },
+            "placeholder_colliers_enterNewOfficeAddress": {
+                "en": "Enter new address...",
+                "fr": "Entrez la nouvelle adresse..."
+            },
+            "placeholder_colliers_newDegree": {
+                "en": "Enter new degree...",
+                "fr": "Entrez le nouveau diplôme..."
+            },
+            "placeholder_colliers_newDesignation": {
+                "en": "Enter new designation...",
+                "fr": "Entrez une nouvelle désignation..."
             },
             "placeholder_colliers_searchOrderByName": {
                 "en": "Search by Name...",

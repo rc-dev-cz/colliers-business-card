@@ -284,6 +284,43 @@ export const messages = {
   viewPastOrders: { EN: 'View past orders', FR: 'Voir les commandes passées' },
   manageBilling: { EN: 'Manage billing', FR: 'Gérer la facturation' },
   viewAnalytics: { EN: 'View analytics', FR: 'Voir les analyses' },
+  lastUpdatedJustNow: { EN: 'Last updated: Just now', FR: 'Dernière mise à jour : à l\'instant' },
+  addressesConfigured: {
+    EN: '{n} addresses configured',
+    FR: '{n} adresses configurées',
+  },
+  designationsConfigured: {
+    EN: '{n} designations configured',
+    FR: '{n} désignations configurées',
+  },
+  degreesConfigured: {
+    EN: '{n} degrees configured',
+    FR: '{n} diplômes configurés',
+  },
+  orderHistoryTileDesc: {
+    EN: 'Review previous orders, track status, and reorder business cards.',
+    FR: 'Consultez les commandes précédentes, suivez le statut et recommandez des cartes.',
+  },
+  invoiceHistoryTileDesc: {
+    EN: 'View historical invoices, billing statements, and download PDF receipts for past orders.',
+    FR: 'Consultez les factures, les relevés et téléchargez les reçus PDF des commandes passées.',
+  },
+  reportingTileDesc: {
+    EN: 'Generate volume reports, department spend analysis, and export data to CSV/Excel.',
+    FR: 'Générez des rapports de volume, analysez les dépenses par département et exportez en CSV/Excel.',
+  },
+  manageAddressesTileDesc: {
+    EN: 'Configure global shipping destinations, office locations, and default addresses for business cards.',
+    FR: 'Configurez les destinations d\'expédition, les bureaux et les adresses par défaut pour les cartes.',
+  },
+  manageDesignationsTileDesc: {
+    EN: 'Manage permitted credentials and designations allowed on business cards.',
+    FR: 'Gérez les titres et désignations autorisés sur les cartes de visite.',
+  },
+  manageDegreesTileDesc: {
+    EN: 'Manage permitted degrees and certifications allowed on business cards.',
+    FR: 'Gérez les diplômes et certifications autorisés sur les cartes de visite.',
+  },
   adminStubHint: {
     EN: 'This screen will be filled in by',
     FR: 'Cet écran sera complété par',
@@ -301,10 +338,13 @@ export const messages = {
     EN: 'Remove this designation?',
     FR: 'Supprimer cette désignation ?',
   },
-  invoiceId: { EN: 'Invoice', FR: 'Facture' },
+  invoiceId: { EN: 'Invoice ID', FR: 'N° de facture' },
   customer: { EN: 'Customer', FR: 'Client' },
   amount: { EN: 'Amount', FR: 'Montant' },
   download: { EN: 'Download', FR: 'Télécharger' },
+  statusPaid: { EN: 'Paid', FR: 'Payée' },
+  statusPending: { EN: 'Pending', FR: 'En attente' },
+  statusOverdue: { EN: 'Overdue', FR: 'En retard' },
   invoiceDownloadMock: {
     EN: 'Invoice download is mock data for',
     FR: 'Le téléchargement de facture est simulé pour',
@@ -312,6 +352,11 @@ export const messages = {
   monthlySpendOverview: { EN: 'Monthly Spend Overview', FR: 'Aperçu des dépenses mensuelles' },
   recentActivity: { EN: 'Recent Activity', FR: 'Activité récente' },
   spendByDepartment: { EN: 'Spend by Department', FR: 'Dépenses par département' },
+  generateCustomReport: { EN: 'Generate Custom Report', FR: 'Générer un rapport personnalisé' },
+  generateCustomReportHint: {
+    EN: 'Export detailed analytics in CSV or PDF format for specific date ranges.',
+    FR: 'Exportez des analyses détaillées en CSV ou PDF pour des plages de dates précises.',
+  },
   exportData: { EN: 'Export Data', FR: 'Exporter les données' },
   exportDataMock: {
     EN: 'Export will be available when FileMaker reporting is connected.',

@@ -1,0 +1,46 @@
+<div id="admin-invoices-root" class="colliers-page-root max-w-5xl">
+  <div class="colliers-page-header">
+    <div class="colliers-page-header__main">
+      <h1 class="colliers-page-title">{{ BF.i18n('label_colliers_invoiceHistory') }}</h1>
+    </div>
+    <div class="colliers-page-header__actions">
+      <button type="button" class="colliers-back-link" @click="BF.namedAction('goDashboard')">
+        <svg class="colliers-back-link__icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" /></svg>
+        {{ BF.i18n('label_colliers_backToDashboard') }}
+      </button>
+    </div>
+  </div>
+  <div class="overflow-x-auto rounded-xl border border-gray-200 bg-white shadow-sm">
+    <table class="min-w-full text-left text-sm">
+      <thead class="border-b border-gray-200 bg-gray-50 text-xs font-medium uppercase tracking-wide text-gray-500">
+        <tr>
+          <th class="px-4 py-3">{{ BF.i18n('label_colliers_invoiceId') }}</th>
+          <th class="px-4 py-3">{{ BF.i18n('label_colliers_date') }}</th>
+          <th class="px-4 py-3">{{ BF.i18n('label_colliers_department') }}</th>
+          <th class="px-4 py-3">{{ BF.i18n('label_colliers_amount') }}</th>
+          <th class="px-4 py-3">{{ BF.i18n('label_general_status') }}</th>
+          <th class="px-4 py-3 text-right">{{ BF.i18n('label_colliers_action') }}</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="row in model.invoices" :key="row.id" class="border-b border-gray-100 last:border-0">
+          <td class="px-4 py-3 font-medium" style="color: var(--colliers-primary)">{{ row.id }}</td>
+          <td class="px-4 py-3 text-gray-700">{{ row.dateFormatted }}</td>
+          <td class="px-4 py-3 text-gray-700">{{ row.department }}</td>
+          <td class="px-4 py-3 tabular-nums text-gray-700">${{ row.amountFormatted }}</td>
+          <td class="px-4 py-3">
+            <span
+              class="inline-flex rounded-md px-2.5 py-1 text-xs font-medium"
+              :class="row.status === 'Paid' ? 'bg-green-100 text-green-800' : row.status === 'Pending' ? 'bg-amber-100 text-amber-800' : row.status === 'Overdue' ? 'bg-red-100 text-red-800' : 'bg-gray-100 text-gray-700'"
+            >
+              {{ row.status === 'Paid' ? BF.i18n('label_colliers_statusPaid') : row.status === 'Pending' ? BF.i18n('label_colliers_statusPending') : row.status === 'Overdue' ? BF.i18n('label_colliers_statusOverdue') : row.status }}
+            </span>
+          </td>
+          <td class="px-4 py-3 text-right">
+            <button type="button" class="hover:underline" style="color: var(--colliers-primary)" @click="BF.namedAction('downloadInvoice', { id: row.id })">{{ BF.i18n('label_colliers_download') }}</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

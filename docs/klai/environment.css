@@ -102,6 +102,11 @@ body {
   /* No z-index here — it stacks over Klai editor chrome. Dropdown uses z-30 inline. */
 }
 
+.colliers-site-header--admin {
+  background: var(--colliers-primary);
+  border-bottom-color: var(--colliers-primary-hover);
+}
+
 .colliers-site-footer {
   flex: 0 0 auto;
   width: 100%;
@@ -158,6 +163,92 @@ body {
 
 .colliers-page-intro {
   margin-bottom: 2rem;
+}
+
+.colliers-page-subtitle {
+  margin: 0.5rem 0 0;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: var(--colliers-text-muted);
+}
+
+/* Admin dashboard tiles — Inter metrics to match designer */
+.colliers-admin-section-title {
+  margin: 0 0 1.25rem;
+  font-family: Inter, 'Open Sans', Helvetica, Arial, sans-serif;
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 1.35;
+  color: var(--colliers-page-title-color);
+}
+
+.colliers-admin-tile {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 1.25rem;
+  text-align: left;
+  border-radius: 0.5rem;
+  border: 1px solid #e5e7eb;
+  background: #fff;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  cursor: pointer;
+  transition: border-color 0.15s ease;
+  font-family: Inter, 'Open Sans', Helvetica, Arial, sans-serif;
+}
+
+.colliers-admin-tile:hover {
+  border-color: var(--colliers-primary, #25408f);
+}
+
+.colliers-admin-tile__header {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+}
+
+.colliers-admin-tile__icon {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 0.375rem;
+  border: 1px solid #e5e7eb;
+  background: #f9fafb;
+  color: #6b7280;
+  font-size: 1rem;
+}
+
+.colliers-admin-tile__heading {
+  min-width: 0;
+  padding-top: 0.125rem;
+}
+
+.colliers-admin-tile__title {
+  display: block;
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.35;
+  color: var(--colliers-page-title-color);
+}
+
+.colliers-admin-tile__subtitle {
+  display: block;
+  margin-top: 0.125rem;
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 1.35;
+  color: #9ca3af;
+}
+
+.colliers-admin-tile__desc {
+  display: block;
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 1.5;
+  color: #6b7280;
 }
 
 .colliers-page-header {
@@ -227,6 +318,71 @@ body {
   border-color: var(--colliers-primary);
   outline: none;
   box-shadow: 0 0 0 1px var(--colliers-primary);
+}
+
+/* --- List panels (Manage Designations, Degrees, Addresses) --- */
+.colliers-list-panel {
+  border-radius: 0.5rem;
+  border: 1px solid var(--colliers-border);
+  background: var(--colliers-bg-surface);
+  padding: 1.5rem;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.colliers-list-panel-scroll {
+  max-height: var(--colliers-list-panel-max-height);
+  overflow-y: auto;
+}
+
+.colliers-list-panel--viewport {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.colliers-list-panel--viewport .colliers-list-panel-scroll {
+  flex: 1 1 auto;
+  min-height: 0;
+  max-height: none;
+  overflow-y: auto;
+}
+
+.colliers-list-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  border-radius: 0.375rem;
+  border: 1px solid #f3f4f6;
+  background: #f9fafb;
+  padding: 0.75rem;
+}
+
+.colliers-list-row-body {
+  min-width: 0;
+  flex: 1 1 auto;
+  padding-right: 0.75rem;
+}
+
+.colliers-list-row-actions {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+@media (min-width: 768px) {
+  .colliers-list-row-actions--hover {
+    opacity: 0;
+    transition: opacity 0.15s ease;
+  }
+
+  .colliers-list-row:hover .colliers-list-row-actions--hover,
+  .colliers-list-row:focus-within .colliers-list-row-actions--hover {
+    opacity: 1;
+  }
 }
 
 /* --- Content card / tabs / table --- */

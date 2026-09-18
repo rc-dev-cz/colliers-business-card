@@ -1,0 +1,69 @@
+<div id="admin-dashboard-root" class="colliers-page-root max-w-5xl">
+  <div class="mb-6 flex flex-col gap-1 sm:mb-8 sm:flex-row sm:items-baseline sm:justify-between">
+    <h1 class="colliers-page-title">{{ BF.i18n('label_colliers_adminDashboard') }}</h1>
+    <p class="text-sm font-normal text-gray-400">{{ BF.i18n('label_colliers_lastUpdatedJustNow') }}</p>
+  </div>
+  <h2 class="colliers-admin-section-title">{{ BF.i18n('label_colliers_systemOptions') }}</h2>
+  <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+    <button type="button" class="colliers-admin-tile" @click="BF.namedAction('goOrders')">
+      <span class="colliers-admin-tile__header">
+        <span class="colliers-admin-tile__icon" aria-hidden="true"><i class="fa-solid fa-cart-shopping"></i></span>
+        <span class="colliers-admin-tile__heading">
+          <span class="colliers-admin-tile__title">{{ BF.i18n('label_general_orderHistory') }}</span>
+          <span class="colliers-admin-tile__subtitle">{{ BF.i18n('label_colliers_viewPastOrders') }}</span>
+        </span>
+      </span>
+      <span class="colliers-admin-tile__desc">{{ BF.i18n('label_colliers_orderHistoryTileDesc') }}</span>
+    </button>
+    <button type="button" class="colliers-admin-tile" @click="BF.namedAction('goInvoices')">
+      <span class="colliers-admin-tile__header">
+        <span class="colliers-admin-tile__icon" aria-hidden="true"><i class="fa-regular fa-file-lines"></i></span>
+        <span class="colliers-admin-tile__heading">
+          <span class="colliers-admin-tile__title">{{ BF.i18n('label_colliers_invoiceHistory') }}</span>
+          <span class="colliers-admin-tile__subtitle">{{ BF.i18n('label_colliers_manageBilling') }}</span>
+        </span>
+      </span>
+      <span class="colliers-admin-tile__desc">{{ BF.i18n('label_colliers_invoiceHistoryTileDesc') }}</span>
+    </button>
+    <button type="button" class="colliers-admin-tile" @click="BF.namedAction('goReporting')">
+      <span class="colliers-admin-tile__header">
+        <span class="colliers-admin-tile__icon" aria-hidden="true"><i class="fa-solid fa-chart-column"></i></span>
+        <span class="colliers-admin-tile__heading">
+          <span class="colliers-admin-tile__title">{{ BF.i18n('label_colliers_reporting') }}</span>
+          <span class="colliers-admin-tile__subtitle">{{ BF.i18n('label_colliers_viewAnalytics') }}</span>
+        </span>
+      </span>
+      <span class="colliers-admin-tile__desc">{{ BF.i18n('label_colliers_reportingTileDesc') }}</span>
+    </button>
+    <button type="button" class="colliers-admin-tile" @click="BF.namedAction('goAddresses')">
+      <span class="colliers-admin-tile__header">
+        <span class="colliers-admin-tile__icon" aria-hidden="true"><i class="fa-solid fa-gear"></i></span>
+        <span class="colliers-admin-tile__heading">
+          <span class="colliers-admin-tile__title">{{ BF.i18n('label_colliers_manageAddresses') }}</span>
+          <span class="colliers-admin-tile__subtitle">{{ (model.counts && model.counts.addresses != null ? model.counts.addresses : 0) + ' ' + BF.i18n('label_colliers_addressesConfiguredSuffix') }}</span>
+        </span>
+      </span>
+      <span class="colliers-admin-tile__desc">{{ BF.i18n('label_colliers_manageAddressesTileDesc') }}</span>
+    </button>
+    <button type="button" class="colliers-admin-tile" @click="BF.namedAction('goTitles')">
+      <span class="colliers-admin-tile__header">
+        <span class="colliers-admin-tile__icon" aria-hidden="true"><i class="fa-regular fa-user"></i></span>
+        <span class="colliers-admin-tile__heading">
+          <span class="colliers-admin-tile__title">{{ BF.i18n('label_colliers_manageDesignations') }}</span>
+          <span class="colliers-admin-tile__subtitle">{{ (model.counts && model.counts.titles != null ? model.counts.titles : 0) + ' ' + BF.i18n('label_colliers_designationsConfiguredSuffix') }}</span>
+        </span>
+      </span>
+      <span class="colliers-admin-tile__desc">{{ BF.i18n('label_colliers_manageDesignationsTileDesc') }}</span>
+    </button>
+    <button type="button" class="colliers-admin-tile" @click="BF.namedAction('goDegrees')">
+      <span class="colliers-admin-tile__header">
+        <span class="colliers-admin-tile__icon" aria-hidden="true"><i class="fa-solid fa-graduation-cap"></i></span>
+        <span class="colliers-admin-tile__heading">
+          <span class="colliers-admin-tile__title">{{ BF.i18n('label_colliers_manageDegrees') }}</span>
+          <span class="colliers-admin-tile__subtitle">{{ (model.counts && model.counts.degrees != null ? model.counts.degrees : 0) + ' ' + BF.i18n('label_colliers_degreesConfiguredSuffix') }}</span>
+        </span>
+      </span>
+      <span class="colliers-admin-tile__desc">{{ BF.i18n('label_colliers_manageDegreesTileDesc') }}</span>
+    </button>
+  </div>
+</div>

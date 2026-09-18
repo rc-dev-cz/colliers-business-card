@@ -1,6 +1,6 @@
 <template>
   <colliers-page-shell>
-    <div class="mx-auto w-full" :class="fromAdmin ? 'max-w-6xl' : 'max-w-5xl'">
+    <div class="mx-auto w-full max-w-5xl">
       <admin-page-header v-if="fromAdmin" :title="t('orderHistory')"></admin-page-header>
       <div v-else class="colliers-page-intro">
         <h1 class="colliers-page-title">{{ t('orderHistory') }}</h1>
@@ -59,7 +59,7 @@
                 <td class="px-4 py-3 text-gray-700">{{ formatOrderDate(row.date) }}</td>
                 <td class="px-4 py-3">
                   <span
-                    class="inline-flex rounded-full px-2.5 py-1 text-xs font-medium"
+                    class="inline-flex rounded-md px-2.5 py-1 text-xs font-medium"
                     :class="statusClass(row.status)"
                   >
                     {{ statusLabel(row.status) }}
@@ -108,7 +108,7 @@
           <div class="flex justify-between gap-4">
             <span class="text-gray-500">{{ t('status') }}</span>
             <span
-              class="inline-flex rounded-full px-2.5 py-1 text-xs font-medium"
+              class="inline-flex rounded-md px-2.5 py-1 text-xs font-medium"
               :class="statusClass(details.status)"
             >
               {{ statusLabel(details.status) }}

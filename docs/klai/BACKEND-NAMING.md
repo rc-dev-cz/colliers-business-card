@@ -4,7 +4,7 @@ Shared reference for frontend and FileMaker: **page name → route → `hookSetN
 
 **Source of truth for hook names:** live Klai Studio when the page exists there; otherwise the **Planned** rows below (from this Cursor/Vue app). FileMaker script names are **convention-derived** from BetterForms (`assistantGuide_fileMaker`), not verified against live FM scripts in this workspace.
 
-Last MCP refresh: 2026-09-11 (print PDF + CardPreview bind fix).
+Last MCP refresh: 2026-09-18 (Admin Home + Admin Order History + Invoice History + Reporting + Manage Addresses + Manage Designations + Manage Degrees Live UI in Klai).
 
 **Status:** Live = in Klai today · Planned = in Cursor/Vue, not in Klai yet.
 
@@ -66,19 +66,19 @@ Bus variables (FileMaker side): `$$BF_Payload`, `$$BF_Model`, `$$BF_Actions`, `$
 
 | Page (`formName`) | Route | `hookSetName` | `requestHook` | Expected FM onFormRequest | Utility / notes | Status |
 | --- | --- | --- | --- | --- | --- | --- |
-| Admin Home | `/admin` | `admin` | true | `BF - onFormRequest - admin` | Dashboard / tool links | Planned |
-| Manage Addresses | `/admin/addresses` | `adminaddresses` | true | `BF - onFormRequest - adminaddresses` | `create`, `update`, `delete` (offices) | Planned |
-| Manage Titles | `/admin/titles` | `admintitles` | true | `BF - onFormRequest - admintitles` | `create`, `update`, `delete` | Planned |
-| Manage Degrees | `/admin/degrees` | `admindegrees` | true | `BF - onFormRequest - admindegrees` | `create`, `update`, `delete` | Planned |
-| Admin Order History | `/admin/orders` | `adminorders` | true | `BF - onFormRequest - adminorders` | Admin-scoped order list | Planned |
-| Invoice History | `/admin/invoices` | `invoices` | true | `BF - onFormRequest - invoices` | — | Planned |
-| Reporting | `/admin/reporting` | `reporting` | true | `BF - onFormRequest - reporting` | — | Planned |
+| Admin Home | `/admin` | `admin` | false (planned true) | `BF - onFormRequest - admin` | Dashboard / tool links; `model.counts` in modelDev | Live UI |
+| Manage Addresses | `/admin/addresses` | `adminaddresses` | false (planned true) | `BF - onFormRequest - adminaddresses` | `create`, `update`, `delete` (offices) — client stub until FM | Live UI |
+| Manage Titles (formName: Manage Designations) | `/admin/titles` | `admintitles` | false (planned true) | `BF - onFormRequest - admintitles` | `create`, `update`, `delete` | Live UI |
+| Manage Degrees | `/admin/degrees` | `admindegrees` | false (planned true) | `BF - onFormRequest - admindegrees` | `create`, `update`, `delete` | Live UI |
+| Admin Order History | `/admin/orders` | `adminorders` | false (planned true) | `BF - onFormRequest - adminorders` | Admin-scoped order list (employee); no `repeat` in v1 | Live UI |
+| Invoice History | `/admin/invoices` | `invoices` | false (planned true) | `BF - onFormRequest - invoices` | Invoice table + download (mock) | Live UI |
+| Reporting | `/admin/reporting` | `reporting` | false (planned true) | `BF - onFormRequest - reporting` | Charts / activity / export CTA (mock) | Live UI |
 
 ---
 
 ## Data models
 
-Shapes the request/utility hooks should put on `$$BF_Model` (Klai `model`). Live pages only below. UI-only keys (`header`, `filtered`, `search`, …) omitted unless the hook must set them.
+Shapes the request/utility hooks should put on `$$BF_Model` (Klai `model`). Includes **Live** product pages and **Planned** admin pages (models agreed for Mike / FileMaker; UI not in Klai yet). UI-only keys (`header`, `filtered`, `search`, …) omitted unless the hook must set them.
 
 ### Shared shapes
 
@@ -159,6 +159,22 @@ Shapes the request/utility hooks should put on `$$BF_Model` (Klai `model`). Live
 
 `status`: `"Delivered"` | `"Shipped"` | `"Processing"`.
 
+Personal Order History uses this shape. Admin Order History adds `employeeName` and `ownerEmail` (see below).
+
+**Invoice**
+
+```json
+{
+  "id": "INV-2026-0842",
+  "date": "2026-08-10",
+  "department": "Marketing",
+  "amount": 1240.0,
+  "status": "Paid"
+}
+```
+
+`status`: `"Paid"` | `"Pending"` | `"Overdue"`. UI may also show `dateFormatted` / `amountFormatted` (dev helpers).
+
 ### Per page — what the hook fills
 
 **Catalogue** (`catalogue`)
@@ -215,6 +231,92 @@ Shapes the request/utility hooks should put on `$$BF_Model` (Klai `model`). Live
 }
 ```
 
+### Admin — Live UI / Planned
+
+Hook set names below are the agreed Mike / FileMaker contract. Build FM scripts to match; do not invent alternate names without updating this doc.
+
+**Manage Designations** (`admintitles`) — Live UI in Klai (`formName` Manage Designations; route `/admin/titles`). Designation strings. Client stubs for `create` / `update` / `delete` until FM utilities exist (`update` sends old + new string).
+
+```json
+{
+  "titles": ["Managing Director", "Associate"]
+}
+```
+
+**Admin Home** (`admin`) — Live UI in Klai (route `/admin`). Dashboard tiles; counts from `model.counts` until FM request hook is on.
+
+```json
+{
+  "counts": {
+    "addresses": 0,
+    "titles": 0,
+    "degrees": 0
+  }
+}
+```
+
+Tiles are UI-only. Counts may come from this object or from loading the three lists on related pages.
+
+**Manage Addresses** (`adminaddresses`) — Live UI in Klai (route `/admin/addresses`). Company offices only (same **Address** shape). Client stubs until FM utilities `create` / `update` / `delete`.
+
+```json
+{
+  "offices": [ /* Address */ ],
+  "form": {
+    "id": "",
+    "addressName": "",
+    "addressStreet": "",
+    "addressCity": "",
+    "addressProvince": "",
+    "addressPostalZip": "",
+    "addressCountry": ""
+  }
+}
+```
+
+**Manage Degrees** (`admindegrees`) — Live UI in Klai (route `/admin/degrees`). Same pattern as titles / designations. Client stubs until FM utilities exist.
+
+```json
+{
+  "degrees": ["Arch. Tech", "P. Eng."]
+}
+```
+
+**Admin Order History** (`adminorders`) — Live UI in Klai (route `/admin/orders`). Company-wide list. **Order** plus employee fields. No `repeat` utility in v1 (ADM-035 open).
+
+```json
+{
+  "orders": [
+    {
+      "id": "ORD-8472",
+      "date": 20260828,
+      "status": "Delivered",
+      "employeeName": "Alex Johnson",
+      "ownerEmail": "alex.johnson@colliers.com",
+      "cart": [ /* same as Order.cart */ ]
+    }
+  ]
+}
+```
+
+**Reporting** (`reporting`) — Live UI in Klai (route `/admin/reporting`). Mock chart / activity / spend bars until FM hook is on.
+
+```json
+{
+  "monthlySpend": [{ "month": "Aug", "amount": 441 }],
+  "recentActivity": [{ "name": "Sarah Jenkins", "action": "Ordered Standard Cards", "department": "Marketing", "when": "2 hours ago" }],
+  "spendByDepartment": [{ "department": "Marketing", "amount": 1260 }]
+}
+```
+
+**Invoice History** (`invoices`) — Live UI in Klai (route `/admin/invoices`). Mock table + download alert until FM hook is on.
+
+```json
+{
+  "invoices": [ /* Invoice */ ]
+}
+```
+
 ---
 
 ## Gaps / To Review
@@ -224,7 +326,7 @@ Shapes the request/utility hooks should put on `$$BF_Model` (Klai `model`). Live
 - **Customize** — turn on `requestHook`; seed product, titles, offices from FM.
 - **Print PDF** — Customize button → `viewPrintPdf` (anchor download). FM base64 → Mark’s Press later ([PRINT-PDF.md](../PRINT-PDF.md)).
 - **Shipping / Review / Confirmed** — Planned pages; order create on Review utility type `submit`.
-- **Admin pages** — Planned hook sets above; confirm names before building scripts.
+- **Admin pages** — Admin Home (`admin`), Admin Order History (`adminorders`), Invoice History (`invoices`), Reporting (`reporting`), Manage Addresses (`adminaddresses`), Manage Designations (`admintitles`), and Manage Degrees (`admindegrees`) are Live UI. Confirm live FM script names when Mike builds them.
 - **Catalogue** — confirm live products payload matches `modelDev` shape.
 - **Script names** — confirm live FM scripts match `BF - onFormRequest - <hookSetName>` / `BF - onUtility - <hookSetName>`; update this doc if they differ.
 

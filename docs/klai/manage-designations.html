@@ -1,0 +1,42 @@
+<div id="manage-designations-root" class="colliers-page-root max-w-2xl">
+  <div class="colliers-page-intro">
+    <h1 class="colliers-page-title">{{ BF.i18n('label_colliers_manageDesignations') }}</h1>
+    <p class="colliers-page-subtitle">{{ BF.i18n('label_colliers_manageDesignationsHint') }}</p>
+  </div>
+  <div class="colliers-list-panel colliers-list-panel--viewport">
+    <div class="mb-4 flex gap-2">
+      <label class="sr-only" for="admin-designation-add">{{ BF.i18n('placeholder_colliers_newDesignation') }}</label>
+      <input id="admin-designation-add" type="text" class="field-input flex-1" :placeholder="BF.i18n('placeholder_colliers_newDesignation')" v-model="model.draft" @keydown.enter.prevent="BF.namedAction('addTitle')">
+      <button type="button" class="btn-primary px-4" :aria-label="BF.i18n('label_colliers_addDesignation')" @click="BF.namedAction('addTitle')">
+        <i class="fa-regular fa-plus" aria-hidden="true"></i>
+      </button>
+    </div>
+    <div v-if="model.titles && model.titles.length" class="colliers-list-panel-scroll">
+      <ul class="space-y-2">
+        <li v-for="(item, index) in model.titles" :key="item + '-' + index" class="colliers-list-row group">
+          <div v-if="model.editingKey === item" class="flex w-full gap-2">
+            <input type="text" class="field-input flex-1" v-model="model.editValue" @keydown.enter.prevent="BF.namedAction('saveEdit')" @keydown.esc.prevent="BF.namedAction('cancelEdit')">
+            <button type="button" class="btn-primary p-1.5" :aria-label="BF.i18n('label_general_save')" @click="BF.namedAction('saveEdit')">
+              <i class="fa-solid fa-check" aria-hidden="true"></i>
+            </button>
+            <button type="button" class="btn-outline p-1.5" :aria-label="BF.i18n('label_colliers_cancel')" @click="BF.namedAction('cancelEdit')">
+              <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+            </button>
+          </div>
+          <template v-else>
+            <span class="colliers-list-row-body text-sm text-gray-800">{{ item }}</span>
+            <div class="colliers-list-row-actions colliers-list-row-actions--hover">
+              <button type="button" class="rounded p-1.5 text-gray-400 transition-colors hover:text-colliers-primary" :title="BF.i18n('label_colliers_editDesignation')" :aria-label="BF.i18n('label_colliers_editDesignation')" @click="model.editingKey = item; model.editValue = item">
+                <i class="fa-regular fa-pen-to-square" aria-hidden="true"></i>
+              </button>
+              <button type="button" class="rounded p-1.5 text-gray-400 transition-colors hover:text-red-500" :title="BF.i18n('label_colliers_deleteDesignation')" :aria-label="BF.i18n('label_colliers_deleteDesignation')" @click="model.actionKey = item; BF.namedAction('deleteTitle')">
+                <i class="fa-regular fa-trash-can" aria-hidden="true"></i>
+              </button>
+            </div>
+          </template>
+        </li>
+      </ul>
+    </div>
+    <p v-else class="py-8 text-center text-sm italic text-gray-500">{{ BF.i18n('label_colliers_noDesignations') }}</p>
+  </div>
+</div>

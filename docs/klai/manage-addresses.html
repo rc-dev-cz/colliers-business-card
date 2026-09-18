@@ -1,0 +1,85 @@
+<div id="manage-addresses-root" class="colliers-page-root max-w-2xl">
+  <div class="colliers-page-header">
+    <div class="colliers-page-header__main">
+      <h1 class="colliers-page-title">{{ BF.i18n('label_colliers_manageAddresses') }}</h1>
+      <p class="colliers-page-subtitle">{{ BF.i18n('label_colliers_manageColliersOfficesHint') }}</p>
+    </div>
+    <div class="colliers-page-header__actions">
+      <button type="button" class="colliers-back-link" @click="BF.namedAction('goDashboard')">
+        <svg class="colliers-back-link__icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" /></svg>
+        {{ BF.i18n('label_colliers_backToDashboard') }}
+      </button>
+    </div>
+  </div>
+  <div class="colliers-list-panel colliers-list-panel--viewport">
+    <div class="mb-4 flex gap-2">
+      <label class="sr-only" for="admin-office-quick-add">{{ BF.i18n('placeholder_colliers_enterNewOfficeAddress') }}</label>
+      <input id="admin-office-quick-add" type="text" class="field-input flex-1" :placeholder="BF.i18n('placeholder_colliers_enterNewOfficeAddress')" v-model="model.quickAdd" @keydown.enter.prevent="BF.namedAction('openNew')">
+      <button type="button" class="btn-primary px-4" :aria-label="BF.i18n('label_colliers_addOfficeAddress')" @click="BF.namedAction('openNew')">
+        <i class="fa-regular fa-plus" aria-hidden="true"></i>
+      </button>
+    </div>
+    <div v-if="model.offices && model.offices.length" class="colliers-list-panel-scroll">
+      <ul class="space-y-2">
+        <li v-for="row in model.offices" :key="row.id" class="colliers-list-row group">
+          <span class="colliers-list-row-body text-sm text-gray-800">{{ row.listLabel }}</span>
+          <div class="colliers-list-row-actions colliers-list-row-actions--hover">
+            <button type="button" class="rounded p-1.5 text-gray-400 transition-colors hover:text-colliers-primary" :title="BF.i18n('label_colliers_editOfficeAddress')" :aria-label="BF.i18n('label_colliers_editOfficeAddress')" @click="BF.namedAction('openEdit', { id: row.id })">
+              <i class="fa-regular fa-pen-to-square" aria-hidden="true"></i>
+            </button>
+            <button type="button" class="rounded p-1.5 text-gray-400 transition-colors hover:text-red-500" :title="BF.i18n('label_colliers_removeOfficeAddress')" :aria-label="BF.i18n('label_colliers_removeOfficeAddress')" @click="BF.namedAction('deleteOffice', { id: row.id })">
+              <i class="fa-regular fa-trash-can" aria-hidden="true"></i>
+            </button>
+          </div>
+        </li>
+      </ul>
+    </div>
+    <p v-else class="py-8 text-center text-sm italic text-gray-500">{{ BF.i18n('label_colliers_noOfficeAddresses') }}</p>
+  </div>
+  <div class="colliers-modal-overlay" role="dialog" aria-modal="true" v-if="model.formOpen" @click.self="BF.namedAction('closeForm')">
+    <div class="colliers-modal-panel colliers-modal-panel--xl" @click.stop>
+      <div class="colliers-modal-header">
+        <h2>{{ model.editingId ? BF.i18n('label_colliers_editAddress') : BF.i18n('label_colliers_newAddress') }}</h2>
+        <button type="button" class="colliers-modal-close" @click="BF.namedAction('closeForm')">{{ BF.i18n('label_general_close') }}</button>
+      </div>
+      <form class="space-y-4 px-5 py-5" @submit.prevent="BF.namedAction('saveOffice')">
+        <p class="text-sm text-gray-500">{{ BF.i18n('label_colliers_officeAddressFormIntro') }}</p>
+        <p class="colliers-form-error" v-if="model.formError">{{ model.formError }}</p>
+        <div>
+          <label class="field-label" for="office-nickname">{{ BF.i18n('label_colliers_locationNickname') }}</label>
+          <input id="office-nickname" class="field-input" required v-model="model.form.addressName">
+        </div>
+        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <div>
+            <label class="field-label" for="office-street">{{ BF.i18n('label_general_address1') }}</label>
+            <input id="office-street" class="field-input" required v-model="model.form.addressStreet">
+          </div>
+          <div>
+            <label class="field-label" for="office-city">{{ BF.i18n('label_general_city') }}</label>
+            <input id="office-city" class="field-input" required v-model="model.form.addressCity">
+          </div>
+        </div>
+        <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
+          <div>
+            <label class="field-label" for="office-province">{{ BF.i18n('label_general_province') }}</label>
+            <input id="office-province" class="field-input" v-model="model.form.addressProvince">
+          </div>
+          <div>
+            <label class="field-label" for="office-postal">{{ BF.i18n('label_general_postalcode') }}</label>
+            <input id="office-postal" class="field-input" v-model="model.form.addressPostalZip">
+          </div>
+          <div>
+            <label class="field-label" for="office-country">{{ BF.i18n('label_general_country') }}</label>
+            <input id="office-country" class="field-input" v-model="model.form.addressCountry">
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn-outline" @click="BF.namedAction('closeForm')">{{ BF.i18n('label_colliers_cancel') }}</button>
+          <div class="modal-footer-actions">
+            <button type="submit" class="btn-primary">{{ BF.i18n('label_general_save') }}</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
