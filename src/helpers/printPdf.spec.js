@@ -1,17 +1,20 @@
 import { describe, expect, it } from 'vitest'
 import { PDFDocument } from 'pdf-lib'
 import { buildPrintPdfBytes, PRINT_PDF_PAGE } from './printPdf.js'
+import { CARD_LAYOUT } from './cardLayout.js'
+
+var base = {
+  name: 'Ada Lovelace',
+  title: 'Associate',
+  region: 'Ontario',
+  email: 'ada@example.com',
+  phone: '4165550100',
+  address: '1 University Ave\nToronto, ON',
+}
 
 describe('printPdf', function () {
   it('builds a 3.75 by 2.25 inch page from card details', async function () {
-    var bytes = await buildPrintPdfBytes({
-      name: 'Ada Lovelace',
-      title: 'Associate | Canada',
-      email: 'ada@example.com',
-      phone: '4165550100',
-      address: '1 University Ave\nToronto, ON',
-      website: 'colliers.com/canada',
-    }, 'English')
+    var bytes = await buildPrintPdfBytes(base, 'English')
     var doc = await PDFDocument.load(bytes)
     var page = doc.getPages()[0]
     var size = page.getSize()
@@ -22,45 +25,56 @@ describe('printPdf', function () {
     expect(doc.getPageCount()).toBe(1)
   })
 
-  it('wraps names longer than 20 characters onto two lines', async function () {
-    var bytes = await buildPrintPdfBytes({
-      name: 'sdasdasdasddsdsdsdsddasd',
-      title: 'Director | Canada',
-      email: 'asdasd@asd.asd',
-      phone: '345345456456',
-    }, 'English')
-    expect(bytes.byteLength).toBeGreaterThan(500)
+  it('sets trim/bleed/art boxes like the approved EN card', async function () {
+    var bytes = await buildPrintPdfBytes(base, 'English')
     var doc = await PDFDocument.load(bytes)
-    expect(doc.getPageCount()).toBe(1)
+    var page = doc.getPages()[0]
+    expect(page.getMediaBox()).toEqual({ x: 0, y: 0, width: 270, height: 162 })
+    expect(page.getBleedBox()).toEqual({ x: 0, y: 0, width: 270, height: 162 })
+    expect(page.getTrimBox()).toEqual({ x: 9, y: 9, width: 252, height: 144 })
+    expect(page.getArtBox()).toEqual({ x: 9, y: 9, width: 252, height: 144 })
   })
 
-  it('joins degrees and credentials on the identity line', async function () {
-    var bytes = await buildPrintPdfBytes({
-      name: 'Firstname Lastname',
-      degree: ['Arch. Tech', 'Architect'],
-      additionalCredentials: 'C.M.',
-      title: 'Title | Region',
-      email: 'firstname@colliersprojectleaders.com',
-      phone: '4444444444',
-    }, 'English')
+  it('joins short degrees inline on the identity line', async function () {
+    var bytes = await buildPrintPdfBytes(
+      Object.assign({}, base, { degree: ['CPA'], additionalCredentials: 'C.M.' }),
+      'English',
+    )
     expect(bytes.byteLength).toBeGreaterThan(500)
   })
 
-  it('wraps long credentials instead of clipping them', async function () {
-    var bytes = await buildPrintPdfBytes({
-      name: 'Firstname Lastname',
-      degree: ['Arch. Tech', 'Dipl. Arch. Tech'],
-      additionalCredentials: 'C.M.',
-      title: 'Associate',
-      region: 'Ontario',
-      specializedTeam: 'Specialized team or department',
-      email: 'carlos.zabaleta@raymentcollins.com',
-      phone: '+1 647 917 9683',
-      address: 'Bell Tower 1700-10104 103\nAvenue NW\nEdmonton, AB\nT5J 0H8 Canada',
-      website: 'colliersprojectleaders.com',
-    }, 'Bilingual')
+  it('builds bilingual pages only after both layouts validate', async function () {
+    var bytes = await buildPrintPdfBytes(base, 'Bilingual')
     var doc = await PDFDocument.load(bytes)
     expect(doc.getPageCount()).toBe(2)
-    expect(bytes.byteLength).toBeGreaterThan(800)
+  })
+
+  it('refuses to build a PDF when credentials cannot fit on one line', async function () {
+    await expect(
+      buildPrintPdfBytes(
+        Object.assign({}, base, {
+          degree: [
+            'Certified Construction Professional Extra',
+            'Dipl Architectural Technology Extra Long',
+          ],
+        }),
+        'English',
+      ),
+    ).rejects.toThrow(/credentials|too long/i)
+  })
+
+  it('refuses four degrees even if each is short', async function () {
+    await expect(
+      buildPrintPdfBytes(Object.assign({}, base, { degree: ['A', 'B', 'C', 'D'] }), 'English'),
+    ).rejects.toThrow(/maximum of 3/i)
+  })
+})
+
+describe('CARD_LAYOUT page geometry', function () {
+  it('matches print media and trim', function () {
+    expect(CARD_LAYOUT.pageW).toBe(270)
+    expect(CARD_LAYOUT.pageH).toBe(162)
+    expect(CARD_LAYOUT.trimW).toBe(252)
+    expect(CARD_LAYOUT.trimH).toBe(144)
   })
 })

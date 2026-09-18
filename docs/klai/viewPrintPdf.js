@@ -232,34 +232,82 @@ async function viewPrintPdfBody() {
   }
 
   /**
-   * Draw name (large) + credentials (smaller), wrapping like CardPreview / printPdf.js.
-   * Returns the y position below the last drawn line.
+   * Plan name + credentials (mirror printPdf.js). Credential wrap uses credLh, not nameLh.
    */
-  function drawNameAndCredentials(page, fontBold, nameText, credSuffix, opts) {
-    var x = opts.x;
-    var y = opts.y;
+  function planNameAndCredentials(fontBold, nameText, credSuffix, opts) {
     var maxW = opts.maxWidth;
     var nameSize = opts.nameSize;
     var credSize = opts.credSize;
-    var lineHeight = opts.lineHeight;
-    var color = opts.color;
+    var nameLh = opts.lineHeight;
+    var credLh = opts.credLineHeight != null ? opts.credLineHeight : credSize + 2;
+    var titleGap = opts.titleGap != null ? opts.titleGap : 8.5;
 
     var rawName = String(nameText || '').trim() || 'Full Name';
     var nameLines = wrapLines(fontBold, wrapCardName(rawName) || rawName, nameSize, maxW);
+    var last = nameLines[nameLines.length - 1] || '';
+    var cred = credSuffix ? String(credSuffix).trim() : '';
+    var onLast = '';
+    var credLines = [];
 
-    for (var i = 0; i < nameLines.length - 1; i++) {
-      page.drawText(nameLines[i], {
+    if (cred) {
+      var prefix = ', ';
+      var used = fontBold.widthOfTextAtSize(last, nameSize);
+      var avail = maxW - used;
+      var words = cred.split(/\s+/).filter(Boolean);
+      var fitted = 0;
+
+      if (avail > fontBold.widthOfTextAtSize(prefix, credSize)) {
+        for (var w = 0; w < words.length; w++) {
+          var trial = prefix + words.slice(0, w + 1).join(' ');
+          if (fontBold.widthOfTextAtSize(trial, credSize) <= avail) {
+            onLast = trial;
+            fitted = w + 1;
+          } else {
+            break;
+          }
+        }
+      }
+
+      var remaining = words.slice(fitted).join(' ');
+      if (remaining) {
+        var restText = onLast ? remaining : prefix + remaining;
+        credLines = wrapLines(fontBold, restText, credSize, maxW);
+      }
+    }
+
+    return {
+      nameLines: nameLines,
+      last: last,
+      onLast: onLast,
+      credLines: credLines,
+      drop: (nameLines.length - 1) * nameLh + credLines.length * credLh + titleGap,
+      nameLh: nameLh,
+      credLh: credLh,
+      titleGap: titleGap
+    };
+  }
+
+  function drawNameAndCredentials(page, fontBold, plan, opts) {
+    var x = opts.x;
+    var y = opts.y;
+    var nameSize = opts.nameSize;
+    var credSize = opts.credSize;
+    var color = opts.color;
+    var nameLh = plan.nameLh;
+    var credLh = plan.credLh;
+
+    for (var i = 0; i < plan.nameLines.length - 1; i++) {
+      page.drawText(plan.nameLines[i], {
         x: x,
         y: y,
         size: nameSize,
         font: fontBold,
         color: color
       });
-      y -= lineHeight;
+      y -= nameLh;
     }
 
-    var last = nameLines[nameLines.length - 1] || '';
-    page.drawText(last, {
+    page.drawText(plan.last, {
       x: x,
       y: y,
       size: nameSize,
@@ -267,61 +315,42 @@ async function viewPrintPdfBody() {
       color: color
     });
 
-    var cred = credSuffix ? String(credSuffix).trim() : '';
-    if (!cred) {
-      return y - lineHeight;
+    if (plan.onLast) {
+      var used = fontBold.widthOfTextAtSize(plan.last, nameSize);
+      page.drawText(plan.onLast, {
+        x: x + used,
+        y: y,
+        size: credSize,
+        font: fontBold,
+        color: color
+      });
     }
 
-    var prefix = ', ';
-    var used = fontBold.widthOfTextAtSize(last, nameSize);
-    var avail = maxW - used;
-    var words = cred.split(/\s+/).filter(Boolean);
-    var fitted = 0;
-    var onLast = '';
-
-    if (avail > fontBold.widthOfTextAtSize(prefix, credSize)) {
-      for (var w = 0; w < words.length; w++) {
-        var trial = prefix + words.slice(0, w + 1).join(' ');
-        if (fontBold.widthOfTextAtSize(trial, credSize) <= avail) {
-          onLast = trial;
-          fitted = w + 1;
-        } else {
-          break;
-        }
-      }
-      if (onLast) {
-        page.drawText(onLast, {
-          x: x + used,
-          y: y,
-          size: credSize,
-          font: fontBold,
-          color: color
-        });
-      }
+    if (!plan.credLines.length) {
+      return y - plan.titleGap;
     }
 
-    y -= lineHeight;
-    var remaining = words.slice(fitted).join(' ');
-    if (remaining) {
-      var restText = onLast ? remaining : prefix + remaining;
-      var credLines = wrapLines(fontBold, restText, credSize, maxW);
-      for (var c = 0; c < credLines.length; c++) {
-        page.drawText(credLines[c], {
-          x: x,
-          y: y,
-          size: credSize,
-          font: fontBold,
-          color: color
-        });
-        y -= lineHeight;
-      }
+    for (var c = 0; c < plan.credLines.length; c++) {
+      y -= credLh;
+      page.drawText(plan.credLines[c], {
+        x: x,
+        y: y,
+        size: credSize,
+        font: fontBold,
+        color: color
+      });
     }
 
-    return y;
+    return y - plan.titleGap;
   }
 
   function drawCardPage(pdfDoc, font, fontBold, fields) {
     var page = pdfDoc.addPage([PAGE_W, PAGE_H]);
+    page.setMediaBox(0, 0, PAGE_W, PAGE_H);
+    page.setCropBox(0, 0, PAGE_W, PAGE_H);
+    page.setBleedBox(0, 0, PAGE_W, PAGE_H);
+    page.setTrimBox(BLEED, BLEED, TRIM_W, TRIM_H);
+    page.setArtBox(BLEED, BLEED, TRIM_W, TRIM_H);
 
     page.drawRectangle({
       x: 0,
@@ -364,6 +393,11 @@ async function viewPrintPdfBody() {
     var nameSize = 10;
     var nameLh = 12;
     var credSize = 7;
+    var credLh = 9;
+    var titleGap = 8.5;
+    var identityFloor = bottomPad + bodyLh * 3 + 6;
+    var defaultNameY = BLEED + TRIM_H * (1 - 0.3);
+    var maxNameY = logoTop - 20;
 
     var titleLines = wrapLines(font, fields.title, bodySize, identityMaxW);
     var teamLines = fields.team ? wrapLines(font, fields.team, bodySize, identityMaxW) : [''];
@@ -418,18 +452,29 @@ async function viewPrintPdfBody() {
       lineHeight: bodyLh
     });
 
-    // Name/title/team in the right column starting ~30% from trim top.
-    var cursorY = BLEED + TRIM_H * (1 - 0.3);
-    cursorY = drawNameAndCredentials(page, fontBold, fields.name, fields.credentialSuffix, {
-      x: identityX,
-      y: cursorY,
+    var namePlan = planNameAndCredentials(fontBold, fields.name, fields.credentialSuffix, {
       maxWidth: identityMaxW,
       nameSize: nameSize,
       credSize: credSize,
       lineHeight: nameLh,
+      credLineHeight: credLh,
+      titleGap: titleGap
+    });
+    var belowName =
+      titleLines.length * bodyLh + (fields.team ? 2 + teamLines.length * bodyLh : 0);
+    var nameStartY = defaultNameY;
+    if (nameStartY - namePlan.drop - belowName < identityFloor) {
+      nameStartY = identityFloor + namePlan.drop + belowName;
+    }
+    if (nameStartY > maxNameY) nameStartY = maxNameY;
+
+    var cursorY = drawNameAndCredentials(page, fontBold, namePlan, {
+      x: identityX,
+      y: nameStartY,
+      nameSize: nameSize,
+      credSize: credSize,
       color: COLLIERS_BLUE
     });
-    cursorY -= 3;
     cursorY -= drawLines(page, titleLines, {
       x: identityX,
       y: cursorY,

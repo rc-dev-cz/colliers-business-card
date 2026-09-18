@@ -30,8 +30,9 @@
 | Trim | 3.5″ × 2″ |
 | Bleed | 0.125″ (⅛″) each side |
 | Media box | **3.75″ × 2.25″** (270 × 162 pt at 72 pt/in) |
+| Page boxes | Media/Crop/Bleed = full media; **TrimBox/ArtBox** = 9,9 → 261,153 (matches approved EN InDesign) |
 | Safe inset | ~0.125″ inside trim |
-| Marks | None (no trim box, no crop marks) |
+| Marks | None (no crop marks) |
 
 ## Stack
 
@@ -45,10 +46,11 @@
 
 The download is a **print file**, not a screenshot of the web preview. Screen captures look fine on a monitor and go soft when printed.
 
-- Page is still 3.75″ × 2.25″ (trim + bleed). Bleed is empty white — **no box, no crop marks**
+- Page is still 3.75″ × 2.25″ (trim + bleed). Bleed is empty white — **no crop marks**; TrimBox/ArtBox mark the 3.5″ × 2″ finish
 - Logo + “Project Leaders” use the approved EN artwork at the original coordinates
 - Body type is Open Sans 10 / 7 / 6.5 pt (`#03438C` / `#5F636A`) like the original
-- Bilingual: two pages; French tagline is Open Sans “Maîtres de projets” at the same lockup position
+- Layout is planned before draw: credentials are all-or-nothing (inline on the name, one dedicated row, or invalid). Right-column fields do not wrap.
+- Bilingual: two pages; both pages must validate before the file is created; French tagline is Open Sans “Maîtres de projets” at the same lockup position
 - Unique filename each click so the browser never reopens a stale Downloads file
 
 ## Klai notes

@@ -1,9 +1,8 @@
 <template>
   <div
-    class="card-preview-face relative aspect-[1.75/1] w-full overflow-hidden rounded-md border border-gray-200 bg-white font-sans text-[#4A4A4A] shadow-sm"
-    style="container-type: inline-size"
+    class="card-preview-face relative aspect-[1.75/1] w-full overflow-hidden rounded-md border border-gray-200 bg-white text-[#4A4A4A] shadow-sm"
+    style="container-type: inline-size; font-family: 'ColliersOpenSans', sans-serif"
   >
-    <!-- Brand lockup: matches approved EN print PDF (logo + Project Leaders) -->
     <div class="absolute left-[7%] top-[12.3%] flex w-[34%] items-center gap-[6%]">
       <div class="inline-flex w-[54.5%] shrink-0 flex-col overflow-hidden">
         <img
@@ -13,7 +12,7 @@
         />
       </div>
       <div
-        class="min-w-0 flex-1 font-sans font-normal leading-[1.08] tracking-tight text-[#03438C]"
+        class="min-w-0 flex-1 font-normal leading-[1.08] tracking-tight text-[#03438C]"
         style="font-size: min(3.2cqw, 16px)"
       >
         <template v-if="isFrench">
@@ -27,67 +26,87 @@
       </div>
     </div>
 
-    <!-- Right column: identity at top of column, contact pinned to bottom with a clear gap -->
-    <div class="absolute bottom-[12.5%] left-[41.3%] right-[8.5%] top-[41%] flex flex-col">
-      <div>
-        <div class="font-bold leading-[1.2] text-[#03438C]" style="font-size: min(3.7cqw, 18px)">
-          <span class="whitespace-pre-line">{{ displayName }}</span><span
-            v-if="credentialSuffix"
-            class="align-baseline font-bold"
-            style="font-size: 0.7em"
-          >, {{ credentialSuffix }}</span>
-        </div>
-        <div class="mt-[3.5%] leading-[1.35] text-[#5F636A]" style="font-size: min(2.15cqw, 11px)">
-          <div>{{ titleLine }}</div>
-          <div class="mt-[2%] min-h-[1.35em]">{{ teamLine }}</div>
-        </div>
-      </div>
-      <!-- Paragraph break before email (matches approved client cards) -->
-      <div
-        class="mt-auto pt-[10%] leading-[1.5] text-[#5F636A]"
-        style="font-size: min(2.15cqw, 11px)"
-      >
-        <div class="break-words">{{ displayEmail }}</div>
-        <div>Mobile: {{ displayPhone }}</div>
-        <div>{{ displayWebsite }}</div>
-      </div>
+    <div
+      v-for="(line, idx) in view.nameLines"
+      :key="'name-' + idx"
+      class="absolute whitespace-nowrap font-bold leading-none text-[#03438C]"
+      :style="nameLineStyle(idx)"
+    >
+      <span>{{ line }}</span><span
+        v-if="idx === view.nameLines.length - 1 && view.inlineCredential"
+        class="align-baseline font-bold"
+        style="font-size: 0.7em"
+      >{{ view.inlineCredential }}</span>
     </div>
 
     <div
-      class="absolute bottom-[12.5%] left-[7%] right-[58%] whitespace-pre-wrap leading-[1.5] text-[#5F636A]"
-      style="font-size: min(2.15cqw, 11px)"
-    >{{ displayAddress }}</div>
+      v-if="view.credentialLine"
+      class="absolute whitespace-nowrap font-bold leading-none text-[#03438C]"
+      :style="rowStyle(view.credentialY, true)"
+    >{{ view.credentialLine }}</div>
+
+    <div
+      class="absolute whitespace-nowrap leading-none text-[#5F636A]"
+      :style="rowStyle(view.titleY, false)"
+    >{{ view.title }}</div>
+    <div
+      v-if="view.team"
+      class="absolute whitespace-nowrap leading-none text-[#5F636A]"
+      :style="rowStyle(view.teamY, false)"
+    >{{ view.team }}</div>
+
+    <div
+      class="absolute whitespace-nowrap leading-none text-[#5F636A]"
+      :style="rowStyle(view.emailY, false)"
+    >{{ view.email }}</div>
+    <div
+      class="absolute whitespace-nowrap leading-none text-[#5F636A]"
+      :style="rowStyle(view.phoneY, false)"
+    >{{ view.phone }}</div>
+    <div
+      class="absolute whitespace-nowrap leading-none text-[#5F636A]"
+      :style="rowStyle(view.websiteY, false)"
+    >{{ view.website }}</div>
+
+    <div
+      class="absolute whitespace-pre-wrap leading-[1.25] text-[#5F636A]"
+      :style="addressStyle"
+    >{{ view.addressText }}</div>
   </div>
 </template>
 
 <script>
 import colliersLogo from '../assets/colliers-logo-print.png'
-import { wrapCardName } from '../helpers/wrapCardName'
-import { formatCredentialSuffix, formatTitleLine, isFrenchLanguage } from '../helpers/formatCardIdentity'
-import { formatCardPhone } from '../helpers/validate'
+import {
+  CARD_LAYOUT,
+  resolveCardFields,
+  trimBottomPct,
+  trimLeftPct,
+} from '../helpers/cardLayout'
+import { isFrenchLanguage } from '../helpers/formatCardIdentity'
 
-/** Catalog/details empty preview — field labels only (matches designer mock). */
-var SAMPLE = {
-  EN: {
-    name: 'Full Name',
-    title: 'Title',
-    region: 'Region',
-    team: 'Specialized Team',
-    email: 'Email:',
-    phone: 'Phone Number',
-    address: 'Address',
-    website: 'colliersprojectleaders.com',
-  },
-  FR: {
-    name: 'Nom complet',
-    title: 'Titre',
-    region: 'Région',
-    team: 'Équipe spécialisée',
-    email: 'Courriel:',
-    phone: 'Numéro de téléphone',
-    address: 'Adresse',
-    website: 'colliersprojectleaders.com/fr',
-  },
+function fallbackView(fields) {
+  var L = CARD_LAYOUT
+  var cred = fields.credentialSuffix
+  return {
+    nameLines: [fields.name],
+    nameLineYs: [L.nameY],
+    inlineCredential: cred ? ', ' + cred : '',
+    credentialLine: '',
+    credentialY: null,
+    title: fields.title,
+    titleY: L.titleYNoCred,
+    team: fields.team,
+    teamY: L.teamYNoCred,
+    email: fields.email,
+    phone: 'Mobile: ' + fields.phone,
+    website: fields.website,
+    emailY: L.emailY,
+    phoneY: L.phoneY,
+    websiteY: L.websiteY,
+    addressText: fields.address,
+    addressY: L.addressBottomY,
+  }
 }
 
 export default {
@@ -103,6 +122,10 @@ export default {
       type: String,
       default: 'English',
     },
+    plan: {
+      type: Object,
+      default: null,
+    },
   },
   computed: {
     isFrench: function () {
@@ -111,42 +134,66 @@ export default {
     colliersLogo: function () {
       return colliersLogo
     },
-    sample: function () {
-      return this.isFrench ? SAMPLE.FR : SAMPLE.EN
+    identityLeft: function () {
+      return trimLeftPct(CARD_LAYOUT.identityX) + '%'
     },
-    displayName: function () {
-      var name = String((this.details && this.details.name) || '').trim()
-      return wrapCardName(name) || this.sample.name
+    view: function () {
+      if (this.plan && this.plan.nameLines) {
+        return Object.assign({}, this.plan, {
+          addressText: (this.plan.address && this.plan.address.lines
+            ? this.plan.address.lines
+            : []
+          ).join('\n'),
+          addressY: this.plan.address ? this.plan.address.bottomY : CARD_LAYOUT.addressBottomY,
+        })
+      }
+      return fallbackView(resolveCardFields(this.details, this.language))
     },
-    credentialSuffix: function () {
-      return formatCredentialSuffix(
-        this.details && this.details.degree,
-        this.details && this.details.additionalCredentials,
-      )
+    addressStyle: function () {
+      return {
+        left: trimLeftPct(CARD_LAYOUT.addressX) + '%',
+        right: 100 - trimLeftPct(CARD_LAYOUT.identityX) + '%',
+        bottom: trimBottomPct(this.view.addressY) + '%',
+        fontSize: 'min(2.15cqw, 11px)',
+      }
     },
-    titleLine: function () {
-      return formatTitleLine(
-        this.details.title,
-        this.details.region,
-        this.sample.title,
-        this.sample.region,
-      )
+  },
+  methods: {
+    nameLineStyle: function (idx) {
+      var y = this.view.nameLineYs && this.view.nameLineYs[idx]
+      if (y == null) y = CARD_LAYOUT.nameY
+      return {
+        left: this.identityLeft,
+        right: '7%',
+        bottom: trimBottomPct(y) + '%',
+        fontSize: 'min(3.7cqw, 18px)',
+      }
     },
-    teamLine: function () {
-      return String((this.details && this.details.specializedTeam) || '').trim()
-    },
-    displayEmail: function () {
-      return this.details.email || this.sample.email
-    },
-    displayPhone: function () {
-      return this.details.phone ? formatCardPhone(this.details.phone) : this.sample.phone
-    },
-    displayWebsite: function () {
-      return this.details.website || this.sample.website
-    },
-    displayAddress: function () {
-      return this.details.address || this.sample.address
+    rowStyle: function (y, cred) {
+      return {
+        left: this.identityLeft,
+        right: '7%',
+        bottom: trimBottomPct(y) + '%',
+        fontSize: cred ? 'min(2.6cqw, 13px)' : 'min(2.15cqw, 11px)',
+      }
     },
   },
 }
 </script>
+
+<style>
+@font-face {
+  font-family: 'ColliersOpenSans';
+  src: url('../assets/fonts/OpenSans-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'ColliersOpenSans';
+  src: url('../assets/fonts/OpenSans-Bold.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+</style>

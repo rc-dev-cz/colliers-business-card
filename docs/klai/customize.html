@@ -21,21 +21,19 @@
                   <template v-else><span class="block">Project</span><span class="block">Leaders</span></template>
                 </div>
               </div>
-              <div class="absolute bottom-[14%] left-[44%] right-[6%] top-[30%] flex flex-col">
-                <div>
-                  <div class="font-bold leading-[1.2] text-[#24418A]" style="font-size: min(3.7cqw, 18px)">
-                    <span class="whitespace-pre-line">{{ (model.card.nameWrapped || model.card.name || '').trim() || (['French','Français','FR'].indexOf(previewLang) >= 0 ? 'Nom complet' : 'Full Name') }}</span><span v-if="(Array.isArray(model.card.degree) ? model.card.degree.length : model.card.degree) || model.card.additionalCredentials" class="align-baseline font-bold" style="font-size: 0.7em">, {{ [ ].concat(Array.isArray(model.card.degree) ? model.card.degree : (model.card.degree ? [model.card.degree] : [])).concat(model.card.additionalCredentials ? [model.card.additionalCredentials] : []).filter(Boolean).join(', ') }}</span>
-                  </div>
-                  <div class="mt-[3.5%] leading-[1.35] text-[#7A7A7A]" style="font-size: min(2.15cqw, 11px)">
-                    <div>{{ ([String(model.card.title || '').split('|')[0].trim(), model.card.region].filter(Boolean).join(' | ')) || (['French','Français','FR'].indexOf(previewLang) >= 0 ? 'Titre | Région' : 'Title | Region') }}</div>
-                    <div class="mt-[2%] min-h-[1.35em]">{{ model.card.specializedTeam || '' }}</div>
-                  </div>
+              <div class="absolute bottom-[38%] left-[44%] right-[6%] top-[30%]">
+                <div class="font-bold leading-[1.2] text-[#24418A]" style="font-size: min(3.7cqw, 18px)">
+                  <span class="whitespace-pre-line">{{ (model.card.nameWrapped || model.card.name || '').trim() || (['French','Français','FR'].indexOf(previewLang) >= 0 ? 'Nom complet' : 'Full Name') }}</span><span v-if="(Array.isArray(model.card.degree) ? model.card.degree.length : model.card.degree) || model.card.additionalCredentials" class="align-baseline font-bold" style="font-size: 0.7em">, {{ [ ].concat(Array.isArray(model.card.degree) ? model.card.degree : (model.card.degree ? [model.card.degree] : [])).concat(model.card.additionalCredentials ? [model.card.additionalCredentials] : []).filter(Boolean).join(', ') }}</span>
                 </div>
-                <div class="mt-auto pt-[10%] leading-[1.5] text-[#7A7A7A]" style="font-size: min(2.15cqw, 11px)">
-                  <div class="break-words">{{ model.card.email || (['French','Français','FR'].indexOf(previewLang) >= 0 ? 'Courriel:' : 'Email:') }}</div>
-                  <div>Mobile: {{ model.card.phone || (['French','Français','FR'].indexOf(previewLang) >= 0 ? 'Numéro de téléphone' : 'Phone Number') }}</div>
-                  <div>{{ (['French','Français','FR'].indexOf(previewLang) >= 0 ? (model.card.websiteFr || 'colliersprojectleaders.com/fr') : (model.card.website || 'colliersprojectleaders.com')) }}</div>
+                <div class="mt-[3.5%] leading-[1.35] text-[#7A7A7A]" style="font-size: min(2.15cqw, 11px)">
+                  <div>{{ ([String(model.card.title || '').split('|')[0].trim(), model.card.region].filter(Boolean).join(' | ')) || (['French','Français','FR'].indexOf(previewLang) >= 0 ? 'Titre | Région' : 'Title | Region') }}</div>
+                  <div class="mt-[2%] min-h-[1.35em]">{{ model.card.specializedTeam || '' }}</div>
                 </div>
+              </div>
+              <div class="absolute bottom-[14%] left-[44%] right-[6%] leading-[1.5] text-[#7A7A7A]" style="font-size: min(2.15cqw, 11px)">
+                <div class="break-words">{{ model.card.email || (['French','Français','FR'].indexOf(previewLang) >= 0 ? 'Courriel:' : 'Email:') }}</div>
+                <div>Mobile: {{ model.card.phone || (['French','Français','FR'].indexOf(previewLang) >= 0 ? 'Numéro de téléphone' : 'Phone Number') }}</div>
+                <div>{{ (['French','Français','FR'].indexOf(previewLang) >= 0 ? (model.card.websiteFr || 'colliersprojectleaders.com/fr') : (model.card.website || 'colliersprojectleaders.com')) }}</div>
               </div>
               <div class="absolute bottom-[14%] left-[7.5%] right-[58%] whitespace-pre-wrap leading-[1.5] text-[#7A7A7A]" style="font-size: min(2.15cqw, 11px)">{{ model.card.address || (['French','Français','FR'].indexOf(previewLang) >= 0 ? 'Adresse' : 'Address') }}</div>
             </div>

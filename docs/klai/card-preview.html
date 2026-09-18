@@ -13,22 +13,20 @@
     </div>
   </div>
 
-  <div class="absolute bottom-[14%] left-[44%] right-[6%] top-[30%] flex flex-col">
-    <div>
-      <div class="font-bold leading-[1.2] text-[#24418A]" style="font-size: min(3.7cqw, 18px)">
-        <span class="whitespace-pre-line">{{ _.get(model, (schema.model || 'card') + '.name') || (['French','Français','FR'].indexOf(_.get(model, (schema.model || 'card') + '.language') || '') >= 0 ? 'Nom complet' : 'Full Name') }}</span><span v-if="_.get(model, (schema.model || 'card') + '.degree') || _.get(model, (schema.model || 'card') + '.additionalCredentials')" class="align-baseline font-bold" style="font-size: 0.7em">, {{ [ ].concat(Array.isArray(_.get(model, (schema.model || 'card') + '.degree')) ? _.get(model, (schema.model || 'card') + '.degree') : (_.get(model, (schema.model || 'card') + '.degree') ? [_.get(model, (schema.model || 'card') + '.degree')] : [])).concat(_.get(model, (schema.model || 'card') + '.additionalCredentials') ? [_.get(model, (schema.model || 'card') + '.additionalCredentials')] : []).filter(Boolean).join(', ') }}</span>
-      </div>
-      <div class="mt-[3.5%] leading-[1.35] text-[#7A7A7A]" style="font-size: min(2.15cqw, 11px)">
-        <div v-if="!_.get(model, (schema.model || 'card') + '.name')">{{ ['French','Français','FR'].indexOf(_.get(model, (schema.model || 'card') + '.language') || '') >= 0 ? 'Titre | Région' : 'Title | Region' }}</div>
-        <div v-else>{{ ([String(_.get(model, (schema.model || 'card') + '.title') || '').split('|')[0].trim(), _.get(model, (schema.model || 'card') + '.region')].filter(Boolean).join(' | ')) || (['French','Français','FR'].indexOf(_.get(model, (schema.model || 'card') + '.language') || '') >= 0 ? 'Titre' : 'Title') }}</div>
-        <div class="mt-[2%] min-h-[1.35em]">{{ _.get(model, (schema.model || 'card') + '.specializedTeam') || '' }}</div>
-      </div>
+  <div class="absolute bottom-[38%] left-[44%] right-[6%] top-[30%]">
+    <div class="font-bold leading-[1.2] text-[#24418A]" style="font-size: min(3.7cqw, 18px)">
+      <span class="whitespace-pre-line">{{ _.get(model, (schema.model || 'card') + '.name') || (['French','Français','FR'].indexOf(_.get(model, (schema.model || 'card') + '.language') || '') >= 0 ? 'Nom complet' : 'Full Name') }}</span><span v-if="_.get(model, (schema.model || 'card') + '.degree') || _.get(model, (schema.model || 'card') + '.additionalCredentials')" class="align-baseline font-bold" style="font-size: 0.7em">, {{ [ ].concat(Array.isArray(_.get(model, (schema.model || 'card') + '.degree')) ? _.get(model, (schema.model || 'card') + '.degree') : (_.get(model, (schema.model || 'card') + '.degree') ? [_.get(model, (schema.model || 'card') + '.degree')] : [])).concat(_.get(model, (schema.model || 'card') + '.additionalCredentials') ? [_.get(model, (schema.model || 'card') + '.additionalCredentials')] : []).filter(Boolean).join(', ') }}</span>
     </div>
-    <div class="mt-auto pt-[10%] leading-[1.5] text-[#7A7A7A]" style="font-size: min(2.15cqw, 11px)">
-      <div class="break-words">{{ _.get(model, (schema.model || 'card') + '.email') || (!_.get(model, (schema.model || 'card') + '.name') ? (['French','Français','FR'].indexOf(_.get(model, (schema.model || 'card') + '.language') || '') >= 0 ? 'Courriel:' : 'Email:') : '') }}</div>
-      <div>Mobile: {{ _.get(model, (schema.model || 'card') + '.phone') || (!_.get(model, (schema.model || 'card') + '.name') ? (['French','Français','FR'].indexOf(_.get(model, (schema.model || 'card') + '.language') || '') >= 0 ? 'Numéro de téléphone' : 'Phone Number') : '') }}</div>
-      <div>{{ _.get(model, (schema.model || 'card') + '.website') || (['French','Français','FR'].indexOf(_.get(model, (schema.model || 'card') + '.language') || '') >= 0 ? 'colliersprojectleaders.com/fr' : 'colliersprojectleaders.com') }}</div>
+    <div class="mt-[3.5%] leading-[1.35] text-[#7A7A7A]" style="font-size: min(2.15cqw, 11px)">
+      <div v-if="!_.get(model, (schema.model || 'card') + '.name')">{{ ['French','Français','FR'].indexOf(_.get(model, (schema.model || 'card') + '.language') || '') >= 0 ? 'Titre | Région' : 'Title | Region' }}</div>
+      <div v-else>{{ ([String(_.get(model, (schema.model || 'card') + '.title') || '').split('|')[0].trim(), _.get(model, (schema.model || 'card') + '.region')].filter(Boolean).join(' | ')) || (['French','Français','FR'].indexOf(_.get(model, (schema.model || 'card') + '.language') || '') >= 0 ? 'Titre' : 'Title') }}</div>
+      <div class="mt-[2%] min-h-[1.35em]">{{ _.get(model, (schema.model || 'card') + '.specializedTeam') || '' }}</div>
     </div>
+  </div>
+  <div class="absolute bottom-[14%] left-[44%] right-[6%] leading-[1.5] text-[#7A7A7A]" style="font-size: min(2.15cqw, 11px)">
+    <div class="break-words">{{ _.get(model, (schema.model || 'card') + '.email') || (!_.get(model, (schema.model || 'card') + '.name') ? (['French','Français','FR'].indexOf(_.get(model, (schema.model || 'card') + '.language') || '') >= 0 ? 'Courriel:' : 'Email:') : '') }}</div>
+    <div>Mobile: {{ _.get(model, (schema.model || 'card') + '.phone') || (!_.get(model, (schema.model || 'card') + '.name') ? (['French','Français','FR'].indexOf(_.get(model, (schema.model || 'card') + '.language') || '') >= 0 ? 'Numéro de téléphone' : 'Phone Number') : '') }}</div>
+    <div>{{ _.get(model, (schema.model || 'card') + '.website') || (['French','Français','FR'].indexOf(_.get(model, (schema.model || 'card') + '.language') || '') >= 0 ? 'colliersprojectleaders.com/fr' : 'colliersprojectleaders.com') }}</div>
   </div>
 
   <div class="absolute bottom-[14%] left-[7.5%] right-[58%] whitespace-pre-wrap leading-[1.5] text-[#7A7A7A]" style="font-size: min(2.15cqw, 11px)">{{ _.get(model, (schema.model || 'card') + '.address') || (!_.get(model, (schema.model || 'card') + '.name') ? (['French','Français','FR'].indexOf(_.get(model, (schema.model || 'card') + '.language') || '') >= 0 ? 'Adresse' : 'Address') : '') }}</div>

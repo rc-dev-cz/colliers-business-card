@@ -11,15 +11,21 @@
           <h2 class="mb-4 text-lg font-bold text-colliers-primary">{{ t('cardPreview') }}</h2>
           <div class="space-y-4">
             <div v-for="preview in previewSlots" :key="preview.language" class="card-preview-frame">
-              <card-preview :details="preview.details" :language="preview.language"></card-preview>
+              <card-preview
+                :details="preview.details"
+                :language="preview.language"
+                :plan="preview.plan"
+              ></card-preview>
             </div>
           </div>
-          <p v-if="printPdfError" class="mt-3 text-sm text-red-600">{{ printPdfError }}</p>
+          <p v-if="layoutStatus === 'loading'" class="mt-3 text-sm text-gray-500">{{ t('layoutFontsLoading') }}</p>
+          <p v-else-if="layoutError" class="mt-3 text-sm text-red-600">{{ layoutError }}</p>
+          <p v-else-if="printPdfError" class="mt-3 text-sm text-red-600">{{ printPdfError }}</p>
           <app-button
             class="mt-4"
             variant="outline"
             block
-            :disabled="printPdfBusy"
+            :disabled="printPdfBusy || !layoutReady"
             @click="openPrintPdf"
           >{{ printPdfBusy ? t('loading') : t('viewPrintPdf') }}</app-button>
         </div>
@@ -55,7 +61,7 @@
               :placeholder="t('selectDegree')"
               :search-placeholder="t('selectDegree')"
               :empty-label="t('noDegrees')"
-              @input="details.degree = $event"
+              @input="onDegrees"
             ></multi-select-field>
             <text-field
               :label="t('additionalCredentialsOptional')"
@@ -96,7 +102,7 @@
               @input="details.address = $event"
             ></select-field>
             <text-field :label="t('website')" :value="details.website" disabled></text-field>
-            <app-button html-type="submit" block>{{ t('addToCart') }}</app-button>
+            <app-button html-type="submit" block :disabled="!layoutReady">{{ t('addToCart') }}</app-button>
           </form>
         </div>
       </div>
@@ -118,6 +124,12 @@ import { clipEmail, clipName, EMAIL_MAX, NAME_MAX } from '../helpers/validate'
 import { formatAddressCard, officeLabel } from '../adapters/api'
 import { goBack } from '../adapters/nav'
 import { viewPrintPdf } from '../helpers/printPdf'
+import { loadLayoutFonts } from '../helpers/cardFonts'
+import {
+  CARD_LAYOUT,
+  layoutErrorMessage,
+  planProductLayout,
+} from '../helpers/cardLayout'
 import {
   isBilingualLanguage,
   websiteForProduct,
@@ -167,6 +179,10 @@ export default {
       EMAIL_MAX: EMAIL_MAX,
       printPdfBusy: false,
       printPdfError: '',
+      layoutStatus: 'loading',
+      layoutErrorCode: '',
+      productPlan: null,
+      layoutFonts: null,
       details: emptyDetails('English'),
     }
   },
@@ -177,16 +193,31 @@ export default {
     previewSlots: function () {
       if (!this.product) return []
       var lang = this.product.language
+      var pages = (this.productPlan && this.productPlan.pages) || []
+      var planFor = function (language) {
+        for (var i = 0; i < pages.length; i++) {
+          if (pages[i].language === language) return pages[i].layout
+        }
+        return null
+      }
       if (isBilingualLanguage(lang)) {
         return [
-          { language: 'English', details: this.details },
+          { language: 'English', details: this.details, plan: planFor('English') },
           {
             language: 'French',
             details: Object.assign({}, this.details, { website: WEBSITE_FR }),
+            plan: planFor('French'),
           },
         ]
       }
-      return [{ language: lang, details: this.details }]
+      return [{ language: lang, details: this.details, plan: planFor(lang) }]
+    },
+    layoutError: function () {
+      if (!this.layoutErrorCode) return ''
+      return layoutErrorMessage(this.layoutErrorCode, t)
+    },
+    layoutReady: function () {
+      return this.layoutStatus === 'valid'
     },
     titleOptions: function () {
       return jobTitles.map(function (title) {
@@ -210,12 +241,29 @@ export default {
       handler: function (product) {
         if (!product) return
         this.details.website = websiteForProduct(product.language)
+        this.replan()
+      },
+    },
+    details: {
+      deep: true,
+      handler: function () {
+        this.replan()
       },
     },
   },
   mounted: function () {
+    var self = this
     loadOffices()
     loadDegrees()
+    loadLayoutFonts()
+      .then(function (fonts) {
+        self.layoutFonts = fonts
+        self.replan()
+      })
+      .catch(function () {
+        self.layoutStatus = 'invalid'
+        self.layoutErrorCode = 'layoutErrorName'
+      })
   },
   methods: {
     t: t,
@@ -224,6 +272,31 @@ export default {
     },
     onEmail: function (value) {
       this.details.email = clipEmail(value)
+    },
+    onDegrees: function (degrees) {
+      var next = Array.isArray(degrees) ? degrees.slice() : []
+      if (next.length > CARD_LAYOUT.maxDegrees) {
+        next = next.slice(0, CARD_LAYOUT.maxDegrees)
+      }
+      this.details.degree = next
+    },
+    replan: function () {
+      this.printPdfError = ''
+      if (!this.layoutFonts || !this.product) {
+        this.layoutStatus = 'loading'
+        this.layoutErrorCode = ''
+        this.productPlan = null
+        return
+      }
+      var plan = planProductLayout(this.details, this.product.language, this.layoutFonts)
+      this.productPlan = plan
+      if (plan.valid) {
+        this.layoutStatus = 'valid'
+        this.layoutErrorCode = ''
+      } else {
+        this.layoutStatus = 'invalid'
+        this.layoutErrorCode = plan.errors[0] || 'layoutErrorName'
+      }
     },
     clearDesign: function () {
       var language = (this.product && this.product.language) || 'English'
@@ -234,7 +307,7 @@ export default {
       goBack()
     },
     addItemToCart: function () {
-      if (!this.product) return
+      if (!this.product || !this.layoutReady) return
       addToCart({
         code: this.product.code,
         language: this.product.language,
@@ -244,7 +317,7 @@ export default {
     },
     openPrintPdf: function () {
       var self = this
-      if (!this.product || this.printPdfBusy) return
+      if (!this.product || this.printPdfBusy || !this.layoutReady) return
       this.printPdfBusy = true
       this.printPdfError = ''
       viewPrintPdf(Object.assign({}, this.details, {
