@@ -1,0 +1,76 @@
+<div id="shipping-root" class="colliers-page-root px-4 py-8 sm:px-6 lg:px-8">
+  <button type="button" class="mb-4 inline-flex items-center gap-1 text-sm text-gray-600 hover:text-gray-900" @click="BF.namedAction('goBack')"><span aria-hidden="true">&lsaquo;</span> {{ BF.i18n('label_colliers_back') }}</button>
+  <div class="colliers-page-header">
+    <div class="flex flex-wrap items-baseline gap-3">
+      <h1 class="colliers-page-title">{{ BF.i18n('label_colliers_shipping') }}</h1>
+      <span class="text-sm text-gray-500">{{ BF.i18n('label_colliers_total') }} {{ model.view.itemCount }} {{ BF.i18n('label_colliers_items') }}</span>
+    </div>
+    <button type="button" class="btn-primary" @click="BF.namedAction('goReview')">{{ BF.i18n('label_colliers_reviewCheckout') }}</button>
+  </div>
+  <div class="space-y-6">
+    <div v-for="(split, splitIndex) in model.order.splits" :key="split.id" class="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
+      <div class="grid grid-cols-1 divide-y divide-gray-200 lg:grid-cols-2 lg:divide-x lg:divide-y-0">
+        <section class="p-4 sm:p-6">
+          <h2 class="mb-4 text-lg font-semibold text-gray-900">
+            {{ BF.i18n('label_colliers_selectedItems') }}
+            <span class="ml-2 text-sm font-normal text-gray-500">{{ BF.i18n('label_colliers_shippingGroup') }} {{ splitIndex + 1 }}</span>
+          </h2>
+          <div v-if="!(split.lines && split.lines.length)" class="py-8 text-center text-sm text-gray-400">{{ BF.i18n('label_colliers_noItemsSelected') }}</div>
+          <ul v-else class="space-y-3">
+            <li v-for="line in split.lines" :key="line.id" class="flex flex-wrap items-center gap-2 rounded-md border border-gray-100 bg-white p-2">
+              <img :src="line.image" alt="" class="h-12 w-12 rounded object-cover" />
+              <div class="inline-flex items-center overflow-hidden rounded border border-gray-300">
+                <button type="button" class="px-2 py-1 text-sm" @click="BF.namedAction('setLineQty', { lineId: line.id, delta: -1 })">−</button>
+                <span class="min-w-[2rem] px-1 text-center text-sm">{{ line.quantity }}</span>
+                <button type="button" class="px-2 py-1 text-sm" @click="BF.namedAction('setLineQty', { lineId: line.id, delta: 1 })">+</button>
+              </div>
+              <select class="min-w-0 flex-1 rounded border border-gray-300 px-2 py-1 text-sm" :value="line.code" @change="BF.namedAction('changeProduct', { lineId: line.id, code: $event.target.value })">
+                <option v-for="p in model.products" :key="p.code" :value="p.code">{{ BF.i18n(p.nameKey) }} - {{ p.language }}</option>
+              </select>
+              <select v-if="model.order.splits.length > 1" class="rounded border border-gray-300 px-2 py-1 text-sm" :value="split.id" @change="BF.namedAction('moveLine', { lineId: line.id, splitId: $event.target.value })">
+                <option v-for="(group, groupIndex) in model.order.splits" :key="group.id" :value="group.id">{{ BF.i18n('label_colliers_shippingGroup') }} {{ groupIndex + 1 }}</option>
+              </select>
+              <button type="button" class="rounded border border-gray-200 p-2 text-gray-500 hover:text-red-600" :aria-label="BF.i18n('label_general_delete')" @click="BF.namedAction('removeLine', { lineId: line.id })">🗑</button>
+            </li>
+          </ul>
+          <div class="mt-4">
+            <button type="button" class="text-sm text-[#25408F] hover:underline" @click="BF.namedAction('addItem', { splitIndex: splitIndex })">+ {{ BF.i18n('label_colliers_addItem') }}</button>
+          </div>
+        </section>
+        <section class="p-4 sm:p-6">
+          <h2 class="mb-4 text-lg font-semibold text-gray-900">{{ BF.i18n('label_colliers_shipToAddress') }}</h2>
+          <p v-if="!(split.locations && split.locations.length)" class="py-4 text-sm text-gray-500">{{ BF.i18n('label_colliers_noShipToAddresses') }}</p>
+          <ul v-else class="space-y-3">
+            <li v-for="(loc, locIndex) in split.locations" :key="loc.id" class="flex flex-wrap items-center gap-2">
+              <select class="field-input min-w-0 flex-1" :value="loc.address" @change="BF.namedAction('setLocationAddress', { splitIndex: splitIndex, locIndex: locIndex, address: $event.target.value })">
+                <option value="" disabled>{{ BF.i18n('label_colliers_selectShipToAddress') }}</option>
+                <optgroup v-if="model.view.addressOptions.personal.length" :label="BF.i18n('label_colliers_myAddressBook')">
+                  <option v-for="opt in model.view.addressOptions.personal" :key="opt.value" :value="opt.value">{{ opt.label }}</option>
+                </optgroup>
+                <optgroup v-if="model.view.addressOptions.offices.length" :label="BF.i18n('label_colliers_officeAddresses')">
+                  <option v-for="opt in model.view.addressOptions.offices" :key="opt.value" :value="opt.value">{{ opt.label }}</option>
+                </optgroup>
+                <optgroup v-if="loc.address && model.view.knownAddresses.indexOf(loc.address) === -1" :label="BF.i18n('label_colliers_savedAddress')">
+                  <option :value="loc.address">{{ loc.address }}</option>
+                </optgroup>
+              </select>
+              <div class="inline-flex items-center overflow-hidden rounded border border-gray-300">
+                <button type="button" class="px-2 py-1 text-sm" @click="BF.namedAction('setLocationQty', { splitIndex: splitIndex, locIndex: locIndex, delta: -1 })">−</button>
+                <span class="min-w-[2rem] px-1 text-center text-sm">{{ loc.qty }}</span>
+                <button type="button" class="px-2 py-1 text-sm" @click="BF.namedAction('setLocationQty', { splitIndex: splitIndex, locIndex: locIndex, delta: 1 })">+</button>
+              </div>
+              <button type="button" class="rounded border border-gray-200 p-2 text-gray-500 hover:text-red-600" :aria-label="BF.i18n('label_general_delete')" @click="BF.namedAction('removeLocation', { splitIndex: splitIndex, locIndex: locIndex })">🗑</button>
+            </li>
+          </ul>
+          <div class="mt-4">
+            <button type="button" class="rounded border border-gray-300 bg-white px-3 py-2 text-sm hover:bg-gray-50" @click="BF.namedAction('addLocation', { splitIndex: splitIndex })">+ {{ BF.i18n('label_colliers_addLocation') }}</button>
+          </div>
+        </section>
+      </div>
+      <div class="flex flex-wrap items-center gap-3 border-t border-gray-200 bg-gray-50 px-4 py-4 sm:px-6">
+        <button type="button" class="btn-primary text-sm" @click="BF.namedAction('splitOrder', { splitIndex: splitIndex })">{{ BF.i18n('label_colliers_splitOrder') }}</button>
+        <button v-if="model.order.splits.length > 1" type="button" class="text-sm text-gray-500 hover:text-red-600" @click="BF.namedAction('removeSplit', { splitIndex: splitIndex })">{{ BF.i18n('label_colliers_removeSplit') }}</button>
+      </div>
+    </div>
+  </div>
+</div>

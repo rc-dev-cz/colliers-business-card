@@ -14,7 +14,7 @@ User stories: [USER.md](USER.md). Admin stories: [ADMIN.md](ADMIN.md).
 | F-02 | Business Card Bilingual | `USR-012` | SKU `BCAD-PL-BIL`, $63/box, 250/box |
 | F-03 | Business Card French | `USR-013` | SKU `BCAD-PL-FR`, $63/box, 250/box |
 | F-04 | Card details page | `USR-020` | Pricing tiers, packaging, brand notes |
-| F-05 | Customize card (Vue) | `USR-030` | Name/email max still 30 in Vue; guide is 50/40 (`USR-032`, `USR-034`) |
+| F-05 | Customize card (Vue) | `USR-030` | Name still max 30 (`USR-032`); email max 50 QA (`USR-034`); print PDF `USR-099`; degrees `USR-100` |
 | F-06 | Cart add and combine | `USR-040` | Same details combine; different name or title stay separate |
 | F-07 | Cart badge icon | `USR-043` | Red number on the header cart icon = total quantity |
 | F-08 | Clear cart | `USR-044` | |

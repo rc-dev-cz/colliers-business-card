@@ -89,12 +89,14 @@ The customization page controls the information shown on the business card previ
 | --- | --- |
 | Full Name | Entered manually. Maximum 50 characters. Long names can use two lines on the card. |
 | Designation | One or more designations can be selected from the available list. Selected designations appear below the field and are displayed on the business card preview. A selected designation can be removed before continuing. |
-| Email | Entered manually. Maximum 40 characters. The preview reflects the entered value. |
+| Email | When the full name has a first and last name, the email fills in as firstname.lastname@colliersprojectleaders.com. The field stays editable. After the user changes it, further name edits do not replace it. Up to 50 characters is allowed. The card does not show a “too long” message for email, mobile, office location, specialized team, or region. |
 | Mobile Phone | Uses the Canadian +1 format and appears on the preview. |
-| Company Name | Locked as Colliers and cannot be edited. |
+| Company Name | Locked as Colliers Project Leaders and cannot be edited. |
 | Address | Selected from the saved Colliers office address list; it is not entered manually on this screen. |
-| Website | Locked as colliers.com/canada and cannot be edited. |
+| Website | Locked as colliersprojectleaders.com (French card uses /fr) and cannot be edited. |
 | Live preview | Changes to editable card information are reflected on the card preview. |
+| Degree/Certification | Up to two can be selected. They appear after the comma on the name line at the top of the card. |
+| Optional fields | Until a degree or credential is entered, the preview and the print PDF show the ICT sample “C.M.” after the comma on the name line. Empty title, region, and team use “Title \| Region” and “Specialized team”. Until an office is selected, the preview and the print PDF show “Address name / Unit, Street / City, Province / Postal Code, Country”. The form follows that card order. Catalogue tiles and order proof leave empty optional fields blank. |
 
 ### Tests
 
@@ -106,6 +108,8 @@ The customization page controls the information shown on the business card previ
 | CU-04 | Open Address and choose a saved office. | The selected office appears on the card preview. |
 | CU-05 | Try to edit Company Name and Website. | Both fields remain locked with the approved values. |
 | CU-06 | Change email or mobile phone. | The preview updates with the entered information. |
+| CU-07 | Open Customize before filling optional fields. | The name line reads “Firstname Lastname, C.M.”. Title shows “Title \| Region”. Team shows “Specialized team”. Address shows “Address name”, “Unit, Street”, “City, Province”, and “Postal Code, Country”. The customize preview does not show the card back. The print PDF includes the blue legal panel. |
+| CU-08 | Enter additional credentials only. | That label is replaced by the typed text. The degree label stays until a degree is selected. |
 
 ---
 
@@ -293,7 +297,7 @@ Use this section when adding tickets. Do **not** create a second ticket for a ru
 | --- | --- |
 | USR-032 | Ready for development. Full name max **50**. Vue still 30. |
 | USR-033 | Still Done (one designation today). Multiple is USR-039. |
-| USR-034 | Ready for development. Email max **40**. Vue still 30. |
+| USR-034 | QA. Guide max **40**; Vue email max **50** for `@colliersprojectleaders.com`. |
 | IDEA-01 | Closed (Done). Guide is **40**, not 20 or 30. |
 
 ### Out of this guide — keep the tickets, do not treat as V2 rules

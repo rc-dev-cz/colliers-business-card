@@ -43,12 +43,14 @@ Each **page** is a tens ticket. Children are the pieces of that page.
   - [x] **USR-031** Live preview
   - [ ] **USR-032** Full name (max 50, two lines) — Ready. Vue still max 30
   - [x] **USR-033** Designation dropdown (one per card)
-  - [ ] **USR-034** Email (max 40) — Ready. Vue still max 30
+  - [x] **USR-034** Email (max 50) — QA. Guide was 40; Vue uses 50 for `@colliersprojectleaders.com`
   - [x] **USR-035** Mobile phone Canadian +1
   - [x] **USR-036** Office address dropdown
   - [x] **USR-037** Company and website locked
   - [x] **USR-038** Add to Cart quantity 1
   - [ ] **USR-039** Multiple designations on one card — F-24
+  - [x] **USR-099** View print PDF — QA. Bleed PDF; shared layout planner with preview
+  - [x] **USR-100** Degrees and additional credentials on card — QA
 - [x] **USR-040** Cart `(CartDrawer.vue)` — F-06
   - [x] **USR-041** Combine same product and details
   - [x] **USR-042** Separate items for different name or title
@@ -97,6 +99,6 @@ Ticket descriptions live on the RC Web Dev board (`#/rc-web-dev`). This file is 
 
 ## Still an idea (not a Vue story yet)
 
-Email max is **40** (`IDEA-01` closed). Vue still uses 30 until `USR-034`.
+Email max guide was **40** (`IDEA-01` closed); Vue uses **50** (`USR-034` QA) so full `@colliersprojectleaders.com` addresses fit.
 
 Footer English/Français is **F-20** (Vue 2 done; Vue 3 still has it). Dark theme is **F-19** (out of scope). Automated tests are **F-21**. Agreed rules: [BUSINESS-RULES.md](BUSINESS-RULES.md).

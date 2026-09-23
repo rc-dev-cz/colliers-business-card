@@ -93,8 +93,8 @@ Price today: **$63.00** per box (`BCAD-PL-ENG`, `BCAD-PL-BIL`, `BCAD-PL-FR`). Sh
 
 - Preconditions: Cart empty.
 - Steps:
-  1. Add Business Card Bilingual for a name with title **Associate | Canada**.
-  2. Add Business Card Bilingual again for the **same** name, email, phone, and office, but title **Vice President | Canada**.
+  1. Add Business Card Bilingual for a name with title **Associate**.
+  2. Add Business Card Bilingual again for the **same** name, email, phone, and office, but title **Vice President**.
 - Expected:
   - cart items: 2 (one Associate row, one Vice President row)
   - qty: 1 each
@@ -246,8 +246,8 @@ Shipping page today: Split Order, Remove Split only if more than one split, add/
 - Steps:
   1. Look at Company and Website.
 - Expected:
-  - Company is “Colliers” and disabled
-  - Website is `colliers.com/canada` and disabled
+  - Company is “Colliers Project Leaders” and disabled
+  - Website is `colliersprojectleaders.com` and disabled
 
 ### TC-20 — Three cards
 

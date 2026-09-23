@@ -14,6 +14,37 @@ export function clipEmail(value) {
   return String(value || '').slice(0, EMAIL_MAX)
 }
 
+export var EMAIL_DOMAIN = 'colliersprojectleaders.com'
+
+function emailLocalPart(value) {
+  return String(value || '')
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .replace(/[^a-z0-9-]+/g, '')
+}
+
+/**
+ * firstname.lastname@colliersprojectleaders.com once the name has a first and last part.
+ * Returns '' until then. The domain is kept intact if the local part must be shortened.
+ */
+export function emailFromFullName(name) {
+  var parts = String(name || '')
+    .trim()
+    .split(/\s+/)
+    .filter(Boolean)
+  if (parts.length < 2) return ''
+  var first = emailLocalPart(parts[0])
+  var last = emailLocalPart(parts[parts.length - 1])
+  if (!first || !last) return ''
+  var domain = '@' + EMAIL_DOMAIN
+  var local = first + '.' + last
+  var maxLocal = EMAIL_MAX - domain.length
+  if (local.length > maxLocal) local = local.slice(0, maxLocal).replace(/\.+$/, '')
+  if (!local || local.charAt(0) === '.') return ''
+  return local + domain
+}
+
 export function digitsOnly(value, max) {
   return String(value || '')
     .replace(/\D/g, '')

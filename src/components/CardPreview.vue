@@ -57,7 +57,7 @@
 
     <div
       class="absolute whitespace-nowrap leading-none text-[#5F636A]"
-      :style="rowStyle(view.emailY, false)"
+      :style="emailStyle()"
     >{{ view.email }}</div>
     <div
       class="absolute whitespace-nowrap leading-none text-[#5F636A]"
@@ -83,7 +83,14 @@ import {
   trimBottomPct,
   trimLeftPct,
 } from '../helpers/cardLayout'
-import { isFrenchLanguage } from '../helpers/formatCardIdentity'
+import {
+  formatCredentialSuffix,
+  isFrenchLanguage,
+  previewAddressText,
+  previewCredentialText,
+  previewTeamText,
+  previewTitleText,
+} from '../helpers/formatCardIdentity'
 
 function fallbackView(fields) {
   var L = CARD_LAYOUT
@@ -126,6 +133,11 @@ export default {
       type: Object,
       default: null,
     },
+    /** Customize only. Empty optional fields keep their labels until the user types. */
+    placeholders: {
+      type: Boolean,
+      default: false,
+    },
   },
   computed: {
     isFrench: function () {
@@ -137,17 +149,26 @@ export default {
     identityLeft: function () {
       return trimLeftPct(CARD_LAYOUT.identityX) + '%'
     },
+    emailRight: function () {
+      var L = CARD_LAYOUT
+      var inset = L.trimW - (L.identityX + L.emailMaxWidth - L.bleed)
+      return (inset / L.trimW) * 100 + '%'
+    },
     view: function () {
+      var base
       if (this.plan && this.plan.nameLines) {
-        return Object.assign({}, this.plan, {
+        base = Object.assign({}, this.plan, {
           addressText: (this.plan.address && this.plan.address.lines
             ? this.plan.address.lines
             : []
           ).join('\n'),
           addressY: this.plan.address ? this.plan.address.bottomY : CARD_LAYOUT.addressBottomY,
         })
+      } else {
+        base = fallbackView(resolveCardFields(this.details, this.language))
       }
-      return fallbackView(resolveCardFields(this.details, this.language))
+      if (!this.placeholders) return base
+      return this.withOptionalPlaceholders(base)
     },
     addressStyle: function () {
       return {
@@ -169,13 +190,38 @@ export default {
         fontSize: 'min(3.7cqw, 18px)',
       }
     },
-    rowStyle: function (y, cred) {
+    emailStyle: function () {
+      return this.rowStyle(this.view.emailY, false, this.emailRight)
+    },
+    rowStyle: function (y, cred, right) {
       return {
         left: this.identityLeft,
-        right: '7%',
+        right: right || '7%',
         bottom: trimBottomPct(y) + '%',
         fontSize: cred ? 'min(2.6cqw, 13px)' : 'min(2.15cqw, 11px)',
       }
+    },
+    withOptionalPlaceholders: function (view) {
+      var details = this.details || {}
+      var language = this.language
+      var real = formatCredentialSuffix(details.degree, details.additionalCredentials)
+      var cred = previewCredentialText(details.degree, details.additionalCredentials, language)
+      var next = Object.assign({}, view, {
+        title: previewTitleText(details.title, details.region, language),
+        team: previewTeamText(details.specializedTeam, language),
+      })
+      var address = details.address != null ? String(details.address).trim() : ''
+      if (!address) next.addressText = previewAddressText('', language)
+      if (cred === real) return next
+      // Degrees start on the name line, after the comma, same as "Lastname, C.M."
+      // A real credential string that already needed its own row stays on that row.
+      if (view.credentialLine) {
+        next.credentialLine = cred
+        return next
+      }
+      next.inlineCredential = ', ' + cred
+      next.credentialLine = ''
+      return next
     },
   },
 }

@@ -15,6 +15,7 @@
                 :details="preview.details"
                 :language="preview.language"
                 :plan="preview.plan"
+                placeholders
               ></card-preview>
             </div>
           </div>
@@ -47,6 +48,22 @@
               :hint="details.name.length + '/' + NAME_MAX + ' — ' + t('fullNameHint')"
               @input="onName"
             ></text-field>
+            <multi-select-field
+              :label="t('degree')"
+              :value="details.degree"
+              :options="degreeOptions"
+              :max="maxDegrees"
+              :placeholder="t('selectDegree')"
+              :search-placeholder="t('selectDegree')"
+              :empty-label="t('noDegrees')"
+              :hint="t('degreeMax')"
+              @input="onDegrees"
+            ></multi-select-field>
+            <text-field
+              :label="t('additionalCredentials')"
+              :value="details.additionalCredentials"
+              @input="details.additionalCredentials = $event"
+            ></text-field>
             <select-field
               :label="t('title')"
               :value="details.title"
@@ -54,27 +71,13 @@
               :placeholder="t('selectTitle')"
               @input="details.title = $event"
             ></select-field>
-            <multi-select-field
-              :label="t('degreeOptional')"
-              :value="details.degree"
-              :options="degreeOptions"
-              :placeholder="t('selectDegree')"
-              :search-placeholder="t('selectDegree')"
-              :empty-label="t('noDegrees')"
-              @input="onDegrees"
-            ></multi-select-field>
             <text-field
-              :label="t('additionalCredentialsOptional')"
-              :value="details.additionalCredentials"
-              @input="details.additionalCredentials = $event"
-            ></text-field>
-            <text-field
-              :label="t('regionOptional')"
+              :label="t('region')"
               :value="details.region"
               @input="details.region = $event"
             ></text-field>
             <text-field
-              :label="t('specializedTeamOptional')"
+              :label="t('specializedTeam')"
               :value="details.specializedTeam"
               @input="details.specializedTeam = $event"
             ></text-field>
@@ -92,7 +95,7 @@
               :hint="t('mobilePhoneHint')"
               @input="details.phone = $event"
             ></phone-field>
-            <text-field :label="t('companyName')" :value="details.company" disabled></text-field>
+            <text-field :label="t('website')" :value="details.website" disabled></text-field>
             <select-field
               :label="t('officeLocation')"
               :value="details.address"
@@ -101,7 +104,7 @@
               :disabled="store.officesLoading"
               @input="details.address = $event"
             ></select-field>
-            <text-field :label="t('website')" :value="details.website" disabled></text-field>
+            <text-field :label="t('companyName')" :value="details.company" disabled></text-field>
             <app-button html-type="submit" block :disabled="!layoutReady">{{ t('addToCart') }}</app-button>
           </form>
         </div>
@@ -118,9 +121,9 @@ import SelectField from '../components/SelectField.vue'
 import MultiSelectField from '../components/MultiSelectField.vue'
 import PhoneField from '../components/PhoneField.vue'
 import AppButton from '../components/AppButton.vue'
-import { getProduct, jobTitles } from '../data/products'
-import { t, store, addToCart, loadOffices, loadDegrees } from '../store'
-import { clipEmail, clipName, EMAIL_MAX, NAME_MAX } from '../helpers/validate'
+import { CARD_COMPANY, emptyCard, getProduct } from '../data/products'
+import { t, store, addToCart, loadOffices, loadDegrees, loadTitles } from '../store'
+import { clipEmail, clipName, emailFromFullName, EMAIL_MAX, NAME_MAX } from '../helpers/validate'
 import { formatAddressCard, officeLabel } from '../adapters/api'
 import { goBack } from '../adapters/nav'
 import { viewPrintPdf } from '../helpers/printPdf'
@@ -137,18 +140,19 @@ import {
 } from '../helpers/formatCardIdentity'
 
 function emptyDetails(language) {
+  var card = emptyCard(language)
   return {
-    name: '',
-    title: '',
-    degree: [],
-    additionalCredentials: '',
-    region: '',
-    specializedTeam: '',
-    email: '',
-    phone: '',
-    company: 'Colliers Project Leaders',
-    address: '',
-    website: websiteForProduct(language),
+    name: card.name,
+    title: card.title,
+    degree: card.degree.slice(),
+    additionalCredentials: card.additionalCredentials,
+    region: card.region,
+    specializedTeam: card.specializedTeam,
+    email: card.email,
+    phone: card.phone,
+    company: CARD_COMPANY,
+    address: card.address,
+    website: card.website,
   }
 }
 
@@ -184,6 +188,7 @@ export default {
       productPlan: null,
       layoutFonts: null,
       details: emptyDetails('English'),
+      emailEdited: false,
     }
   },
   computed: {
@@ -220,9 +225,12 @@ export default {
       return this.layoutStatus === 'valid'
     },
     titleOptions: function () {
-      return jobTitles.map(function (title) {
+      return (store.titles || []).map(function (title) {
         return { value: title, label: title }
       })
+    },
+    maxDegrees: function () {
+      return CARD_LAYOUT.maxDegrees
     },
     degreeOptions: function () {
       return (store.degrees || []).map(function (degree) {
@@ -255,6 +263,7 @@ export default {
     var self = this
     loadOffices()
     loadDegrees()
+    loadTitles()
     loadLayoutFonts()
       .then(function (fonts) {
         self.layoutFonts = fonts
@@ -269,9 +278,12 @@ export default {
     t: t,
     onName: function (value) {
       this.details.name = clipName(value)
+      if (this.emailEdited) return
+      this.details.email = emailFromFullName(this.details.name)
     },
     onEmail: function (value) {
       this.details.email = clipEmail(value)
+      this.emailEdited = true
     },
     onDegrees: function (degrees) {
       var next = Array.isArray(degrees) ? degrees.slice() : []
@@ -301,6 +313,7 @@ export default {
     clearDesign: function () {
       var language = (this.product && this.product.language) || 'English'
       this.details = emptyDetails(language)
+      this.emailEdited = false
       this.printPdfError = ''
     },
     back: function () {

@@ -43,6 +43,7 @@ Admin login, nav, dashboard tiles, and Address Book are in Vue 2. Remaining **sc
   - [x] **ADM-021** System Options tiles
   - [x] **ADM-022** Live address count
   - [x] **ADM-023** Live title count
+  - [x] **ADM-024** Live degree count
 - [x] **ADM-030** Order History — F-16. `#/admin/orders`
   - [x] **ADM-031** Table
   - [x] **ADM-032** Search by name
@@ -72,12 +73,12 @@ Admin login, nav, dashboard tiles, and Address Book are in Vue 2. Remaining **sc
   - [x] **ADM-073** Delete
   - [x] **ADM-074** Inline edit
   - [x] **ADM-075** Customize dropdown uses this list
-- [x] **ADM-090** Manage Degrees/Certifications — `#/admin/degrees`
+- [x] **ADM-090** Manage Degrees/Certifications — `#/admin/degrees` (board QA)
   - [x] **ADM-091** List degrees
   - [x] **ADM-092** Add
   - [x] **ADM-093** Delete
   - [x] **ADM-094** Inline edit
-  - [ ] **ADM-095** Customize card uses degree list (future — designer preview only)
+  - [x] **ADM-095** Customize card uses degree list (multi-select from Manage Degrees)
 - [x] **ADM-080** Address Book (admin) — F-29. Done. Same page as the demo user.
   - [x] **ADM-081** Address Book from profile menu
   - [x] **ADM-082** My Address Book (personal; admin can add / edit / delete)

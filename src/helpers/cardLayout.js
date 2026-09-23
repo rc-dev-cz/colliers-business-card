@@ -6,7 +6,7 @@ import {
   WEBSITE_EN,
   WEBSITE_FR,
 } from './formatCardIdentity.js'
-import { formatCardPhone } from './validate.js'
+import { EMAIL_MAX, formatCardPhone } from './validate.js'
 
 var IN = 72
 
@@ -35,25 +35,27 @@ export var CARD_LAYOUT = {
 
   identityX: 113.03,
   identityWidth: 130,
+  // Email is capped at 50 characters. The line may run to the right trim edge.
+  emailMaxWidth: 3.5 * IN - (113.03 - 0.125 * IN),
 
-  nameY: 83.49,
+  nameY: 75.49,
   nameSize: 10,
   nameLineHeight: 11,
   nameMaxLines: 2,
 
   credentialSize: 7,
-  credentialY: 74.99,
+  credentialY: 66.99,
 
-  titleYNoCred: 74.99,
-  teamYNoCred: 66.99,
-  titleYWithCred: 66.99,
-  teamYWithCred: 58.99,
+  titleYNoCred: 66.99,
+  teamYNoCred: 58.99,
+  titleYWithCred: 58.99,
+  teamYWithCred: 50.99,
 
   bodySize: 6.5,
   bodyLineHeight: 8,
 
-  emailY: 50.99,
-  phoneY: 42.99,
+  emailY: 42.99,
+  phoneY: 34.99,
   websiteY: 26.99,
 
   addressX: 27,
@@ -61,31 +63,34 @@ export var CARD_LAYOUT = {
   addressMaxWidth: 80,
   addressMaxLines: 5,
 
-  maxDegrees: 3,
+  maxDegrees: 2,
 }
 
+/** Blank-card copy from the ICT master (3.5×2). Address stays a selector, not this sample. */
 export var SAMPLE_CARD = {
   EN: {
-    name: 'Full Name',
+    name: 'Firstname Lastname',
     title: 'Title',
     region: 'Region',
-    team: 'Specialized Team',
-    email: 'Email:',
-    phone: 'Phone Number',
+    team: 'Specialized team',
+    email: 'first.lastname@colliersprojectleaders.com',
+    phone: '+1 555 555 5555',
     address: 'Address',
     website: WEBSITE_EN,
   },
   FR: {
-    name: 'Nom complet',
+    name: 'Prénom Nom',
     title: 'Titre',
-    region: 'Region',
-    team: 'Equipe specialisee',
-    email: 'Courriel:',
-    phone: 'Numero de telephone',
+    region: 'Région',
+    team: 'Équipe spécialisée',
+    email: 'prenom.nom@colliersprojectleaders.com',
+    phone: '+1 555 555 5555',
     address: 'Adresse',
     website: WEBSITE_FR,
   },
 }
+
+export var CARD_BACK_LEGAL = 'Colliers International Group Inc.'
 
 export var LAYOUT_ERROR = {
   name: 'layoutErrorName',
@@ -108,7 +113,7 @@ export var LAYOUT_ERROR_EN = {
   layoutErrorPhone: 'The mobile number is too long for the card.',
   layoutErrorWebsite: 'The website is too long for the card.',
   layoutErrorAddress: 'The office address is too long for the card.',
-  layoutErrorDegrees: 'A maximum of 3 degrees/certifications can be selected.',
+  layoutErrorDegrees: 'A maximum of 2 degrees/certifications can be selected.',
 }
 
 export function snapshotCardDetails(details) {
@@ -183,18 +188,17 @@ function wrapByWords(font, text, size, maxWidth) {
   return { ok: true, lines: lines }
 }
 
-function wrapAddress(font, text, size, maxWidth, maxLines) {
+function wrapAddress(font, text, size, maxWidth) {
   var paragraphs = String(text || '').split(/\n/)
   var lines = []
   for (var p = 0; p < paragraphs.length; p++) {
     var chunk = paragraphs[p].trim()
     if (!chunk) continue
     var wrapped = wrapByWords(font, chunk, size, maxWidth)
-    if (!wrapped.ok) return { ok: false, lines: [] }
-    lines = lines.concat(wrapped.lines)
+    if (!wrapped.ok) lines.push(chunk)
+    else lines = lines.concat(wrapped.lines)
   }
   if (!lines.length) lines = ['']
-  if (lines.length > maxLines) return { ok: false, lines: lines }
   return { ok: true, lines: lines }
 }
 
@@ -240,22 +244,10 @@ export function planCardLayout(fields, fonts, opts) {
     }
   }
 
-  requireOneLine(font, fields.title, L.bodySize, L.identityWidth, LAYOUT_ERROR.title, errors)
-  if (fields.team) {
-    requireOneLine(font, fields.team, L.bodySize, L.identityWidth, LAYOUT_ERROR.team, errors)
-  }
-  requireOneLine(font, fields.email, L.bodySize, L.identityWidth, LAYOUT_ERROR.email, errors)
-  requireOneLine(font, 'Mobile: ' + fields.phone, L.bodySize, L.identityWidth, LAYOUT_ERROR.phone, errors)
   requireOneLine(font, fields.website, L.bodySize, L.identityWidth, LAYOUT_ERROR.website, errors)
+  if (String(fields.email || '').length > EMAIL_MAX) errors.push(LAYOUT_ERROR.email)
 
-  var addressWrap = wrapAddress(
-    font,
-    fields.address,
-    L.bodySize,
-    L.addressMaxWidth,
-    L.addressMaxLines,
-  )
-  if (!addressWrap.ok) errors.push(LAYOUT_ERROR.address)
+  var addressWrap = wrapAddress(font, fields.address, L.bodySize, L.addressMaxWidth)
 
   var ownCred = credMode === 'own-row'
   var titleY = ownCred ? L.titleYWithCred : L.titleYNoCred

@@ -5,6 +5,10 @@ import {
   formatTitleLine,
   isBilingualLanguage,
   isFrenchLanguage,
+  previewAddressText,
+  previewCredentialText,
+  previewTeamText,
+  previewTitleText,
   websiteForProduct,
   WEBSITE_EN,
   WEBSITE_FR,
@@ -55,6 +59,39 @@ describe('formatTitleLine', function () {
 
   it('falls back to sample title and region when both empty', function () {
     expect(formatTitleLine('', '', 'Title', 'Region')).toBe('Title | Region')
+  })
+})
+
+describe('customize optional placeholders', function () {
+  it('shows the ICT credential sample until a degree or credential is entered', function () {
+    expect(previewCredentialText([], '', 'English')).toBe('C.M.')
+    expect(previewCredentialText(['CPA'], '', 'English')).toBe('CPA')
+    expect(previewCredentialText([], 'P.Eng', 'English')).toBe('P.Eng')
+    expect(previewCredentialText(['CPA'], 'C.M.', 'English')).toBe('CPA, C.M.')
+    expect(previewCredentialText([], '', 'French')).toBe('C.M.')
+  })
+
+  it('keeps region and team labels until those fields are filled', function () {
+    expect(previewTitleText('', '', 'English')).toBe('Title | Region')
+    expect(previewTitleText('Broker', '', 'English')).toBe('Broker | Region')
+    expect(previewTitleText('Broker | Canada', 'Ontario', 'English')).toBe('Broker | Ontario')
+    expect(previewTeamText('', 'English')).toBe('Specialized team')
+    expect(previewTeamText('Industrial', 'English')).toBe('Industrial')
+    expect(previewAddressText('', 'English')).toBe(
+      'Address name\nUnit, Street\nCity, Province\nPostal Code, Country',
+    )
+    expect(previewAddressText('181 Bay Street\nToronto, ON', 'English')).toBe(
+      '181 Bay Street\nToronto, ON',
+    )
+  })
+
+  it('uses French labels on the French preview', function () {
+    expect(previewCredentialText([], '', 'French')).toBe('C.M.')
+    expect(previewTitleText('', '', 'French')).toBe('Titre | Région')
+    expect(previewTeamText('', 'French')).toBe('Équipe spécialisée')
+    expect(previewAddressText('', 'French')).toBe(
+      "Nom de l'adresse\nUnité, Rue\nVille, Province\nCode postal, Pays",
+    )
   })
 })
 

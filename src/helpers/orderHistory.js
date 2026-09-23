@@ -1,5 +1,5 @@
 import { makeLine, cartSubtotal } from './cart.js'
-import { getProduct } from '../data/products.js'
+import { CARD_COMPANY, getProduct } from '../data/products.js'
 import { snapshotOrder } from './order.js'
 import { productNameKey } from '../i18n/messages.js'
 
@@ -15,11 +15,12 @@ function demoDetails(overrides) {
   return Object.assign(
     {
       name: 'Demo Partner',
-      title: 'Associate | Canada',
+      title: 'Associate',
+      degree: [],
       email: 'demo@colliers.com',
       phone: '+1 416 555-0100',
-      company: 'Colliers',
-      website: 'colliers.com/canada',
+      company: CARD_COMPANY,
+      website: 'colliersprojectleaders.com',
       address: TORONTO_CARD,
     },
     overrides || {},
@@ -117,7 +118,7 @@ export function seedAdminOrderHistory() {
         },
       ],
     })
-    return Object.assign(record, { ownerEmail: row.ownerEmail })
+    return Object.assign(record, { employeeName: row.employeeName, ownerEmail: row.ownerEmail })
   })
 }
 

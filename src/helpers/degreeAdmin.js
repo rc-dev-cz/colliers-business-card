@@ -1,63 +1,67 @@
 import { readStorage, writeStorage } from './storage'
+import { uniqueLabels } from './labels.js'
 
 export const DEGREES_STORAGE_KEY = 'managedDegrees'
 
+/** Unique FileMaker spellings. Do not add P.Eng / P.Eng. / M.Sc duplicates. */
 export const DEFAULT_DEGREES = [
   'Arch. Tech',
-  'Dipl. Arch. Tech',
-  'LEED Green Assoc.',
-  'BSc',
   'Architect',
-  'Eng. Tech',
-  'P. Eng.',
-  'MSc',
-  'CA',
-  'EP(CEA)',
-  'PgMP',
-  'BA',
-  'CAPM',
-  'GSC',
-  'PMI-RMP',
-  'Real Estate Broker',
-  'CEC',
-  'LEED AP',
-  'PMI-SP',
-  'CEM',
-  'BBA',
-  'PEng',
-  'RPP',
+  'B.A.',
   'B.Arch',
-  'MBA',
-  'MRICS',
+  'B.Comm',
+  'B.Eng.',
+  'B.Tech',
+  'BA',
+  'BBA',
+  'BSc',
+  'CA',
+  'CAPM',
+  'CEC',
+  'CEM',
+  'CET',
+  'CGA',
+  'CMA',
   'CMC',
   'CPA',
-  'MCIP',
-  'B.Comm',
-  'B.Sc.',
-  'M.Arch',
-  'B.A.',
-  'C.E.T',
-  'M.Sc.',
-  'B.Tech',
+  'CSDP',
   'C.Tech',
-  'P.Eng',
-  'C.E.T.',
-  'M.Sc',
-  'P.Eng.',
-  'M.A.',
-  'Ph.D.',
-  'OAA',
+  'Dipl. Arch. Tech',
+  'Eng. Tech',
+  'EP(CEA)',
   'FMC',
+  'GSC',
+  'LEED AP',
+  'LEED AP BD+C',
+  'LEED AP Homes',
+  'LEED AP ID+C',
+  'LEED AP ND',
+  'LEED AP O+M',
+  'LEED Green Assoc.',
+  'M.A.',
+  'M.Arch',
+  'MBA',
+  'MCIP',
+  'MRICS',
+  'MSc',
+  'OAA',
+  'P. Eng.',
+  'PgMP',
+  'Ph.D.',
+  'PMI-RMP',
+  'PMI-SP',
   'PMP',
-  'B.Eng.',
+  'PQS',
+  'Real Estate Broker',
+  'RPP',
 ]
 
 export function loadManagedDegrees() {
   const stored = readStorage(DEGREES_STORAGE_KEY, null)
-  if (Array.isArray(stored) && stored.length) return stored.slice()
+  if (Array.isArray(stored) && stored.length) return uniqueLabels(stored)
   return DEFAULT_DEGREES.slice()
 }
 
 export function saveManagedDegrees(rows) {
-  writeStorage(DEGREES_STORAGE_KEY, Array.isArray(rows) ? rows : [])
+  writeStorage(DEGREES_STORAGE_KEY, uniqueLabels(rows))
 }

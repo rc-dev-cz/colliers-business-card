@@ -115,8 +115,7 @@ export default {
         { label: t('packaging'), value: this.product.packaging },
         { label: t('productType'), value: t('printOnDemand') },
         { label: t('minOrderQty'), value: this.product.minQty },
-        { label: t('status'), value: t('active') },
-        { label: t('longDescription'), value: this.product.longDescription || '—' },
+        { label: t('status'), value: this.product.status === 'Active' ? t('active') : this.product.status },
         { label: t('dateAdded'), value: this.product.dateAdded },
       ]
     },

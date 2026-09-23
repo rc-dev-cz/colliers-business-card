@@ -55,8 +55,8 @@ F-05 — Customize the card in this repo (`src/pages/CustomizePage.vue`). Do not
 - Email (max 40 characters)
 - Mobile phone (Canadian +1, formatted)
 - Office address (dropdown)
-- Company locked: **Colliers**
-- Website locked: **colliers.com/canada**
+- Company locked: **Colliers Project Leaders**
+- Website locked: **colliersprojectleaders.com** (French product uses `/fr`)
 - Live preview updates as fields change
 - Add to Cart adds **quantity 1**
 

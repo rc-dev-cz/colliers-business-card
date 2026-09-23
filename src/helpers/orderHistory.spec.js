@@ -28,13 +28,17 @@ describe('orderHistory helpers', function () {
     expect(boxCount(personal[1])).toBe(1)
     expect(cardCount(personal[1])).toBe(250)
     expect(orderTotal(personal[1])).toBe(63)
+    expect(personal[0].cart[0].details.degree).toEqual([])
+    expect(personal[0].cart[0].details.title).toBe('Associate')
+    expect(personal[0].cart[0].details.website).toBe('colliersprojectleaders.com')
   })
 
   it('OH-03 admin seed exposes designer rows with card qty and totals', function () {
     const admin = seedAdminOrderHistory()
     expect(admin.length).toBe(5)
     expect(admin[0].id).toBe('ORD-8472')
-    expect(cardholderName(admin[0])).toBe('Alex Johnson')
+    expect(admin[0].employeeName).toBe('Alex Johnson')
+    expect(admin[0].ownerEmail).toBe('alex.johnson@colliers.com')
     expect(boxCount(admin[0])).toBe(2)
     expect(cardCount(admin[0])).toBe(500)
     expect(orderTotal(admin[0])).toBe(126)

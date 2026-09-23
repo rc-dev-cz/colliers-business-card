@@ -4,7 +4,7 @@
     <button type="button" class="mb-6 inline-flex items-center gap-1 text-sm text-gray-600 hover:text-gray-900" @click="BF.namedAction('goBack')"><span aria-hidden="true">&lsaquo;</span> {{ BF.i18n('label_colliers_back') }}</button>
     <div class="flex flex-col gap-10 lg:flex-row lg:gap-12">
       <div class="w-full max-w-sm mx-auto lg:mx-0 lg:max-w-[24rem]">
-        <h2 class="mb-4 text-lg font-bold text-[#25408F]">{{ BF.i18n('label_colliers_cardPreview') }}</h2>
+        <h2 class="mb-4 text-lg font-semibold text-[#25408F]">{{ BF.i18n('label_colliers_cardPreview') }}</h2>
         <div class="space-y-4">
           <div
             v-for="previewLang in (['Bilingual','Bilingue'].indexOf((model.product && model.product.language) || model.card.language || '') >= 0 ? ['English','French'] : [((model.product && model.product.language) || model.card.language || 'English')])"
@@ -12,30 +12,30 @@
             class="card-preview-frame"
           >
             <div id="colliersCardPreview" class="relative aspect-[1.75/1] w-full overflow-hidden rounded-md border border-gray-200 bg-white font-sans text-[#4A4A4A] shadow-sm" style="container-type: inline-size">
-              <div class="absolute left-[7.5%] top-[13%] flex w-[34%] items-center gap-[8%]">
-                <div class="inline-flex w-[42%] shrink-0 flex-col overflow-hidden rounded-[2px]">
-                  <img src="https://upload.wikimedia.org/wikipedia/commons/9/91/Colliers_logo.svg" alt="Colliers Logo" class="block h-auto w-full object-contain" />
+              <div class="absolute left-[7%] top-[12.3%] flex w-[34%] items-center gap-[6%]">
+                <div class="inline-flex w-[54.5%] shrink-0 flex-col overflow-hidden">
+                  <img src="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyB3aWR0aD0iMzQuMzZtbSIgaGVpZ2h0PSIxOS41Nm1tIiBpbmtzY2FwZTp2ZXJzaW9uPSIxLjAuMiAoZTg2Yzg3MDg3OSwgMjAyMS0wMS0xNSwgY3VzdG9tKSIgc29kaXBvZGk6ZG9jbmFtZT0iQ29sbGllcnNfbG9nby5zdmciIHZlcnNpb249IjEuMSIgdmlld0JveD0iMCAwIDM0LjM2IDE5LjU2IiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOmNjPSJodHRwOi8vY3JlYXRpdmVjb21tb25zLm9yZy9ucyMiIHhtbG5zOmRjPSJodHRwOi8vcHVybC5vcmcvZGMvZWxlbWVudHMvMS4xLyIgeG1sbnM6aW5rc2NhcGU9Imh0dHA6Ly93d3cuaW5rc2NhcGUub3JnL25hbWVzcGFjZXMvaW5rc2NhcGUiIHhtbG5zOnJkZj0iaHR0cDovL3d3dy53My5vcmcvMTk5OS8wMi8yMi1yZGYtc3ludGF4LW5zIyIgeG1sbnM6c29kaXBvZGk9Imh0dHA6Ly9zb2RpcG9kaS5zb3VyY2Vmb3JnZS5uZXQvRFREL3NvZGlwb2RpLTAuZHRkIj4KIDxkZWZzPgogIDxjbGlwUGF0aCBpZD0iY3ZmYSI+CiAgIDxwYXRoIGQ9Im0yNjAuNSA0ODkuNmg5Ny40djU1LjQ0aC05Ny40eiIvPgogIDwvY2xpcFBhdGg+CiA8L2RlZnM+CiA8c29kaXBvZGk6bmFtZWR2aWV3IGlkPSJjdmZiIiBib3JkZXJjb2xvcj0iIzY2NjY2NiIgYm9yZGVyb3BhY2l0eT0iMS4wIiBpbmtzY2FwZTpjdXJyZW50LWxheWVyPSJnOTAxIiBpbmtzY2FwZTpjeD0iLTE4OS43ODA5NiIgaW5rc2NhcGU6Y3k9IjE5OC4zNjg4MyIgaW5rc2NhcGU6ZG9jdW1lbnQtcm90YXRpb249IjAiIGlua3NjYXBlOmRvY3VtZW50LXVuaXRzPSJtbSIgaW5rc2NhcGU6cGFnZW9wYWNpdHk9IjAuMCIgaW5rc2NhcGU6cGFnZXNoYWRvdz0iMiIgaW5rc2NhcGU6d2luZG93LWhlaWdodD0iMTAxNCIgaW5rc2NhcGU6d2luZG93LW1heGltaXplZD0iMSIgaW5rc2NhcGU6d2luZG93LXdpZHRoPSIxOTIwIiBpbmtzY2FwZTp3aW5kb3cteD0iMCIgaW5rc2NhcGU6d2luZG93LXk9IjM2IiBpbmtzY2FwZTp6b29tPSIxLjE4NTU2MDkiIHBhZ2Vjb2xvcj0iI2ZmZmZmZiIgc2hvd2dyaWQ9ImZhbHNlIi8+CiA8dGl0bGU+Q29sbGllcnMgbG9nbzwvdGl0bGU+CiA8bWV0YWRhdGE+CiAgPHJkZjpSREY+CiAgIDxjYzpXb3JrIHJkZjphYm91dD0iIj4KICAgIDxkYzpmb3JtYXQ+aW1hZ2Uvc3ZnK3htbDwvZGM6Zm9ybWF0PgogICAgPGRjOnR5cGUgcmRmOnJlc291cmNlPSJodHRwOi8vcHVybC5vcmcvZGMvZGNtaXR5cGUvU3RpbGxJbWFnZSIvPgogICAgPGRjOnRpdGxlLz4KICAgPC9jYzpXb3JrPgogIDwvcmRmOlJERj4KIDwvbWV0YWRhdGE+CiA8ZyB0cmFuc2Zvcm09InRyYW5zbGF0ZSgtNi4zIC00LjA1OCkiIGlua3NjYXBlOmdyb3VwbW9kZT0ibGF5ZXIiIGlua3NjYXBlOmxhYmVsPSJMYXllciAxIj4KICA8ZyB0cmFuc2Zvcm09Im1hdHJpeCguMzUyOCAwIDAgLS4zNTI4IC04NS42MSAxOTYuMykiPgogICA8ZyBjbGlwLXBhdGg9InVybCgjY3ZmYSkiPgogICAgPGcgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoMzUyLjMgNTQ1KSI+CiAgICAgPHBhdGggZD0ibTAgMGgtODYuMmMtMy4wODggMC01LjYwMS0yLjUxNS01LjYwMS01LjYwNXYtNDQuMjVjMC0yLjk1MyAyLjMxMi01LjQwNyA1LjI2Mi01LjU4Nmw4Ni44NC0zZS0zIDAuMDQ3IDNlLTNjMi45NSAwLjE3OSA1LjI2MSAyLjYzMyA1LjI2MSA1LjU5OXY0NC4yM2MwIDMuMDktMi41MTIgNS42MDUtNS42IDUuNjA1IiBzdHlsZT0iZmlsbDojZmZmIi8+CiAgICA8L2c+CiAgICA8cGF0aCBkPSJtMjYyLjEgNDk5LjNoOTQuM3YtNC4wNTNoLTk0LjN6IiBzdHlsZT0iZmlsbDojMzJhY2U3Ii8+CiAgICA8cGF0aCBkPSJtMjYyLjEgNTAzLjRoOTQuM3YtNC4xMjRoLTk0LjN6IiBzdHlsZT0iZmlsbDojZmNkNDA1Ii8+CiAgICA8ZyB0cmFuc2Zvcm09InRyYW5zbGF0ZSgyNjUuOSA0OTEuMSkiPgogICAgIDxwYXRoIGQ9Im0wIDBoODYuNjljMi4xMiAwLjEyOSAzLjgwNSAxLjg4NSAzLjgwNSA0LjAzOXYwLjAxNGgtOTQuM3YtMC4wMTRjMC0yLjE1NCAxLjY4NS0zLjkxIDMuODA2LTQuMDM5IiBzdHlsZT0iZmlsbDojZWUyNzIyIi8+CiAgICA8L2c+CiAgICA8ZyB0cmFuc2Zvcm09InRyYW5zbGF0ZSgzNTIuMyA1NDMuNSkiPgogICAgIDxwYXRoIGQ9Im0wIDBoLTg2LjJjLTIuMjM3IDAtNC4wNS0xLjgxNi00LjA1LTQuMDU2di0zNi4wNmg5NC4zdjM2LjA2YzAgMi4yNC0xLjgxMiA0LjA1Ni00LjA1IDQuMDU2IiBzdHlsZT0iZmlsbDojMWQzZjhhIi8+CiAgICA8L2c+CiAgICA8ZyB0cmFuc2Zvcm09InRyYW5zbGF0ZSgyOTguMyA1MjMuNykiPgogICAgIDxwYXRoIGQ9Im0wIDBjMS4xNC0xLjE0MiAxLjY3OC0yLjQwNyAxLjY3OC0zLjgzNyAwLTEuMzY1LTAuNTg3LTIuNjc2LTEuNTA5LTMuNjk1LTAuOTk2LTEuMTE4LTIuNDU0LTEuNzQ5LTQuMDc5LTEuNzQ5LTEuNTM0IDAtMi44NDUgMC40NC0zLjkzNyAxLjc0OS0xLjA2OSAxLjI2NS0xLjMxMyAyLjI4NC0xLjMxMyAzLjc2NyAwIDEuMTY2IDAuNTg2IDIuODY1IDIuMDQgNC4wMzEgMS4xOTEgMC45NzYgMi40NTggMS4xNjkgMy40NDggMS4xNjkgMS42MjkgMCAyLjg0NS0wLjYzNiAzLjY3Mi0xLjQzNW0tMS4yODgtMy43NjVjMCAyLjY3My0xLjQxIDQuMjMxLTIuNTMgNC4yMzEtMC42MjkgMC0xLjExNC0wLjItMS41MjctMC42NjQtMC43NTUtMC44NDktMS4wNDYtMS44NjctMS4wNDYtMy42MzkgMC0xLjQxMSAwLjA5OC0yLjMzNCAwLjc1Ni0zLjM3NiAwLjQxMS0wLjY1OSAwLjk0Ny0xLjA0OSAxLjkxNi0xLjA0OSAxLjYwNCAwIDIuNDMxIDIuMDE4IDIuNDMxIDQuNDk3IiBzdHlsZT0iZmlsbDojZmZmIi8+CiAgICA8L2c+CiAgICA8ZyB0cmFuc2Zvcm09InRyYW5zbGF0ZSgzMjIuMyA1MjAuMSkiPgogICAgIDxwYXRoIGQ9Im0wIDBjMC0yLjQ3OSAxLjc3My0zLjkzNiAzLjE1Ny0zLjkzNiAxLjUwNyAwIDIuNDI3IDAuNjM1IDIuOTQgMS40MSAwLjEgMC4xNyAwLjE5NiAwLjE3IDAuMjk1IDAuMTIxbDAuMzYtMC4yMTdjMC4xMjItMC4wNzIgMC4xNzEtMC4xNzEgMC0wLjQ4Ni0wLjUxLTAuOTI1LTEuNzQ4LTIuNTc3LTQuNDItMi41NzctMS41NTYgMC0yLjY0OSAwLjMzOS0zLjQ5OCAxLjMxLTEuMTE4IDEuMjktMS4zNjMgMi41MDUtMS4zNjMgNC4wMSAwIDEuMzMzIDAuMTUgMi4yMzcgMS4xOTQgMy41OTggMS4wMTggMS4zMSAyLjExMSAxLjc5OSA0LjIyNyAxLjc5OSAyLjc2OSAwIDMuNjctMi44OTMgMy42Ny0zLjg5MiAwLTAuMzYzLTAuMjQ1LTAuMzg5LTAuNjg0LTAuMzg5aC01Ljg3OHptMy4wMTIgMS42MjhjMC41MDkgMCAwLjgwMyAwLjE0NiAwLjgwMyAwLjM0MSAwIDAuNzI4LTAuMjQ0IDIuMTYyLTEuNTA2IDIuMTYyLTEuMTkyIDAtMS45MjMtMC44NzYtMi4yMzYtMi41MDN6IiBzdHlsZT0iZmlsbDojZmZmIi8+CiAgICA8L2c+CiAgICA8ZyB0cmFuc2Zvcm09InRyYW5zbGF0ZSgzMzEuOCA1MjEpIj4KICAgICA8cGF0aCBkPSJtMCAwYzAgMS4xMi0wLjE5MiAxLjUwNi0wLjkyMiAxLjg5NWwtMC40MzYgMC4yNDRjLTAuMTQzIDAuMDUtMC4xOTIgMC4wOTYtMC4xOTIgMC4xOTd2MC4xNDVjMCAwLjA5NSAwLjA0OSAwLjE0MyAwLjE5MiAwLjIxOGwyLjkzOSAxLjM4NmMwLjE0NyAwLjA0NyAwLjI0MyAwLjA5NyAwLjM5IDAuMDk3IDAuMTQ2IDAgMC4xOTItMC4xNDggMC4yMTktMC4yOTVsMC4yMTgtMS43NDhoMC4wOThjMC44MjUgMS4zNjEgMS44NDYgMi4xODkgMi45MTQgMi4xODkgMC43NzggMCAxLjI2My0wLjUzOSAxLjI2My0xLjIxNyAwLTAuNjgyLTAuNjgtMS4zMTItMS4zMTItMS4zMTItMC4zNDEgMC0wLjYzMiAwLjA5Ni0wLjgyOCAwLjE5My0wLjE5MSAwLjE0Ny0wLjQzNCAwLjE5Ny0wLjY3OCAwLjE5Ny0wLjI5IDAtMC43MjYtMC4xOTctMS4wMTktMC43MDYtMC4xOTMtMC4zNC0wLjI5My0wLjg3MS0wLjI5My0xLjE5MnYtNC42ODdjMC0wLjc3NyAwLjE5Ni0xLjAyMSAwLjY4MS0xLjAyMWgxLjA3MmMwLjE0MyAwIDAuMTkyLTAuMDQ3IDAuMTkyLTAuMTY2di0wLjU2NGMwLTAuMTItMC4wNDktMC4xNy0wLjE3MS0wLjE3LTAuMTcgMC0xLjIzOSAwLjA3NC0zLjAxNSAwLjA3NC0xLjY5NyAwLTIuNjQ1LTAuMDc0LTIuODM4LTAuMDc0LTAuMTI0IDAtMC4xNzIgMC4wNS0wLjE3MiAwLjE3djAuNTMzYzAgMC4xNSAwLjA0OCAwLjE5NyAwLjIxNiAwLjE5N2gwLjg1NGMwLjM4OCAwIDAuNjI4IDAuMTkyIDAuNjI4IDAuNjU3eiIgc3R5bGU9ImZpbGw6I2ZmZiIvPgogICAgPC9nPgogICAgPGcgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoMzM5LjIgNTE3LjgpIj4KICAgICA8cGF0aCBkPSJtMCAwYy0wLjAyNCAwLjA5OCAwIDAuMTczIDAuMDcgMC4xOTdsMC40NjMgMC4xNDNjMC4wOTggMC4wMjYgMC4xNyAwLjAyNiAwLjIxOS0wLjA3MmwwLjgtMS4zNmMwLjQ0LTAuNzMyIDAuOTAxLTEuMzA4IDIuMDkyLTEuMzA4IDAuOTQ4IDAgMS43MjQgMC41NzYgMS43MjQgMS40OCAwIDAuOTcyLTAuNjMyIDEuNDEyLTIuMzMxIDEuODk1LTEuNjUyIDAuNDg0LTIuOTY3IDEuMzExLTIuOTY3IDMuMDM4IDAgMS4wNjYgMC4zOSAxLjk0MiAxLjI0MSAyLjU1IDAuODQ5IDAuNTgxIDEuNTMxIDAuODAzIDIuNTI2IDAuODAzIDEuMTkgMCAxLjkyLTAuMjk1IDIuMzU4LTAuNTM2IDAuMzYzLTAuMTkyIDAuNDM1LTAuMjkyIDAuNDU5LTAuNDMzbDAuMzItMS42NTdjMC4wMjEtMC4wOTcgMC4wMjEtMC4yMTctMC4wMjUtMC4yNjdsLTAuNDY0LTAuMjE4Yy0wLjA3MS0wLjAyNC0wLjE0NSAwLTAuMTkzIDAuMDk5bC0xLjE2OSAxLjMxMWMtMC4yOTEgMC4zMTUtMC43MjkgMC43NDktMS41MjggMC43NDktMC44OTkgMC0xLjY3OC0wLjUzMi0xLjY3OC0xLjM4MyAwLTAuOTk2IDAuNzMxLTEuMjkxIDIuMTg3LTEuNjc0IDEuMTIxLTAuMjkgMS44MDItMC41ODQgMi40MzItMS4yNjMgMC41MzUtMC41MzUgMC43MjctMS4xMTkgMC43MjctMS45NDcgMC0yLjAzOS0xLjY1My0zLjQ5Ny00LjA1NS0zLjQ5Ny0xLjI5MSAwLTIuMzU3IDAuNDEzLTIuNjI4IDAuNjMxLTAuMDk1IDAuMS0wLjE2NiAwLjE3LTAuMTkzIDAuMjY2eiIgc3R5bGU9ImZpbGw6I2ZmZiIvPgogICAgPC9nPgogICAgPGcgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoMzE4LjggNTE1LjYpIj4KICAgICA8cGF0aCBkPSJtMCAwaC0wLjk3MmMtMC4yNDQgMC0wLjM0MiAwLjE5Mi0wLjM4OCAwLjYzMi0wLjA1MSAwLjI5Mi0wLjA1MSAxLjE3LTAuMDUxIDIuMDkzdjIuNjJjMCAyLjAxNyAwIDMuNTcyIDAuMDUxIDMuOTU5IDAuMDIzIDAuMTk4LTAuMDUxIDAuMjk1LTAuMTk3IDAuMjk1LTAuMTQ0IDAtMC4zMzgtMC4wNS0wLjU4Mi0wLjE0OC0wLjQxNS0wLjE2OC0yLjgxOC0xLjAyLTMuMTU4LTEuMTY1LTAuMTIzLTAuMDQ5LTAuMTcyLTAuMDk4LTAuMTcyLTAuMTk0di0wLjI2OWMwLTAuMDk0IDAuMDI0LTAuMTY5IDAuMjQ0LTAuMjE3IDEuMTE4LTAuMjk0IDEuMjY1LTAuNzc4IDEuMjY1LTEuNTA3di0zLjQyOGMwLTAuNjc4LTAuMDI0LTEuNDU1LTAuMDUtMi4xODUtMC4wMjUtMC4zOTItMC4xNDYtMC40ODYtMC4zODgtMC40ODYgMCAwLTAuMTc0LTAuMDM2LTEuMjAzLTAuMDM2LTEuMDM2IDAtMS4zMTIgMC4wMzYtMS4zMTIgMC4wMzYtMC41MzMgMC0wLjU4IDAuMzQxLTAuNjMgMC43ODEtMC4wNDkgMC43MjctMC4wNDkgMy4yMDMtMC4wNDkgNC4zMnYzLjUwMmMwIDEuMzM1IDAuMDQ5IDYuMzkgMC4wOTkgNy42OTkgMCAwLjM0MS0wLjA5OSAwLjQzNy0wLjI0MyAwLjQzNy0wLjEgMC0wLjI0My0wLjA0Ni0wLjUzNC0wLjE0NC0wLjc4LTAuNDg2LTIuNjc0LTEuMTE4LTMuNjQ0LTEuNDEtMC4xNTEtMC4wNDgtMC4xOTQtMC4xNDMtMC4xOTQtMC4xOTJ2LTAuMjljMC0wLjEwMyAwLTAuMTQ4IDAuMTQ1LTAuMjAxbDAuNDg1LTAuMTQzYzAuNzc3LTAuMjQzIDEuMTktMC42MzIgMS4yMzgtMS40NTcgMC4wNDgtMC42MzIgMC4wOTktMi43MiAwLjA5OS00LjQyMXYtNy42MDhjMC0wLjY4MS0wLjM2Ny0wLjg3My0wLjYwNy0wLjg3MyAwIDAtMC4zNjUtMC4wMzYtMS4yNTYtMC4wMzYtMC44OTIgMC0xLjIzOSAwLjAzNi0xLjIzOSAwLjAzNi0wLjUzNyAwLTAuNTg3IDAuMzQxLTAuNjM1IDAuNzgxLTAuMDQ5IDAuNzI3LTAuMDQ5IDMuMjAzLTAuMDQ5IDQuMzJ2My41MDJjMCAxLjMzNSAwLjA0OSA2LjM5IDAuMDk3IDcuNjk5IDAgMC4zNDEtMC4wOTcgMC40MzctMC4yNCAwLjQzNy0wLjA5NyAwLTAuMjQyLTAuMDQ2LTAuNTM2LTAuMTQ0LTAuNzc5LTAuNDg2LTIuNjctMS4xMTgtMy42NDMtMS40MS0wLjE0Ny0wLjA0OC0wLjE5Ni0wLjE0My0wLjE5Ni0wLjE5MnYtMC4yOWMwLTAuMTAzIDAtMC4xNDggMC4xNDktMC4yMDFsMC40ODQtMC4xNDNjMC43NzgtMC4yNDMgMS4xODgtMC42MzIgMS4yMzktMS40NTcgMC4wNS0wLjYzMiAwLjA5OC0yLjcyIDAuMDk4LTQuNDIxdi03LjYwOGMwLTAuNjgxLTAuMzY0LTAuODczLTAuNjA4LTAuODczaC0wLjkyNWMtMC4yODggMC0wLjMzNy0wLjA0Ny0wLjMzNy0wLjE5N3YtMC40NmMwLTAuMTQ1IDAuMDQ5LTAuMjQzIDAuMTk0LTAuMjQzIDAuMDk3IDAgNC43NTUgMC4wNDUgOS4zMzYgMC4wNDUgNC40MiAwIDguNzY3LTAuMDQ1IDguODYzLTAuMDQ1IDAuMTQ3IDAgMC4xOTYgMC4wOTggMC4xOTYgMC4yNDN2MC40OWMwIDAuMTItMC4wNDkgMC4xNjctMC4yNDQgMC4xNjciIHN0eWxlPSJmaWxsOiNmZmYiLz4KICAgIDwvZz4KICAgIDxnIHRyYW5zZm9ybT0idHJhbnNsYXRlKDI4Ny45IDUxOC4yKSI+CiAgICAgPHBhdGggZD0ibTAgMGMtMC4xNTggMC4xNS0wLjQ0IDAuNC0wLjQ1OSAwLjQyNC0wLjAyNyAwLjAzLTAuMTEyIDRlLTMgLTAuMTM3LTAuMDI3LTEuMDgtMS4zNjktMy4wODgtMi41NTMtNS41OTctMi41NTMtMS4xNjYgMC0yLjU3NiAwLjE5Ni00LjE3NiAxLjg5OC0xLjggMS45NDQtMi4yMzggNC44MS0yLjIzOCA2LjMxNyAwIDMuNDk0IDEuNjA1IDYuOTk1IDUuNDg5IDYuOTk1IDEuODk5IDAgMy4xNjItMC43NzYgNC4yMzEtMS43OTYgMS4wMTctMS4wNjcgMS42MDMtMi4yODIgMS44OTUtMy4xNTYgMC4wNzEtMC4xOTYgMC4xNDYtMC4yOTMgMC4yNjUtMC4yNDZsMC40NjEgMC4xNDZjMC4wOTggMC4wMjUgMC4xMjMgMC4xIDAuMDk4IDAuMjQ3LTAuMDk4IDAuNzI3LTAuNTgzIDQuNjEyLTAuNTgzIDUuMDQ2IDAgMC4zNDMtMC4wNDcgMC4zOTItMC4zNDEgMC4zOTItMC4yOSAwLTAuMzQyIDAtMC4zODYtMC4xNWwtMC4xOTgtMC42MjhjLTAuMDQ2LTAuMTkyLTAuMTQ1LTAuMTkyLTAuNDg1IDAtMC44NzMgMC40ODItMi42NzEgMS4xNjYtNC45MDcgMS4xNjYtMi45MTUgMC01LjAwNC0xLjE2Ni02LjMxNy0yLjU3NS0xLjcwMS0xLjg0OC0yLjQ3Ny00LjEzMS0yLjQ3Ny02LjUxIDAtMi4xMzkgMC44MjYtNC45NTcgMi42MjMtNi41NjIgMS41MS0xLjM2IDMuMjU2LTIuMjg0IDYuMzY4LTIuMjg0IDMuMTk4IDAgNS40MzEgMS43MTQgNi45MDUgMy42MjcgMC4wMjcgMC4wNCAwLjAzOCAwLjE2NC0wLjAzNCAwLjIyOSIgc3R5bGU9ImZpbGw6I2ZmZiIvPgogICAgPC9nPgogICAgPGcgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoMzE3LjMgNTI4LjMpIj4KICAgICA8cGF0aCBkPSJtMCAwYzAtMC44MTctMC42NjMtMS40OC0xLjQ4Mi0xLjQ4LTAuODIxIDAtMS40ODEgMC42NjMtMS40ODEgMS40OCAwIDAuODE4IDAuNjYgMS40ODQgMS40ODEgMS40ODQgMC44MTkgMCAxLjQ4Mi0wLjY2NiAxLjQ4Mi0xLjQ4NCIgc3R5bGU9ImZpbGw6I2ZmZiIvPgogICAgPC9nPgogICA8L2c+CiAgPC9nPgogPC9nPgo8L3N2Zz4K" alt="Colliers Logo" class="block h-auto w-full object-contain" />
                 </div>
-                <div class="min-w-0 flex-1 font-sans font-normal leading-[1.08] tracking-tight text-[#24418A]" style="font-size: min(3.35cqw, 22px)">
+                <div class="min-w-0 flex-1 font-sans font-normal leading-[1.08] tracking-tight text-[#03438C]" style="font-size: min(3.2cqw, 16px)">
                   <template v-if="['French','Français','FR'].indexOf(previewLang) >= 0"><span class="block">Maîtres</span><span class="block">de projets</span></template>
                   <template v-else><span class="block">Project</span><span class="block">Leaders</span></template>
                 </div>
               </div>
               <div class="absolute bottom-[38%] left-[44%] right-[6%] top-[30%]">
-                <div class="font-bold leading-[1.2] text-[#24418A]" style="font-size: min(3.7cqw, 18px)">
-                  <span class="whitespace-pre-line">{{ (model.card.nameWrapped || model.card.name || '').trim() || (['French','Français','FR'].indexOf(previewLang) >= 0 ? 'Nom complet' : 'Full Name') }}</span><span v-if="(Array.isArray(model.card.degree) ? model.card.degree.length : model.card.degree) || model.card.additionalCredentials" class="align-baseline font-bold" style="font-size: 0.7em">, {{ [ ].concat(Array.isArray(model.card.degree) ? model.card.degree : (model.card.degree ? [model.card.degree] : [])).concat(model.card.additionalCredentials ? [model.card.additionalCredentials] : []).filter(Boolean).join(', ') }}</span>
+                <div class="font-bold leading-[1.2] text-[#03438C]" style="font-size: min(3.7cqw, 18px)">
+                  <span class="whitespace-pre-line">{{ (model.card.nameWrapped || model.card.name || '').trim() || (['French','Français','FR'].indexOf(previewLang) >= 0 ? 'Prénom Nom' : 'Firstname Lastname') }}</span><span class="align-baseline font-bold" style="font-size: 0.7em">, {{ ([].concat(Array.isArray(model.card.degree) ? model.card.degree : (model.card.degree ? [model.card.degree] : [])).filter(Boolean).concat(String(model.card.additionalCredentials || '').trim() ? [String(model.card.additionalCredentials).trim()] : []).join(', ')) || 'C.M.' }}</span>
                 </div>
-                <div class="mt-[3.5%] leading-[1.35] text-[#7A7A7A]" style="font-size: min(2.15cqw, 11px)">
-                  <div>{{ ([String(model.card.title || '').split('|')[0].trim(), model.card.region].filter(Boolean).join(' | ')) || (['French','Français','FR'].indexOf(previewLang) >= 0 ? 'Titre | Région' : 'Title | Region') }}</div>
-                  <div class="mt-[2%] min-h-[1.35em]">{{ model.card.specializedTeam || '' }}</div>
+                <div class="mt-[3.5%] leading-[1.35] text-[#5F636A]" style="font-size: min(2.15cqw, 11px)">
+                  <div>{{ (String(model.card.title || '').split('|')[0].trim() || (['French','Français','FR'].indexOf(previewLang) >= 0 ? 'Titre' : 'Title')) + ' | ' + (String(model.card.region || '').trim() || (['French','Français','FR'].indexOf(previewLang) >= 0 ? 'Région' : 'Region')) }}</div>
+                  <div class="mt-[2%] min-h-[1.35em]">{{ String(model.card.specializedTeam || '').trim() || (['French','Français','FR'].indexOf(previewLang) >= 0 ? 'Équipe spécialisée' : 'Specialized team') }}</div>
                 </div>
               </div>
-              <div class="absolute bottom-[14%] left-[44%] right-[6%] leading-[1.5] text-[#7A7A7A]" style="font-size: min(2.15cqw, 11px)">
-                <div class="break-words">{{ model.card.email || (['French','Français','FR'].indexOf(previewLang) >= 0 ? 'Courriel:' : 'Email:') }}</div>
-                <div>Mobile: {{ model.card.phone || (['French','Français','FR'].indexOf(previewLang) >= 0 ? 'Numéro de téléphone' : 'Phone Number') }}</div>
+              <div class="absolute bottom-[14%] left-[44%] right-[6%] leading-[1.5] text-[#5F636A]" style="font-size: min(2.15cqw, 11px)">
+                <div class="break-words">{{ model.card.email || (['French','Français','FR'].indexOf(previewLang) >= 0 ? 'prenom.nom@colliersprojectleaders.com' : 'first.lastname@colliersprojectleaders.com') }}</div>
+                <div>Mobile: {{ model.card.phone || '+1 555 555 5555' }}</div>
                 <div>{{ (['French','Français','FR'].indexOf(previewLang) >= 0 ? (model.card.websiteFr || 'colliersprojectleaders.com/fr') : (model.card.website || 'colliersprojectleaders.com')) }}</div>
               </div>
-              <div class="absolute bottom-[14%] left-[7.5%] right-[58%] whitespace-pre-wrap leading-[1.5] text-[#7A7A7A]" style="font-size: min(2.15cqw, 11px)">{{ model.card.address || (['French','Français','FR'].indexOf(previewLang) >= 0 ? 'Adresse' : 'Address') }}</div>
+              <div class="absolute bottom-[14%] left-[7.5%] right-[58%] whitespace-pre-wrap leading-[1.5] text-[#5F636A]" style="font-size: min(2.15cqw, 11px)">{{ model.card.address || (['French','Français','FR'].indexOf(previewLang) >= 0 ? "Nom de l'adresse\nUnité, Rue\nVille, Province\nCode postal, Pays" : "Address name\nUnit, Street\nCity, Province\nPostal Code, Country") }}</div>
             </div>
           </div>
         </div>
@@ -43,69 +43,91 @@
       </div>
       <div class="min-w-0 flex-1">
         <div class="mb-6 flex items-start justify-between gap-4">
-          <h1 class="colliers-page-title">{{ BF.i18n('label_colliers_customizeDetails') }}</h1>
-          <button type="button" class="shrink-0 text-sm text-gray-500 underline-offset-2 hover:text-gray-800 hover:underline" @click="BF.namedAction('clearDesign')">{{ BF.i18n('label_colliers_clearDesign') }}</button>
+          <h1 class="colliers-page-title text-[28px] font-semibold tracking-tight text-[#0a1a3a]">{{ BF.i18n('label_colliers_customizeDetails') }}</h1>
+          <button type="button" class="shrink-0 text-sm text-gray-500 underline-offset-2 hover:text-gray-800 hover:underline" @click="model.card.emailEdited = false; BF.namedAction('clearDesign')">{{ BF.i18n('label_colliers_clearDesign') }}</button>
         </div>
         <form class="space-y-4" @submit.prevent="BF.namedAction('addToCart')">
           <div>
-            <label class="field-label" for="card-name">{{ BF.i18n('label_colliers_fullName') }}</label>
-            <input id="card-name" class="field-input" maxlength="60" v-model="model.card.name" @input="BF.namedAction('wrapCardName')" />
-            <p class="mt-1 text-xs text-gray-500">{{ (model.card.name || '').length }}/60 — {{ BF.i18n('label_colliers_fullNameHint') }}</p>
+            <label class="field-label text-[14px] font-normal text-gray-700" for="card-name">{{ BF.i18n('label_colliers_fullName') }}</label>
+            <input id="card-name" class="field-input" maxlength="30" v-model="model.card.name" @input="BF.namedAction('wrapCardName')" />
+            <p class="mt-1 text-xs text-gray-500">{{ (model.card.name || '').length }}/30 — {{ BF.i18n('label_colliers_fullNameHint') }}</p>
+          </div>
+          <div class="relative">
+            <label class="field-label text-[14px] font-normal text-gray-700">{{ BF.i18n('label_colliers_degreeOptional') }}</label>
+            <button type="button" class="field-input flex w-full items-center justify-between text-left" @click="model.degreeMenuOpen = !model.degreeMenuOpen">
+              <span :class="(Array.isArray(model.card.degree) && model.card.degree.length) ? 'text-gray-900' : 'text-gray-400'">{{ BF.i18n('label_colliers_selectDegree') }}</span>
+              <span class="ml-2 shrink-0 text-gray-400" aria-hidden="true">▾</span>
+            </button>
+            <div v-if="model.degreeMenuOpen" class="fixed inset-0 z-10" @click="model.degreeMenuOpen = false"></div>
+            <div v-if="model.degreeMenuOpen" class="absolute z-20 mt-1 max-h-56 w-full overflow-auto rounded border border-gray-200 bg-white shadow-lg" @click.stop>
+              <div class="sticky top-0 border-b border-gray-100 bg-white p-2">
+                <input type="search" class="field-input py-2" :placeholder="BF.i18n('label_colliers_selectDegree')" :value="model.degreeQuery" @input="model.degreeQuery = $event.target.value" @click.stop />
+              </div>
+              <ul class="py-1">
+                <li v-if="!(model.degreeOptions || []).filter(function (opt) { var q = String(model.degreeQuery || '').trim().toLowerCase(); return !q || String(opt).toLowerCase().indexOf(q) !== -1; }).length" class="px-3 py-2 text-sm text-gray-500">{{ BF.i18n('label_colliers_noDegrees') }}</li>
+                <li
+                  v-for="opt in (model.degreeOptions || []).filter(function (opt) { var q = String(model.degreeQuery || '').trim().toLowerCase(); return !q || String(opt).toLowerCase().indexOf(q) !== -1; })"
+                  :key="opt"
+                  class="flex cursor-pointer items-center gap-2 px-3 py-2 text-sm hover:bg-gray-50"
+                  :class="Array.isArray(model.card.degree) && model.card.degree.length >= 2 && model.card.degree.indexOf(opt) === -1 ? 'cursor-not-allowed opacity-40' : ''"
+                  @click.stop="if (!Array.isArray(model.card.degree)) model.card.degree = []; if (model.card.degree.indexOf(opt) === -1) { if (model.card.degree.length >= 2) return; model.card.degree.push(opt); } else { model.card.degree = model.card.degree.filter(function (d) { return d !== opt; }); }"
+                >
+                  <input type="checkbox" class="h-4 w-4 rounded border-gray-300" :checked="Array.isArray(model.card.degree) && model.card.degree.indexOf(opt) !== -1" :disabled="Array.isArray(model.card.degree) && model.card.degree.length >= 2 && model.card.degree.indexOf(opt) === -1" tabindex="-1" @click.stop.prevent="if (!Array.isArray(model.card.degree)) model.card.degree = []; if (model.card.degree.indexOf(opt) === -1) { if (model.card.degree.length >= 2) return; model.card.degree.push(opt); } else { model.card.degree = model.card.degree.filter(function (d) { return d !== opt; }); }" />
+                  <span>{{ opt }}</span>
+                </li>
+              </ul>
+            </div>
+            <div v-if="Array.isArray(model.card.degree) && model.card.degree.length" class="mt-2 flex flex-wrap gap-2">
+              <span v-for="d in model.card.degree" :key="d" class="inline-flex items-center gap-1 rounded-md bg-[#E8EEF7] px-2.5 py-1 text-sm text-[#24418A]">{{ d }} <button type="button" class="ml-0.5 inline-flex h-4 w-4 items-center justify-center rounded text-[#24418A] hover:bg-[#d4deef]" @click="model.card.degree = model.card.degree.filter(function (x) { return x !== d; })">×</button></span>
+            </div>
+            <p class="mt-1 text-xs text-gray-500">{{ BF.i18n('label_colliers_degreeMax') }}</p>
           </div>
           <div>
-            <label class="field-label" for="card-title">{{ BF.i18n('label_colliers_title') }}</label>
+            <label class="field-label text-[14px] font-normal text-gray-700" for="card-credentials">{{ BF.i18n('label_colliers_additionalCredentialsOptional') }}</label>
+            <input id="card-credentials" class="field-input" v-model="model.card.additionalCredentials" />
+          </div>
+          <div>
+            <label class="field-label text-[14px] font-normal text-gray-700" for="card-title">{{ BF.i18n('label_colliers_title') }}</label>
             <select id="card-title" class="field-input" v-model="model.card.title">
               <option value="">{{ BF.i18n('label_colliers_selectTitle') }}</option>
               <option v-for="opt in model.titleOptions" :key="opt" :value="opt">{{ opt }}</option>
             </select>
           </div>
           <div>
-            <label class="field-label">{{ BF.i18n('label_colliers_degreeOptional') }}</label>
-            <div class="field-input max-h-40 overflow-auto p-2">
-              <label v-for="opt in model.degreeOptions" :key="opt" class="mb-1 flex cursor-pointer items-center gap-2 text-sm last:mb-0">
-                <input type="checkbox" :value="opt" v-model="model.card.degree" />
-                <span>{{ opt }}</span>
-              </label>
-            </div>
-            <div v-if="Array.isArray(model.card.degree) && model.card.degree.length" class="mt-2 flex flex-wrap gap-2">
-              <span v-for="d in model.card.degree" :key="d" class="inline-flex items-center gap-1 rounded-md bg-[#E8EEF7] px-2.5 py-1 text-sm text-[#24418A]">{{ d }}</span>
-            </div>
-          </div>
-          <div>
-            <label class="field-label" for="card-credentials">{{ BF.i18n('label_colliers_additionalCredentialsOptional') }}</label>
-            <input id="card-credentials" class="field-input" v-model="model.card.additionalCredentials" />
-          </div>
-          <div>
-            <label class="field-label" for="card-region">{{ BF.i18n('label_colliers_regionOptional') }}</label>
+            <label class="field-label text-[14px] font-normal text-gray-700" for="card-region">{{ BF.i18n('label_colliers_regionOptional') }}</label>
             <input id="card-region" class="field-input" v-model="model.card.region" />
           </div>
           <div>
-            <label class="field-label" for="card-team">{{ BF.i18n('label_colliers_specializedTeamOptional') }}</label>
+            <label class="field-label text-[14px] font-normal text-gray-700" for="card-team">{{ BF.i18n('label_colliers_specializedTeamOptional') }}</label>
             <input id="card-team" class="field-input" v-model="model.card.specializedTeam" />
           </div>
           <div>
-            <label class="field-label" for="card-email">{{ BF.i18n('label_colliers_email') }}</label>
-            <input id="card-email" type="email" class="field-input" maxlength="50" v-model="model.card.email" />
+            <label class="field-label text-[14px] font-normal text-gray-700" for="card-email">{{ BF.i18n('label_colliers_email') }}</label>
+            <input id="card-email" type="email" class="field-input" maxlength="50" v-model="model.card.email" @input="model.card.emailEdited = true" />
+            <p class="mt-1 text-xs text-gray-500">{{ (model.card.email || '').length }}/50 — {{ BF.i18n('label_colliers_emailHint') }}</p>
           </div>
           <div>
-            <label class="field-label" for="card-phone">{{ BF.i18n('label_colliers_mobilePhone') }}</label>
-            <input id="card-phone" class="field-input" v-model="model.card.phone" />
+            <label class="field-label text-[14px] font-normal text-gray-700" for="card-phone">{{ BF.i18n('label_colliers_mobilePhone') }}</label>
+            <div class="flex overflow-hidden rounded border border-gray-300 focus-within:border-[#25408F] focus-within:ring-1 focus-within:ring-[#25408F]">
+              <span class="flex shrink-0 items-center bg-gray-100 px-3 text-[14px] text-gray-600">+1</span>
+              <input id="card-phone" type="tel" inputmode="numeric" maxlength="12" class="w-full border-0 px-3 py-2.5 text-[14px] focus:outline-none focus:ring-0" :value="String(model.card.phone || '').replace(/^\+1\s?/, '')" @input="(function (e) { var d = String(e.target.value).replace(/\D/g, '').slice(0, 10); model.card.phone = d ? ('+1 ' + (d.length <= 3 ? d : d.length <= 6 ? d.slice(0, 3) + ' ' + d.slice(3) : d.slice(0, 3) + ' ' + d.slice(3, 6) + '-' + d.slice(6))) : ''; })($event)" />
+            </div>
             <p class="mt-1 text-xs text-gray-500">{{ BF.i18n('label_colliers_mobilePhoneHint') }}</p>
           </div>
           <div>
-            <label class="field-label" for="card-company">{{ BF.i18n('label_colliers_companyName') }}</label>
-            <input id="card-company" class="field-input" :value="model.card.company" disabled />
+            <label class="field-label text-[14px] font-normal text-gray-700" for="card-website">{{ BF.i18n('label_colliers_website') }}</label>
+            <input id="card-website" class="field-input" :value="model.card.website" disabled />
           </div>
           <div>
-            <label class="field-label" for="card-address">{{ BF.i18n('label_colliers_officeLocation') }}</label>
+            <label class="field-label text-[14px] font-normal text-gray-700" for="card-address">{{ BF.i18n('label_colliers_officeLocation') }}</label>
             <select id="card-address" class="field-input" v-model="model.card.address" :disabled="model.officesLoading">
               <option value="">{{ model.officesLoading ? BF.i18n('label_colliers_loading') : BF.i18n('label_colliers_selectAddress') }}</option>
               <option v-for="opt in model.officeOptions" :key="opt.value" :value="opt.value">{{ opt.label }}</option>
             </select>
           </div>
           <div>
-            <label class="field-label" for="card-website">{{ BF.i18n('label_colliers_website') }}</label>
-            <input id="card-website" class="field-input" :value="model.card.website" disabled />
+            <label class="field-label text-[14px] font-normal text-gray-700" for="card-company">{{ BF.i18n('label_colliers_companyName') }}</label>
+            <input id="card-company" class="field-input" :value="model.card.company" disabled />
           </div>
           <button type="submit" class="btn-primary w-full">{{ BF.i18n('label_addToCart') }}</button>
         </form>

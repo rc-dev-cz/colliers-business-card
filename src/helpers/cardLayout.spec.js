@@ -45,35 +45,37 @@ beforeAll(async function () {
 })
 
 describe('planCardLayout', function () {
-  it('one-line name, no credentials uses title 74.99 and team 66.99', function () {
+  it('one-line name, no credentials uses title 66.99 and team 58.99', function () {
     var layout = plan({})
     expect(layout.valid).toBe(true)
     expect(layout.credMode).toBe('none')
     expect(layout.lastNameY).toBe(L.nameY)
-    expect(layout.titleY).toBe(74.99)
-    expect(layout.teamY).toBe(66.99)
-    expect(layout.emailY).toBe(50.99)
-    expect(layout.phoneY).toBe(42.99)
+    expect(layout.titleY).toBe(66.99)
+    expect(layout.teamY).toBe(58.99)
+    expect(layout.emailY).toBe(42.99)
+    expect(layout.phoneY).toBe(34.99)
     expect(layout.websiteY).toBe(26.99)
+    expect(layout.emailY - layout.phoneY).toBeCloseTo(L.bodyLineHeight)
+    expect(layout.phoneY - layout.websiteY).toBeCloseTo(L.bodyLineHeight)
   })
 
   it('approved blank sample card uses the same baselines', function () {
     var layout = planCardLayout(resolveCardFields({}, 'English'), fonts, { degreeCount: 0 })
     expect(layout.valid).toBe(true)
-    expect(layout.nameLines).toEqual(['Full Name'])
-    expect(layout.titleY).toBe(74.99)
-    expect(layout.teamY).toBe(66.99)
+    expect(layout.nameLines).toEqual(['Firstname Lastname'])
+    expect(layout.titleY).toBe(66.99)
+    expect(layout.teamY).toBe(58.99)
     expect(layout.credentialLine).toBe('')
   })
 
-  it('short inline credential keeps title at 74.99', function () {
+  it('short inline credential keeps title at 66.99', function () {
     var layout = plan({ degree: ['CPA'] }, 'English', 1)
     expect(layout.valid).toBe(true)
     expect(layout.credMode).toBe('inline')
     expect(layout.inlineCredential).toBe(', CPA')
     expect(layout.credentialLine).toBe('')
-    expect(layout.titleY).toBe(74.99)
-    expect(layout.teamY).toBe(66.99)
+    expect(layout.titleY).toBe(66.99)
+    expect(layout.teamY).toBe(58.99)
   })
 
   it('moves the entire credential string to its own row when it cannot sit on the name', function () {
@@ -89,18 +91,18 @@ describe('planCardLayout', function () {
     expect(layout.credMode).toBe('own-row')
     expect(layout.inlineCredential).toBe('')
     expect(layout.credentialLine).toBe(cred)
-    expect(layout.credentialY).toBe(74.99)
-    expect(layout.titleY).toBe(66.99)
-    expect(layout.teamY).toBe(58.99)
+    expect(layout.credentialY).toBe(66.99)
+    expect(layout.titleY).toBe(58.99)
+    expect(layout.teamY).toBe(50.99)
   })
 
-  it('two-line name keeps the last line at 83.49 and grows upward', function () {
+  it('two-line name keeps the last line at 75.49 and grows upward', function () {
     var layout = plan({ name: 'Carlos Moises Zabaleta Copa' })
     expect(layout.valid).toBe(true)
     expect(layout.nameLines.length).toBe(2)
-    expect(layout.lastNameY).toBe(83.49)
-    expect(layout.nameLineYs[1]).toBe(83.49)
-    expect(layout.nameLineYs[0]).toBe(83.49 + L.nameLineHeight)
+    expect(layout.lastNameY).toBe(75.49)
+    expect(layout.nameLineYs[1]).toBe(75.49)
+    expect(layout.nameLineYs[0]).toBe(75.49 + L.nameLineHeight)
     expect(layout.nameLineYs[0]).toBeLessThan(L.lockupY)
   })
 
@@ -117,20 +119,28 @@ describe('planCardLayout', function () {
     expect(layout.teamY).toBeGreaterThan(layout.emailY)
   })
 
-  it('treats exactly 130pt as valid and just over as invalid', function () {
-    var exact = padToWidth(fonts.font, L.bodySize, L.identityWidth, 'ada@')
-    expect(fitsLine(fonts.font, exact, L.bodySize, L.identityWidth)).toBe(true)
-    var ok = plan({ email: exact })
-    expect(ok.valid).toBe(true)
+  it('accepts carlos.zabaleta@colliersprojectleaders.com on one line', function () {
+    var email = 'carlos.zabaleta@colliersprojectleaders.com'
+    expect(fitsLine(fonts.font, email, L.bodySize, L.emailMaxWidth)).toBe(true)
+    var layout = plan({ email: email })
+    expect(layout.valid).toBe(true)
+    expect(layout.errors).not.toContain(LAYOUT_ERROR.email)
+  })
 
-    var over = exact + 'x'
-    expect(fitsLine(fonts.font, over, L.bodySize, L.identityWidth)).toBe(false)
-    var bad = plan({ email: over })
+  it('accepts an email of 50 characters and rejects 51', function () {
+    var fifty = 'carlos.zabaleta@colliersprojectleaders.comssssssss'
+    expect(fifty.length).toBe(50)
+    var ok = plan({ email: fifty })
+    expect(ok.valid).toBe(true)
+    expect(ok.errors).not.toContain(LAYOUT_ERROR.email)
+
+    var fiftyOne = fifty + 'x'
+    var bad = plan({ email: fiftyOne })
     expect(bad.valid).toBe(false)
     expect(bad.errors).toContain(LAYOUT_ERROR.email)
   })
 
-  it('rejects two very long degrees even when count is below 3', function () {
+  it('rejects two very long degrees when the count is within the cap', function () {
     var longA = padToWidth(fonts.fontBold, L.credentialSize, L.identityWidth + 20, 'Dipl. Architectural ')
     var layout = plan(
       { degree: [longA, longA] },
@@ -141,27 +151,43 @@ describe('planCardLayout', function () {
     expect(layout.errors).toContain(LAYOUT_ERROR.credentials)
   })
 
-  it('rejects four tiny degrees because of the selection cap', function () {
-    var layout = plan({ degree: ['A', 'B', 'C', 'D'] }, 'English', 4)
+  it('rejects a third degree because of the selection cap', function () {
+    var layout = plan({ degree: ['A', 'B', 'C'] }, 'English', 3)
     expect(layout.valid).toBe(false)
     expect(layout.errors).toContain(LAYOUT_ERROR.degrees)
   })
 
-  it('rejects overflowing title, team, and email instead of wrapping', function () {
+  it('does not block on a long region, team, mobile, office, or 50-character email', function () {
     var over = padToWidth(fonts.font, L.bodySize, L.identityWidth, 'Long ') + ' overflow'
-    expect(plan({ title: over, region: '' }).errors).toContain(LAYOUT_ERROR.title)
-    expect(plan({ specializedTeam: over }).errors).toContain(LAYOUT_ERROR.team)
-    expect(plan({ email: over }).errors).toContain(LAYOUT_ERROR.email)
+    var email = 'carlos.zabaleta@colliersprojectleaders.comssssssss'
+    var layout = plan({
+      title: over,
+      region: over,
+      specializedTeam: over,
+      email: email,
+      phone: '4165550100',
+      address: 'One\nTwo\nThree\nFour\nFive\nSix',
+    })
+    expect(layout.errors).not.toContain(LAYOUT_ERROR.title)
+    expect(layout.errors).not.toContain(LAYOUT_ERROR.team)
+    expect(layout.errors).not.toContain(LAYOUT_ERROR.email)
+    expect(layout.errors).not.toContain(LAYOUT_ERROR.phone)
+    expect(layout.errors).not.toContain(LAYOUT_ERROR.address)
+    expect(layout.valid).toBe(true)
+    expect(layout.address.lines.length).toBe(6)
   })
 
-  it('allows 5 address lines and rejects 6', function () {
+  it('keeps a long office address and does not report it as too long', function () {
     var five = 'One\nTwo\nThree\nFour\nFive'
     var six = five + '\nSix'
     var ok = plan({ address: five })
     expect(ok.valid).toBe(true)
     expect(ok.address.lines.length).toBe(5)
     expect(ok.address.bottomY).toBe(27)
-    expect(plan({ address: six }).errors).toContain(LAYOUT_ERROR.address)
+    var longer = plan({ address: six })
+    expect(longer.valid).toBe(true)
+    expect(longer.errors).not.toContain(LAYOUT_ERROR.address)
+    expect(longer.address.lines.length).toBe(6)
   })
 
   it('keeps address bottom-aligned for 1, 3 and 5 lines', function () {
@@ -173,6 +199,11 @@ describe('planCardLayout', function () {
       expect(layout.address.lines.length).toBe(n)
       expect(layout.address.bottomY).toBe(27)
     })
+  })
+
+  it('still rejects a website that does not fit on one line', function () {
+    var over = padToWidth(fonts.font, L.bodySize, L.identityWidth, 'https://') + ' overflow'
+    expect(plan({ website: over }).errors).toContain(LAYOUT_ERROR.website)
   })
 
   it('does not letter-split an oversized name token', function () {

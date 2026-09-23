@@ -33,12 +33,14 @@
           class="flex cursor-pointer items-center gap-2 px-3 py-2 text-sm hover:bg-gray-50"
           role="option"
           :aria-selected="isSelected(option) ? 'true' : 'false'"
+          :class="isLocked(option) ? 'cursor-not-allowed opacity-40' : ''"
           @click.stop="toggleOption(option)"
         >
           <input
             type="checkbox"
             class="h-4 w-4 rounded border-gray-300 text-colliers-primary focus:ring-colliers-primary"
             :checked="isSelected(option)"
+            :disabled="isLocked(option)"
             tabindex="-1"
             @click.stop.prevent="toggleOption(option)"
           />
@@ -97,6 +99,7 @@ export default {
     disabled: { type: Boolean, default: false },
     hint: { type: String, default: '' },
     error: { type: String, default: '' },
+    max: { type: Number, default: 0 },
   },
   data: function () {
     return {
@@ -129,6 +132,9 @@ export default {
     isSelected: function (option) {
       return this.selectedValues.indexOf(this.optionValue(option)) !== -1
     },
+    isLocked: function (option) {
+      return this.max > 0 && this.selectedValues.length >= this.max && !this.isSelected(option)
+    },
     toggle: function () {
       if (this.disabled) return
       this.open = !this.open
@@ -150,8 +156,10 @@ export default {
       var val = this.optionValue(option)
       var next = this.selectedValues.slice()
       var idx = next.indexOf(val)
-      if (idx === -1) next.push(val)
-      else next.splice(idx, 1)
+      if (idx === -1) {
+        if (this.max > 0 && next.length >= this.max) return
+        next.push(val)
+      } else next.splice(idx, 1)
       this.emitValues(next)
     },
     remove: function (item) {

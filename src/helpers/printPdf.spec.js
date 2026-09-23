@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { PDFDocument } from 'pdf-lib'
-import { buildPrintPdfBytes, PRINT_PDF_PAGE } from './printPdf.js'
+import { buildPrintPdfBytes, printAddressLines, printInlineCredential, PRINT_PDF_PAGE } from './printPdf.js'
 import { CARD_LAYOUT } from './cardLayout.js'
 
 var base = {
@@ -22,7 +22,7 @@ describe('printPdf', function () {
     expect(PRINT_PDF_PAGE.heightIn).toBe(2.25)
     expect(size.width).toBeCloseTo(3.75 * 72, 5)
     expect(size.height).toBeCloseTo(2.25 * 72, 5)
-    expect(doc.getPageCount()).toBe(1)
+    expect(doc.getPageCount()).toBe(2)
   })
 
   it('sets trim/bleed/art boxes like the approved EN card', async function () {
@@ -43,10 +43,39 @@ describe('printPdf', function () {
     expect(bytes.byteLength).toBeGreaterThan(500)
   })
 
+  it('keeps the C.M. sample and comma when no credential is entered', function () {
+    expect(printInlineCredential({ degree: [], additionalCredentials: '' }, 'English')).toBe(', C.M.')
+    expect(printInlineCredential({ degree: [], additionalCredentials: '' }, 'French')).toBe(', C.M.')
+    expect(printInlineCredential({ degree: ['CPA'], additionalCredentials: '' }, 'English')).toBe(null)
+    expect(printInlineCredential({ degree: [], additionalCredentials: 'P.Eng' }, 'English')).toBe(null)
+  })
+
+  it('uses the address placeholder when no office is selected', function () {
+    expect(printAddressLines('', 'English')).toEqual([
+      'Address name',
+      'Unit, Street',
+      'City, Province',
+      'Postal Code, Country',
+    ])
+    expect(printAddressLines('', 'French')).toEqual([
+      "Nom de l'adresse",
+      'Unité, Rue',
+      'Ville, Province',
+      'Code postal, Pays',
+    ])
+    expect(printAddressLines('181 Bay Street\nToronto, ON', 'English')).toBe(null)
+  })
+
+  it('still builds a PDF when the address is left empty', async function () {
+    var bytes = await buildPrintPdfBytes(Object.assign({}, base, { address: '' }), 'Bilingual')
+    var doc = await PDFDocument.load(bytes)
+    expect(doc.getPageCount()).toBe(4)
+  })
+
   it('builds bilingual pages only after both layouts validate', async function () {
     var bytes = await buildPrintPdfBytes(base, 'Bilingual')
     var doc = await PDFDocument.load(bytes)
-    expect(doc.getPageCount()).toBe(2)
+    expect(doc.getPageCount()).toBe(4)
   })
 
   it('refuses to build a PDF when credentials cannot fit on one line', async function () {
@@ -63,10 +92,10 @@ describe('printPdf', function () {
     ).rejects.toThrow(/credentials|too long/i)
   })
 
-  it('refuses four degrees even if each is short', async function () {
+  it('refuses a third degree even if each is short', async function () {
     await expect(
-      buildPrintPdfBytes(Object.assign({}, base, { degree: ['A', 'B', 'C', 'D'] }), 'English'),
-    ).rejects.toThrow(/maximum of 3/i)
+      buildPrintPdfBytes(Object.assign({}, base, { degree: ['A', 'B', 'C'] }), 'English'),
+    ).rejects.toThrow(/maximum of 2/i)
   })
 })
 

@@ -2,11 +2,17 @@ import { PDFDocument, rgb } from 'pdf-lib'
 import fontkit from '@pdf-lib/fontkit'
 import { loadBytes, loadLayoutFonts, loadOpenSansBytes } from './cardFonts.js'
 import {
+  CARD_BACK_LEGAL,
   CARD_LAYOUT,
   layoutErrorMessage,
   planProductLayout,
   snapshotCardDetails,
 } from './cardLayout.js'
+import {
+  formatCredentialSuffix,
+  previewAddressText,
+  previewCredentialText,
+} from './formatCardIdentity.js'
 import lockupEnUrl from '../assets/brand-lockup-en.png?url'
 import logoUrl from '../assets/colliers-logo-print.png?url'
 
@@ -18,6 +24,7 @@ var TRIM_W = L.trimW
 var TRIM_H = L.trimH
 
 var COLLIERS_BLUE = rgb(3 / 255, 67 / 255, 140 / 255)
+var WHITE = rgb(1, 1, 1)
 var GRAY = rgb(95 / 255, 99 / 255, 106 / 255)
 
 function applyPrintPageBoxes(page) {
@@ -191,6 +198,45 @@ function drawCardPage(pdfDoc, pagePlan, assets) {
   })
 }
 
+/** Back face from the ICT master: blue field, white L, legal name. Same for EN and FR. */
+function drawCardBack(pdfDoc, assets) {
+  var page = pdfDoc.addPage([PAGE_W, PAGE_H])
+  applyPrintPageBoxes(page)
+  page.drawRectangle({
+    x: 0,
+    y: 0,
+    width: PAGE_W,
+    height: PAGE_H,
+    color: COLLIERS_BLUE,
+  })
+  var inset = 18
+  var x = BLEED + inset
+  var y = BLEED + inset
+  var top = BLEED + TRIM_H
+  var right = BLEED + TRIM_W
+  page.drawLine({
+    start: { x: x, y: top },
+    end: { x: x, y: y },
+    thickness: 0.5,
+    color: WHITE,
+  })
+  page.drawLine({
+    start: { x: x, y: y },
+    end: { x: right, y: y },
+    thickness: 0.5,
+    color: WHITE,
+  })
+  var size = 6.5
+  var textWidth = assets.font.widthOfTextAtSize(CARD_BACK_LEGAL, size)
+  drawText(page, CARD_BACK_LEGAL, {
+    x: right - inset - textWidth,
+    y: top - 23.36,
+    size: size,
+    font: assets.font,
+    color: WHITE,
+  })
+}
+
 function throwLayoutError(productPlan) {
   var code = productPlan.errors[0]
   var err = new Error(layoutErrorMessage(code))
@@ -198,10 +244,54 @@ function throwLayoutError(productPlan) {
   throw err
 }
 
+/** Lines drawn when no office is selected. Null keeps the planned address. */
+export function printAddressLines(address, language) {
+  var text = address != null ? String(address).trim() : ''
+  if (text) return null
+  return previewAddressText('', language).split('\n')
+}
+
+/** ", C.M." drawn when no degree or credential is entered. Null keeps the planned suffix. */
+export function printInlineCredential(details, language) {
+  var degree = details && details.degree
+  var extra = details && details.additionalCredentials
+  if (formatCredentialSuffix(degree, extra)) return null
+  var cred = previewCredentialText(degree, extra, language)
+  if (!cred) return null
+  return ', ' + cred
+}
+
+function applyPrintCredentialPlaceholder(productPlan, details) {
+  productPlan.pages.forEach(function (page) {
+    var inline = printInlineCredential(details, page.language)
+    if (!inline || !page.layout) return
+    if (page.layout.credentialLine) {
+      page.layout.credentialLine = inline.replace(/^, /, '')
+      return
+    }
+    page.layout.inlineCredential = inline
+    page.layout.credentialLine = ''
+    page.layout.credMode = 'inline'
+    if (page.fields) page.fields.credentialSuffix = inline.replace(/^, /, '')
+  })
+}
+
+function applyPrintAddressPlaceholder(productPlan, details) {
+  var address = details && details.address
+  productPlan.pages.forEach(function (page) {
+    var lines = printAddressLines(address, page.language)
+    if (!lines || !page.layout || !page.layout.address) return
+    page.layout.address.lines = lines
+    if (page.fields) page.fields.address = lines.join('\n')
+  })
+}
+
 export async function buildPrintPdfBytes(details, language) {
   var snapshot = snapshotCardDetails(details)
   var measureFonts = await loadLayoutFonts()
   var productPlan = planProductLayout(snapshot, language, measureFonts)
+  applyPrintCredentialPlaceholder(productPlan, snapshot)
+  applyPrintAddressPlaceholder(productPlan, snapshot)
   if (!productPlan.valid) throwLayoutError(productPlan)
 
   var pdfDoc = await PDFDocument.create()
@@ -210,6 +300,7 @@ export async function buildPrintPdfBytes(details, language) {
 
   productPlan.pages.forEach(function (pagePlan) {
     drawCardPage(pdfDoc, pagePlan, assets)
+    drawCardBack(pdfDoc, assets)
   })
 
   return pdfDoc.save()

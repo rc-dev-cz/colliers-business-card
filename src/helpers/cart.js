@@ -49,14 +49,14 @@ export function consolidateCart(items) {
   const source = Array.isArray(items) ? items : []
   const merged = []
   for (let i = 0; i < source.length; i += 1) {
-    const item = source[i]
+    const item = makeLine(source[i])
     const match = merged.find(function (line) {
       return line.code === item.code && sameDetails(line.details, item.details)
     })
     if (match) {
       match.quantity += item.quantity || 1
     } else {
-      merged.push(makeLine(item))
+      merged.push(item)
     }
   }
   return merged

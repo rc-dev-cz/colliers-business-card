@@ -56,8 +56,8 @@
                 "fr": "Ajouter au panier"
             },
             "label_colliers_additionalCredentialsOptional": {
-                "en": "Additional Credentials (Optional)",
-                "fr": "Informations d'identification supplémentaires (facultatif)"
+                "en": "Additional Credentials",
+                "fr": "Informations d'identification supplémentaires"
             },
             "label_colliers_address": {
                 "en": "Address",
@@ -160,8 +160,12 @@
                 "fr": "Date d'ajout"
             },
             "label_colliers_degreeOptional": {
-                "en": "Degree/Certification (Optional)",
-                "fr": "Diplôme/Certification (facultatif)"
+                "en": "Degree/Certification",
+                "fr": "Diplôme/Certification"
+            },
+            "label_colliers_degreeMax": {
+                "en": "2 maximum, shown after the name",
+                "fr": "2 maximum, après le nom"
             },
             "label_colliers_degreesConfiguredSuffix": {
                 "en": "degrees configured",
@@ -483,9 +487,13 @@
                 "en": "Recent Orders",
                 "fr": "Commandes récentes"
             },
+            "label_colliers_cardBack": {
+                "en": "Card back",
+                "fr": "Verso de la carte"
+            },
             "label_colliers_regionOptional": {
-                "en": "Region (Optional)",
-                "fr": "Région (facultatif)"
+                "en": "Region",
+                "fr": "Région"
             },
             "label_colliers_removeOfficeAddress": {
                 "en": "Remove address",
@@ -536,8 +544,8 @@
                 "fr": "Sélectionner un titre"
             },
             "label_colliers_specializedTeamOptional": {
-                "en": "Specialized Team (Optional)",
-                "fr": "Équipe spécialisée (facultatif)"
+                "en": "Specialized Team",
+                "fr": "Équipe spécialisée"
             },
             "label_colliers_spendByDepartment": {
                 "en": "Spend by Department",
