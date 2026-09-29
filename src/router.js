@@ -5,6 +5,7 @@ import LoginPage from './pages/LoginPage.vue'
 import CatalogPage from './pages/CatalogPage.vue'
 import DetailsPage from './pages/DetailsPage.vue'
 import CustomizePage from './pages/CustomizePage.vue'
+import ProofPage from './pages/ProofPage.vue'
 import ShippingPage from './pages/ShippingPage.vue'
 import ReviewPage from './pages/ReviewPage.vue'
 import ConfirmedPage from './pages/ConfirmedPage.vue'
@@ -43,6 +44,14 @@ const router = new VueRouter({
       path: '/customize',
       name: 'customize',
       component: CustomizePage,
+      props: function (route) {
+        return { code: route.query.code ? String(route.query.code) : '' }
+      },
+    },
+    {
+      path: '/proof',
+      name: 'proof',
+      component: ProofPage,
       props: function (route) {
         return { code: route.query.code ? String(route.query.code) : '' }
       },

@@ -1,6 +1,8 @@
 <template>
   <div>
-    <label v-if="label" class="field-label">{{ label }}</label>
+    <label v-if="label" class="field-label">
+      {{ label }}<span v-if="required" class="field-required" aria-hidden="true">*</span>
+    </label>
     <input
       :id="id || undefined"
       class="field-input"

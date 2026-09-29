@@ -13,8 +13,9 @@ import {
   previewAddressText,
   previewCredentialText,
 } from './formatCardIdentity.js'
-import lockupEnUrl from '../assets/brand-lockup-en.png?url'
-import logoUrl from '../assets/colliers-logo-print.png?url'
+import logoUrl from '../assets/colliers-logo-mark.png?url'
+import wordsEnUrl from '../assets/lockup-words-en.png?url'
+import wordsFrUrl from '../assets/lockup-words-fr.png?url'
 
 var L = CARD_LAYOUT
 var PAGE_W = L.pageW
@@ -65,8 +66,9 @@ async function embedPrintAssets(pdfDoc) {
   var regular = await pdfDoc.embedFont(sans.regular)
   var bold = await pdfDoc.embedFont(sans.bold)
   var logo = await pdfDoc.embedPng(await loadBytes(logoUrl))
-  var lockupEn = await pdfDoc.embedPng(await loadBytes(lockupEnUrl))
-  return { font: regular, fontBold: bold, logo: logo, lockupEn: lockupEn }
+  var wordsEn = await pdfDoc.embedPng(await loadBytes(wordsEnUrl))
+  var wordsFr = await pdfDoc.embedPng(await loadBytes(wordsFrUrl))
+  return { font: regular, fontBold: bold, logo: logo, wordsEn: wordsEn, wordsFr: wordsFr }
 }
 
 function drawCardPage(pdfDoc, pagePlan, assets) {
@@ -85,35 +87,22 @@ function drawCardPage(pdfDoc, pagePlan, assets) {
     color: rgb(1, 1, 1),
   })
 
-  if (fields.isFrench) {
-    page.drawImage(assets.logo, {
-      x: L.logoX,
-      y: L.logoY,
-      width: L.logoW,
-      height: L.logoH,
-    })
-    drawText(page, fields.tagline1, {
-      x: L.taglineX,
-      y: L.taglineY1,
-      size: L.taglineSize,
-      font: font,
-      color: COLLIERS_BLUE,
-    })
-    drawText(page, fields.tagline2, {
-      x: L.taglineX,
-      y: L.taglineY2,
-      size: L.taglineSize,
-      font: font,
-      color: COLLIERS_BLUE,
-    })
-  } else {
-    page.drawImage(assets.lockupEn, {
-      x: L.lockupX,
-      y: L.lockupY,
-      width: L.lockupW,
-      height: L.lockupH,
-    })
-  }
+  var markAspect = assets.logo.width / assets.logo.height
+  var logoDrawH = L.logoW / markAspect
+  var logoDrawY = L.logoY + (L.logoH - logoDrawH) / 2
+  page.drawImage(assets.logo, {
+    x: L.logoX,
+    y: logoDrawY,
+    width: L.logoW,
+    height: logoDrawH,
+  })
+  var words = fields.isFrench ? L.wordmarkFr : L.wordmarkEn
+  page.drawImage(fields.isFrench ? assets.wordsFr : assets.wordsEn, {
+    x: words.x,
+    y: words.y,
+    width: words.w,
+    height: words.h,
+  })
 
   var identityX = L.identityX
 

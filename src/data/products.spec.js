@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { emptyCard, getProduct, products } from './products.js'
+import { catalogCodeFromLine, emptyCard, getProduct, products } from './products.js'
 
 describe('products catalogue', function () {
   it('has three language SKUs', function () {
@@ -13,6 +13,12 @@ describe('products catalogue', function () {
   it('getProduct resolves by code', function () {
     expect(getProduct('BCAD-PL-ENG').language).toBe('English')
     expect(getProduct('missing')).toBe(null)
+  })
+
+  it('catalogCodeFromLine maps FileMaker codes by language', function () {
+    expect(catalogCodeFromLine({ code: 'BCAD-PL-FR', language: 'French' })).toBe('BCAD-PL-FR')
+    expect(catalogCodeFromLine({ code: 'CPL-13616', language: 'English' })).toBe('BCAD-PL-ENG')
+    expect(catalogCodeFromLine({ code: 'CPL-13617', language: 'Bilingual' })).toBe('BCAD-PL-BIL')
   })
 
   it('omits unused catalogue fields', function () {

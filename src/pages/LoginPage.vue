@@ -3,9 +3,9 @@
     <div class="w-full max-w-[440px] rounded-lg bg-white p-8 shadow-[0_4px_24px_rgba(0,0,0,0.04)] sm:p-10">
       <div class="mb-8 flex justify-center">
         <img
-          src="https://www.collierscanada.com/-/media/images/colliers/unitedstates/national/footer/logofooter.ashx?bid=19443a8c23424c689d86c4d1320eac0f"
-          alt="Colliers"
-          class="h-14 object-contain"
+          :src="lockupSrc"
+          :alt="lockupAlt"
+          class="h-14 w-auto max-w-full object-contain"
         />
       </div>
 
@@ -28,7 +28,8 @@
 import TextField from '../components/TextField.vue'
 import AppButton from '../components/AppButton.vue'
 import LoadingState from '../components/LoadingState.vue'
-import { t, login } from '../store'
+import { brandLockupAlt, brandLockupUrl } from '../helpers/brandLockup'
+import { store, t, login } from '../store'
 import { go } from '../adapters/nav'
 
 export default {
@@ -40,7 +41,16 @@ export default {
       password: '123',
       loading: false,
       error: '',
+      store: store,
     }
+  },
+  computed: {
+    lockupSrc: function () {
+      return brandLockupUrl(this.store.locale)
+    },
+    lockupAlt: function () {
+      return brandLockupAlt(this.store.locale)
+    },
   },
   methods: {
     t: t,

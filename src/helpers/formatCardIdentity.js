@@ -40,13 +40,11 @@ export var OPTIONAL_PREVIEW = {
   EN: {
     credential: SAMPLE_CREDENTIAL,
     region: 'Region',
-    team: 'Specialized team',
     address: SAMPLE_ADDRESS.EN,
   },
   FR: {
     credential: SAMPLE_CREDENTIAL,
     region: 'Région',
-    team: 'Équipe spécialisée',
     address: SAMPLE_ADDRESS.FR,
   },
 }
@@ -74,11 +72,9 @@ export function previewTitleText(title, region, language) {
   return formatTitleLine(title, regionPart || labels.region, sampleTitle, labels.region)
 }
 
-/** Team line for the customize preview. Empty team keeps its label. */
-export function previewTeamText(team, language) {
-  var text = team != null ? String(team).trim() : ''
-  if (text) return text
-  return optionalPreview(language).team
+/** Team line. Empty specialized team draws nothing — no form-label fallback. */
+export function previewTeamText(team) {
+  return team != null ? String(team).trim() : ''
 }
 
 /** Address block for the customize preview. Empty address keeps the four-line sample. */

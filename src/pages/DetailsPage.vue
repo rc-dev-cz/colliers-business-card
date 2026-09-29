@@ -8,8 +8,10 @@
 
       <div class="flex flex-col gap-10 lg:flex-row lg:gap-12">
         <div class="w-full lg:max-w-[480px]">
-          <div class="card-preview-frame">
-            <card-preview :details="{}" :language="product.language"></card-preview>
+          <div class="space-y-4">
+            <div v-for="language in previewLanguages" :key="language" class="card-preview-frame">
+              <card-preview :details="{}" :language="language" placeholders></card-preview>
+            </div>
           </div>
           <div class="mt-6 space-y-4 text-[15px]">
             <div>
@@ -17,7 +19,6 @@
               <div class="mb-2 italic text-gray-700">{{ t('materials') }}</div>
               <ul class="list-disc space-y-1 pl-5 text-gray-700">
                 <li>{{ t('premiumStock') }}</li>
-                <li>{{ t('finishOptions') }}</li>
               </ul>
             </div>
             <div>
@@ -91,6 +92,7 @@ import ColliersPageShell from '../layout/ColliersPageShell.vue'
 import CardPreview from '../components/CardPreview.vue'
 import AppButton from '../components/AppButton.vue'
 import { getProduct } from '../data/products'
+import { isBilingualLanguage } from '../helpers/formatCardIdentity'
 import { productNameKey } from '../i18n/messages'
 import { t } from '../store'
 import { go } from '../adapters/nav'
@@ -107,6 +109,11 @@ export default {
     },
     name: function () {
       return this.product ? t(productNameKey(this.product.code)) : ''
+    },
+    previewLanguages: function () {
+      if (!this.product) return []
+      if (isBilingualLanguage(this.product.language)) return ['English', 'French']
+      return [this.product.language || 'English']
     },
     specRows: function () {
       if (!this.product) return []

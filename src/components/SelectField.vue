@@ -1,13 +1,16 @@
 <template>
   <div>
-    <label v-if="label" class="field-label">{{ label }}</label>
+    <label v-if="label" class="field-label">
+      {{ label }}<span v-if="required" class="field-required" aria-hidden="true">*</span>
+    </label>
     <select
       class="field-input"
       :value="value"
       :disabled="disabled"
+      :required="required"
       @change="onChange"
     >
-      <option v-if="placeholder" disabled value="">{{ placeholder }}</option>
+      <option v-if="placeholder" value="">{{ placeholder }}</option>
       <option
         v-for="option in options"
         :key="optionValue(option)"
@@ -32,6 +35,7 @@ export default {
     optionLabelKey: { type: String, default: 'label' },
     placeholder: { type: String, default: '' },
     disabled: { type: Boolean, default: false },
+    required: { type: Boolean, default: false },
     hint: { type: String, default: '' },
     error: { type: String, default: '' },
   },

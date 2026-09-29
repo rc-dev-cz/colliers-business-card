@@ -19,8 +19,8 @@
               ></card-preview>
             </div>
           </div>
-          <p v-if="layoutStatus === 'loading'" class="mt-3 text-sm text-gray-500">{{ t('layoutFontsLoading') }}</p>
-          <p v-else-if="layoutError" class="mt-3 text-sm text-red-600">{{ layoutError }}</p>
+
+          <p v-if="layoutError" class="mt-3 text-sm text-red-600">{{ layoutError }}</p>
           <p v-else-if="printPdfError" class="mt-3 text-sm text-red-600">{{ printPdfError }}</p>
           <app-button
             class="mt-4"
@@ -40,14 +40,22 @@
               @click="clearDesign"
             >{{ t('clearDesign') }}</button>
           </div>
-          <form class="space-y-4" @submit.prevent="addItemToCart">
+          <form class="space-y-4" @submit.prevent="previewProof">
             <text-field
               :label="t('fullName')"
               :value="details.name"
               :maxlength="NAME_MAX"
-              :hint="details.name.length + '/' + NAME_MAX + ' — ' + t('fullNameHint')"
+              required
               @input="onName"
             ></text-field>
+            <select-field
+              :label="t('title')"
+              :value="details.title"
+              :options="titleOptions"
+              :placeholder="t('selectTitle')"
+              required
+              @input="details.title = $event"
+            ></select-field>
             <multi-select-field
               :label="t('degree')"
               :value="details.degree"
@@ -56,7 +64,6 @@
               :placeholder="t('selectDegree')"
               :search-placeholder="t('selectDegree')"
               :empty-label="t('noDegrees')"
-              :hint="t('degreeMax')"
               @input="onDegrees"
             ></multi-select-field>
             <text-field
@@ -64,13 +71,6 @@
               :value="details.additionalCredentials"
               @input="details.additionalCredentials = $event"
             ></text-field>
-            <select-field
-              :label="t('title')"
-              :value="details.title"
-              :options="titleOptions"
-              :placeholder="t('selectTitle')"
-              @input="details.title = $event"
-            ></select-field>
             <text-field
               :label="t('region')"
               :value="details.region"
@@ -86,26 +86,28 @@
               type="email"
               :value="details.email"
               :maxlength="EMAIL_MAX"
-              :hint="details.email.length + '/' + EMAIL_MAX + ' — ' + t('emailHint')"
+              :error="emailFieldError"
+              required
               @input="onEmail"
             ></text-field>
             <phone-field
               :label="t('mobilePhone')"
               :value="details.phone"
-              :hint="t('mobilePhoneHint')"
+              required
               @input="details.phone = $event"
             ></phone-field>
             <text-field :label="t('website')" :value="details.website" disabled></text-field>
+            <text-field :label="t('companyName')" :value="details.company" disabled></text-field>
             <select-field
               :label="t('officeLocation')"
               :value="details.address"
               :options="officeOptions"
               :placeholder="store.officesLoading ? t('loading') : t('selectAddress')"
               :disabled="store.officesLoading"
+              required
               @input="details.address = $event"
             ></select-field>
-            <text-field :label="t('companyName')" :value="details.company" disabled></text-field>
-            <app-button html-type="submit" block :disabled="!layoutReady">{{ t('addToCart') }}</app-button>
+            <app-button html-type="submit" block :disabled="!canPreviewProof">{{ t('previewProof') }}</app-button>
           </form>
         </div>
       </div>
@@ -122,14 +124,16 @@ import MultiSelectField from '../components/MultiSelectField.vue'
 import PhoneField from '../components/PhoneField.vue'
 import AppButton from '../components/AppButton.vue'
 import { CARD_COMPANY, emptyCard, getProduct } from '../data/products'
-import { t, store, addToCart, loadOffices, loadDegrees, loadTitles } from '../store'
+import { t, store, setProof, loadOffices, loadDegrees, loadTitles } from '../store'
+import { cloneCardDetails } from '../helpers/cart'
 import { clipEmail, clipName, emailFromFullName, EMAIL_MAX, NAME_MAX } from '../helpers/validate'
 import { formatAddressCard, officeLabel } from '../adapters/api'
-import { goBack } from '../adapters/nav'
+import { go, goBack } from '../adapters/nav'
 import { viewPrintPdf } from '../helpers/printPdf'
 import { loadLayoutFonts } from '../helpers/cardFonts'
 import {
   CARD_LAYOUT,
+  LAYOUT_ERROR,
   layoutErrorMessage,
   planProductLayout,
 } from '../helpers/cardLayout'
@@ -154,12 +158,6 @@ function emptyDetails(language) {
     address: card.address,
     website: card.website,
   }
-}
-
-function cloneDetails(details) {
-  var out = Object.assign({}, details || {})
-  out.degree = Array.isArray(details && details.degree) ? details.degree.slice() : []
-  return out
 }
 
 export default {
@@ -221,8 +219,23 @@ export default {
       if (!this.layoutErrorCode) return ''
       return layoutErrorMessage(this.layoutErrorCode, t)
     },
+    emailFieldError: function () {
+      if (this.layoutErrorCode !== LAYOUT_ERROR.email) return ''
+      return this.layoutError
+    },
     layoutReady: function () {
       return this.layoutStatus === 'valid'
+    },
+    canPreviewProof: function () {
+      var details = this.details || {}
+      return (
+        this.layoutReady &&
+        Boolean(String(details.name || '').trim()) &&
+        Boolean(String(details.title || '').trim()) &&
+        Boolean(String(details.email || '').trim()) &&
+        Boolean(String(details.phone || '').trim()) &&
+        Boolean(String(details.address || '').trim())
+      )
     },
     titleOptions: function () {
       return (store.titles || []).map(function (title) {
@@ -261,6 +274,7 @@ export default {
   },
   mounted: function () {
     var self = this
+    this.hydrateFromStore()
     loadOffices()
     loadDegrees()
     loadTitles()
@@ -310,6 +324,27 @@ export default {
         this.layoutErrorCode = plan.errors[0] || 'layoutErrorName'
       }
     },
+    hydrateFromStore: function () {
+      if (!this.product) return
+      var line = null
+      if (store.editLineId) {
+        line = store.cart.find(function (item) {
+          return item.id === store.editLineId
+        }) || null
+      }
+      if (line && line.code === this.product.code) {
+        this.details = cloneCardDetails(line.details)
+        this.emailEdited = true
+        return
+      }
+      if (store.editLineId && (!line || line.code !== this.product.code)) {
+        store.editLineId = null
+      }
+      if (store.proof && store.proof.code === this.product.code) {
+        this.details = cloneCardDetails(store.proof.details)
+        this.emailEdited = true
+      }
+    },
     clearDesign: function () {
       var language = (this.product && this.product.language) || 'English'
       this.details = emptyDetails(language)
@@ -319,14 +354,14 @@ export default {
     back: function () {
       goBack()
     },
-    addItemToCart: function () {
-      if (!this.product || !this.layoutReady) return
-      addToCart({
+    previewProof: function () {
+      if (!this.product || !this.canPreviewProof) return
+      setProof({
         code: this.product.code,
         language: this.product.language,
-        quantity: 1,
-        details: cloneDetails(this.details),
+        details: cloneCardDetails(this.details),
       })
+      go('proof', { code: this.product.code })
     },
     openPrintPdf: function () {
       var self = this

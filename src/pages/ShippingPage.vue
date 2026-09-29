@@ -38,10 +38,10 @@
               <li
                 v-for="line in linesInSplit(split)"
                 :key="line.id"
-                class="flex flex-wrap items-center gap-2 rounded-md border border-gray-100 bg-white p-2"
+                class="flex items-start gap-3"
               >
                 <div
-                  class="drag-handle -ml-0.5 flex shrink-0 cursor-grab touch-none items-center justify-center rounded p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600 active:cursor-grabbing"
+                  class="drag-handle mt-3 flex shrink-0 cursor-grab touch-none items-center justify-center rounded p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600 active:cursor-grabbing"
                   role="button"
                   tabindex="0"
                   aria-label="Reorder item"
@@ -55,41 +55,43 @@
                     <circle cx="8" cy="14" r="1.5" />
                   </svg>
                 </div>
-                <img
-                  :src="productImage(line.code)"
-                  alt=""
-                  class="h-12 w-12 rounded object-cover"
-                />
-                <qty-stepper compact :value="line.quantity" @input="setQty(line.id, $event)"></qty-stepper>
-                <select
-                  class="min-w-0 flex-1 rounded border border-gray-300 px-2 py-1 text-sm"
-                  :value="line.code"
-                  @change="changeProduct(line, $event.target.value)"
-                >
-                  <option v-for="p in products" :key="p.code" :value="p.code">
-                    {{ t(productNameKey(p.code)) }} - {{ p.language }}
-                  </option>
-                </select>
-                <select
-                  v-if="store.order.splits.length > 1"
-                  class="rounded border border-gray-300 px-2 py-1 text-sm"
-                  :value="split.id"
-                  @change="onMoveLine(line.id, $event.target.value)"
-                >
-                  <option
-                    v-for="(group, groupIndex) in store.order.splits"
-                    :key="group.id"
-                    :value="group.id"
-                  >
-                    {{ splitLabel(groupIndex) }}
-                  </option>
-                </select>
+                <div class="w-32 shrink-0 overflow-hidden rounded border border-gray-200 bg-white">
+                  <card-preview :details="line.details || {}" :language="line.language"></card-preview>
+                </div>
+                <div class="min-w-0 flex-1 rounded-lg border border-gray-200 bg-white p-3">
+                  <div class="font-medium leading-snug text-gray-900">{{ lineName(line) }}</div>
+                  <div v-if="personName(line)" class="mt-0.5 text-sm text-gray-700">{{ personName(line) }}</div>
+                  <div class="mt-2">
+                    <qty-stepper
+                      cards
+                      compact
+                      :value="line.quantity"
+                      @input="setQty(line.id, $event)"
+                    ></qty-stepper>
+                  </div>
+                </div>
                 <button
                   type="button"
-                  class="rounded border border-gray-200 p-2 text-gray-500 hover:text-red-600"
+                  class="mt-2 rounded border border-gray-200 p-2 text-gray-500 hover:bg-gray-50 hover:text-colliers-primary"
+                  :aria-label="t('editItem')"
+                  @click="editLine(line)"
+                >
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                    <path d="M12 20h9"></path>
+                    <path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z"></path>
+                  </svg>
+                </button>
+                <button
+                  type="button"
+                  class="mt-2 rounded border border-gray-200 p-2 text-gray-500 hover:text-red-600"
+                  :aria-label="t('removeItem')"
                   @click="removeLine(line.id)"
                 >
-                  🗑
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                    <polyline points="3 6 5 6 21 6"></polyline>
+                    <path d="M8 6V4h8v2"></path>
+                    <path d="M19 6l-1 14H6L5 6"></path>
+                  </svg>
                 </button>
               </li>
             </ul>
@@ -165,7 +167,7 @@
                     <option :value="loc.address">{{ loc.address }}</option>
                   </optgroup>
                 </select>
-                <qty-stepper :value="loc.qty" @input="onQty(loc, $event)"></qty-stepper>
+                <qty-stepper cards :value="loc.qty" @input="onQty(loc, $event)"></qty-stepper>
                 <button
                   type="button"
                   class="rounded border border-gray-200 p-2 text-gray-500 hover:text-red-600"
@@ -210,9 +212,9 @@
 import Sortable from 'sortablejs'
 import ColliersPageShell from '../layout/ColliersPageShell.vue'
 import AppButton from '../components/AppButton.vue'
+import CardPreview from '../components/CardPreview.vue'
 import QtyStepper from '../components/QtyStepper.vue'
 import LocationDrawer from '../components/LocationDrawer.vue'
-import { products, getProduct } from '../data/products'
 import { productNameKey } from '../i18n/messages'
 import {
   store,
@@ -227,10 +229,11 @@ import {
   removeShipLocation,
   moveLineToSplit,
   updateQty,
-  persistCartNow,
   persistOrderNow,
   openLocationPicker,
   loadOffices,
+  setProof,
+  setEditLineId,
 } from '../store'
 import { formatAddressLine, officeLabel } from '../adapters/api'
 import { buildAddressOptionGroups, isKnownAddress } from '../helpers/shippingAddressOptions'
@@ -251,11 +254,10 @@ var SORTABLE_OPTIONS = {
 
 export default {
   name: 'ShippingPage',
-  components: { ColliersPageShell, AppButton, QtyStepper, LocationDrawer },
+  components: { ColliersPageShell, AppButton, CardPreview, QtyStepper, LocationDrawer },
   data: function () {
     return {
       store: store,
-      products: products,
       sortables: [],
     }
   },
@@ -292,12 +294,26 @@ export default {
     addCartItemToSplit: addCartItemToSplit,
     addShipLocation: addShipLocation,
     removeShipLocation: removeShipLocation,
-    productImage: function (code) {
-      const product = getProduct(code)
-      return (product && product.image) || ''
-    },
     splitLabel: function (index) {
       return t('shippingGroup') + ' ' + (index + 1)
+    },
+    lineName: function (line) {
+      return t(productNameKey(line.code))
+    },
+    personName: function (line) {
+      return String((line.details && line.details.name) || '').trim()
+    },
+    setQty: function (id, quantity) {
+      updateQty(id, quantity)
+    },
+    editLine: function (line) {
+      setEditLineId(line.id)
+      setProof({
+        code: line.code,
+        language: line.language,
+        details: line.details,
+      })
+      go('customize', { code: line.code })
     },
     onSplitOrder: function (splitIndex) {
       splitOrder(splitIndex)
@@ -307,17 +323,6 @@ export default {
     },
     checkout: function () {
       go('review')
-    },
-    setQty: function (id, quantity) {
-      updateQty(id, quantity)
-    },
-    changeProduct: function (line, code) {
-      const product = getProduct(code)
-      if (!product) return
-      line.code = product.code
-      line.language = product.language
-      line.price = product.price
-      persistCartNow()
     },
     onMoveLine: function (lineId, splitId) {
       moveLineToSplit(lineId, splitId)

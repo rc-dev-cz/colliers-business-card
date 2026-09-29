@@ -63,9 +63,26 @@ describe('planCardLayout', function () {
     var layout = planCardLayout(resolveCardFields({}, 'English'), fonts, { degreeCount: 0 })
     expect(layout.valid).toBe(true)
     expect(layout.nameLines).toEqual(['Firstname Lastname'])
+    expect(layout.address.lines).toEqual([
+      'Address name',
+      'Unit, Street',
+      'City, Province',
+      'Postal Code, Country',
+    ])
     expect(layout.titleY).toBe(66.99)
     expect(layout.teamY).toBe(58.99)
     expect(layout.credentialLine).toBe('')
+  })
+
+  it('French blank sample uses the four-line address labels', function () {
+    var layout = planCardLayout(resolveCardFields({}, 'French'), fonts, { degreeCount: 0 })
+    expect(layout.valid).toBe(true)
+    expect(layout.address.lines).toEqual([
+      "Nom de l'adresse",
+      'Unité, Rue',
+      'Ville, Province',
+      'Code postal, Pays',
+    ])
   })
 
   it('short inline credential keeps title at 66.99', function () {
@@ -106,6 +123,35 @@ describe('planCardLayout', function () {
     expect(layout.nameLineYs[0]).toBeLessThan(L.lockupY)
   })
 
+  it('accepts a long name that fills two lines without overlapping the lockup', function () {
+    // Field allows 50 chars (NAME_MAX); layout still rejects wraps beyond two lines.
+    var longName = 'Carlos Moises Zabaleta Copa Project Lead'
+    expect(longName.length).toBeLessThanOrEqual(50)
+    expect(longName.length).toBeGreaterThan(30)
+    var layout = plan({ name: longName })
+    expect(layout.valid).toBe(true)
+    expect(layout.errors).not.toContain(LAYOUT_ERROR.name)
+    expect(layout.nameLines.length).toBe(2)
+    expect(layout.nameLineYs[0]).toBeLessThan(L.lockupY)
+    expect(layout.lastNameY).toBe(L.nameY)
+  })
+
+  it('rejects a name that still fits in 50 characters but needs a third wrap line', function () {
+    var name = 'Christopher Harrington-Wellinton Second'
+    expect(name.length).toBeLessThan(50)
+    var layout = plan({ name: name })
+    expect(layout.valid).toBe(false)
+    expect(layout.errors).toContain(LAYOUT_ERROR.name)
+  })
+
+  it('rejects a 50-character name that would need a third line', function () {
+    var fiftyName = 'Anna Marie Elizabeth Catherine Thompson Smith Jr A'
+    expect(fiftyName.length).toBe(50)
+    var layout = plan({ name: fiftyName })
+    expect(layout.valid).toBe(false)
+    expect(layout.errors).toContain(LAYOUT_ERROR.name)
+  })
+
   it('two-line name plus own credential row stays below the logo', function () {
     var cred = padToWidth(fonts.fontBold, L.credentialSize, L.identityWidth - 8, 'LEED ')
     var layout = plan({
@@ -119,20 +165,38 @@ describe('planCardLayout', function () {
     expect(layout.teamY).toBeGreaterThan(layout.emailY)
   })
 
-  it('accepts carlos.zabaleta@colliersprojectleaders.com on one line', function () {
-    var email = 'carlos.zabaleta@colliersprojectleaders.com'
+  it('fits the ICT sample email in the 130 pt lane with ~18 pt remaining to trim', function () {
+    var email = 'first.lastname@colliersprojectleaders.com'
     expect(fitsLine(fonts.font, email, L.bodySize, L.emailMaxWidth)).toBe(true)
     var layout = plan({ email: email })
     expect(layout.valid).toBe(true)
     expect(layout.errors).not.toContain(LAYOUT_ERROR.email)
+    var used = fonts.font.widthOfTextAtSize(email, L.bodySize)
+    var remainingToTrim = L.bleed + L.trimW - (L.identityX + used)
+    expect(remainingToTrim).toBeGreaterThan(18)
+    expect(L.emailMaxWidth).toBe(130)
+    expect(L.identityWidth).toBe(130)
   })
 
-  it('accepts an email of 50 characters and rejects 51', function () {
+  it('rejects an email that is within 50 characters but wider than 130 pt', function () {
+    var wide = 'WWWWWWWWWW@colliersprojectleaders.comWWWW'
+    expect(wide.length).toBeLessThanOrEqual(50)
+    expect(fitsLine(fonts.font, wide, L.bodySize, L.emailMaxWidth)).toBe(false)
+    var layout = plan({ email: wide })
+    expect(layout.valid).toBe(false)
+    expect(layout.errors).toContain(LAYOUT_ERROR.email)
+  })
+
+  it('accepts an email of 50 characters when it still fits 130 pt, and rejects 51', function () {
     var fifty = 'carlos.zabaleta@colliersprojectleaders.comssssssss'
     expect(fifty.length).toBe(50)
     var ok = plan({ email: fifty })
-    expect(ok.valid).toBe(true)
-    expect(ok.errors).not.toContain(LAYOUT_ERROR.email)
+    if (fitsLine(fonts.font, fifty, L.bodySize, L.emailMaxWidth)) {
+      expect(ok.valid).toBe(true)
+      expect(ok.errors).not.toContain(LAYOUT_ERROR.email)
+    } else {
+      expect(ok.errors).toContain(LAYOUT_ERROR.email)
+    }
 
     var fiftyOne = fifty + 'x'
     var bad = plan({ email: fiftyOne })
@@ -157,14 +221,13 @@ describe('planCardLayout', function () {
     expect(layout.errors).toContain(LAYOUT_ERROR.degrees)
   })
 
-  it('does not block on a long region, team, mobile, office, or 50-character email', function () {
+  it('does not block on a long region, team, mobile, or office', function () {
     var over = padToWidth(fonts.font, L.bodySize, L.identityWidth, 'Long ') + ' overflow'
-    var email = 'carlos.zabaleta@colliersprojectleaders.comssssssss'
     var layout = plan({
       title: over,
       region: over,
       specializedTeam: over,
-      email: email,
+      email: 'ada@example.com',
       phone: '4165550100',
       address: 'One\nTwo\nThree\nFour\nFive\nSix',
     })

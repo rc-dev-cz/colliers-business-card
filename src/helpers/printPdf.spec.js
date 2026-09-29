@@ -78,6 +78,16 @@ describe('printPdf', function () {
     expect(doc.getPageCount()).toBe(4)
   })
 
+  it('builds a PDF for a long two-line name within the 50-character field limit', async function () {
+    var longName = 'Carlos Moises Zabaleta Copa Project Lead'
+    expect(longName.length).toBeLessThanOrEqual(50)
+    expect(longName.length).toBeGreaterThan(30)
+    var bytes = await buildPrintPdfBytes(Object.assign({}, base, { name: longName }), 'English')
+    var doc = await PDFDocument.load(bytes)
+    expect(doc.getPageCount()).toBe(2)
+    expect(bytes.byteLength).toBeGreaterThan(500)
+  })
+
   it('refuses to build a PDF when credentials cannot fit on one line', async function () {
     await expect(
       buildPrintPdfBytes(
@@ -95,7 +105,7 @@ describe('printPdf', function () {
   it('refuses a third degree even if each is short', async function () {
     await expect(
       buildPrintPdfBytes(Object.assign({}, base, { degree: ['A', 'B', 'C'] }), 'English'),
-    ).rejects.toThrow(/maximum of 2/i)
+    ).rejects.toThrow(/up to 2 degrees/i)
   })
 })
 
@@ -105,5 +115,11 @@ describe('CARD_LAYOUT page geometry', function () {
     expect(CARD_LAYOUT.pageH).toBe(162)
     expect(CARD_LAYOUT.trimW).toBe(252)
     expect(CARD_LAYOUT.trimH).toBe(144)
+  })
+
+  it('sizes the lockup boxes to the designer PNG aspects', function () {
+    expect(CARD_LAYOUT.logoW / CARD_LAYOUT.logoH).toBeCloseTo(1883 / 1072, 3)
+    expect(CARD_LAYOUT.wordmarkEn.w / CARD_LAYOUT.wordmarkEn.h).toBeCloseTo(1377 / 736, 3)
+    expect(CARD_LAYOUT.wordmarkFr.w / CARD_LAYOUT.wordmarkFr.h).toBeCloseTo(1780 / 850, 3)
   })
 })

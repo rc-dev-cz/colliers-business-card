@@ -41,7 +41,7 @@ Each **page** is a tens ticket. Children are the pieces of that page.
   - [x] **USR-023** Materials / brand notes
 - [x] **USR-030** Customize card `(CustomizePage.vue)` — F-05
   - [x] **USR-031** Live preview
-  - [ ] **USR-032** Full name (max 50, two lines) — Ready. Vue still max 30
+  - [x] **USR-032** Full name (max 50, two lines) — QA. Vue `NAME_MAX=50`
   - [x] **USR-033** Designation dropdown (one per card)
   - [x] **USR-034** Email (max 50) — QA. Guide was 40; Vue uses 50 for `@colliersprojectleaders.com`
   - [x] **USR-035** Mobile phone Canadian +1

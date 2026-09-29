@@ -1,0 +1,38 @@
+<sl-drawer id="colliersCartDrawer" class="colliers-cart-drawer" placement="end" style="--size: 28rem" :label="BF.i18n('label_colliers_shoppingCart')" @sl-after-hide="namedAction('closeCart')">
+  <div v-if="!((Array.isArray(app.cart) ? app.cart : (model.cart || [])).length)" class="py-16 text-center text-gray-500">{{ BF.i18n('label_colliers_cartEmpty') }}</div>
+  <div v-else>
+    <ul class="space-y-4">
+      <li v-for="(line, index) in (Array.isArray(app.cart) ? app.cart : (model.cart || []))" :key="line.id" class="flex items-start gap-3 border-b border-gray-100 pb-4">
+        <div class="w-16 shrink-0 overflow-hidden rounded">
+          <bfcomp name="CardPreview" :model="'cart[' + index + '].details'"></bfcomp>
+        </div>
+        <div class="min-w-0 flex-1">
+          <div class="flex items-start justify-between gap-3">
+            <div class="font-medium text-gray-900">{{ line.nameKey ? BF.i18n(line.nameKey) : line.code }}</div>
+            <div class="shrink-0 font-semibold text-gray-900">${{ ((Number(line.price) || 0) * (Number(line.quantity) || 0)).toFixed(2) }}</div>
+          </div>
+          <div class="mt-1 text-sm text-gray-500">{{ BF.i18n('label_colliers_language') }}: {{ line.language }}</div>
+          <div class="mt-0.5 text-sm text-gray-500">{{ BF.i18n('label_colliers_qty') }}: {{ line.quantity }}</div>
+        </div>
+      </li>
+    </ul>
+    <button type="button" class="mt-4 text-sm font-medium text-[#25408F] hover:underline" @click="namedAction('clearCart', { schema: schema })">{{ BF.i18n('label_colliers_clearCart') }}</button>
+  </div>
+  <div slot="footer" class="space-y-3">
+    <div class="space-y-2 border-t border-gray-200 pt-3">
+      <div class="flex justify-between text-sm text-gray-700">
+        <span>{{ BF.i18n('label_colliers_subtotal') }}</span>
+        <span>${{ _.get(app, 'header.cartTotal') || _.get(model, 'header.cartTotal') || '0.00' }}</span>
+      </div>
+      <div class="flex justify-between text-sm text-gray-700">
+        <span>{{ BF.i18n('label_colliers_shippingHandling') }}</span>
+        <span>$0.00</span>
+      </div>
+      <div class="flex justify-between border-t border-gray-200 pt-2 font-semibold text-gray-900">
+        <span>{{ BF.i18n('label_colliers_total') }}</span>
+        <span>${{ _.get(app, 'header.cartTotal') || _.get(model, 'header.cartTotal') || '0.00' }}</span>
+      </div>
+    </div>
+    <button type="button" class="btn-primary w-full" :disabled="!((Array.isArray(app.cart) ? app.cart : (model.cart || [])).length)" @click="namedAction('goShipping', { schema: schema })">{{ BF.i18n('label_colliers_continueToShippingCart') }}</button>
+  </div>
+</sl-drawer>

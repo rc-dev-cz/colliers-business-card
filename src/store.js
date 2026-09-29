@@ -1,7 +1,15 @@
 import Vue from 'vue'
 import { messages } from './i18n/messages'
 import { readStorage, writeStorage, removeStorage } from './helpers/storage'
-import { cartCount, cartSubtotal, consolidateCart, cloneLine, makeLine, sameDetails } from './helpers/cart'
+import {
+  cartCount,
+  cartSubtotal,
+  cloneCardDetails,
+  consolidateCart,
+  cloneLine,
+  makeLine,
+  sameDetails,
+} from './helpers/cart'
 import {
   addLocation as pushLocation,
   addSplit,
@@ -29,7 +37,8 @@ import { loadManagedTitles, saveManagedTitles } from './helpers/titleAdmin'
 import { loadManagedDegrees, saveManagedDegrees } from './helpers/degreeAdmin'
 import { loadAllPortalOrders } from './helpers/adminData'
 import { buildHistoryRecord, nextOrderId } from './helpers/orderHistory'
-import { getProduct, products } from './data/products.js'
+import { getProduct } from './data/products.js'
+import { go } from './adapters/nav'
 
 const storedLocale = readStorage('locale', 'EN')
 
@@ -38,6 +47,10 @@ export const store = Vue.observable({
   session: readStorage('session', null),
   cart: consolidateCart(readStorage('cart', [])),
   cartOpen: false,
+  proof: null,
+  editLineId: null,
+  /** Shipping group to receive the next proof add-to-cart (from + Add item). */
+  pendingSplitId: null,
   locationOpen: false,
   locationTarget: null,
   order: normalizeOrder(readStorage('order', null)),
@@ -231,7 +244,23 @@ export function closeCart() {
   store.cartOpen = false
 }
 
-export function addToCart(payload) {
+export function setProof(payload) {
+  if (!payload || !payload.code) {
+    Vue.set(store, 'proof', null)
+    return
+  }
+  Vue.set(store, 'proof', {
+    code: payload.code,
+    language: payload.language || '',
+    details: cloneCardDetails(payload.details),
+  })
+}
+
+export function setEditLineId(id) {
+  store.editLineId = id || null
+}
+
+export function addToCart(payload, options) {
   const product = getProduct(payload.code)
   if (!product) return
   const existing = store.cart.find(function (item) {
@@ -251,7 +280,77 @@ export function addToCart(payload) {
   }
   persistCart()
   syncAssignments()
-  store.cartOpen = true
+  if (!options || options.openCart !== false) {
+    store.cartOpen = true
+  }
+}
+
+function applyPendingSplit(lineId) {
+  if (!store.pendingSplitId || !lineId) return
+  const split = store.order.splits.find(function (row) {
+    return String(row.id) === String(store.pendingSplitId)
+  })
+  store.pendingSplitId = null
+  if (!split) return
+  assignItem(store.order, split, lineId)
+  persistOrder()
+}
+
+function findCartLineForProof(proof) {
+  if (!proof || !proof.code) return null
+  return store.cart.find(function (item) {
+    return item.code === proof.code && sameDetails(item.details, proof.details)
+  })
+}
+
+function applyProofToCart(options) {
+  const proof = store.proof
+  const opts = options || {}
+  if (!proof || !proof.code) return
+  if (store.editLineId) {
+    const line = store.cart.find(function (item) {
+      return item.id === store.editLineId
+    })
+    if (line) {
+      line.code = proof.code
+      line.language = proof.language || line.language
+      line.details = cloneCardDetails(proof.details)
+      const product = getProduct(proof.code)
+      if (product) line.price = product.price
+      persistCart()
+      store.editLineId = null
+      if (opts.openCart) store.cartOpen = true
+      return
+    }
+    store.editLineId = null
+  }
+  const existing = findCartLineForProof(proof)
+  if (existing) {
+    if (opts.bumpIfExisting) existing.quantity += 1
+    persistCart()
+    applyPendingSplit(existing.id)
+    if (opts.openCart) store.cartOpen = true
+    return
+  }
+  addToCart(
+    {
+      code: proof.code,
+      language: proof.language,
+      quantity: 1,
+      details: cloneCardDetails(proof.details),
+    },
+    { openCart: Boolean(opts.openCart) },
+  )
+  const added = findCartLineForProof(proof)
+  if (added) applyPendingSplit(added.id)
+}
+
+export function addProofToCart() {
+  applyProofToCart({ bumpIfExisting: true, openCart: true })
+}
+
+export function ensureProofInCart() {
+  applyProofToCart({ bumpIfExisting: false, openCart: false })
 }
 
 export function updateQty(id, quantity) {
@@ -274,6 +373,7 @@ export function removeLine(id) {
 
 export function clearCart() {
   store.cart = []
+  store.pendingSplitId = null
   persistCart()
   syncAssignments()
   persistOrder()
@@ -300,6 +400,7 @@ export function syncAssignments() {
 }
 
 export function splitOrder(splitIndex) {
+  syncAssignments()
   const source = store.order.splits[splitIndex]
   const newItemIds = []
   if (source && source.itemIds.length) {
@@ -340,17 +441,8 @@ export function assignLine(split, itemId) {
 }
 
 export function addCartItemToSplit(split) {
-  const first = products[0]
-  const line = makeLine({
-    code: first.code,
-    language: first.language,
-    quantity: 1,
-    details: {},
-  })
-  store.cart.push(line)
-  assignItem(store.order, split, line.id)
-  persistCart()
-  persistOrder()
+  store.pendingSplitId = split && split.id != null ? split.id : null
+  go('catalog')
 }
 
 export function addShipLocation(split, address, qty) {

@@ -1,5 +1,28 @@
 import { getProduct } from '../data/products.js'
 
+export var CARDS_PER_BOX = 250
+
+export function cardsFromBoxes(boxes) {
+  return Math.max(0, Number(boxes) || 0) * CARDS_PER_BOX
+}
+
+export function boxesFromCards(cards) {
+  var n = Number(cards) || 0
+  return Math.max(1, Math.round(n / CARDS_PER_BOX))
+}
+
+export function cloneCardDetails(details) {
+  var out = Object.assign({}, details || {})
+  if (Array.isArray(details && details.degree)) {
+    out.degree = details.degree.slice()
+  } else if (details && details.degree) {
+    out.degree = [details.degree]
+  } else {
+    out.degree = []
+  }
+  return out
+}
+
 export function sameDetails(a, b) {
   const left = a || {}
   const right = b || {}
@@ -12,14 +35,7 @@ export function uid() {
 
 export function makeLine(payload) {
   const product = getProduct(payload.code)
-  const details = Object.assign({}, payload.details || {})
-  if (Array.isArray(details.degree)) {
-    details.degree = details.degree.slice()
-  } else if (details.degree) {
-    details.degree = [details.degree]
-  } else {
-    details.degree = []
-  }
+  const details = cloneCardDetails(payload.details)
   return {
     id: payload.id || uid(),
     code: payload.code,

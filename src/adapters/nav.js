@@ -6,6 +6,7 @@ const PATHS = {
   catalog: '/',
   'product-detail': '/product-detail',
   customize: '/customize',
+  proof: '/proof',
   shipping: '/shipping',
   'address-book': '/address-book',
   'order-history': '/order-history',
@@ -28,6 +29,7 @@ const PATHS = {
 const QUERY_CODE_ROUTES = {
   'product-detail': true,
   customize: true,
+  proof: true,
 }
 
 function fill(path, params) {

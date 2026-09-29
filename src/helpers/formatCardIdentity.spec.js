@@ -71,11 +71,11 @@ describe('customize optional placeholders', function () {
     expect(previewCredentialText([], '', 'French')).toBe('C.M.')
   })
 
-  it('keeps region and team labels until those fields are filled', function () {
+  it('keeps region labels until those fields are filled; empty team prints nothing', function () {
     expect(previewTitleText('', '', 'English')).toBe('Title | Region')
     expect(previewTitleText('Broker', '', 'English')).toBe('Broker | Region')
     expect(previewTitleText('Broker | Canada', 'Ontario', 'English')).toBe('Broker | Ontario')
-    expect(previewTeamText('', 'English')).toBe('Specialized team')
+    expect(previewTeamText('', 'English')).toBe('')
     expect(previewTeamText('Industrial', 'English')).toBe('Industrial')
     expect(previewAddressText('', 'English')).toBe(
       'Address name\nUnit, Street\nCity, Province\nPostal Code, Country',
@@ -88,7 +88,7 @@ describe('customize optional placeholders', function () {
   it('uses French labels on the French preview', function () {
     expect(previewCredentialText([], '', 'French')).toBe('C.M.')
     expect(previewTitleText('', '', 'French')).toBe('Titre | Région')
-    expect(previewTeamText('', 'French')).toBe('Équipe spécialisée')
+    expect(previewTeamText('', 'French')).toBe('')
     expect(previewAddressText('', 'French')).toBe(
       "Nom de l'adresse\nUnité, Rue\nVille, Province\nCode postal, Pays",
     )

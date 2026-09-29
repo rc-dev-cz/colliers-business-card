@@ -1,33 +1,19 @@
 <div id="colliersCardPreview" class="relative aspect-[1.75/1] w-full overflow-hidden rounded-md border border-gray-200 bg-white font-sans text-[#4A4A4A] shadow-sm" style="container-type: inline-size">
-  <div class="absolute left-[7.5%] top-[13%] flex w-[34%] items-center gap-[8%]">
-    <div class="inline-flex w-[42%] shrink-0 flex-col overflow-hidden rounded-[2px]">
-      <img src="https://upload.wikimedia.org/wikipedia/commons/9/91/Colliers_logo.svg" alt="Colliers Logo" class="block h-auto w-full object-contain" />
-    </div>
-    <div class="min-w-0 flex-1 font-sans font-normal leading-[1.08] tracking-tight text-[#24418A]" style="font-size: min(3.35cqw, 22px)">
-      <template v-if="['French','Français','FR'].indexOf(_.get(model, (schema.model || 'card') + '.language') || '') >= 0">
-        <span class="block">Maîtres</span><span class="block">de projets</span>
-      </template>
-      <template v-else>
-        <span class="block">Project</span><span class="block">Leaders</span>
-      </template>
-    </div>
+  <img src="https://5t61ut5p19.ucarecd.net/56be9cc0-c8e8-4203-b43f-02a1ba2e1be3/" alt="Colliers" class="absolute object-contain" style="left: 6.968%; bottom: 69.306%; width: 18.488%; height: 18.417%" />
+  <img
+    :src="['French','Français','FR'].indexOf(_.get(model, (schema.model || 'card') + '.language') || '') >= 0 ? 'https://5t61ut5p19.ucarecd.net/e4267105-701e-4bd0-a30e-4d7360eef476/' : 'https://5t61ut5p19.ucarecd.net/90e9de45-e966-414c-a05f-d7b537acfb35/'"
+    :alt="['French','Français','FR'].indexOf(_.get(model, (schema.model || 'card') + '.language') || '') >= 0 ? 'Maîtres de projets' : 'Project Leaders'"
+    class="absolute"
+    :style="['French','Français','FR'].indexOf(_.get(model, (schema.model || 'card') + '.language') || '') >= 0 ? 'left: 27.873%; bottom: 70.347%; width: 18.044%; height: 15.083%' : 'left: 27.917%; bottom: 72.125%; width: 13.96%; height: 13.083%'"
+  />
+  <div v-for="(line, idx) in (_.get(model, (schema.model || 'card') + '.nameLines') && _.get(model, (schema.model || 'card') + '.nameLines').length ? _.get(model, (schema.model || 'card') + '.nameLines') : [((_.get(model, (schema.model || 'card') + '.nameWrapped') || _.get(model, (schema.model || 'card') + '.name') || '').trim() || (['French','Français','FR'].indexOf(_.get(model, (schema.model || 'card') + '.language') || '') >= 0 ? 'Prénom Nom' : 'Firstname Lastname'))])" :key="'name-' + idx" class="absolute whitespace-nowrap font-bold leading-none text-[#03438C]" :style="'left: 41.28%; right: 6%; bottom: ' + (46.17 + (((_.get(model, (schema.model || 'card') + '.nameLines') && _.get(model, (schema.model || 'card') + '.nameLines').length) ? _.get(model, (schema.model || 'card') + '.nameLines').length : 1) - 1 - idx) * 7.64) + '%; font-size: min(3.7cqw, 18px)'">
+    <span>{{ line }}</span><span v-if="idx === ((_.get(model, (schema.model || 'card') + '.nameLines') && _.get(model, (schema.model || 'card') + '.nameLines').length) ? _.get(model, (schema.model || 'card') + '.nameLines').length : 1) - 1 && _.get(model, (schema.model || 'card') + '.inlineCredential')" class="align-baseline font-bold" style="font-size: 0.7em">{{ _.get(model, (schema.model || 'card') + '.inlineCredential') }}</span>
   </div>
-
-  <div class="absolute bottom-[38%] left-[44%] right-[6%] top-[30%]">
-    <div class="font-bold leading-[1.2] text-[#24418A]" style="font-size: min(3.7cqw, 18px)">
-      <span class="whitespace-pre-line">{{ _.get(model, (schema.model || 'card') + '.name') || (['French','Français','FR'].indexOf(_.get(model, (schema.model || 'card') + '.language') || '') >= 0 ? 'Nom complet' : 'Full Name') }}</span><span v-if="_.get(model, (schema.model || 'card') + '.degree') || _.get(model, (schema.model || 'card') + '.additionalCredentials')" class="align-baseline font-bold" style="font-size: 0.7em">, {{ [ ].concat(Array.isArray(_.get(model, (schema.model || 'card') + '.degree')) ? _.get(model, (schema.model || 'card') + '.degree') : (_.get(model, (schema.model || 'card') + '.degree') ? [_.get(model, (schema.model || 'card') + '.degree')] : [])).concat(_.get(model, (schema.model || 'card') + '.additionalCredentials') ? [_.get(model, (schema.model || 'card') + '.additionalCredentials')] : []).filter(Boolean).join(', ') }}</span>
-    </div>
-    <div class="mt-[3.5%] leading-[1.35] text-[#7A7A7A]" style="font-size: min(2.15cqw, 11px)">
-      <div v-if="!_.get(model, (schema.model || 'card') + '.name')">{{ ['French','Français','FR'].indexOf(_.get(model, (schema.model || 'card') + '.language') || '') >= 0 ? 'Titre | Région' : 'Title | Region' }}</div>
-      <div v-else>{{ ([String(_.get(model, (schema.model || 'card') + '.title') || '').split('|')[0].trim(), _.get(model, (schema.model || 'card') + '.region')].filter(Boolean).join(' | ')) || (['French','Français','FR'].indexOf(_.get(model, (schema.model || 'card') + '.language') || '') >= 0 ? 'Titre' : 'Title') }}</div>
-      <div class="mt-[2%] min-h-[1.35em]">{{ _.get(model, (schema.model || 'card') + '.specializedTeam') || '' }}</div>
-    </div>
-  </div>
-  <div class="absolute bottom-[14%] left-[44%] right-[6%] leading-[1.5] text-[#7A7A7A]" style="font-size: min(2.15cqw, 11px)">
-    <div class="break-words">{{ _.get(model, (schema.model || 'card') + '.email') || (!_.get(model, (schema.model || 'card') + '.name') ? (['French','Français','FR'].indexOf(_.get(model, (schema.model || 'card') + '.language') || '') >= 0 ? 'Courriel:' : 'Email:') : '') }}</div>
-    <div>Mobile: {{ _.get(model, (schema.model || 'card') + '.phone') || (!_.get(model, (schema.model || 'card') + '.name') ? (['French','Français','FR'].indexOf(_.get(model, (schema.model || 'card') + '.language') || '') >= 0 ? 'Numéro de téléphone' : 'Phone Number') : '') }}</div>
-    <div>{{ _.get(model, (schema.model || 'card') + '.website') || (['French','Français','FR'].indexOf(_.get(model, (schema.model || 'card') + '.language') || '') >= 0 ? 'colliersprojectleaders.com/fr' : 'colliersprojectleaders.com') }}</div>
-  </div>
-
-  <div class="absolute bottom-[14%] left-[7.5%] right-[58%] whitespace-pre-wrap leading-[1.5] text-[#7A7A7A]" style="font-size: min(2.15cqw, 11px)">{{ _.get(model, (schema.model || 'card') + '.address') || (!_.get(model, (schema.model || 'card') + '.name') ? (['French','Français','FR'].indexOf(_.get(model, (schema.model || 'card') + '.language') || '') >= 0 ? 'Adresse' : 'Address') : '') }}</div>
+  <div v-if="_.get(model, (schema.model || 'card') + '.credentialLine')" class="absolute whitespace-nowrap font-bold leading-none text-[#03438C]" style="left: 41.28%; right: 6%; bottom: 40.27%; font-size: min(2.6cqw, 13px)">{{ _.get(model, (schema.model || 'card') + '.credentialLine') }}</div>
+  <div class="absolute whitespace-nowrap leading-none text-[#5F636A]" :style="'left: 41.28%; right: 6%; bottom: ' + (_.get(model, (schema.model || 'card') + '.credentialLine') ? '34.72%' : '40.27%') + '; font-size: min(2.15cqw, 11px)'">{{ (String(_.get(model, (schema.model || 'card') + '.title') || '').split('|')[0].trim() || (['French','Français','FR'].indexOf(_.get(model, (schema.model || 'card') + '.language') || '') >= 0 ? 'Titre' : 'Title')) + ' | ' + (String(_.get(model, (schema.model || 'card') + '.region') || '').trim() || (['French','Français','FR'].indexOf(_.get(model, (schema.model || 'card') + '.language') || '') >= 0 ? 'Région' : 'Region')) }}</div>
+  <div class="absolute whitespace-nowrap leading-none text-[#5F636A]" :style="'left: 41.28%; right: 6%; bottom: ' + (_.get(model, (schema.model || 'card') + '.credentialLine') ? '29.16%' : '34.72%') + '; font-size: min(2.15cqw, 11px)'">{{ String(_.get(model, (schema.model || 'card') + '.specializedTeam') || '').trim() || (['French','Français','FR'].indexOf(_.get(model, (schema.model || 'card') + '.language') || '') >= 0 ? 'Équipe spécialisée' : 'Specialized team') }}</div>
+  <div class="absolute whitespace-nowrap leading-none text-[#5F636A]" style="left: 41.28%; right: 6%; bottom: 23.6%; font-size: min(2.15cqw, 11px)">{{ _.get(model, (schema.model || 'card') + '.email') || (['French','Français','FR'].indexOf(_.get(model, (schema.model || 'card') + '.language') || '') >= 0 ? 'prenom.nom@colliersprojectleaders.com' : 'first.lastname@colliersprojectleaders.com') }}</div>
+  <div class="absolute whitespace-nowrap leading-none text-[#5F636A]" style="left: 41.28%; right: 6%; bottom: 18.05%; font-size: min(2.15cqw, 11px)">Mobile: {{ _.get(model, (schema.model || 'card') + '.phone') || '+1 555 555 5555' }}</div>
+  <div class="absolute whitespace-nowrap leading-none text-[#5F636A]" style="left: 41.28%; right: 6%; bottom: 12.49%; font-size: min(2.15cqw, 11px)">{{ (['French','Français','FR'].indexOf(_.get(model, (schema.model || 'card') + '.language') || '') >= 0 ? (_.get(model, (schema.model || 'card') + '.websiteFr') || 'colliersprojectleaders.com/fr') : (_.get(model, (schema.model || 'card') + '.website') || 'colliersprojectleaders.com')) }}</div>
+  <div class="absolute whitespace-pre-wrap leading-[1.25] text-[#5F636A]" style="left: 7.14%; right: 58.72%; bottom: 12.5%; font-size: min(2.15cqw, 11px)">{{ _.get(model, (schema.model || 'card') + '.address') || (['French','Français','FR'].indexOf(_.get(model, (schema.model || 'card') + '.language') || '') >= 0 ? "Nom de l'adresse\nUnité, Rue\nVille, Province\nCode postal, Pays" : "Address name\nUnit, Street\nCity, Province\nPostal Code, Country") }}</div>
 </div>

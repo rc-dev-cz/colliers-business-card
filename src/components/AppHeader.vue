@@ -14,21 +14,21 @@
           :class="[
             admin ? 'mr-4 flex items-center self-center focus-visible:ring-2 focus-visible:ring-white sm:mr-6 lg:mr-12' : 'focus-visible:ring-2 focus-visible:ring-colliers-primary',
           ]"
-          aria-label="Colliers"
+          :aria-label="lockupAlt"
           @click="goCatalog"
         >
           <span
-            class="inline-flex h-8 w-[58px] flex-col overflow-hidden rounded-[2.5px] bg-white shadow-[0_1px_2px_rgba(0,0,0,0.1)] sm:h-10 sm:w-[72px]"
+            class="colliers-header-lockup"
+            :class="{ 'colliers-header-lockup--on-blue': admin }"
             aria-hidden="true"
           >
-            <span class="flex flex-1 items-center justify-center bg-[#24418A] px-[10%]">
-              <span class="w-full text-center font-serif leading-none tracking-normal text-white text-[11px] sm:text-[13px]">
-                Colliers
-              </span>
-            </span>
-            <span class="block h-[2px] w-full bg-[#00A9E0]"></span>
-            <span class="block h-[2px] w-full bg-[#FFD100]"></span>
-            <span class="block h-[2px] w-full bg-[#E31837]"></span>
+            <img :src="markSrc" alt="" class="colliers-header-mark" />
+            <img
+              :src="wordsSrc"
+              alt=""
+              class="colliers-header-wordmark"
+              :class="{ 'colliers-header-wordmark--fr': wordsFrench }"
+            />
           </span>
         </button>
 
@@ -297,6 +297,8 @@
 </template>
 
 <script>
+import { brandLockupAlt, brandMarkUrl, brandWordmarkUrl } from '../helpers/brandLockup'
+import { isFrenchLanguage } from '../helpers/formatCardIdentity'
 import { store, t, setLocale, openCart, logout, userEmail, isAdmin } from '../store'
 import { cartCount } from '../helpers/cart'
 import { go, currentRouteName } from '../adapters/nav'
@@ -328,6 +330,18 @@ export default {
     },
     routeName: function () {
       return this.$route && this.$route.name ? this.$route.name : currentRouteName()
+    },
+    markSrc: function () {
+      return brandMarkUrl()
+    },
+    wordsSrc: function () {
+      return brandWordmarkUrl(this.store.locale)
+    },
+    wordsFrench: function () {
+      return isFrenchLanguage(this.store.locale)
+    },
+    lockupAlt: function () {
+      return brandLockupAlt(this.store.locale)
     },
   },
   watch: {
@@ -455,7 +469,53 @@ export default {
   Admin nav uses viewport width, not page content width.
   Breakpoint matches Tailwind lg (1024px) — see --colliers-admin-nav-min-width.
   Below 1024px: hamburger. At 1024px+: inline nav (blue bar indicates admin).
+
+  Same lockup geometry on the light user bar and the blue admin bar.
+  Heights follow the card artwork: words are 71% (EN) or 82% (FR) of the tile.
+  On blue, only the wordmark is painted white. The tile keeps its color bar.
 */
+.colliers-header-lockup {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.colliers-header-mark {
+  height: 2rem;
+  width: auto;
+}
+
+.colliers-header-wordmark {
+  height: 1.42rem;
+  width: auto;
+}
+
+.colliers-header-wordmark--fr {
+  height: 1.64rem;
+}
+
+.colliers-header-lockup--on-blue .colliers-header-wordmark {
+  filter: brightness(0) invert(1);
+}
+
+@media (min-width: 640px) {
+  .colliers-header-lockup {
+    gap: 0.55rem;
+  }
+
+  .colliers-header-mark {
+    height: 2.25rem;
+  }
+
+  .colliers-header-wordmark {
+    height: 1.6rem;
+  }
+
+  .colliers-header-wordmark--fr {
+    height: 1.84rem;
+  }
+}
+
 .colliers-admin-menu-btn {
   display: flex;
   align-items: center;
@@ -586,7 +646,12 @@ export default {
     height: 72px;
     padding-left: 1rem;
     padding-right: 1rem;
-    font-size: 1rem;
+  }
+}
+
+@media (min-width: 1536px) {
+  .colliers-user-nav-link {
+    font-size: 0.9375rem;
   }
 }
 

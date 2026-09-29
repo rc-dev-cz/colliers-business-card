@@ -29,8 +29,6 @@ export const products = [
     languageKey: 'bilingual',
     nameKey: 'productBilingual',
     previewKey: 'previews.bil',
-    image:
-      'https://images.unsplash.com/photo-1589829085413-56de8ae18c73?w=800&auto=format&fit=crop&q=80',
   }),
   makeProduct({
     code: 'BCAD-PL-ENG',
@@ -38,8 +36,6 @@ export const products = [
     languageKey: 'english',
     nameKey: 'productEnglish',
     previewKey: 'previews.eng',
-    image:
-      'https://images.unsplash.com/photo-1611162617474-5b21e879e113?w=800&auto=format&fit=crop&q=80',
   }),
   makeProduct({
     code: 'BCAD-PL-FR',
@@ -47,8 +43,6 @@ export const products = [
     languageKey: 'french',
     nameKey: 'productFrench',
     previewKey: 'previews.fr',
-    image:
-      'https://images.unsplash.com/photo-1596704017254-9b121068fb31?w=800&auto=format&fit=crop&q=80',
   }),
 ]
 
@@ -60,9 +54,20 @@ export function getProduct(code) {
   )
 }
 
+/** Map a cart line (including FileMaker codes like CPL-13616) onto a catalogue SKU. */
+export function catalogCodeFromLine(line) {
+  var row = line || {}
+  if (getProduct(row.code)) return row.code
+  var lang = String(row.language || '').toLowerCase()
+  if (lang.indexOf('bil') >= 0) return 'BCAD-PL-BIL'
+  if (lang.indexOf('fr') >= 0) return 'BCAD-PL-FR'
+  return 'BCAD-PL-ENG'
+}
+
 /** Seed for Manage Designations / Customize titleOptions until FileMaker loads. */
 export const jobTitles = [
   'Associate',
+  'Associate Director',
   'Senior Associate',
   'Vice President',
   'Managing Director',

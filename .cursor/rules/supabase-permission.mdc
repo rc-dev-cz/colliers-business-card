@@ -1,0 +1,28 @@
+---
+description: Ask the user before running any live Supabase command, query, or mutation
+alwaysApply: true
+---
+
+# Supabase: ask before acting
+
+Never run commands against the live Supabase project, database, or MCP without explicit permission in this conversation.
+
+## Requires permission first
+
+Ask and wait for a yes before doing any of the following:
+
+- Supabase MCP tools that hit the project (SQL, tables, migrations, logs, advisors, edge functions, branches, keys, pause/restore, cost, etc.)
+- Supabase CLI against a linked or remote project (`supabase db`, `supabase migration`, `supabase functions`, `supabase gen`, and similar)
+- Executing SQL, applying migrations, changing schema, RLS, storage, auth, or Edge Functions
+- Creating, pausing, restoring, or otherwise mutating a Supabase project
+
+Describe what you want to run and why, then wait. Do not treat prior chats, docs, or "I'll just check" as approval.
+
+## Allowed without asking
+
+- Reading local code, env examples, and docs
+- Planning SQL/migrations and showing them for review
+- Editing local files only (client code, local migration files) when the user already asked for that work
+- Fetching public Supabase documentation
+
+If the user says no, stop. Do not retry the same live operation with a different tool.

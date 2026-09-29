@@ -3,28 +3,18 @@
     class="card-preview-face relative aspect-[1.75/1] w-full overflow-hidden rounded-md border border-gray-200 bg-white text-[#4A4A4A] shadow-sm"
     style="container-type: inline-size; font-family: 'ColliersOpenSans', sans-serif"
   >
-    <div class="absolute left-[7%] top-[12.3%] flex w-[34%] items-center gap-[6%]">
-      <div class="inline-flex w-[54.5%] shrink-0 flex-col overflow-hidden">
-        <img
-          :src="colliersLogo"
-          alt="Colliers Logo"
-          class="block h-auto w-full object-contain"
-        />
-      </div>
-      <div
-        class="min-w-0 flex-1 font-normal leading-[1.08] tracking-tight text-[#03438C]"
-        style="font-size: min(3.2cqw, 16px)"
-      >
-        <template v-if="isFrench">
-          <span class="block">Maîtres</span>
-          <span class="block">de projets</span>
-        </template>
-        <template v-else>
-          <span class="block">Project</span>
-          <span class="block">Leaders</span>
-        </template>
-      </div>
-    </div>
+    <img
+      :src="logoSrc"
+      alt="Colliers"
+      class="absolute object-contain"
+      :style="logoStyle"
+    />
+    <img
+      :src="wordsSrc"
+      :alt="wordsAlt"
+      class="absolute object-contain"
+      :style="wordsStyle"
+    />
 
     <div
       v-for="(line, idx) in view.nameLines"
@@ -76,7 +66,9 @@
 </template>
 
 <script>
-import colliersLogo from '../assets/colliers-logo-print.png'
+import logoMark from '../assets/colliers-logo-mark.png'
+import wordsEn from '../assets/lockup-words-en.png'
+import wordsFr from '../assets/lockup-words-fr.png'
 import {
   CARD_LAYOUT,
   resolveCardFields,
@@ -140,11 +132,32 @@ export default {
     },
   },
   computed: {
-    isFrench: function () {
-      return isFrenchLanguage(this.language)
+    logoSrc: function () {
+      return logoMark
     },
-    colliersLogo: function () {
-      return colliersLogo
+    wordsSrc: function () {
+      return isFrenchLanguage(this.language) ? wordsFr : wordsEn
+    },
+    wordsAlt: function () {
+      return isFrenchLanguage(this.language) ? 'Maîtres de projets' : 'Project Leaders'
+    },
+    wordsStyle: function () {
+      var box = isFrenchLanguage(this.language) ? CARD_LAYOUT.wordmarkFr : CARD_LAYOUT.wordmarkEn
+      return {
+        left: trimLeftPct(box.x) + '%',
+        bottom: trimBottomPct(box.y) + '%',
+        width: (box.w / CARD_LAYOUT.trimW) * 100 + '%',
+        height: (box.h / CARD_LAYOUT.trimH) * 100 + '%',
+      }
+    },
+    logoStyle: function () {
+      var L = CARD_LAYOUT
+      return {
+        left: trimLeftPct(L.logoX) + '%',
+        bottom: trimBottomPct(L.logoY) + '%',
+        width: (L.logoW / L.trimW) * 100 + '%',
+        height: (L.logoH / L.trimH) * 100 + '%',
+      }
     },
     identityLeft: function () {
       return trimLeftPct(CARD_LAYOUT.identityX) + '%'
@@ -208,7 +221,7 @@ export default {
       var cred = previewCredentialText(details.degree, details.additionalCredentials, language)
       var next = Object.assign({}, view, {
         title: previewTitleText(details.title, details.region, language),
-        team: previewTeamText(details.specializedTeam, language),
+        team: previewTeamText(details.specializedTeam),
       })
       var address = details.address != null ? String(details.address).trim() : ''
       if (!address) next.addressText = previewAddressText('', language)

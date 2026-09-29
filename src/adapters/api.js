@@ -58,6 +58,7 @@ export function formatAddressLine(address) {
 
 export function formatAddressCard(address) {
   if (!address) return ''
+  const name = field(address, 'addressName', 'address_name')
   const street = field(address, 'addressStreet', 'address_street')
   const street2 = field(address, 'addressStreet2', 'address_street2')
   const city = field(address, 'addressCity', 'address_city')
@@ -65,10 +66,17 @@ export function formatAddressCard(address) {
   const postal = field(address, 'addressPostalZip', 'address_postal_zip')
   const country = field(address, 'addressCountry', 'address_country') || 'Canada'
 
-  // Card layout (matches designer): street, suite, city/province, postal + country
   const lines = []
-  if (street) lines.push(street)
-  if (street2) lines.push(street2)
+  if (name && street2) {
+    lines.push(name + ', ' + street2)
+    if (street) lines.push(street)
+  } else if (!name && street2) {
+    if (street) lines.push(street + ',')
+    lines.push(street2)
+  } else {
+    if (name) lines.push(name)
+    if (street) lines.push(street)
+  }
   const cityProvince = [city, province].filter(Boolean).join(', ')
   if (cityProvince) lines.push(cityProvince)
   const postalCountry = [postal, country].filter(Boolean).join(' ')

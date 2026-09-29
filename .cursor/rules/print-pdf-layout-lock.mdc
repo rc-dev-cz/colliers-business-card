@@ -1,0 +1,47 @@
+---
+description: Locked Colliers print-PDF layout — do not redesign geometry or approval fixtures
+globs: src/helpers/{cardLayout,printPdf,approvalSamples,formatCardIdentity}*.js
+alwaysApply: false
+---
+
+# Print PDF layout lock (approved)
+
+Treat the current generated print PDF and approval sheets as **locked**. Do not redesign the business card or invent spacing from diagrams.
+
+## Source of truth
+
+1. **Generated production PDF** (`src/helpers/printPdf.js` + `src/helpers/cardLayout.js`) owns page geometry and final placement.
+2. **Approval images** in `docs/samples/print-pdf/` are the visual lock for client approval:
+   - `Colliers-Print-PDF-Approval-Standard.png`
+   - `Colliers-Print-PDF-Approval-Maximum.png`
+3. Written rules: `docs/samples/print-pdf/LAYOUT-GUIDE.md` and `docs/PRINT-PDF.md`.
+4. Fixtures: `src/helpers/approvalSamples.js` (Standard + Maximum). Regenerate with `npm run export:approval-guide`.
+
+## Geometry (do not change without explicit approval)
+
+| Spec | Value |
+| --- | --- |
+| MediaBox / BleedBox | 270 × 162 pt |
+| TrimBox | `[9, 9, 261, 153]` |
+| Final trim | 252 × 144 pt |
+| Bleed | 9 pt / ⅛ in every side |
+| Address | X = 27 · 80 pt wide · bottom Y = 27 · max 5 lines |
+| Identity | X = 113.03 · 130 pt wide |
+
+`3_5x2_BusCrd_MASTER.pdf` is **trim-only**. Use it only for typography / composition. MASTER → production is **+9 pt X/Y**. Never strip bleed from the production spec because MASTER has none.
+
+## Hard rules
+
+- Do **not** redraw the card as field blocks, UI wireframes, or spacing rectangles.
+- Do **not** invent gaps from bounding-box edges (“8 pt empty band”).
+- Email / website must fit **one line ≤ 130 pt**; character count alone is not enough.
+- Name wraps by whole words, max **2 lines**; layout may fail under 50 characters.
+- Optional rows omit; do not redistribute vertical space to fill the card.
+- Maximum approval is a **valid stress case**, not an overflow demo.
+- Keep Standard / Maximum fixtures and approval PNGs in sync after any intentional layout change.
+
+## Allowed without reopening the lock
+
+- Bug fixes that restore parity with the locked approval sheets
+- Klai mirror sync that matches Vue `cardLayout` / `printPdf`
+- Docs clarifying the locked rules (no new coordinates)

@@ -115,6 +115,10 @@
                 "en": "Cardholder",
                 "fr": "Titulaire"
             },
+            "label_colliers_clearCart": {
+                "en": "Clear cart",
+                "fr": "Vider le panier"
+            },
             "label_colliers_clearDesign": {
                 "en": "Clear Design",
                 "fr": "Effacer le design"
@@ -138,6 +142,10 @@
             "label_colliers_confirmDeleteOffice": {
                 "en": "Remove this Colliers office address?",
                 "fr": "Supprimer cette adresse de bureau Colliers ?"
+            },
+            "label_colliers_continueToShippingCart": {
+                "en": "Continue to Shipping",
+                "fr": "Continuer vers l'expédition"
             },
             "label_colliers_contactUs": {
                 "en": "Contact Us",
@@ -220,8 +228,8 @@
                 "fr": "Courriel"
             },
             "label_colliers_emailHint": {
-                "en": "Fits on one line",
-                "fr": "Sur une seule ligne"
+                "en": "One line, 130 pt max",
+                "fr": "Une ligne, 130 pt max."
             },
             "label_colliers_employee": {
                 "en": "Employee",
@@ -543,6 +551,10 @@
                 "en": "Select a title",
                 "fr": "Sélectionner un titre"
             },
+            "label_colliers_shoppingCart": {
+                "en": "Shopping Cart",
+                "fr": "Panier d'achat"
+            },
             "label_colliers_specializedTeamOptional": {
                 "en": "Specialized Team",
                 "fr": "Équipe spécialisée"
@@ -578,6 +590,10 @@
             "label_colliers_statusShipped": {
                 "en": "Shipped",
                 "fr": "Expédiée"
+            },
+            "label_colliers_subtotal": {
+                "en": "Subtotal",
+                "fr": "Sous-total"
             },
             "label_colliers_systemOptions": {
                 "en": "System Options",

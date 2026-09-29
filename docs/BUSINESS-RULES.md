@@ -85,18 +85,27 @@ The order process follows these main steps:
 
 The customization page controls the information shown on the business card preview.
 
+**Required** (red asterisk; Preview Proof needs all of these): Full Name, Title, Email, Mobile, Office Location.
+
+**Optional** (label ends with “(Optional)”): Degree/Certification, Additional Credentials, Region, Specialized Team.
+
+**Locked** (no asterisk): Company Name, Website.
+
 | Rule | Expected behaviour |
 | --- | --- |
-| Full Name | Entered manually. Maximum 50 characters. Long names can use two lines on the card. |
-| Designation | One or more designations can be selected from the available list. Selected designations appear below the field and are displayed on the business card preview. A selected designation can be removed before continuing. |
-| Email | When the full name has a first and last name, the email fills in as firstname.lastname@colliersprojectleaders.com. The field stays editable. After the user changes it, further name edits do not replace it. Up to 50 characters is allowed. The card does not show a “too long” message for email, mobile, office location, specialized team, or region. |
-| Mobile Phone | Uses the Canadian +1 format and appears on the preview. |
+| Full Name | Required. Entered manually. Maximum 50 characters. Long names can use two lines on the card. |
+| Title | Required. Selected from the available list. |
+| Designation | Optional. Up to two degrees/certifications from the list. Selected values appear below the field and after the comma on the name line. A selected value can be removed before continuing. |
+| Additional Credentials | Optional. Free text shown with degrees on the name line. |
+| Region | Optional. Shown with the title as “Title \| Region”. |
+| Specialized Team | Optional. Shown under the title line when present. |
+| Email | Required. When the full name has a first and last name, the email fills in as firstname.lastname@colliersprojectleaders.com. The field stays editable. After the user changes it, further name edits do not replace it. Up to 50 characters is allowed. Print/preview also require the address to fit one line in the 130 pt identity lane (Open Sans 6.5 pt). |
+| Mobile Phone | Required. Uses the Canadian +1 format and appears on the preview. |
 | Company Name | Locked as Colliers Project Leaders and cannot be edited. |
-| Address | Selected from the saved Colliers office address list; it is not entered manually on this screen. |
+| Address | Required. Selected from the saved Colliers office address list; it is not entered manually on this screen. |
 | Website | Locked as colliersprojectleaders.com (French card uses /fr) and cannot be edited. |
 | Live preview | Changes to editable card information are reflected on the card preview. |
-| Degree/Certification | Up to two can be selected. They appear after the comma on the name line at the top of the card. |
-| Optional fields | Until a degree or credential is entered, the preview and the print PDF show the ICT sample “C.M.” after the comma on the name line. Empty title, region, and team use “Title \| Region” and “Specialized team”. Until an office is selected, the preview and the print PDF show “Address name / Unit, Street / City, Province / Postal Code, Country”. The form follows that card order. Catalogue tiles and order proof leave empty optional fields blank. |
+| Optional empty fields | Until a degree or credential is entered, the preview and the print PDF show the ICT sample “C.M.” after the comma on the name line. Empty title, region, and team use “Title \| Region” and “Specialized team”. Until an office is selected, every card preview and the print PDF show the four-line sample “Address name / Unit, Street / City, Province / Postal Code, Country” (FR: Nom de l’adresse / …). |
 
 ### Tests
 
@@ -295,7 +304,7 @@ Use this section when adding tickets. Do **not** create a second ticket for a ru
 
 | Ticket | Change |
 | --- | --- |
-| USR-032 | Ready for development. Full name max **50**. Vue still 30. |
+| USR-032 | QA. Full name max **50**. Vue `NAME_MAX=50`. |
 | USR-033 | Still Done (one designation today). Multiple is USR-039. |
 | USR-034 | QA. Guide max **40**; Vue email max **50** for `@colliersprojectleaders.com`. |
 | IDEA-01 | Closed (Done). Guide is **40**, not 20 or 30. |

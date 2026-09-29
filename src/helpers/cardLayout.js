@@ -3,6 +3,7 @@ import {
   formatTitleLine,
   isBilingualLanguage,
   isFrenchLanguage,
+  SAMPLE_ADDRESS,
   WEBSITE_EN,
   WEBSITE_FR,
 } from './formatCardIdentity.js'
@@ -28,15 +29,17 @@ export var CARD_LAYOUT = {
   lockupY: 108.0,
   lockupW: 87.3,
   lockupH: 27.8,
-  taglineX: 78.41,
-  taglineY1: 124.0,
-  taglineY2: 113.2,
-  taglineSize: 8,
+  // Word boxes: same height as the approved card lockup; width follows the
+  // designer PNG aspect (EN 1377×736, FR 1780×850). y is the PDF bottom.
+  wordmarkEn: { x: 79.35, y: 112.86, w: 35.25, h: 18.84 },
+  wordmarkFr: { x: 79.24, y: 110.3, w: 45.48, h: 21.72 },
 
   identityX: 113.03,
+  // ICT master (270×162 bleed): identity starts at 113.03. A 130 pt lane
+  // ends at 243, leaving 18 pt to the trim right — same inset as the left.
   identityWidth: 130,
-  // Email is capped at 50 characters. The line may run to the right trim edge.
-  emailMaxWidth: 3.5 * IN - (113.03 - 0.125 * IN),
+  // Email stays on one line inside that 130 pt lane (sample EN email ≈ 125 pt).
+  emailMaxWidth: 130,
 
   nameY: 75.49,
   nameSize: 10,
@@ -66,7 +69,7 @@ export var CARD_LAYOUT = {
   maxDegrees: 2,
 }
 
-/** Blank-card copy from the ICT master (3.5×2). Address stays a selector, not this sample. */
+/** Blank-card copy from the ICT master (3.5×2). Address uses the four-line sample. */
 export var SAMPLE_CARD = {
   EN: {
     name: 'Firstname Lastname',
@@ -75,7 +78,7 @@ export var SAMPLE_CARD = {
     team: 'Specialized team',
     email: 'first.lastname@colliersprojectleaders.com',
     phone: '+1 555 555 5555',
-    address: 'Address',
+    address: SAMPLE_ADDRESS.EN,
     website: WEBSITE_EN,
   },
   FR: {
@@ -85,7 +88,7 @@ export var SAMPLE_CARD = {
     team: 'Équipe spécialisée',
     email: 'prenom.nom@colliersprojectleaders.com',
     phone: '+1 555 555 5555',
-    address: 'Adresse',
+    address: SAMPLE_ADDRESS.FR,
     website: WEBSITE_FR,
   },
 }
@@ -105,15 +108,15 @@ export var LAYOUT_ERROR = {
 }
 
 export var LAYOUT_ERROR_EN = {
-  layoutErrorName: 'Full name is too long for the business card.',
-  layoutErrorCredentials: 'Selected degrees and credentials are too long for the business card.',
-  layoutErrorTitle: 'The selected title and region are too long.',
-  layoutErrorTeam: 'The specialized team is too long.',
-  layoutErrorEmail: 'The email address is too long for the card.',
-  layoutErrorPhone: 'The mobile number is too long for the card.',
-  layoutErrorWebsite: 'The website is too long for the card.',
-  layoutErrorAddress: 'The office address is too long for the card.',
-  layoutErrorDegrees: 'A maximum of 2 degrees/certifications can be selected.',
+  layoutErrorName: 'This name is too long to fit on two lines of the card.',
+  layoutErrorCredentials: 'These degrees and credentials are too long for the card.',
+  layoutErrorTitle: 'This title and region are too long for the card.',
+  layoutErrorTeam: 'This specialized team is too long for the card.',
+  layoutErrorEmail: 'This email is too long to fit on one line of the card.',
+  layoutErrorPhone: 'This mobile number is too long for the card.',
+  layoutErrorWebsite: 'This website is too long for the card.',
+  layoutErrorAddress: 'This office address is too long for the card.',
+  layoutErrorDegrees: 'You can select up to 2 degrees or certifications.',
 }
 
 export function snapshotCardDetails(details) {
@@ -245,6 +248,7 @@ export function planCardLayout(fields, fonts, opts) {
   }
 
   requireOneLine(font, fields.website, L.bodySize, L.identityWidth, LAYOUT_ERROR.website, errors)
+  requireOneLine(font, fields.email, L.bodySize, L.emailMaxWidth, LAYOUT_ERROR.email, errors)
   if (String(fields.email || '').length > EMAIL_MAX) errors.push(LAYOUT_ERROR.email)
 
   var addressWrap = wrapAddress(font, fields.address, L.bodySize, L.addressMaxWidth)

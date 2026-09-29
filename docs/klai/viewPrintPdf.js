@@ -3,21 +3,18 @@
  * Mirror of Vue src/helpers/printPdf.js + cardLayout.js — keep in sync with Studio.
  *
  * Print file (not a screenshot): 3.75×2.25 in media, 3.5×2 in trim, 0.125 in bleed.
- * pdf-lib cannot embed SVG as a vector XObject, so the Colliers SVG is rasterized
- * at 600 dpi (or the approved lockup PNG is used for EN). Body type is Open Sans.
+ * pdf-lib embeds PNG. Preview and download use the mark plus EN/FR wordmark PNGs
+ * from Klai file assets. Body type is Open Sans.
  */
 async function viewPrintPdfBody() {
   try {
   var PDF_LIB_URL = 'https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js';
-  var FONTKIT_URL = 'https://unpkg.com/@pdf-lib/fontkit@1.1.1/dist/fontkit.umd.min.js';
+  var FONTKIT_URL = 'https://cdn.jsdelivr.net/npm/@pdf-lib/fontkit@1.1.1/dist/fontkit.umd.min.js';
   var FONT_REG_URL = 'https://cdn.jsdelivr.net/gh/googlefonts/opensans@main/fonts/ttf/OpenSans-Regular.ttf';
   var FONT_BOLD_URL = 'https://cdn.jsdelivr.net/gh/googlefonts/opensans@main/fonts/ttf/OpenSans-Bold.ttf';
-  function previewSvgDataUrl() {
-    var img = document.querySelector('#colliersCardPreview img');
-    var src = img && img.getAttribute('src');
-    if (src && src.indexOf('data:image/svg') === 0) return src;
-    return 'https://upload.wikimedia.org/wikipedia/commons/9/91/Colliers_logo.svg';
-  }
+  var LOGO_MARK_URL = 'https://5t61ut5p19.ucarecd.net/56be9cc0-c8e8-4203-b43f-02a1ba2e1be3/';
+  var WORDS_EN_URL = 'https://5t61ut5p19.ucarecd.net/90e9de45-e966-414c-a05f-d7b537acfb35/';
+  var WORDS_FR_URL = 'https://5t61ut5p19.ucarecd.net/e4267105-701e-4bd0-a30e-4d7360eef476/';
 
   var IN = 72;
   var L = {
@@ -37,12 +34,15 @@ async function viewPrintPdfBody() {
     lockupY: 108.0,
     lockupW: 87.3,
     lockupH: 27.8,
-    taglineX: 78.41,
-    taglineY1: 124.0,
-    taglineY2: 113.2,
-    taglineSize: 8,
+    wordmarkEn: { x: 79.35, y: 112.86, w: 35.18, h: 18.84 },
+    wordmarkFr: { x: 79.24, y: 110.3, w: 45.47, h: 21.72 },
+    taglineX: 79.11,
+    taglineY1: 123.61,
+    taglineY2: 111.51,
+    taglineSize: 12.6,
     identityX: 113.03,
     identityWidth: 130,
+    emailMaxWidth: 130,
     nameY: 75.49,
     nameSize: 10,
     nameLineHeight: 11,
@@ -126,42 +126,10 @@ async function viewPrintPdfBody() {
   WHITE = rgb(1, 1, 1);
   GRAY = rgb(95 / 255, 99 / 255, 106 / 255);
 
-  function dataUrlToBytes(dataUrl) {
-    var b64 = String(dataUrl || '').split(',')[1] || '';
-    var bin = atob(b64);
-    var bytes = new Uint8Array(bin.length);
-    for (var i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
-    return bytes;
-  }
-
   async function fetchBytes(url) {
     var res = await fetch(url, { mode: 'cors' });
     if (!res.ok) throw new Error('Failed to fetch ' + url + ' (' + res.status + ')');
     return new Uint8Array(await res.arrayBuffer());
-  }
-
-  async function rasterizeSvgPng(svgDataUrl, widthPt, heightPt, dpi) {
-    dpi = dpi || 600;
-    var w = Math.max(1, Math.round(widthPt * dpi / 72));
-    var h = Math.max(1, Math.round(heightPt * dpi / 72));
-    var img = new Image();
-    img.decoding = 'sync';
-    await new Promise(function (resolve, reject) {
-      img.onload = resolve;
-      img.onerror = function () { reject(new Error('SVG rasterize failed')); };
-      img.src = svgDataUrl;
-    });
-    var canvas = document.createElement('canvas');
-    canvas.width = w;
-    canvas.height = h;
-    var ctx = canvas.getContext('2d');
-    ctx.clearRect(0, 0, w, h);
-    ctx.drawImage(img, 0, 0, w, h);
-    var blob = await new Promise(function (resolve) {
-      canvas.toBlob(resolve, 'image/png');
-    });
-    if (!blob) throw new Error('SVG rasterize produced no PNG');
-    return new Uint8Array(await blob.arrayBuffer());
   }
 
   function isFrenchLanguage(language) {
@@ -303,6 +271,7 @@ async function viewPrintPdfBody() {
       else errors.push('credentials');
     }
     if (!fitsLine(font, fields.website, L.bodySize, L.identityWidth)) errors.push('website');
+    if (!fitsLine(font, fields.email, L.bodySize, L.emailMaxWidth)) errors.push('email');
     if (String(fields.email || '').length > EMAIL_MAX) errors.push('email');
     var addressWrap = wrapAddress(font, fields.address, L.bodySize, L.addressMaxWidth);
     var ownCred = credMode === 'own-row';
@@ -389,15 +358,15 @@ async function viewPrintPdfBody() {
     });
   }
   var LAYOUT_MSG = {
-    name: 'Full name is too long for the business card.',
-    credentials: 'Selected degrees and credentials are too long for the business card.',
-    title: 'The selected title and region are too long.',
-    team: 'The specialized team is too long.',
-    email: 'The email address is too long for the card.',
-    phone: 'The mobile number is too long for the card.',
-    website: 'The website is too long for the card.',
-    address: 'The office address is too long for the card.',
-    degrees: 'A maximum of 2 degrees/certifications can be selected.'
+    name: 'This name is too long to fit on two lines of the card.',
+    credentials: 'These degrees and credentials are too long for the card.',
+    title: 'This title and region are too long for the card.',
+    team: 'This specialized team is too long for the card.',
+    email: 'This email is too long to fit on one line of the card.',
+    phone: 'This mobile number is too long for the card.',
+    website: 'This website is too long for the card.',
+    address: 'This office address is too long for the card.',
+    degrees: 'You can select up to 2 degrees or certifications.'
   };
 
   function applyPrintPageBoxes(page) {
@@ -439,9 +408,22 @@ async function viewPrintPdfBody() {
     applyPrintPageBoxes(page);
     page.drawRectangle({ x: 0, y: 0, width: PAGE_W, height: PAGE_H, color: rgb(1, 1, 1) });
 
-    page.drawImage(assets.logo, { x: L.logoX, y: L.logoY, width: L.logoW, height: L.logoH });
-    drawText(page, fields.tagline1, { x: L.taglineX, y: L.taglineY1, size: L.taglineSize, font: font, color: COLLIERS_BLUE });
-    drawText(page, fields.tagline2, { x: L.taglineX, y: L.taglineY2, size: L.taglineSize, font: font, color: COLLIERS_BLUE });
+    var markAspect = 227.8 / 126.4;
+    var logoDrawH = L.logoW / markAspect;
+    var logoDrawY = L.logoY + (L.logoH - logoDrawH) / 2;
+    page.drawImage(assets.logo, {
+      x: L.logoX,
+      y: logoDrawY,
+      width: L.logoW,
+      height: logoDrawH
+    });
+    var words = fields.isFrench ? L.wordmarkFr : L.wordmarkEn;
+    page.drawImage(fields.isFrench ? assets.wordsFr : assets.wordsEn, {
+      x: words.x,
+      y: words.y,
+      width: words.w,
+      height: words.h
+    });
 
     var identityX = L.identityX;
     layout.nameLines.forEach(function (line, idx) {
@@ -515,9 +497,16 @@ async function viewPrintPdfBody() {
   var fontBytes = await Promise.all([fetchBytes(FONT_REG_URL), fetchBytes(FONT_BOLD_URL)]);
   var font = await pdfDoc.embedFont(fontBytes[0]);
   var fontBold = await pdfDoc.embedFont(fontBytes[1]);
-  var logoPng = await rasterizeSvgPng(previewSvgDataUrl(), L.logoW, L.logoH, 600);
-  var logo = await pdfDoc.embedPng(logoPng);
-  var assets = { font: font, fontBold: fontBold, lockupEn: logo, logo: logo };
+  var logoBytes = await fetchBytes(LOGO_MARK_URL);
+  var wordsEnBytes = await fetchBytes(WORDS_EN_URL);
+  var wordsFrBytes = await fetchBytes(WORDS_FR_URL);
+  var assets = {
+    font: font,
+    fontBold: fontBold,
+    logo: await pdfDoc.embedPng(logoBytes),
+    wordsEn: await pdfDoc.embedPng(wordsEnBytes),
+    wordsFr: await pdfDoc.embedPng(wordsFrBytes)
+  };
 
   var productPlan = planProductLayout(snapshot, language, assets);
   applyPrintPlaceholders(productPlan, snapshot);

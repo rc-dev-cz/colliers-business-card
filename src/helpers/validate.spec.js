@@ -1,5 +1,15 @@
 import { describe, expect, it } from 'vitest'
-import { emailFromFullName } from './validate.js'
+import { clipName, emailFromFullName, NAME_MAX } from './validate.js'
+
+describe('NAME_MAX', function () {
+  it('allows 50 characters and clips beyond that', function () {
+    expect(NAME_MAX).toBe(50)
+    var fifty = 'Anna Marie Elizabeth Catherine Thompson Smith Jr A'
+    expect(fifty.length).toBe(50)
+    expect(clipName(fifty)).toBe(fifty)
+    expect(clipName(fifty + 'Y').length).toBe(50)
+  })
+})
 
 describe('emailFromFullName', function () {
   it('waits until the name has a first and last part', function () {

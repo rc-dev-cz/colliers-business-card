@@ -37,8 +37,8 @@ Bus variables (FileMaker side): `$$BF_Payload`, `$$BF_Model`, `$$BF_Actions`, `$
 | Page (`formName`) | Route | `hookSetName` | `requestHook` | Expected FM onFormRequest | Utility / notes | Status |
 | --- | --- | --- | --- | --- | --- | --- |
 | Catalogue | `/` (`default`) | `catalogue` | true | `BF - onFormRequest - catalogue` | Named actions: `goDetails`, `goCustomize` | Live |
-| Product Detail | `/product-detail` | `catalogueitem` | true | `BF - onFormRequest - catalogueitem` | Query `?code=` | Live |
-| Customize | `/customize` | `customize` | true (planned; false in Klai today) | `BF - onFormRequest - customize` | Query `?code=`. Client stubs (`loadOffices`, `addToCart`). Print PDF: button → `viewPrintPdf` (anchor download; see [PRINT-PDF.md](../PRINT-PDF.md)) | Live UI |
+| Product Detail | `/product-detail` | `catalogueitem` | true | `BF - onFormRequest - catalogueitem` | Query `?code=` and `?id=` (`store_catalogue::id`). Page keeps a product when either matches | Live |
+| Customize | `/customize` | `customize` | true | `BF - onFormRequest - customize` | Query `?code=` and `?id=` (`store_catalogue::id`, e.g. `13616` for `CPL-13616`). Client stubs (`loadOffices`, `addToCart`). Print PDF: button → `viewPrintPdf` (anchor download; see [PRINT-PDF.md](../PRINT-PDF.md)) | Live UI |
 | Shipping | `/shipping` | `shipping` | true (planned; false in Klai today) | `BF - onFormRequest - shipping` | Load personal + office addresses. Split/qty client until submit. Shared draft: `app.cart` + `app.order` | Live UI |
 | Review | `/review` | `review` | false | — | `submit` → create order → `BF - onUtility - review` | Live UI |
 | Confirmed | `/confirmed` | `confirmed` | false | — | Display-only; clears `app.cart` / `app.order` | Live UI |
@@ -131,6 +131,7 @@ Shapes the request/utility hooks should put on `$$BF_Model` (Klai `model`). Incl
   "id": "1",
   "addressName": "Toronto — Bay Street",
   "addressStreet": "181 Bay Street",
+  "addressStreet2": "",
   "addressCity": "Toronto",
   "addressProvince": "ON",
   "addressPostalZip": "M5J 2T3",
@@ -139,7 +140,7 @@ Shapes the request/utility hooks should put on `$$BF_Model` (Klai `model`). Incl
 }
 ```
 
-`line` is optional (computed or provided).
+`line` is optional (comma-separated for lists). Customize builds `card.address` from the Address fields (name, street, street 2, city/province, postal and country). Do not use `line` as the card face.
 
 **Order**
 
@@ -208,7 +209,7 @@ Preview objects may include empty card fields the `CardPreview` component reads.
 }
 ```
 
-`card` here is only the empty preview seed (`language`). Do not copy the customize form onto this page.
+`card` here is only the empty preview seed (`language`). Do not copy the customize form onto this page. FileMaker must return the same product `code` values as Catalogue, on `products` or on `product`. The page matches `?code=` and shows nothing when that code is missing.
 
 **Customize** (`customize`) — planned request load
 
@@ -221,12 +222,13 @@ Preview objects may include empty card fields the `CardPreview` component reads.
   "cart": [],
   "titleOptions": [],
   "degreeOptions": [],
+  "offices": [],
   "officeOptions": [],
   "officesLoading": 0
 }
 ```
 
-No `products` list on Customize. `cart` is the lines this page appends. `titleOptions` / `degreeOptions` come from the FileMaker titles and degrees tables (plain strings, no `| Canada` suffix).
+FileMaker should return the same Product rows as Catalogue (`products`, or the one match on `product`). `code` must match `?code=`. `cart` is the lines this page appends. `titleOptions` / `degreeOptions` come from the FileMaker titles and degrees tables (plain strings, no `| Canada` suffix). FileMaker fills `offices` with Address records (`id`, `addressName`, `addressStreet`, `addressStreet2`, `listLabel`). `loadOffices` keeps those rows, builds `cardAddress` for the preview/print block, and only seeds stubs when the list is empty. The office select binds `office.cardAddress` into `model.card.address`.
 
 **Order draft (shared)** — `app.cart` + `app.order`. Shipping, Review, and Confirmed read/write this so the cart drawer and pages stay in sync. Page `model.cart` / `model.order` are the same objects for the current screen. `model.view` is computed in `refreshView` and is **not** sent to FileMaker.
 
@@ -239,7 +241,20 @@ No `products` list on Customize. `cart` is the lines this page appends. `titleOp
       "language": "English",
       "quantity": 2,
       "price": 63,
-      "details": {}
+      "details": {
+        "name": "",
+        "title": "",
+        "degree": [],
+        "additionalCredentials": "",
+        "region": "",
+        "specializedTeam": "",
+        "email": "",
+        "phone": "",
+        "company": "",
+        "address": "",
+        "website": "",
+        "language": "English"
+      }
     }
   ],
   "order": {
@@ -347,7 +362,7 @@ Hook set names below are the agreed Mike / FileMaker contract. Build FM scripts 
 
 Tiles are UI-only. Counts may come from this object or from loading the three lists on related pages.
 
-**Manage Addresses** (`adminaddresses`) — Live UI in Klai (route `/admin/addresses`). Company offices only (same **Address** shape). Client stubs until FM utilities `create` / `update` / `delete`.
+**Manage Addresses** (`adminaddresses`) — Live UI in Klai (route `/admin/addresses`). Company offices only (same **Address** shape). `saveOffice` calls utility `type: "save"` and swaps `model.payload.id` (`office-<timestamp>` on create) for `model.payload.newId` after FileMaker returns. `deleteOffice` calls utility `type: "delete"` with that Address id.
 
 ```json
 {
@@ -413,7 +428,7 @@ Tiles are UI-only. Counts may come from this object or from loading the three li
 
 - **Order History** — turn on `requestHook` + `BF - onFormRequest - orders` when live load is ready (`repeat` utility already exists).
 - **Address Book** — wire `create` / `update` / `delete` utilities; load already uses request hook.
-- **Customize** — turn on `requestHook`; seed product, titles, offices from FM.
+- **Customize / Product Detail** — Catalogue opens both with `?code=` and `?id=` (`store_catalogue::id`, such as `13616` for `CPL-13616`). If `product.id` is missing, the click uses the trailing number on `code`. Each page shows the form from that query even when the dev product list does not contain the code. FileMaker should still set `model.product` with the same `code`.
 - **Print PDF** — Customize button → `viewPrintPdf` (anchor download). FM base64 → Mark’s Press later ([PRINT-PDF.md](../PRINT-PDF.md)).
 - **Shipping / Review / Confirmed** — Live UI. Turn on Shipping `requestHook` when FM fills addresses; Review `submit` utility still a stub until FM creates the order.
 - **Admin pages** — Admin Home (`admin`), Admin Order History (`adminorders`), Invoice History (`admininvoices`), Reporting (`adminreporting`), Manage Addresses (`adminaddresses`), Manage Designations (`admintitles`), and Manage Degrees (`admindegrees`) are Live UI. Confirm live FM script names when Mike builds them.

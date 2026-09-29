@@ -10,7 +10,9 @@
     "check": "node scripts/check-vue2.mjs",
     "check:v2": "npm run check && npm test && npm run build",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "export:print-pdfs": "vitest run src/helpers/printPdf.samples.spec.js",
+    "export:approval-guide": "vitest run src/helpers/printPdf.approval.spec.js && python3 scripts/render-approval-guide.py"
   },
   "engines": {
     "node": ">=18"
