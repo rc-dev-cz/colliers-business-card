@@ -32,5 +32,8 @@ docs/*.docx
 *.njsproj
 *.sln
 *.sw?
-docs/colliers-business-card-order-portal_AUG28_2026
-docs/colliers-business-card-order-portal_SEPT01-2026.DS_Store
+
+# Local dumps (keep on disk, out of git)
+docs/meetings/
+docs/colliers-business-card-order-portal_AUG28_2026/
+docs/colliers-business-card-order-portal_SEPT01-2026/
