@@ -72,7 +72,7 @@ F-08 — Clear cart.
 
 F-09 — Shipping splits: Split Order, Remove Split only when there is more than one split.
 
-F-10 — Ship-to addresses: add/remove location, select a saved location, qty on a location (does not change cart quantity).
+F-10 — Ship-to addresses: add/remove location, select a saved location, qty on a location (location qty stepper syncs Selected Items to the sum of ship-to qtys up or down; empty ship-to clears the line).
 
 F-11 — Order confirmed: success screen; cart and order draft cleared. Review before confirm is F-27. User Order History is F-30.
 
@@ -90,7 +90,7 @@ F-13 — Admin Dashboard: System Options (Order History, Invoice History, Report
 
 F-14 — Manage Addresses: list; add and edit via structured address form; remove. Designer 19 Aug 2026: one-line add on the list, hover Edit/Remove, structured form on Edit. Do not copy US default or empty postal. Edit Supplier Details is gone.
 
-F-15 — Manage Titles: list of designations (PMP, LEED AP, and others); add; delete; inline edit.
+F-15 — Manage Titles: list of job titles; add; delete; inline edit.
 
 F-16 / F-17 / F-18 — Admin Order History, Invoice History, and Reporting are real screens in the designer (mock data). User Order History is F-30.
 

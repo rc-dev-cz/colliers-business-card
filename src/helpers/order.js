@@ -122,6 +122,30 @@ export function linesForSplit(split, cartLines) {
     .filter(Boolean)
 }
 
+/** Boxes ordered in this shipping group (sum of cart line quantities). */
+export function orderedBoxesForSplit(split, cartLines) {
+  return linesForSplit(split, cartLines).reduce(function (sum, line) {
+    return sum + (Number(line.quantity) || 0)
+  }, 0)
+}
+
+/** Boxes already assigned to ship-to rows in this group. */
+export function assignedBoxesForSplit(split) {
+  return (split.locations || []).reduce(function (sum, loc) {
+    return sum + (Number(loc.qty) > 0 ? Number(loc.qty) : 0)
+  }, 0)
+}
+
+/**
+ * Default boxes for a newly added ship-to row.
+ * Uses remaining unallocated boxes from the cart lines in this group.
+ * Falls back to 1 when nothing remains (user must raise Selected Items qty).
+ */
+export function nextLocationQty(split, cartLines) {
+  var remaining = orderedBoxesForSplit(split, cartLines) - assignedBoxesForSplit(split)
+  return remaining > 0 ? remaining : 1
+}
+
 export function addSplit(order, itemIds) {
   const split = createSplit({
     locations: [],
@@ -134,7 +158,12 @@ export function addSplit(order, itemIds) {
 export function removeSplitAt(order, index) {
   if (order.splits.length <= 1) return []
   const removed = order.splits.splice(index, 1)[0]
-  return (removed.itemIds || []).slice()
+  const ids = (removed.itemIds || []).map(String)
+  const target = order.splits[0]
+  ids.forEach(function (id) {
+    if (target.itemIds.indexOf(id) === -1) target.itemIds.push(id)
+  })
+  return ids
 }
 
 export function assignItem(order, split, itemId) {
@@ -174,12 +203,59 @@ export function moveItem(order, itemId, toSplitId) {
 
 export function addLocation(split, address, qty) {
   const trimmed = String(address || '').trim()
-  if (!trimmed) return
   split.locations.push(createLocation(trimmed, qty == null ? 1 : qty))
 }
 
 export function removeLocation(split, index) {
-  split.locations.splice(index, 1)
+  const removed = split.locations.splice(index, 1)[0]
+  return removed || null
+}
+
+/**
+ * Reduce cart line quantities for items in this shipping group by `boxes`.
+ * Mutates matching lines. Returns ids whose quantity dropped to 0 (caller should drop them).
+ */
+export function reduceCartBoxesForSplit(cartLines, split, boxes) {
+  var remaining = Math.max(0, Number(boxes) || 0)
+  if (remaining <= 0) return []
+
+  var idSet = {}
+  ;(split && split.itemIds ? split.itemIds : []).forEach(function (id) {
+    idSet[String(id)] = true
+  })
+
+  var zeroIds = []
+  ;(cartLines || []).forEach(function (line) {
+    if (remaining <= 0 || !idSet[String(line.id)]) return
+    var qty = Number(line.quantity) || 0
+    if (qty <= 0) {
+      zeroIds.push(line.id)
+      return
+    }
+    var take = Math.min(qty, remaining)
+    line.quantity = qty - take
+    remaining -= take
+    if (line.quantity <= 0) zeroIds.push(line.id)
+  })
+  return zeroIds
+}
+
+/**
+ * Keep Selected Items boxes equal to the sum of ship-to location qtys.
+ * - Location qty up → cart up
+ * - Location qty down / remove → cart down (0 → lines removed)
+ */
+export function syncCartBoxesToAssigned(cartLines, split) {
+  var ordered = orderedBoxesForSplit(split, cartLines)
+  var assigned = assignedBoxesForSplit(split)
+  if (assigned === ordered) return []
+  if (assigned < ordered) {
+    return reduceCartBoxesForSplit(cartLines, split, ordered - assigned)
+  }
+  var lines = linesForSplit(split, cartLines)
+  if (!lines.length) return []
+  lines[0].quantity = (Number(lines[0].quantity) || 0) + (assigned - ordered)
+  return []
 }
 
 export function resetOrder(order) {

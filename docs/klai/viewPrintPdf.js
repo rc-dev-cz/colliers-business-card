@@ -42,7 +42,7 @@ async function viewPrintPdfBody() {
     taglineSize: 12.6,
     identityX: 113.03,
     identityWidth: 130,
-    emailMaxWidth: 130,
+    emailMaxWidth: 132,
     nameY: 75.49,
     nameSize: 10,
     nameLineHeight: 11,
@@ -55,9 +55,9 @@ async function viewPrintPdfBody() {
     teamYWithCred: 50.99,
     bodySize: 6.5,
     bodyLineHeight: 8,
-    emailY: 42.99,
-    phoneY: 34.99,
-    websiteY: 26.99,
+    emailY: 43,
+    phoneY: 35,
+    websiteY: 27,
     addressX: 27,
     addressBottomY: 27,
     addressMaxWidth: 80,
@@ -82,7 +82,7 @@ async function viewPrintPdfBody() {
     region: 'Region',
     team: 'Specialized team',
     email: 'first.lastname@colliersprojectleaders.com',
-    phone: '+1 555 555 5555',
+    phone: '555 555 5555',
     address: 'Address name\nUnit, Street\nCity, Province\nPostal Code, Country',
     website: WEBSITE_EN
   };
@@ -92,7 +92,7 @@ async function viewPrintPdfBody() {
     region: 'Région',
     team: 'Équipe spécialisée',
     email: 'prenom.nom@colliersprojectleaders.com',
-    phone: '+1 555 555 5555',
+    phone: '555 555 5555',
     address: "Nom de l'adresse\nUnité, Rue\nVille, Province\nCode postal, Pays",
     website: WEBSITE_FR
   };
@@ -174,7 +174,7 @@ async function viewPrintPdfBody() {
     var local = cleaned;
     if (cleaned.length === 11 && cleaned.charAt(0) === '1') local = cleaned.slice(1);
     if (local.length === 10) {
-      return '+1 ' + local.slice(0, 3) + ' ' + local.slice(3, 6) + ' ' + local.slice(6);
+      return local.slice(0, 3) + ' ' + local.slice(3, 6) + ' ' + local.slice(6);
     }
     return String(value);
   }
@@ -277,9 +277,10 @@ async function viewPrintPdfBody() {
     var ownCred = credMode === 'own-row';
     var titleY = ownCred ? L.titleYWithCred : L.titleYNoCred;
     var teamY = ownCred ? L.teamYWithCred : L.teamYNoCred;
+    var lastNameY = L.nameY;
     var nameLineYs = [];
     for (var n = 0; n < nameLines.length; n++) {
-      nameLineYs.push(L.nameY + (nameLines.length - 1 - n) * L.nameLineHeight);
+      nameLineYs.push(lastNameY + (nameLines.length - 1 - n) * L.nameLineHeight);
     }
     return {
       valid: errors.length === 0,
@@ -287,7 +288,7 @@ async function viewPrintPdfBody() {
       credMode: credMode,
       nameLines: nameLines,
       nameLineYs: nameLineYs,
-      lastNameY: L.nameY,
+      lastNameY: lastNameY,
       inlineCredential: credMode === 'inline' ? ', ' + credText : '',
       credentialLine: ownCred ? credText : '',
       credentialY: ownCred ? L.credentialY : null,
@@ -514,9 +515,10 @@ async function viewPrintPdfBody() {
     throw new Error(LAYOUT_MSG[productPlan.errors[0]] || productPlan.errors[0]);
   }
 
+  var bilingual = isBilingualLanguage(language);
   productPlan.pages.forEach(function (pagePlan) {
     drawCardPage(pdfDoc, pagePlan, assets);
-    drawCardBack(pdfDoc, assets);
+    if (!bilingual) drawCardBack(pdfDoc, assets);
   });
 
   var bytes = await pdfDoc.save();

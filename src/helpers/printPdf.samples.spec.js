@@ -7,28 +7,18 @@ import { mkdirSync, writeFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { PDFDocument } from 'pdf-lib'
+import { APPROVAL_STANDARD } from './approvalSamples.js'
 import { buildPrintPdfBytes } from './printPdf.js'
 
 var here = dirname(fileURLToPath(import.meta.url))
 var outDir = join(here, '../../docs/samples/print-pdf')
 
-/** Realistic mock for print-test handoff (not empty ICT placeholders). */
-var SAMPLE_DETAILS = {
-  name: 'Kevin Collins',
-  title: 'Associate Director',
-  region: 'Ontario',
-  specializedTeam: 'Project Management',
-  degree: ['P.Eng'],
-  additionalCredentials: '',
-  email: 'kevin.collins@colliersprojectleaders.com',
-  phone: '4165550142',
-  address: '181 Bay Street, Suite 1400\nToronto, ON\nM5J 2T3\nCanada',
-}
+var SAMPLE_DETAILS = APPROVAL_STANDARD
 
 var SAMPLES = [
   { language: 'English', file: 'Colliers-Sample-EN.pdf', pages: 2 },
   { language: 'French', file: 'Colliers-Sample-FR.pdf', pages: 2 },
-  { language: 'Bilingual', file: 'Colliers-Sample-Bilingual.pdf', pages: 4 },
+  { language: 'Bilingual', file: 'Colliers-Sample-Bilingual.pdf', pages: 2 },
 ]
 
 describe('print PDF client samples', function () {

@@ -38,8 +38,9 @@ export var CARD_LAYOUT = {
   // ICT master (270×162 bleed): identity starts at 113.03. A 130 pt lane
   // ends at 243, leaving 18 pt to the trim right — same inset as the left.
   identityWidth: 130,
-  // Email stays on one line inside that 130 pt lane (sample EN email ≈ 125 pt).
-  emailMaxWidth: 130,
+  // Email may use 132 pt (still ~16 pt to trim). Real Colliers first.lastname
+  // addresses such as hannah.sharpe@… measure ≈ 131.33 pt at 6.5 pt Open Sans.
+  emailMaxWidth: 132,
 
   nameY: 75.49,
   nameSize: 10,
@@ -57,9 +58,13 @@ export var CARD_LAYOUT = {
   bodySize: 6.5,
   bodyLineHeight: 8,
 
-  emailY: 42.99,
-  phoneY: 34.99,
-  websiteY: 26.99,
+  // Last contact line shares the address bottom baseline. Email / mobile stack up.
+  emailY: 43,
+  phoneY: 35,
+  websiteY: 27,
+  // Cynthia (Oct 2026): long / Maximum stack keeps at least this much air above email
+  // (Standard team→email gap). Own-row + team lifts the identity block to match.
+  emailGapMin: 15.99,
 
   addressX: 27,
   addressBottomY: 27,
@@ -77,7 +82,7 @@ export var SAMPLE_CARD = {
     region: 'Region',
     team: 'Specialized team',
     email: 'first.lastname@colliersprojectleaders.com',
-    phone: '+1 555 555 5555',
+    phone: '555 555 5555',
     address: SAMPLE_ADDRESS.EN,
     website: WEBSITE_EN,
   },
@@ -87,7 +92,7 @@ export var SAMPLE_CARD = {
     region: 'Région',
     team: 'Équipe spécialisée',
     email: 'prenom.nom@colliersprojectleaders.com',
-    phone: '+1 555 555 5555',
+    phone: '555 555 5555',
     address: SAMPLE_ADDRESS.FR,
     website: WEBSITE_FR,
   },
@@ -256,10 +261,24 @@ export function planCardLayout(fields, fonts, opts) {
   var ownCred = credMode === 'own-row'
   var titleY = ownCred ? L.titleYWithCred : L.titleYNoCred
   var teamY = ownCred ? L.teamYWithCred : L.teamYNoCred
+  var lastNameY = L.nameY
   var nameLineYs = []
   for (var n = 0; n < nameLines.length; n++) {
-    nameLineYs.push(L.nameY + (nameLines.length - 1 - n) * L.nameLineHeight)
+    nameLineYs.push(lastNameY + (nameLines.length - 1 - n) * L.nameLineHeight)
   }
+
+  var lastIdentityY = fields.team ? teamY : titleY
+  var minLastY = L.emailY + L.emailGapMin
+  var lift = lastIdentityY < minLastY ? Number((minLastY - lastIdentityY).toFixed(2)) : 0
+  if (lift) {
+    titleY += lift
+    teamY += lift
+    lastNameY += lift
+    for (n = 0; n < nameLineYs.length; n++) {
+      nameLineYs[n] += lift
+    }
+  }
+  var credentialY = ownCred ? L.credentialY + lift : null
 
   var addressLines = addressWrap.ok ? addressWrap.lines : []
 
@@ -269,10 +288,10 @@ export function planCardLayout(fields, fonts, opts) {
     credMode: credMode,
     nameLines: nameLines,
     nameLineYs: nameLineYs,
-    lastNameY: L.nameY,
+    lastNameY: lastNameY,
     inlineCredential: credMode === 'inline' ? ', ' + credText : '',
     credentialLine: ownCred ? credText : '',
-    credentialY: ownCred ? L.credentialY : null,
+    credentialY: credentialY,
     title: fields.title,
     titleY: titleY,
     team: fields.team,

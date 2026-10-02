@@ -71,11 +71,13 @@
               :value="details.additionalCredentials"
               @input="details.additionalCredentials = $event"
             ></text-field>
-            <text-field
+            <select-field
               :label="t('region')"
               :value="details.region"
+              :options="regionOptions"
+              :placeholder="t('selectRegion')"
               @input="details.region = $event"
-            ></text-field>
+            ></select-field>
             <text-field
               :label="t('specializedTeam')"
               :value="details.specializedTeam"
@@ -142,6 +144,7 @@ import {
   websiteForProduct,
   WEBSITE_FR,
 } from '../helpers/formatCardIdentity'
+import { CANADIAN_REGION_OPTIONS } from '../helpers/canadianProvinces'
 
 function emptyDetails(language) {
   var card = emptyCard(language)
@@ -242,6 +245,9 @@ export default {
         return { value: title, label: title }
       })
     },
+    regionOptions: function () {
+      return CANADIAN_REGION_OPTIONS
+    },
     maxDegrees: function () {
       return CARD_LAYOUT.maxDegrees
     },
@@ -326,19 +332,23 @@ export default {
     },
     hydrateFromStore: function () {
       if (!this.product) return
+      var editId = store.editLineId || (store.proof && store.proof.editLineId)
       var line = null
-      if (store.editLineId) {
-        line = store.cart.find(function (item) {
-          return item.id === store.editLineId
-        }) || null
+      if (editId != null && editId !== '') {
+        line =
+          store.cart.find(function (item) {
+            return String(item.id) === String(editId)
+          }) || null
+        if (line) store.editLineId = line.id
       }
       if (line && line.code === this.product.code) {
         this.details = cloneCardDetails(line.details)
         this.emailEdited = true
         return
       }
-      if (store.editLineId && (!line || line.code !== this.product.code)) {
+      if (editId && (!line || (line && line.code !== this.product.code))) {
         store.editLineId = null
+        if (store.proof) store.proof.editLineId = null
       }
       if (store.proof && store.proof.code === this.product.code) {
         this.details = cloneCardDetails(store.proof.details)
@@ -360,6 +370,7 @@ export default {
         code: this.product.code,
         language: this.product.language,
         details: cloneCardDetails(this.details),
+        editLineId: store.editLineId,
       })
       go('proof', { code: this.product.code })
     },

@@ -9,6 +9,7 @@ These two images are for design approval. They are **not** a layout redesign. Ea
 | --- | --- |
 | **[`Colliers-Print-PDF-Approval-Standard.png`](Colliers-Print-PDF-Approval-Standard.png)** | Typical finished card using approved sample content |
 | **[`Colliers-Print-PDF-Approval-Maximum.png`](Colliers-Print-PDF-Approval-Maximum.png)** | Finished card using a demanding but still valid combination of allowed content |
+| **[`Colliers-Print-PDF-Credentials-Spacing.png`](Colliers-Print-PDF-Credentials-Spacing.png)** | Side-by-side: Standard inline vs Maximum own-row, with **PDF baseline Y** callouts (used lines, address max slots, approved air above email) |
 
 Regenerate (only after an intentional, approved layout change): `npm run export:approval-guide`  
 Filled samples: [`Colliers-Sample-EN.pdf`](Colliers-Sample-EN.pdf) · [`Colliers-Sample-FR.pdf`](Colliers-Sample-FR.pdf) · [`Colliers-Sample-Bilingual.pdf`](Colliers-Sample-Bilingual.pdf)
@@ -55,18 +56,23 @@ Do not convert production coordinates back to MASTER coordinates.
 
 The Standard image shows the normal finished card:
 
-- One-line name
-- Short credential inline after the name
+- One-line name with short credentials **inline** after the name (e.g. `Hannah Sharpe, B.Comm, PMP`)
 - Title | Region
 - Team when present
 - Email
 - Mobile
 - Website
-- Four-line office address
+- Street, city/province, postal Canada (office **name is not printed** on the card)
 
-The card should visually match the generated sample PDF.
+The card should visually match the generated sample PDF and Cynthia’s reference placement for designations.
 
-Optional rows are omitted when empty. Do not redistribute content simply to fill unused vertical space.
+The last address line and the website share baseline **Y = 27**. Email and mobile stack up from there (43 / 35 / 27).
+
+On Standard (inline / no own-row credentials), name stays at **75.49** and title at **66.99**. Contacts stay bottom-locked (email 43). The unused band between title (or team) and email is the **client-approved short-card gap**. Do not pack short cards up from email.
+
+On Maximum / own-row credentials **with team**, lift the identity block so the last identity line matches Standard team Y (**58.99**). That leaves the same ~16 pt air above email that Cynthia requested (Oct 2026). Email / mobile / website stay at 43 / 35 / 27.
+
+Optional rows are omitted when empty.
 
 ---
 
@@ -79,7 +85,7 @@ It should demonstrate the most demanding supported content while remaining insid
 Expected behavior:
 
 - Name can use up to two lines
-- A long credential can move to its own row
+- A long credential can move to its own row (up to **2 selected degrees** plus optional Additional Credentials as a third text)
 - Title | Region remains below the name / credential area
 - Team remains optional
 - Email stays on one line
@@ -87,6 +93,9 @@ Expected behavior:
 - Website stays on one line
 - Address can use up to five lines and remains bottom-aligned
 - No field may cross the approved content width or enter the bleed area
+- Own-row + team lifts the identity block so the last line sits at **58.99**, leaving ~16 pt above email (Cynthia, Oct 2026). Contacts stay at 43 / 35 / 27.
+
+The Maximum approval fixture uses two list degrees plus Additional Credentials (`CPA`). Email is name-derived and must still fit the 132 pt email lane. When name + credentials do not fit in the 130 pt identity lane, credentials use their **own row** — that is the approved fallback, not an overflow.
 
 The exact vertical positions should come from the generated production PDF. Do **not** invent new spacing rules from the diagram.
 
@@ -100,21 +109,24 @@ For the current layout:
 
 - Font: Open Sans Regular
 - Size: 6.5 pt
-- Available identity/email width: 130 pt
+- Available identity width (name, title, website): 130 pt
+- Available email width: **132 pt** (Open Sans Regular 6.5 pt)
 - Start X: 113.03 pt
-- Maximum content end X: 243.03 pt
+- Maximum email end X: 245.03 pt (~16 pt remaining to trim)
 
 The email must:
 
 1. Stay on one line
-2. Render at **130 pt wide or less**
-3. Stay inside the identity/content lane
-4. Never enter the right-side safe area or bleed
+2. Render at **132 pt wide or less**
+3. Stay inside the email lane
+4. Never enter the bleed
 
 A character-count limit may still exist as a form validation rule, but it is **not sufficient by itself** to guarantee that the email fits.
 
-The Maximum approval fixture uses a clean Colliers-domain email that fills the 130 pt lane
-(`mike.lastname@colliersprojectleaders.com`, ≈ 129.84 pt). One wider glyph would overflow.
+The Maximum approval fixture uses a name-derived Colliers-domain email that still fits the
+132 pt email lane (`christopher.hw@colliersprojectleaders.com`, ≈ 131.20 pt). The address is an official
+office street block (`1066 West Hastings…`). The Standard fixture uses Hannah Sharpe at Ottawa (Iris Street) with
+inline `B.Comm, PMP`.
 
 ---
 

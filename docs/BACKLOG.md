@@ -19,7 +19,7 @@ User stories: [USER.md](USER.md). Admin stories: [ADMIN.md](ADMIN.md).
 | F-07 | Cart badge icon | `USR-043` | Red number on the header cart icon = total quantity |
 | F-08 | Clear cart | `USR-044` | |
 | F-09 | Shipping splits | `USR-054` | Split Order; cannot remove the last split |
-| F-10 | Ship-to locations | `USR-050` | Location qty does not change cart qty. Shipping $0 in the $63 box fee |
+| F-10 | Ship-to locations | `USR-050` | Location qty stepper syncs cart to ship-to sum (up/down/remove). Shipping $0 in the $63 box fee |
 | F-11 | Order confirmed | `USR-060` | Clears cart; no payment |
 | F-12 | Admin login | `ADM-010` | Vue 2: `admin` / `123`. Checklist: [ADMIN.md](ADMIN.md) |
 | F-13 | Admin Dashboard | `ADM-020` | Tiles Done. Live counts still Ideas (`ADM-022`, `ADM-023`) |

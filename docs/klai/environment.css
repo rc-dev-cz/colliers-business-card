@@ -622,6 +622,14 @@ body {
   padding: 0.25rem;
 }
 
+.card-preview-frame--proof {
+  max-width: none;
+  margin-left: 0;
+  margin-right: 0;
+  padding: 0.5rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
 /* --- Buttons (compiled from Tailwind @layer components) --- */
 .btn-primary {
   display: inline-flex;

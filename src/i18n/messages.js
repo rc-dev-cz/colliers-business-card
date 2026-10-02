@@ -16,6 +16,7 @@ export const messages = {
   },
   title: { EN: 'Title', FR: 'Titre' },
   selectTitle: { EN: 'Select a title', FR: 'Sélectionner un titre' },
+  selectRegion: { EN: 'Select a region', FR: 'Sélectionner une région' },
   degree: { EN: 'Degree/Certification (Optional)', FR: 'Diplôme/Certification (facultatif)' },
   selectDegree: { EN: 'Search or select degree...', FR: 'Rechercher ou sélectionner un diplôme...' },
   additionalCredentials: {
@@ -25,10 +26,10 @@ export const messages = {
   region: { EN: 'Region (Optional)', FR: 'Région (facultatif)' },
   specializedTeam: { EN: 'Specialized Team (Optional)', FR: 'Équipe spécialisée (facultatif)' },
   email: { EN: 'Email', FR: 'Courriel' },
-  // Print lane is 130 pt at Open Sans 6.5 — character count alone is not the fit check.
+  // Print email lane is 132 pt at Open Sans 6.5 — character count alone is not the fit check.
   emailHint: {
-    EN: 'One line on the card · width limit 130 pt',
-    FR: 'Une ligne sur la carte · largeur max. 130 pt',
+    EN: 'One line on the card · width limit 132 pt',
+    FR: 'Une ligne sur la carte · largeur max. 132 pt',
   },
 
   layoutErrorName: {
@@ -103,11 +104,26 @@ export const messages = {
   total: { EN: 'Total', FR: 'Total' },
   items: { EN: 'items', FR: 'articles' },
   reviewCheckout: { EN: 'Review / Checkout', FR: 'Révision / Caisse' },
-  reviewOrder: { EN: 'Review order', FR: 'Réviser la commande' },
+  reviewOrder: { EN: 'Order Review', FR: 'Révision de la commande' },
   confirmOrder: { EN: 'Confirm order', FR: 'Confirmer la commande' },
+  placeOrder: { EN: 'Place Order', FR: 'Passer la commande' },
+  printOrder: { EN: 'Print Order', FR: 'Imprimer la commande' },
+  backToShipping: { EN: 'Back to Shipping', FR: "Retour à l'expédition" },
+  shipment: { EN: 'Shipment', FR: 'Envoi' },
+  itemsHeading: { EN: 'Items', FR: 'Articles' },
+  shippingTo: { EN: 'Shipping To:', FR: 'Expédier à :' },
+  shippingTbd: { EN: '$0.00', FR: '0,00 $' },
   selectedItems: { EN: 'Selected Items', FR: 'Articles sélectionnés' },
   noItemsSelected: { EN: 'No items selected', FR: 'Aucun article sélectionné' },
   addItem: { EN: 'Add item', FR: 'Ajouter un article' },
+  addItemFromCart: { EN: 'Add from cart', FR: 'Ajouter depuis le panier' },
+  allCartItemsInGroup: {
+    EN: 'All cart items are already in this group.',
+    FR: 'Tous les articles du panier sont déjà dans ce groupe.',
+  },
+  moveToGroup: { EN: 'Move to', FR: 'Déplacer vers' },
+  reorderItem: { EN: 'Reorder item', FR: 'Réordonner l’article' },
+  reorderAddress: { EN: 'Reorder address', FR: 'Réordonner l’adresse' },
   splitOrder: { EN: 'Split Order', FR: 'Diviser la commande' },
   removeSplit: { EN: 'Remove Split', FR: 'Supprimer la division' },
   shipToAddress: { EN: 'Ship to Address', FR: "Expédier à l'adresse" },
@@ -212,7 +228,7 @@ export const messages = {
     EN: 'Thank you for your order! Your payment has been processed and your business cards are currently being prepared.',
     FR: 'Merci pour votre commande ! Votre paiement a été traité et vos cartes de visite sont en cours de préparation.',
   },
-  returnToCatalog: { EN: 'Return to Catalog', FR: 'Retour au catalogue' },
+  returnToCatalog: { EN: 'Return to Catalogue', FR: 'Retour au catalogue' },
   contactUs: { EN: 'Contact Us', FR: 'Nous contacter' },
   securityPrivacy: {
     EN: 'Security / Privacy Policy',
@@ -308,10 +324,10 @@ export const messages = {
   saving: { EN: 'Saving...', FR: 'Enregistrement...' },
   saveDraft: { EN: 'Save Draft', FR: 'Enregistrer le brouillon' },
   draftSaved: { EN: 'Draft saved. You can finish this address later.', FR: 'Brouillon enregistré. Vous pourrez terminer cette adresse plus tard.' },
-  manageDesignations: { EN: 'Manage Designations', FR: 'Gérer les désignations' },
+  manageDesignations: { EN: 'Manage Titles', FR: 'Gérer les titres' },
   manageDesignationsHint: {
-    EN: 'Designations shown on business cards during customization.',
-    FR: 'Désignations affichées sur les cartes lors de la personnalisation.',
+    EN: 'Titles shown on business cards during customization.',
+    FR: 'Titres affichés sur les cartes lors de la personnalisation.',
   },
   manageDegrees: { EN: 'Manage Degrees', FR: 'Gérer les diplômes' },
   manageDegreesHint: {
@@ -319,16 +335,16 @@ export const messages = {
     FR: 'Diplômes et certifications autorisés sur les cartes de visite.',
   },
   newDesignationPlaceholder: {
-    EN: 'Enter new designation...',
-    FR: 'Entrez une nouvelle désignation...',
+    EN: 'Enter new title...',
+    FR: 'Entrez un nouveau titre...',
   },
   newDegreePlaceholder: {
     EN: 'Enter new degree...',
     FR: 'Entrez le nouveau diplôme...',
   },
-  addDesignation: { EN: 'Add designation', FR: 'Ajouter une désignation' },
-  editDesignation: { EN: 'Edit designation', FR: 'Modifier la désignation' },
-  deleteDesignation: { EN: 'Delete designation', FR: 'Supprimer la désignation' },
+  addDesignation: { EN: 'Add title', FR: 'Ajouter un titre' },
+  editDesignation: { EN: 'Edit title', FR: 'Modifier le titre' },
+  deleteDesignation: { EN: 'Delete title', FR: 'Supprimer le titre' },
   addDegree: { EN: 'Add degree', FR: 'Ajouter un diplôme' },
   editDegree: { EN: 'Edit degree', FR: 'Modifier le diplôme' },
   deleteDegree: { EN: 'Delete degree', FR: 'Supprimer le diplôme' },
@@ -348,8 +364,8 @@ export const messages = {
     FR: '{n} adresses configurées',
   },
   designationsConfigured: {
-    EN: '{n} designations configured',
-    FR: '{n} désignations configurées',
+    EN: '{n} titles configured',
+    FR: '{n} titres configurés',
   },
   degreesConfigured: {
     EN: '{n} degrees configured',
@@ -372,8 +388,8 @@ export const messages = {
     FR: 'Configurez les destinations d\'expédition, les bureaux et les adresses par défaut pour les cartes.',
   },
   manageDesignationsTileDesc: {
-    EN: 'Manage permitted credentials and designations allowed on business cards.',
-    FR: 'Gérez les titres et désignations autorisés sur les cartes de visite.',
+    EN: 'Manage permitted job titles allowed on business cards.',
+    FR: 'Gérez les titres de poste autorisés sur les cartes de visite.',
   },
   manageDegreesTileDesc: {
     EN: 'Manage permitted degrees and certifications allowed on business cards.',
@@ -391,10 +407,10 @@ export const messages = {
     EN: 'Remove this Colliers office address?',
     FR: 'Supprimer cette adresse de bureau Colliers ?',
   },
-  noTitles: { EN: 'No designations yet.', FR: 'Aucune désignation pour le moment.' },
+  noTitles: { EN: 'No titles yet.', FR: 'Aucun titre pour le moment.' },
   confirmDeleteTitle: {
-    EN: 'Remove this designation?',
-    FR: 'Supprimer cette désignation ?',
+    EN: 'Remove this title?',
+    FR: 'Supprimer ce titre ?',
   },
   invoiceId: { EN: 'Invoice ID', FR: 'N° de facture' },
   customer: { EN: 'Customer', FR: 'Client' },

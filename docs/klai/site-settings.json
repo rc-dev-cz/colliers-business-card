@@ -91,6 +91,14 @@
                 "en": "Back to Dashboard",
                 "fr": "Retour au tableau de bord"
             },
+            "label_colliers_backToEdit": {
+                "en": "Back to Edit",
+                "fr": "Retour à la modification"
+            },
+            "label_colliers_backToShipping": {
+                "en": "Back to Shipping",
+                "fr": "Retour à l'expédition"
+            },
             "label_colliers_bilingual": {
                 "en": "Bilingual",
                 "fr": "Bilingue"
@@ -102,6 +110,10 @@
             "label_colliers_businessCards": {
                 "en": "Business Cards",
                 "fr": "Cartes de visite"
+            },
+            "label_colliers_businessCardPreview": {
+                "en": "Business Card Preview",
+                "fr": "Aperçu de la carte de visite"
             },
             "label_colliers_cancel": {
                 "en": "Cancel",
@@ -142,6 +154,10 @@
             "label_colliers_confirmDeleteOffice": {
                 "en": "Remove this Colliers office address?",
                 "fr": "Supprimer cette adresse de bureau Colliers ?"
+            },
+            "label_colliers_continueToShipping": {
+                "en": "Continue to Shipping",
+                "fr": "Continuer vers l'expédition"
             },
             "label_colliers_continueToShippingCart": {
                 "en": "Continue to Shipping",
@@ -207,6 +223,10 @@
                 "en": "Edit",
                 "fr": "Modifier"
             },
+            "label_colliers_editItem": {
+                "en": "Edit",
+                "fr": "Modifier"
+            },
             "label_colliers_editAddress": {
                 "en": "Edit address",
                 "fr": "Modifier l'adresse"
@@ -228,8 +248,8 @@
                 "fr": "Courriel"
             },
             "label_colliers_emailHint": {
-                "en": "One line, 130 pt max",
-                "fr": "Une ligne, 130 pt max."
+                "en": "One line, 132 pt max",
+                "fr": "Une ligne, 132 pt max."
             },
             "label_colliers_employee": {
                 "en": "Employee",
@@ -303,6 +323,10 @@
                 "en": "Items Included",
                 "fr": "Articles Inclus"
             },
+            "label_colliers_itemsHeading": {
+                "en": "Items",
+                "fr": "Articles"
+            },
             "label_colliers_language": {
                 "en": "Language",
                 "fr": "Langue"
@@ -310,6 +334,42 @@
             "label_colliers_lastUpdatedJustNow": {
                 "en": "Last updated: Just now",
                 "fr": "Dernière mise à jour : à l'instant"
+            },
+            "label_colliers_layoutErrorAddress": {
+                "en": "This office address is too long for the card.",
+                "fr": "Cette adresse de bureau est trop longue pour la carte."
+            },
+            "label_colliers_layoutErrorCredentials": {
+                "en": "These degrees and credentials are too long for the card.",
+                "fr": "Ces diplômes et mentions sont trop longs pour la carte."
+            },
+            "label_colliers_layoutErrorDegrees": {
+                "en": "You can select up to 2 degrees or certifications.",
+                "fr": "Vous pouvez sélectionner jusqu’à 2 diplômes ou certifications."
+            },
+            "label_colliers_layoutErrorEmail": {
+                "en": "This email is too long to fit on one line of the card.",
+                "fr": "Ce courriel est trop long pour tenir sur une ligne de la carte."
+            },
+            "label_colliers_layoutErrorName": {
+                "en": "This name is too long to fit on two lines of the card.",
+                "fr": "Ce nom est trop long pour tenir sur deux lignes de la carte."
+            },
+            "label_colliers_layoutErrorPhone": {
+                "en": "This mobile number is too long for the card.",
+                "fr": "Ce numéro de mobile est trop long pour la carte."
+            },
+            "label_colliers_layoutErrorTeam": {
+                "en": "This specialized team is too long for the card.",
+                "fr": "Cette équipe spécialisée est trop longue pour la carte."
+            },
+            "label_colliers_layoutErrorTitle": {
+                "en": "This title and region are too long for the card.",
+                "fr": "Ce titre et cette région sont trop longs pour la carte."
+            },
+            "label_colliers_layoutErrorWebsite": {
+                "en": "This website is too long for the card.",
+                "fr": "Ce site web est trop long pour la carte."
             },
             "label_colliers_loading": {
                 "en": "Loading...",
@@ -443,6 +503,14 @@
                 "en": "Premium 16pt cardstock",
                 "fr": "Carton de qualité supérieure 16 pt"
             },
+            "label_colliers_previewCard": {
+                "en": "Preview",
+                "fr": "Aperçu"
+            },
+            "label_colliers_previewProof": {
+                "en": "Preview Proof",
+                "fr": "Aperçu de l'épreuve"
+            },
             "label_colliers_price": {
                 "en": "Price",
                 "fr": "Prix"
@@ -459,6 +527,14 @@
                 "en": "Print on demand",
                 "fr": "Impression à la demande"
             },
+            "label_colliers_printOrder": {
+                "en": "Print Order",
+                "fr": "Imprimer la commande"
+            },
+            "label_colliers_placeOrder": {
+                "en": "Place Order",
+                "fr": "Passer la commande"
+            },
             "label_colliers_productBilingual": {
                 "en": "Business Card Bilingual",
                 "fr": "Carte de visite bilingue"
@@ -474,6 +550,22 @@
             "label_colliers_productNotFound": {
                 "en": "Product not found",
                 "fr": "Produit introuvable"
+            },
+            "label_colliers_proofApproval": {
+                "en": "Proof Approval",
+                "fr": "Approbation de l'épreuve"
+            },
+            "label_colliers_proofCheckbox": {
+                "en": "I have reviewed this proof and confirm that all information is accurate and ready for print.",
+                "fr": "J'ai examiné cette épreuve et je confirme que toutes les informations sont exactes et prêtes à imprimer."
+            },
+            "label_colliers_proofNotice": {
+                "en": "Once printed, cards cannot be returned or reprinted at no charge due to errors in the submitted information.",
+                "fr": "Une fois imprimées, les cartes ne peuvent pas être retournées ni réimprimées sans frais en cas d'erreurs dans les informations soumises."
+            },
+            "label_colliers_proofNoticeLead": {
+                "en": "Please review your business card proof carefully.",
+                "fr": "Veuillez examiner attentivement l'épreuve de votre carte de visite."
             },
             "label_colliers_productType": {
                 "en": "Product Type",
@@ -551,6 +643,10 @@
                 "en": "Select a title",
                 "fr": "Sélectionner un titre"
             },
+            "label_colliers_selectRegion": {
+                "en": "Select a region",
+                "fr": "Sélectionner une région"
+            },
             "label_colliers_shoppingCart": {
                 "en": "Shopping Cart",
                 "fr": "Panier d'achat"
@@ -558,6 +654,30 @@
             "label_colliers_specializedTeamOptional": {
                 "en": "Specialized Team",
                 "fr": "Équipe spécialisée"
+            },
+            "label_colliers_shipToAddress": {
+                "en": "Ship to Address",
+                "fr": "Expédier à l'adresse"
+            },
+            "label_colliers_shipment": {
+                "en": "Shipment",
+                "fr": "Envoi"
+            },
+            "label_colliers_shipping": {
+                "en": "Shipping",
+                "fr": "Expédition"
+            },
+            "label_colliers_shippingTbd": {
+                "en": "TBD",
+                "fr": "À déterminer"
+            },
+            "label_colliers_shippingTo": {
+                "en": "Shipping To:",
+                "fr": "Expédier à :"
+            },
+            "label_colliers_noShipToAddresses": {
+                "en": "No ship-to addresses yet. Use + Add location to pick from your Address Book.",
+                "fr": "Aucune adresse d'expédition. Utilisez + Ajouter un lieu pour choisir dans votre carnet d'adresses."
             },
             "label_colliers_spendByDepartment": {
                 "en": "Spend by Department",

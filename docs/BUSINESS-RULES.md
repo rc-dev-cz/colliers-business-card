@@ -50,7 +50,7 @@ The order process follows these main steps:
 | Shipping group | A part of the order that groups business cards going to one or more shipping addresses. |
 | Split Order | Creates an additional shipping group within the same order so business cards can be organized and shipped separately. |
 | Shipping location | The delivery address selected for a shipping group. |
-| Location quantity | The number of boxes assigned to a shipping location. Changing this value does not change the quantity ordered in the cart. |
+| Location quantity | The number of boxes assigned to a shipping location. Changing location qty (stepper or delete) syncs Selected Items / cart quantity to the sum of remaining location qtys (empty ship-to clears the cart line). |
 
 ---
 
@@ -96,11 +96,11 @@ The customization page controls the information shown on the business card previ
 | Full Name | Required. Entered manually. Maximum 50 characters. Long names can use two lines on the card. |
 | Title | Required. Selected from the available list. |
 | Designation | Optional. Up to two degrees/certifications from the list. Selected values appear below the field and after the comma on the name line. A selected value can be removed before continuing. |
-| Additional Credentials | Optional. Free text shown with degrees on the name line. |
+| Additional Credentials | Optional. Free text shown with degrees on the name line (a third credential when two degrees are selected). |
 | Region | Optional. Shown with the title as “Title \| Region”. |
 | Specialized Team | Optional. Shown under the title line when present. |
 | Email | Required. When the full name has a first and last name, the email fills in as firstname.lastname@colliersprojectleaders.com. The field stays editable. After the user changes it, further name edits do not replace it. Up to 50 characters is allowed. Print/preview also require the address to fit one line in the 130 pt identity lane (Open Sans 6.5 pt). |
-| Mobile Phone | Required. Uses the Canadian +1 format and appears on the preview. |
+| Mobile Phone | Required. Shown on the card as a Canadian 10-digit local number (no +1). |
 | Company Name | Locked as Colliers Project Leaders and cannot be edited. |
 | Address | Required. Selected from the saved Colliers office address list; it is not entered manually on this screen. |
 | Website | Locked as colliersprojectleaders.com (French card uses /fr) and cannot be edited. |
@@ -167,7 +167,7 @@ The customization page controls the information shown on the business card previ
 | Move a product | A business card can be moved from one shipping group to another without creating an additional copy of the product. |
 | Remove Split | An additional shipping group can be removed. At least one shipping group must remain. |
 | Saved location | Shipping locations are selected from the saved address list. |
-| Add / remove location | Shipping locations can be added to or removed from a shipping group. |
+| Add / remove location | Shipping locations can be added to or removed from a shipping group. Location qty and Selected Items stay linked: raise/lower/remove a ship-to qty and cart follows the remaining sum. |
 
 ### Example
 
@@ -232,7 +232,7 @@ Admin functions maintain the lists used by the business card ordering experience
 | Rule | Expected behaviour |
 | --- | --- |
 | Manage Addresses | Admin can view, add, and remove office addresses used by the Address dropdown. |
-| Manage Designations | Admin can view, add, and remove designations used by the Designation selector. |
+| Manage Titles | Admin can view, add, and remove titles used by the Title selector. |
 | Admin Dashboard | The Admin area provides the available administrative shortcuts and summary information. |
 
 ### Tests
@@ -241,8 +241,8 @@ Admin functions maintain the lists used by the business card ordering experience
 | --- | --- | --- |
 | AD-01 | Add an office address in Admin. | The address appears in the managed address list and is available for card selection. |
 | AD-02 | Remove an office address in Admin. | The address is removed from the managed list. |
-| AD-03 | Add a designation in Admin. | The designation appears in the managed designation list and is available for card selection. |
-| AD-04 | Remove a designation in Admin. | The designation is removed from the managed list. |
+| AD-03 | Add a title in Admin. | The title appears in the managed title list and is available for card selection. |
+| AD-04 | Remove a title in Admin. | The title is removed from the managed list. |
 
 ---
 
@@ -275,25 +275,25 @@ Use this section when adding tickets. Do **not** create a second ticket for a ru
 | Three products, $63 / 250 | F-01–F-04, USR-010–USR-023 | Done |
 | Locked company / website | USR-037 | Done |
 | Office from saved list | USR-036 | Done |
-| Canadian +1 phone | USR-035 | Done |
+| Canadian local phone on card | USR-035 | Done |
 | Live preview | USR-031 | Done |
 | Cart combine / separate / qty / badge | USR-040–USR-045 | Done |
 | Shipping $0, no payment | USR-053 | Done |
 | Cannot remove last split | USR-055 | Done |
 | Header EN/FR | USR-070, USR-071 | Done |
 | Light theme | F-23 | Done |
-| Manage Addresses | ADM-060 | Ready (Vue stub `#/admin/addresses`) |
-| Manage Designations / Titles | ADM-070 | Ideas (Vue stub `#/admin/titles`) |
+| Manage Addresses | ADM-060 | Ready (Vue `#/admin/addresses`) |
+| Manage Titles | ADM-070 | Done (Vue `#/admin/titles`) |
 | Admin Dashboard | ADM-020 | Done (Vue tiles; live counts ADM-022/023 still Ideas) |
+| Printed-card count (qty × 250) | USR-046 | Done |
+| Move a card between shipping groups | USR-056 | Done (SH-04) |
+| Split Order creates an empty group | USR-057 | Done (SH-02, SH-03) |
 
 ### Already ticketed as Ideas — reuse these, do not duplicate
 
 | Guide | Ticket | Notes |
 | --- | --- | --- |
 | One or more designations | `USR-039` | Vue still allows one title |
-| Printed-card count (qty × 250) | `USR-046` | Needed for PR-01 / PR-02 |
-| Move a card between shipping groups | `USR-056` | SH-04 |
-| Split Order creates an empty group | `USR-057` | SH-02, SH-03 |
 | Colliers offices on shipping | `USR-058` | Not in the PDF; keep |
 | Order review before confirm | `USR-063` | Section 7 / OR-01 |
 | Remove footer language | `F-20` | UI-02 |

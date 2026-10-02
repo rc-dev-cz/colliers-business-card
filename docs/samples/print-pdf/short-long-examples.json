@@ -1,0 +1,91 @@
+{
+  "description": "Print PDF test cases. Language defaults to English; each sample may override. Empty details use generic placeholders (Firstname Lastname, Title | Region, C.M.).",
+  "outDir": "docs/samples/print-pdf",
+  "samples": [
+    {
+      "id": "placeholder-en",
+      "label": "Empty preview placeholders (English)",
+      "file": "Colliers-Sample-Placeholder-EN.pdf",
+      "language": "English",
+      "details": {
+        "name": "Firstname Lastname",
+        "title": "Title",
+        "region": "Region",
+        "specializedTeam": "Specialized team",
+        "degree": [],
+        "additionalCredentials": "",
+        "email": "",
+        "phone": "",
+        "address": ""
+      }
+    },
+    {
+      "id": "placeholder-fr",
+      "label": "Empty preview placeholders (French)",
+      "file": "Colliers-Sample-Placeholder-FR.pdf",
+      "language": "French",
+      "details": {
+        "name": "Prénom Nom",
+        "title": "Titre",
+        "region": "Région",
+        "specializedTeam": "Équipe spécialisée",
+        "degree": [],
+        "additionalCredentials": "",
+        "email": "",
+        "phone": "",
+        "address": ""
+      }
+    },
+    {
+      "id": "short",
+      "label": "Standard / short with team",
+      "file": "Colliers-Sample-Short.pdf",
+      "language": "English",
+      "details": {
+        "name": "Hannah Sharpe",
+        "title": "Business Services Administrator",
+        "region": "Ontario",
+        "specializedTeam": "Business Services",
+        "degree": ["B.Comm", "PMP"],
+        "additionalCredentials": "",
+        "email": "hannah.sharpe@colliersprojectleaders.com",
+        "phone": "6139789906",
+        "address": "2720 Iris Street\nOttawa, ON\nK2C 1E6 Canada"
+      }
+    },
+    {
+      "id": "long",
+      "label": "Maximum / long (own-row credentials + team)",
+      "file": "Colliers-Sample-Long.pdf",
+      "language": "English",
+      "details": {
+        "name": "Christopher Harrington-Wellington",
+        "title": "Associate Director",
+        "region": "British Columbia",
+        "specializedTeam": "Project Management Advisory",
+        "degree": ["P. Eng.", "LEED AP BD+C"],
+        "additionalCredentials": "CPA",
+        "email": "christopher.hw@colliersprojectleaders.com",
+        "phone": "6045550199",
+        "address": "1066 West Hastings Street, 23rd Floor\nVancouver, BC\nV6E 3X1 Canada"
+      }
+    },
+    {
+      "id": "long-fr",
+      "label": "Maximum / long French (own-row credentials + team, extra air above email)",
+      "file": "Colliers-Sample-Long-FR.pdf",
+      "language": "French",
+      "details": {
+        "name": "Christopher Harrington-Wellington",
+        "title": "Associate Director",
+        "region": "British Columbia",
+        "specializedTeam": "Project Management Advisory",
+        "degree": ["P. Eng.", "LEED AP BD+C"],
+        "additionalCredentials": "CPA",
+        "email": "christopher.hw@colliersprojectleaders.com",
+        "phone": "6045550199",
+        "address": "1066 West Hastings Street, 23rd Floor\nVancouver, BC\nV6E 3X1 Canada"
+      }
+    }
+  ]
+}

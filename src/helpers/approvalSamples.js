@@ -2,16 +2,19 @@
  * Shared Standard / Maximum card fixtures for approval sheets and Customize.
  * Keep Maximum as a valid stress case (fits layout), not an overflow example.
  */
+import { OTTAWA_OFFICE_CARD, VANCOUVER_OFFICE_CARD } from '../data/offices.js'
+
 export var APPROVAL_STANDARD = {
-  name: 'Kevin Collins',
-  title: 'Associate Director',
+  name: 'Hannah Sharpe',
+  title: 'Business Services Administrator',
   region: 'Ontario',
-  specializedTeam: 'Project Management',
-  degree: ['P.Eng'],
+  specializedTeam: '',
+  // Short pair that fits inline after the name (matches client reference).
+  degree: ['B.Comm', 'PMP'],
   additionalCredentials: '',
-  email: 'kevin.collins@colliersprojectleaders.com',
-  phone: '4165550142',
-  address: '181 Bay Street, Suite 1400\nToronto, ON\nM5J 2T3\nCanada',
+  email: 'hannah.sharpe@colliersprojectleaders.com',
+  phone: '6139789906',
+  address: OTTAWA_OFFICE_CARD,
 }
 
 export var APPROVAL_MAXIMUM = {
@@ -20,12 +23,11 @@ export var APPROVAL_MAXIMUM = {
   region: 'British Columbia',
   specializedTeam: 'Project Management Advisory',
   degree: ['P. Eng.', 'LEED AP BD+C'],
-  additionalCredentials: '',
-  // Longest clean @colliersprojectleaders.com local that still fits the 130 pt lane
-  // (Open Sans Regular 6.5 pt ≈ 129.84 pt; one wider glyph overflows).
-  email: 'mike.lastname@colliersprojectleaders.com',
+  additionalCredentials: 'CPA',
+  // Longest clean name-derived local that still fits the 132 pt email lane.
+  email: 'christopher.hw@colliersprojectleaders.com',
   phone: '6045550199',
-  address: 'Bay Adelaide Centre\n333 Bay Street\nSuite 3400\nToronto, ON\nM5H 2S7 Canada',
+  address: VANCOUVER_OFFICE_CARD,
 }
 
 export function cloneApprovalDetails(source) {

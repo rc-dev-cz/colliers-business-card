@@ -1,31 +1,11 @@
 import { jobTitles } from '../data/products.js'
+import { MOCK_OFFICES } from '../data/offices.js'
+
+export { MOCK_OFFICES }
 
 export const COLLIERS_API_HOST = 'https://colliers-dev-rc.clientportal.cloud'
 
 const FETCH_TIMEOUT_MS = 10000
-
-export const MOCK_OFFICES = [
-  {
-    id: 1,
-    addressName: 'Toronto — Bay Street',
-    addressStreet: '181 Bay Street',
-    addressStreet2: 'Suite 1400',
-    addressCity: 'Toronto',
-    addressProvince: 'ON',
-    addressPostalZip: 'M5J 2T3',
-    addressCountry: 'Canada',
-  },
-  {
-    id: 2,
-    addressName: 'Vancouver',
-    addressStreet: '200 Granville Street',
-    addressStreet2: 'Suite 1900',
-    addressCity: 'Vancouver',
-    addressProvince: 'BC',
-    addressPostalZip: 'V6C 1S4',
-    addressCountry: 'Canada',
-  },
-]
 
 function isDev() {
   try {
@@ -58,7 +38,6 @@ export function formatAddressLine(address) {
 
 export function formatAddressCard(address) {
   if (!address) return ''
-  const name = field(address, 'addressName', 'address_name')
   const street = field(address, 'addressStreet', 'address_street')
   const street2 = field(address, 'addressStreet2', 'address_street2')
   const city = field(address, 'addressCity', 'address_city')
@@ -67,16 +46,8 @@ export function formatAddressCard(address) {
   const country = field(address, 'addressCountry', 'address_country') || 'Canada'
 
   const lines = []
-  if (name && street2) {
-    lines.push(name + ', ' + street2)
-    if (street) lines.push(street)
-  } else if (!name && street2) {
-    if (street) lines.push(street + ',')
-    lines.push(street2)
-  } else {
-    if (name) lines.push(name)
-    if (street) lines.push(street)
-  }
+  if (street) lines.push(street)
+  if (street2) lines.push(street2)
   const cityProvince = [city, province].filter(Boolean).join(', ')
   if (cityProvince) lines.push(cityProvince)
   const postalCountry = [postal, country].filter(Boolean).join(' ')

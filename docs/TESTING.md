@@ -8,6 +8,8 @@ Do **not** add tests for `demo` / `123`, signup, or forgot password. Those are p
 
 Price today: **$63.00** per box (`BCAD-PL-ENG`, `BCAD-PL-BIL`, `BCAD-PL-FR`). Shipping is included in that fee, so Shipping & Handling is **$0.00**. Cart key: `colliers.cart`.
 
+Preview admin login stays `admin` / `123`. Live FileMaker test user and admin accounts come from Mike — do not commit those passwords.
+
 ## Terms
 
 | Term | Meaning |
@@ -203,12 +205,14 @@ Shipping page today: Split Order, Remove Split only if more than one split, add/
 
 ### TC-15 — Remove a location
 
-- Preconditions: A split with 2 or more locations.
+- Preconditions: A split with 2 or more locations. Cart quantity equals the sum of location qtys.
 - Steps:
   1. Delete one location row.
 - Expected:
   - That address is gone
   - Other locations remain
+  - Cart / Selected Items quantity equals the sum of remaining location qtys
+  - Deleting the last location clears the cart line for that group (no orphan Qty 250 with empty ship-to)
 
 ### TC-16 — Select saved location
 
@@ -221,12 +225,15 @@ Shipping page today: Split Order, Remove Split only if more than one split, add/
 
 ### TC-17 — Location qty
 
-- Preconditions: A ship-to row exists. Cart quantity is known.
+- Preconditions: A ship-to row exists with one cart line in the split.
 - Steps:
-  1. Set that location qty to 5.
+  1. Raise that location qty with the stepper (e.g. 250 → 500).
 - Expected:
-  - That row shows 5
-  - Cart quantity is unchanged
+  - That row shows 500
+  - Selected Items / cart quantity updates to match (500)
+  2. Lower location qty (500 → 250).
+- Expected:
+  - Cart quantity follows down to 250
 
 ---
 

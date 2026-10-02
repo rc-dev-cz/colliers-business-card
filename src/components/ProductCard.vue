@@ -1,7 +1,7 @@
 <template>
   <article class="catalog-product-card group flex flex-col overflow-hidden rounded-md border border-gray-200 bg-white shadow-sm">
     <div class="cursor-pointer bg-white p-1" @click="goDetails">
-      <card-preview :details="{}" :language="product.language"></card-preview>
+      <card-preview :details="{}" :language="product.language" placeholders></card-preview>
     </div>
     <div class="flex flex-1 flex-col p-6">
       <div

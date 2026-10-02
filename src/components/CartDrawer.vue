@@ -5,63 +5,67 @@
 
     <empty-state v-if="!store.cart.length" :message="t('cartEmpty')"></empty-state>
     <div v-else>
-      <ul class="space-y-4">
+      <ul class="space-y-6">
         <li
           v-for="line in store.cart"
           :key="line.id"
-          class="flex items-start gap-3 border-b border-gray-100 pb-4"
+          class="flex items-start gap-4"
         >
-          <div class="w-24 shrink-0 overflow-hidden rounded border border-gray-200 bg-white">
+          <div class="card-preview-frame w-[148px] max-w-[148px] shrink-0">
             <card-preview :details="line.details || {}" :language="line.language"></card-preview>
           </div>
           <div class="min-w-0 flex-1">
-            <div class="flex items-start justify-between gap-3">
-              <div>
-                <div class="font-medium text-gray-900">{{ lineName(line) }}</div>
-                <div v-if="personName(line)" class="mt-0.5 text-sm text-gray-700">{{ personName(line) }}</div>
+            <div class="flex items-start justify-between gap-4">
+              <div class="min-w-0">
+                <div class="text-[15px] font-semibold leading-snug text-gray-900">{{ lineName(line) }}</div>
+                <div v-if="personName(line)" class="mt-0.5 text-[14px] leading-snug text-gray-900">{{ personName(line) }}</div>
+                <div class="mt-1.5 text-[13px] leading-snug text-gray-500">{{ t('language') }}: {{ line.language }}</div>
+                <div class="mt-0.5 text-[13px] leading-snug text-gray-500">{{ t('qty') }}: {{ cardsQty(line.quantity) }}</div>
               </div>
-              <div class="shrink-0 font-semibold text-gray-900">${{ lineAmount(line) }}</div>
-            </div>
-            <div class="mt-1 text-sm text-gray-500">{{ t('language') }}: {{ line.language }}</div>
-            <div class="mt-0.5 text-sm text-gray-500">{{ t('qty') }}: {{ cardsQty(line.quantity) }}</div>
-            <div class="mt-2 flex items-center gap-2">
-              <button
-                type="button"
-                class="rounded border border-gray-200 p-1.5 text-gray-500 hover:bg-gray-50 hover:text-colliers-primary"
-                :aria-label="t('previewCard')"
-                @click="openPreview(line)"
-              >
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-                  <circle cx="11" cy="11" r="7"></circle>
-                  <path d="M20 20l-3.5-3.5"></path>
-                </svg>
-              </button>
-              <button
-                type="button"
-                class="rounded border border-gray-200 p-1.5 text-gray-500 hover:bg-gray-50 hover:text-colliers-primary"
-                :aria-label="t('editItem')"
-                @click="editLine(line)"
-              >
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-                  <path d="M12 20h9"></path>
-                  <path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z"></path>
-                </svg>
-              </button>
+              <div class="flex shrink-0 flex-col items-end gap-2">
+                <div class="text-[15px] font-semibold text-gray-900">${{ lineAmount(line) }}</div>
+                <div class="flex items-center gap-2">
+                  <button
+                    type="button"
+                    class="inline-flex h-8 w-8 items-center justify-center rounded border border-gray-200 text-gray-400 hover:bg-gray-50 hover:text-colliers-primary"
+                    :aria-label="t('previewCard')"
+                    @click="openPreview(line)"
+                  >
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                      <circle cx="11" cy="11" r="7"></circle>
+                      <path d="M20 20l-3.5-3.5"></path>
+                    </svg>
+                  </button>
+                  <button
+                    type="button"
+                    class="inline-flex h-8 w-8 items-center justify-center rounded border border-gray-200 text-gray-400 hover:bg-gray-50 hover:text-colliers-primary"
+                    :aria-label="t('editItem')"
+                    @click="editLine(line)"
+                  >
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                      <path d="M12 20h9"></path>
+                      <path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z"></path>
+                    </svg>
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
         </li>
       </ul>
-      <button
-        type="button"
-        class="mt-4 text-sm font-medium text-colliers-primary hover:text-colliers-primary-hover hover:underline"
-        @click="clearCart"
-      >
-        {{ t('clearCart') }}
-      </button>
+      <div class="mt-6 border-t border-gray-200 pt-4">
+        <button
+          type="button"
+          class="text-[14px] font-medium text-colliers-primary hover:underline"
+          @click="clearCart"
+        >
+          {{ t('clearCart') }}
+        </button>
+      </div>
     </div>
 
     <div slot="footer" class="space-y-3">
-      <div class="space-y-2 border-t border-gray-200 pt-3">
+      <div class="space-y-2">
         <div class="flex justify-between text-sm text-gray-700">
           <span>{{ t('subtotal') }}</span>
           <span>${{ cartTotal.toFixed(2) }}</span>
@@ -70,7 +74,7 @@
           <span>{{ t('shippingHandling') }}</span>
           <span>$0.00</span>
         </div>
-        <div class="flex justify-between border-t border-gray-200 pt-2 font-semibold text-gray-900">
+        <div class="flex justify-between border-t border-gray-200 pt-2 text-[15px] font-semibold text-gray-900">
           <span>{{ t('total') }}</span>
           <span>${{ cartTotal.toFixed(2) }}</span>
         </div>

@@ -69,8 +69,10 @@
 import logoMark from '../assets/colliers-logo-mark.png'
 import wordsEn from '../assets/lockup-words-en.png'
 import wordsFr from '../assets/lockup-words-fr.png'
+import { loadLayoutFonts, getLayoutFontsSync } from '../helpers/cardFonts'
 import {
   CARD_LAYOUT,
+  planProductLayout,
   resolveCardFields,
   trimBottomPct,
   trimLeftPct,
@@ -83,6 +85,25 @@ import {
   previewTeamText,
   previewTitleText,
 } from '../helpers/formatCardIdentity'
+
+function viewFromPlan(layout) {
+  if (!layout || !layout.nameLines) return null
+  return Object.assign({}, layout, {
+    addressText: (layout.address && layout.address.lines ? layout.address.lines : []).join('\n'),
+    addressY: layout.address ? layout.address.bottomY : CARD_LAYOUT.addressBottomY,
+  })
+}
+
+function plannedLayout(details, language, fonts) {
+  if (!fonts) return null
+  var product = planProductLayout(details, language, fonts)
+  var pages = product.pages || []
+  var french = isFrenchLanguage(language)
+  for (var i = 0; i < pages.length; i++) {
+    if (isFrenchLanguage(pages[i].language) === french) return pages[i].layout
+  }
+  return pages[0] && pages[0].layout
+}
 
 function fallbackView(fields) {
   var L = CARD_LAYOUT
@@ -131,6 +152,20 @@ export default {
       default: false,
     },
   },
+  data: function () {
+    return {
+      layoutFonts: getLayoutFontsSync(),
+    }
+  },
+  mounted: function () {
+    if (this.layoutFonts) return
+    var self = this
+    loadLayoutFonts()
+      .then(function (fonts) {
+        self.layoutFonts = fonts
+      })
+      .catch(function () {})
+  },
   computed: {
     logoSrc: function () {
       return logoMark
@@ -168,18 +203,9 @@ export default {
       return (inset / L.trimW) * 100 + '%'
     },
     view: function () {
-      var base
-      if (this.plan && this.plan.nameLines) {
-        base = Object.assign({}, this.plan, {
-          addressText: (this.plan.address && this.plan.address.lines
-            ? this.plan.address.lines
-            : []
-          ).join('\n'),
-          addressY: this.plan.address ? this.plan.address.bottomY : CARD_LAYOUT.addressBottomY,
-        })
-      } else {
-        base = fallbackView(resolveCardFields(this.details, this.language))
-      }
+      var base = viewFromPlan(this.plan)
+      if (!base) base = viewFromPlan(plannedLayout(this.details, this.language, this.layoutFonts))
+      if (!base) base = fallbackView(resolveCardFields(this.details, this.language))
       if (!this.placeholders) return base
       return this.withOptionalPlaceholders(base)
     },
@@ -221,7 +247,7 @@ export default {
       var cred = previewCredentialText(details.degree, details.additionalCredentials, language)
       var next = Object.assign({}, view, {
         title: previewTitleText(details.title, details.region, language),
-        team: previewTeamText(details.specializedTeam),
+        team: previewTeamText(details.specializedTeam, language),
       })
       var address = details.address != null ? String(details.address).trim() : ''
       if (!address) next.addressText = previewAddressText('', language)

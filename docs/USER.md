@@ -57,10 +57,10 @@ Each **page** is a tens ticket. Children are the pieces of that page.
   - [x] **USR-043** Cart badge icon — F-07
   - [x] **USR-044** Clear cart — F-08
   - [x] **USR-045** Change quantity
-  - [ ] **USR-046** Printed-card count (qty × 250)
+  - [x] **USR-046** Printed-card count (qty × 250)
 - [x] **USR-050** Shipping `(ShippingPage.vue)` — F-10
   - [x] **USR-051** Add / remove / select location
-  - [x] **USR-052** Location qty vs cart qty
+  - [x] **USR-052** Location qty vs cart qty (location stepper syncs Selected Items to ship-to sum)
   - [x] **USR-053** Shipping $0, no payment (included in the $63 box fee)
   - [x] **USR-054** Split Order — F-09
   - [x] **USR-055** Cannot remove the last split

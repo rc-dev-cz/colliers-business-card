@@ -1,0 +1,30 @@
+---
+description: Use generic Firstname Lastname in preview/dev data — never real or sensitive personal names
+alwaysApply: true
+---
+
+# Preview / modelDev identity placeholders
+
+When no real card has been selected (Klai builder, `modelDev`, empty Customize/Proof/Cart preview, CardPreview fallbacks), show **generic placeholders only**. Do not use real-looking personal names, job titles, offices, or emails.
+
+## Required placeholders
+
+| Field | English | French |
+| --- | --- | --- |
+| Name | `Firstname Lastname` | `Prénom Nom` |
+| Title / region / team | `Title` / `Region` / `Specialized team` | `Titre` / `Région` / `Équipe spécialisée` |
+| Email | `first.lastname@colliersprojectleaders.com` | `prenom.nom@colliersprojectleaders.com` |
+| Phone | `+1 555 555 5555` (or `555 555 5555`) | same |
+| Address | `Address name` / `Unit, Street` / … | `Nom de l'adresse` / … |
+
+## How to seed `modelDev`
+
+- Prefer **empty** card/proof fields (`name: ""`, `title: ""`, …) so the UI falls back to `SAMPLE_CARD` / CU-07 placeholders.
+- If a filled name is required for the page to render, use **`Firstname Lastname`** only — never Hannah, Alex, Carlos, Sarah, or other person names.
+- Do **not** fill realistic titles, degrees, regions, teams, or real office streets in preview/dev data.
+- Same for cart line `details` on Shipping / Review / Confirmed / CartDrawer sample data.
+
+## Exceptions (allowed)
+
+- **Print PDF layout fixtures** (`src/helpers/approvalSamples.js`, `docs/samples/print-pdf/short-long-examples.json`, approval PNGs) may keep Standard/Maximum stress names for geometry lock only.
+- Do not copy those fixture names into Klai `modelDev` or live preview empty states.

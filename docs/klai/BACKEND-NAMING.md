@@ -4,7 +4,7 @@ Shared reference for frontend and FileMaker: **page name → route → `hookSetN
 
 **Source of truth for hook names:** live Klai Studio when the page exists there; otherwise the **Planned** rows below (from this Cursor/Vue app). FileMaker script names are **convention-derived** from BetterForms (`assistantGuide_fileMaker`), not verified against live FM scripts in this workspace.
 
-Last MCP refresh: 2026-09-23 (Shipping + Review + Confirmed Live UI in Klai).
+Last MCP refresh: 2026-10-01 (Proof page + Customize Preview Proof + CartDrawer preview/edit).
 
 **Status:** Live = in Klai today · Planned = in Cursor/Vue, not in Klai yet.
 
@@ -38,7 +38,8 @@ Bus variables (FileMaker side): `$$BF_Payload`, `$$BF_Model`, `$$BF_Actions`, `$
 | --- | --- | --- | --- | --- | --- | --- |
 | Catalogue | `/` (`default`) | `catalogue` | true | `BF - onFormRequest - catalogue` | Named actions: `goDetails`, `goCustomize` | Live |
 | Product Detail | `/product-detail` | `catalogueitem` | true | `BF - onFormRequest - catalogueitem` | Query `?code=` and `?id=` (`store_catalogue::id`). Page keeps a product when either matches | Live |
-| Customize | `/customize` | `customize` | true | `BF - onFormRequest - customize` | Query `?code=` and `?id=` (`store_catalogue::id`, e.g. `13616` for `CPL-13616`). Client stubs (`loadOffices`, `addToCart`). Print PDF: button → `viewPrintPdf` (anchor download; see [PRINT-PDF.md](../PRINT-PDF.md)) | Live UI |
+| Customize | `/customize` | `customize` | true | `BF - onFormRequest - customize` | Query `?code=` and `?id=`. Form submit is `previewProof` (not add-to-cart). Layout lock + `viewPrintPdf`. Shared draft: `app.proof` | Live UI |
+| Proof | `/proof` | `proof` | false | — | Client-only. Reads `app.proof`. Checkbox then `addProofToCart` / `continueToShipping`. No FileMaker hook | Live UI |
 | Shipping | `/shipping` | `shipping` | true (planned; false in Klai today) | `BF - onFormRequest - shipping` | Load personal + office addresses. Split/qty client until submit. Shared draft: `app.cart` + `app.order` | Live UI |
 | Review | `/review` | `review` | false | — | `submit` → create order → `BF - onUtility - review` | Live UI |
 | Confirmed | `/confirmed` | `confirmed` | false | — | Display-only; clears `app.cart` / `app.order` | Live UI |
@@ -102,6 +103,8 @@ Shapes the request/utility hooks should put on `$$BF_Model` (Klai `model`). Incl
 
 `previewKey` is a path into `previews` for `CardPreview` (`previews.eng` | `previews.fr` | `previews.bil`).
 
+**CardPreview usage:** Catalogue, Product Detail, CartDrawer, and Shipping embed `<bfcomp name="CardPreview" :model="…">`. Customize and Proof **inline** the same face (live `model.card` / `model.proof.details`) because `bfcomp` scopes/clones `model` and does not track form edits. Do **not** add Catalogue or Admin Home page namedActions for preview layout — that lives on the component (`onUpdated` / `onMount`). HTML also falls back to CU-07 samples when `name` is empty.
+
 **Card** — customize form. `degree` is always an array (max 2). `websiteFr` is the French face URL.
 
 ```json
@@ -129,18 +132,31 @@ Shapes the request/utility hooks should put on `$$BF_Model` (Klai `model`). Incl
 ```json
 {
   "id": "1",
-  "addressName": "Toronto — Bay Street",
-  "addressStreet": "181 Bay Street",
+  "addressName": "Toronto Office",
+  "addressStreet": "1400-181 Bay Street",
   "addressStreet2": "",
   "addressCity": "Toronto",
   "addressProvince": "ON",
-  "addressPostalZip": "M5J 2T3",
+  "addressPostalZip": "M5J 2V1",
   "addressCountry": "Canada",
-  "line": "181 Bay Street, Toronto, ON M5J 2T3"
+  "line": "1400-181 Bay Street, Toronto, ON M5J 2V1"
 }
 ```
 
 `line` is optional (comma-separated for lists). Customize builds `card.address` from the Address fields (name, street, street 2, city/province, postal and country). Do not use `line` as the card face.
+
+**Proof** (`app.proof`) — same card `details` as Customize, plus product `code` / `language` / `quantity`. Proof is client-only (`hookSetName: proof`, `requestHook: false`).
+
+```json
+{
+  "code": "BCAD-PL-ENG",
+  "language": "English",
+  "quantity": 1,
+  "details": {}
+}
+```
+
+**CartDrawer** — not a page. Component `CartDrawer` on the site header. Line qty is boxes; UI shows `qty * 250` cards plus person name. Preview navigates to `/proof`; edit sets `app.editLineId` and opens Customize.
 
 **Order**
 
@@ -269,7 +285,7 @@ FileMaker should return the same Product rows as Catalogue (`products`, or the o
 }
 ```
 
-`itemIds` point at `cart[].id` so a card can move between shipping groups without copying the line. Location `qty` is boxes to that address and does **not** change cart quantity.
+`itemIds` point at `cart[].id` so a card can move between shipping groups without copying the line. Location `qty` is boxes to that address. Changing location qty syncs cart quantity to the sum of ship-to qtys (up, down, or clear when empty).
 
 **Shipping** (`shipping`) — planned request load (`personalAddresses`, `offices`, `products`). Client keeps cart/splits.
 
@@ -430,7 +446,8 @@ Tiles are UI-only. Counts may come from this object or from loading the three li
 - **Address Book** — wire `create` / `update` / `delete` utilities; load already uses request hook.
 - **Customize / Product Detail** — Catalogue opens both with `?code=` and `?id=` (`store_catalogue::id`, such as `13616` for `CPL-13616`). If `product.id` is missing, the click uses the trailing number on `code`. Each page shows the form from that query even when the dev product list does not contain the code. FileMaker should still set `model.product` with the same `code`.
 - **Print PDF** — Customize button → `viewPrintPdf` (anchor download). FM base64 → Mark’s Press later ([PRINT-PDF.md](../PRINT-PDF.md)).
-- **Shipping / Review / Confirmed** — Live UI. Turn on Shipping `requestHook` when FM fills addresses; Review `submit` utility still a stub until FM creates the order.
+- **Proof** — Live UI at `/proof`. No request hook. Cart is still a drawer (`CartDrawer`); preview/edit on a line opens Proof or Customize.
+- **Review** — Live UI uses person name + card qty (`qty * 250`), `printOrder`, Place Order. Turn on Shipping `requestHook` when FM fills addresses; Review `submit` is still a stub until FM creates the order.
 - **Admin pages** — Admin Home (`admin`), Admin Order History (`adminorders`), Invoice History (`admininvoices`), Reporting (`adminreporting`), Manage Addresses (`adminaddresses`), Manage Designations (`admintitles`), and Manage Degrees (`admindegrees`) are Live UI. Confirm live FM script names when Mike builds them.
 - **Catalogue** — confirm live products payload matches `modelDev` shape.
 - **Script names** — confirm live FM scripts match `BF - onFormRequest - <hookSetName>` / `BF - onUtility - <hookSetName>`; update this doc if they differ.

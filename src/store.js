@@ -6,7 +6,6 @@ import {
   cartSubtotal,
   cloneCardDetails,
   consolidateCart,
-  cloneLine,
   makeLine,
   sameDetails,
 } from './helpers/cart'
@@ -17,6 +16,7 @@ import {
   linesForSplit,
   moveItem,
   normalizeOrder,
+  syncCartBoxesToAssigned,
   removeLocation as spliceLocation,
   removeSplitAt,
   resetOrder,
@@ -249,15 +249,26 @@ export function setProof(payload) {
     Vue.set(store, 'proof', null)
     return
   }
+  var editId =
+    payload.editLineId != null
+      ? payload.editLineId
+      : store.editLineId
+  if (editId != null && editId !== '') {
+    store.editLineId = editId
+  }
   Vue.set(store, 'proof', {
     code: payload.code,
     language: payload.language || '',
     details: cloneCardDetails(payload.details),
+    editLineId: store.editLineId,
   })
 }
 
 export function setEditLineId(id) {
   store.editLineId = id || null
+  if (store.proof && store.editLineId) {
+    Vue.set(store.proof, 'editLineId', store.editLineId)
+  }
 }
 
 export function addToCart(payload, options) {
@@ -303,14 +314,27 @@ function findCartLineForProof(proof) {
   })
 }
 
+function findCartLineById(id) {
+  if (id == null || id === '') return null
+  return (
+    store.cart.find(function (item) {
+      return String(item.id) === String(id)
+    }) || null
+  )
+}
+
+function clearEditLine() {
+  store.editLineId = null
+  if (store.proof) Vue.set(store.proof, 'editLineId', null)
+}
+
 function applyProofToCart(options) {
   const proof = store.proof
   const opts = options || {}
   if (!proof || !proof.code) return
-  if (store.editLineId) {
-    const line = store.cart.find(function (item) {
-      return item.id === store.editLineId
-    })
+  const editId = store.editLineId || proof.editLineId
+  if (editId != null && editId !== '') {
+    const line = findCartLineById(editId)
     if (line) {
       line.code = proof.code
       line.language = proof.language || line.language
@@ -318,11 +342,12 @@ function applyProofToCart(options) {
       const product = getProduct(proof.code)
       if (product) line.price = product.price
       persistCart()
-      store.editLineId = null
+      syncAssignments()
+      clearEditLine()
       if (opts.openCart) store.cartOpen = true
       return
     }
-    store.editLineId = null
+    clearEditLine()
   }
   const existing = findCartLineForProof(proof)
   if (existing) {
@@ -399,34 +424,14 @@ export function syncAssignments() {
   persistOrder()
 }
 
-export function splitOrder(splitIndex) {
+export function splitOrder() {
   syncAssignments()
-  const source = store.order.splits[splitIndex]
-  const newItemIds = []
-  if (source && source.itemIds.length) {
-    source.itemIds.forEach(function (id) {
-      const clone = cloneLine(store.cart, id)
-      if (clone) {
-        store.cart.push(clone)
-        newItemIds.push(clone.id)
-      }
-    })
-  }
-  addSplit(store.order, newItemIds)
-  persistCart()
+  addSplit(store.order, [])
   persistOrder()
 }
 
 export function removeSplit(index) {
-  const ids = removeSplitAt(store.order, index)
-  if (!ids.length) return
-  ids.forEach(function (id) {
-    const rowIndex = store.cart.findIndex(function (line) {
-      return String(line.id) === String(id)
-    })
-    if (rowIndex !== -1) store.cart.splice(rowIndex, 1)
-  })
-  persistCart()
+  removeSplitAt(store.order, index)
   persistOrder()
 }
 
@@ -440,6 +445,16 @@ export function assignLine(split, itemId) {
   persistOrder()
 }
 
+export function cartLinesOutsideSplit(split) {
+  const ids = {}
+  ;(split && split.itemIds ? split.itemIds : []).forEach(function (id) {
+    ids[String(id)] = true
+  })
+  return store.cart.filter(function (line) {
+    return !ids[String(line.id)]
+  })
+}
+
 export function addCartItemToSplit(split) {
   store.pendingSplitId = split && split.id != null ? split.id : null
   go('catalog')
@@ -450,8 +465,33 @@ export function addShipLocation(split, address, qty) {
   persistOrder()
 }
 
+function dropZeroQtyLines(ids) {
+  if (!ids || !ids.length) return
+  var drop = {}
+  ids.forEach(function (id) {
+    drop[String(id)] = true
+  })
+  store.cart = store.cart.filter(function (item) {
+    return !drop[String(item.id)]
+  })
+  ids.forEach(function (id) {
+    unassignItem(store.order, id)
+  })
+}
+
+/**
+ * After ship-to delete/uncheck/modal sync: Selected Items = sum of remaining
+ * location qtys. Empty ship-to clears leftover cart qty for this group.
+ */
+export function syncCartToAssignedForSplit(split) {
+  var zeroIds = syncCartBoxesToAssigned(store.cart, split)
+  dropZeroQtyLines(zeroIds)
+  persistCart()
+}
+
 export function removeShipLocation(split, index) {
   spliceLocation(split, index)
+  syncCartToAssignedForSplit(split)
   persistOrder()
 }
 

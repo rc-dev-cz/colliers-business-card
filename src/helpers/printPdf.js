@@ -10,6 +10,7 @@ import {
 } from './cardLayout.js'
 import {
   formatCredentialSuffix,
+  isBilingualLanguage,
   previewAddressText,
   previewCredentialText,
 } from './formatCardIdentity.js'
@@ -287,9 +288,10 @@ export async function buildPrintPdfBytes(details, language) {
   pdfDoc.registerFontkit(fontkit)
   var assets = await embedPrintAssets(pdfDoc)
 
+  var bilingual = isBilingualLanguage(language)
   productPlan.pages.forEach(function (pagePlan) {
     drawCardPage(pdfDoc, pagePlan, assets)
-    drawCardBack(pdfDoc, assets)
+    if (!bilingual) drawCardBack(pdfDoc, assets)
   })
 
   return pdfDoc.save()

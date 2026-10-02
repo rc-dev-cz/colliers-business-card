@@ -37,14 +37,15 @@
             </div>
           </div>
         </div>
-        <button type="button" class="btn-outline mt-4 w-full" @click="BF.namedAction('viewPrintPdf')">{{ BF.i18n('label_colliers_viewPrintPdf') }}</button>
+        <p v-if="model.layoutError" class="mt-3 text-sm text-red-600">{{ model.layoutError }}</p>
+        <button type="button" class="btn-outline mt-4 w-full" :disabled="!model.layoutReady" @click="BF.namedAction('viewPrintPdf')">{{ BF.i18n('label_colliers_viewPrintPdf') }}</button>
       </div>
       <div class="min-w-0 flex-1">
         <div class="mb-6 flex items-start justify-between gap-4">
           <h1 class="colliers-page-title text-[28px] font-semibold tracking-tight text-[#0a1a3a]">{{ BF.i18n('label_colliers_customizeDetails') }}</h1>
           <button type="button" class="shrink-0 text-sm text-gray-500 underline-offset-2 hover:text-gray-800 hover:underline" @click="model.card.emailEdited = false; BF.namedAction('clearDesign')">{{ BF.i18n('label_colliers_clearDesign') }}</button>
         </div>
-        <form class="space-y-4" @submit.prevent="BF.namedAction('addToCart')">
+        <form class="space-y-4" @submit.prevent="BF.namedAction('previewProof')">
           <div>
             <label class="field-label text-[14px] font-normal text-gray-700" for="card-name">{{ BF.i18n('label_colliers_fullName') }}</label>
             <input id="card-name" class="field-input" maxlength="30" v-model="model.card.name" @input="BF.namedAction('wrapCardName')" />
@@ -93,7 +94,10 @@
           </div>
           <div>
             <label class="field-label text-[14px] font-normal text-gray-700" for="card-region">{{ BF.i18n('label_colliers_regionOptional') }}</label>
-            <input id="card-region" class="field-input" v-model="model.card.region" />
+            <select id="card-region" class="field-input" v-model="model.card.region">
+              <option value="">{{ BF.i18n('label_colliers_selectRegion') }}</option>
+              <option v-for="opt in (model.regionOptions || [])" :key="opt" :value="opt">{{ opt }}</option>
+            </select>
           </div>
           <div>
             <label class="field-label text-[14px] font-normal text-gray-700" for="card-team">{{ BF.i18n('label_colliers_specializedTeamOptional') }}</label>
@@ -127,7 +131,7 @@
             <label class="field-label text-[14px] font-normal text-gray-700" for="card-company">{{ BF.i18n('label_colliers_companyName') }}</label>
             <input id="card-company" class="field-input" :value="model.card.company" disabled />
           </div>
-          <button type="submit" class="btn-primary w-full">{{ BF.i18n('label_addToCart') }}</button>
+          <button type="submit" class="btn-primary w-full" :disabled="!model.canPreviewProof">{{ BF.i18n('label_colliers_previewProof') }}</button>
         </form>
       </div>
     </div>

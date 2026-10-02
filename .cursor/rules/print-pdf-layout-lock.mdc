@@ -34,9 +34,11 @@ Treat the current generated print PDF and approval sheets as **locked**. Do not 
 
 - Do **not** redraw the card as field blocks, UI wireframes, or spacing rectangles.
 - Do **not** invent gaps from bounding-box edges (“8 pt empty band”).
-- Email / website must fit **one line ≤ 130 pt**; character count alone is not enough.
+- Website must fit **one line ≤ 130 pt**. Email may use **≤ 132 pt** so real Colliers first.lastname addresses fit; character count alone is not enough.
 - Name wraps by whole words, max **2 lines**; layout may fail under 50 characters.
-- Optional rows omit; do not redistribute vertical space to fill the card.
+- Optional rows omit when empty. On Standard (no own-row credentials), name/title stay on MASTER Ys (75.49 / 66.99). Unused air between title (or team) and the bottom-locked email is the client-approved short-card gap. Do not pack short cards up from email.
+- Own-row / Maximum: if team (or the last identity line) would sit tighter than the Standard team→email gap (`emailGapMin` 15.99 pt), lift the identity block so the last line is at **58.99**. Contacts stay bottom-locked (email 43 / mobile 35 / website 27). Cynthia Oct 2026: extra space above email on the long card.
+- Website / last address line share baseline Y = 27. Email and mobile stack up at 8 pt.
 - Maximum approval is a **valid stress case**, not an overflow demo.
 - Keep Standard / Maximum fixtures and approval PNGs in sync after any intentional layout change.
 

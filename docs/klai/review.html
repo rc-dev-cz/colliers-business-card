@@ -1,42 +1,78 @@
 <div id="review-root" class="colliers-page-root px-4 py-8 sm:px-6 lg:px-8">
-  <button type="button" class="mb-4 inline-flex items-center gap-1 text-sm text-gray-600 hover:text-gray-900" @click="BF.namedAction('goBack')"><span aria-hidden="true">&lsaquo;</span> {{ BF.i18n('label_colliers_back') }}</button>
+  <div class="mb-4 flex flex-wrap items-center justify-between gap-3">
+    <button type="button" class="inline-flex items-center gap-1 text-sm text-gray-600 hover:text-gray-900" @click="BF.namedAction('goBack')">
+      <span aria-hidden="true">&lsaquo;</span> {{ BF.i18n('label_colliers_backToShipping') }}
+    </button>
+    <button type="button" class="btn-secondary" @click="BF.namedAction('printOrder')">
+      <svg class="mr-2 h-4 w-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+        <path d="M6 9V2h12v7"></path>
+        <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
+        <path d="M6 14h12v8H6z"></path>
+      </svg>
+      {{ BF.i18n('label_colliers_printOrder') }}
+    </button>
+  </div>
   <div class="colliers-page-header">
     <h1 class="colliers-page-title">{{ BF.i18n('label_colliers_reviewOrder') }}</h1>
-    <button type="button" class="btn-primary" :disabled="!model.cart.length || model.submitting" @click="BF.namedAction('submitOrder')">{{ BF.i18n('label_colliers_confirmOrder') }}</button>
   </div>
   <p v-if="model.submitError" class="colliers-form-error mb-4">{{ model.submitError }}</p>
   <div v-if="!model.cart.length" class="py-16 text-center text-gray-500">{{ BF.i18n('label_colliers_cartEmpty') }}</div>
   <div v-else class="space-y-6">
-    <section class="overflow-hidden rounded-xl border border-gray-200 bg-white p-4 shadow-sm sm:p-6">
-      <h2 class="mb-4 text-lg font-semibold text-gray-900">{{ BF.i18n('label_colliers_selectedItems') }}</h2>
-      <ul class="space-y-3">
-        <li v-for="line in model.view.lines" :key="line.id" class="flex items-start justify-between gap-3 border-b border-gray-100 pb-3">
-          <div>
-            <div class="font-medium text-gray-900">{{ line.name }}</div>
-            <div class="text-sm text-gray-500">{{ BF.i18n('label_colliers_qty') }}: {{ line.quantity }} · {{ line.language }}</div>
-          </div>
-          <div class="font-semibold text-gray-900">${{ line.amount }}</div>
-        </li>
-      </ul>
-      <div class="mt-4 flex justify-between font-semibold text-gray-900">
+    <section v-for="(split, splitIndex) in model.view.splits" :key="split.id" class="overflow-hidden rounded-xl border border-gray-200 bg-white p-4 shadow-sm sm:p-6">
+      <h2 class="mb-4 border-b border-gray-200 pb-3 text-base font-semibold text-gray-900">{{ BF.i18n('label_colliers_shipment') }} {{ splitIndex + 1 }}</h2>
+      <h3 class="mb-3 text-sm font-semibold text-gray-900">{{ BF.i18n('label_colliers_itemsHeading') }}</h3>
+      <div class="overflow-x-auto">
+        <table class="w-full min-w-[32rem] text-left text-sm">
+          <thead>
+            <tr class="border-b border-gray-100 text-gray-400">
+              <th class="pb-2 pr-4 font-medium">{{ BF.i18n('label_colliers_item') }}</th>
+              <th class="pb-2 px-2 text-right font-medium">{{ BF.i18n('label_colliers_qty') }}</th>
+              <th class="pb-2 px-2 text-right font-medium">{{ BF.i18n('label_colliers_price') }}</th>
+              <th class="pb-2 pl-2 text-right font-medium">{{ BF.i18n('label_colliers_total') }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="line in split.lines" :key="line.id" class="border-b border-gray-50">
+              <td class="py-3 pr-4 align-top">
+                <div class="font-medium text-gray-900">{{ line.name }}</div>
+                <div v-if="line.personName" class="mt-0.5 text-sm text-gray-500">{{ line.personName }}</div>
+              </td>
+              <td class="px-2 py-3 text-right align-top text-gray-700">{{ line.cardsQty }}</td>
+              <td class="px-2 py-3 text-right align-top text-gray-700">${{ line.unitPrice }}</td>
+              <td class="py-3 pl-2 text-right align-top font-medium text-gray-900">${{ line.amount }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="mt-4 flex justify-end gap-6 text-sm font-semibold text-gray-900">
+        <span>{{ BF.i18n('label_colliers_subtotal') }}</span>
+        <span>${{ split.subtotal }}</span>
+      </div>
+      <div class="mt-6 border-t border-gray-100 pt-5">
+        <h3 class="mb-3 text-sm font-semibold text-gray-900">{{ BF.i18n('label_colliers_shippingTo') }}</h3>
+        <ul v-if="split.locations && split.locations.length" class="space-y-2">
+          <li v-for="loc in split.locations" :key="loc.id" class="grid grid-cols-[1fr_auto] gap-4 text-sm text-gray-700">
+            <span>{{ loc.address || BF.i18n('label_colliers_enterAddress') }}</span>
+            <span class="min-w-[3rem] text-right tabular-nums">{{ loc.cardsQty }}</span>
+          </li>
+        </ul>
+        <p v-else class="text-sm text-gray-500">{{ BF.i18n('label_colliers_noShipToAddresses') }}</p>
+      </div>
+    </section>
+    <aside class="ml-auto w-full max-w-sm overflow-hidden rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
+      <div class="flex justify-between text-sm text-gray-700">
+        <span>{{ BF.i18n('label_colliers_subtotal') }}</span>
+        <span>${{ model.view.totals.subtotal }}</span>
+      </div>
+      <div class="mt-2 flex justify-between text-sm text-gray-700">
+        <span>{{ BF.i18n('label_colliers_shipping') }}</span>
+        <span>{{ BF.i18n('label_colliers_shippingTbd') }}</span>
+      </div>
+      <div class="mt-4 flex justify-between border-t border-gray-200 pt-4 text-base font-semibold text-colliers-primary">
         <span>{{ BF.i18n('label_colliers_total') }}</span>
         <span>${{ model.view.totals.subtotal }}</span>
       </div>
-      <div class="mt-1 flex justify-between text-sm text-gray-500">
-        <span>{{ BF.i18n('label_colliers_shippingHandling') }}</span>
-        <span>$0.00</span>
-      </div>
-    </section>
-    <section v-for="(split, splitIndex) in model.view.splits" :key="split.id" class="overflow-hidden rounded-xl border border-gray-200 bg-white p-4 shadow-sm sm:p-6">
-      <h2 class="mb-3 text-lg font-semibold text-gray-900">{{ BF.i18n('label_colliers_shipping') }} {{ splitIndex + 1 }}</h2>
-      <p class="mb-2 text-sm text-gray-500">{{ BF.i18n('label_colliers_selectedItems') }}</p>
-      <ul class="mb-4 list-disc space-y-1 pl-5 text-sm text-gray-700">
-        <li v-for="line in split.lines" :key="line.id">{{ line.name }} × {{ line.quantity }}</li>
-      </ul>
-      <p class="mb-2 text-sm text-gray-500">{{ BF.i18n('label_colliers_shipToAddress') }}</p>
-      <ul class="list-disc space-y-1 pl-5 text-sm text-gray-700">
-        <li v-for="loc in split.locations" :key="loc.id">{{ loc.address || BF.i18n('label_colliers_enterAddress') }} · {{ BF.i18n('label_colliers_qty') }} {{ loc.qty }}</li>
-      </ul>
-    </section>
+      <button type="button" class="btn-primary mt-5 w-full" :disabled="!model.cart.length || model.submitting" @click="BF.namedAction('submitOrder')">{{ BF.i18n('label_colliers_placeOrder') }}</button>
+    </aside>
   </div>
 </div>

@@ -64,10 +64,11 @@ export function catalogCodeFromLine(line) {
   return 'BCAD-PL-ENG'
 }
 
-/** Seed for Manage Designations / Customize titleOptions until FileMaker loads. */
+/** Seed for Manage Titles / Customize titleOptions until FileMaker loads. */
 export const jobTitles = [
   'Associate',
   'Associate Director',
+  'Business Services Administrator',
   'Senior Associate',
   'Vice President',
   'Managing Director',

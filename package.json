@@ -12,6 +12,7 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "export:print-pdfs": "vitest run src/helpers/printPdf.samples.spec.js",
+    "export:print-pdf-json": "vitest run src/helpers/printPdf.shortLong.spec.js",
     "export:approval-guide": "vitest run src/helpers/printPdf.approval.spec.js && python3 scripts/render-approval-guide.py"
   },
   "engines": {

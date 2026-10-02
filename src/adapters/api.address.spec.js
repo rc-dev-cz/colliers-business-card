@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest'
 import { formatAddressCard } from '../adapters/api.js'
 
 describe('formatAddressCard', function () {
-  it('puts name and suite on the first line, then street', function () {
+  it('prints street then suite, never the office name', function () {
     expect(
       formatAddressCard({
         addressName: 'TD Tower',
@@ -13,10 +13,10 @@ describe('formatAddressCard', function () {
         addressPostalZip: 'T5J 2Z1',
         addressCountry: 'Canada',
       }),
-    ).toBe('TD Tower, Suite 1703\n10088 102 Avenue NW\nEdmonton, AB\nT5J 2Z1 Canada')
+    ).toBe('10088 102 Avenue NW\nSuite 1703\nEdmonton, AB\nT5J 2Z1 Canada')
   })
 
-  it('keeps a trailing comma on the street when there is no name', function () {
+  it('prints street then unit when there is no name', function () {
     expect(
       formatAddressCard({
         addressName: '',
@@ -27,21 +27,21 @@ describe('formatAddressCard', function () {
         addressPostalZip: 'H3A 3J6',
         addressCountry: 'Canada',
       }),
-    ).toBe('1800 Avenue McGill College,\nbureau 410\nMontréal, QC\nH3A 3J6 Canada')
+    ).toBe('1800 Avenue McGill College\nbureau 410\nMontréal, QC\nH3A 3J6 Canada')
   })
 
-  it('shows the office name then street when there is no suite', function () {
+  it('omits the office name when there is no suite', function () {
     expect(
       formatAddressCard({
-        addressName: 'Toronto -- Bay Street',
-        addressStreet: '181 Bay Street',
+        addressName: 'Toronto Office',
+        addressStreet: '1400-181 Bay Street',
         addressStreet2: '',
         addressCity: 'Toronto',
         addressProvince: 'ON',
-        addressPostalZip: 'M5J 2T3',
+        addressPostalZip: 'M5J 2V1',
         addressCountry: 'Canada',
       }),
-    ).toBe('Toronto -- Bay Street\n181 Bay Street\nToronto, ON\nM5J 2T3 Canada')
+    ).toBe('1400-181 Bay Street\nToronto, ON\nM5J 2V1 Canada')
   })
 
   it('omits empty name and suite lines', function () {

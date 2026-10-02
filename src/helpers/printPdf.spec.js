@@ -69,13 +69,13 @@ describe('printPdf', function () {
   it('still builds a PDF when the address is left empty', async function () {
     var bytes = await buildPrintPdfBytes(Object.assign({}, base, { address: '' }), 'Bilingual')
     var doc = await PDFDocument.load(bytes)
-    expect(doc.getPageCount()).toBe(4)
+    expect(doc.getPageCount()).toBe(2)
   })
 
   it('builds bilingual pages only after both layouts validate', async function () {
     var bytes = await buildPrintPdfBytes(base, 'Bilingual')
     var doc = await PDFDocument.load(bytes)
-    expect(doc.getPageCount()).toBe(4)
+    expect(doc.getPageCount()).toBe(2)
   })
 
   it('builds a PDF for a long two-line name within the 50-character field limit', async function () {

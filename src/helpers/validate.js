@@ -63,14 +63,14 @@ export function formatCanadianLocal(digits) {
   return source.slice(0, 3) + ' ' + source.slice(3, 6) + '-' + source.slice(6)
 }
 
-/** Card preview / PDF: always show Canadian +1 with spaced local number. */
+/** Card preview / PDF: Canadian 10-digit local, spaced, no country code. */
 export function formatCardPhone(value) {
   if (!value) return ''
   var cleaned = String(value).replace(/\D/g, '')
   var local = cleaned
   if (cleaned.length === 11 && cleaned.charAt(0) === '1') local = cleaned.slice(1)
   if (local.length === 10) {
-    return '+1 ' + local.slice(0, 3) + ' ' + local.slice(3, 6) + ' ' + local.slice(6)
+    return local.slice(0, 3) + ' ' + local.slice(3, 6) + ' ' + local.slice(6)
   }
   return String(value)
 }

@@ -45,16 +45,17 @@ beforeAll(async function () {
 })
 
 describe('planCardLayout', function () {
-  it('one-line name, no credentials uses title 66.99 and team 58.99', function () {
+  it('one-line name, no credentials keeps MASTER name/title Ys and bottom-locked contacts', function () {
     var layout = plan({})
     expect(layout.valid).toBe(true)
     expect(layout.credMode).toBe('none')
-    expect(layout.lastNameY).toBe(L.nameY)
+    expect(layout.lastNameY).toBe(75.49)
     expect(layout.titleY).toBe(66.99)
     expect(layout.teamY).toBe(58.99)
-    expect(layout.emailY).toBe(42.99)
-    expect(layout.phoneY).toBe(34.99)
-    expect(layout.websiteY).toBe(26.99)
+    expect(layout.emailY).toBe(43)
+    expect(layout.phoneY).toBe(35)
+    expect(layout.websiteY).toBe(27)
+    expect(layout.websiteY).toBe(layout.address.bottomY)
     expect(layout.emailY - layout.phoneY).toBeCloseTo(L.bodyLineHeight)
     expect(layout.phoneY - layout.websiteY).toBeCloseTo(L.bodyLineHeight)
   })
@@ -70,7 +71,7 @@ describe('planCardLayout', function () {
       'Postal Code, Country',
     ])
     expect(layout.titleY).toBe(66.99)
-    expect(layout.teamY).toBe(58.99)
+    expect(layout.lastNameY).toBe(75.49)
     expect(layout.credentialLine).toBe('')
   })
 
@@ -92,7 +93,20 @@ describe('planCardLayout', function () {
     expect(layout.inlineCredential).toBe(', CPA')
     expect(layout.credentialLine).toBe('')
     expect(layout.titleY).toBe(66.99)
+    expect(layout.lastNameY).toBe(75.49)
+    expect(layout.emailY).toBe(43)
+    expect(layout.phoneY).toBe(35)
+    expect(layout.websiteY).toBe(27)
+  })
+
+  it('draws specialized team at 58.99 when present without moving contacts', function () {
+    var layout = plan({ specializedTeam: 'Business Services' })
+    expect(layout.valid).toBe(true)
+    expect(layout.team).toBe('Business Services')
     expect(layout.teamY).toBe(58.99)
+    expect(layout.titleY).toBe(66.99)
+    expect(layout.lastNameY).toBe(75.49)
+    expect(layout.emailY).toBe(43)
   })
 
   it('moves the entire credential string to its own row when it cannot sit on the name', function () {
@@ -111,6 +125,23 @@ describe('planCardLayout', function () {
     expect(layout.credentialY).toBe(66.99)
     expect(layout.titleY).toBe(58.99)
     expect(layout.teamY).toBe(50.99)
+  })
+
+  it('lifts own-row + team so there is a blank line above email', function () {
+    var cred = padToWidth(fonts.fontBold, L.credentialSize, L.identityWidth - 8, 'Arch. Tech ')
+    var layout = plan({
+      additionalCredentials: cred,
+      specializedTeam: 'Business Services',
+    })
+    expect(layout.valid).toBe(true)
+    expect(layout.credMode).toBe('own-row')
+    expect(layout.teamY).toBe(L.teamYNoCred)
+    expect(layout.titleY).toBeCloseTo(L.titleYNoCred)
+    expect(layout.credentialY).toBeCloseTo(L.credentialY + (L.teamYNoCred - L.teamYWithCred))
+    expect(layout.teamY - layout.emailY).toBeCloseTo(L.emailGapMin)
+    expect(layout.emailY).toBe(43)
+    expect(layout.phoneY).toBe(35)
+    expect(layout.websiteY).toBe(27)
   })
 
   it('two-line name keeps the last line at 75.49 and grows upward', function () {
@@ -162,10 +193,14 @@ describe('planCardLayout', function () {
     expect(layout.nameLines.length).toBe(2)
     expect(layout.credMode).toBe('own-row')
     expect(layout.nameLineYs[0]).toBeLessThan(L.lockupY)
-    expect(layout.teamY).toBeGreaterThan(layout.emailY)
+    expect(layout.titleY).toBe(58.99)
+    expect(layout.emailY).toBe(43)
+    expect(layout.phoneY).toBe(35)
+    expect(layout.websiteY).toBe(27)
+    expect(layout.websiteY).toBe(layout.address.bottomY)
   })
 
-  it('fits the ICT sample email in the 130 pt lane with ~18 pt remaining to trim', function () {
+  it('fits the ICT sample email in the identity lane with ~18 pt remaining to trim', function () {
     var email = 'first.lastname@colliersprojectleaders.com'
     expect(fitsLine(fonts.font, email, L.bodySize, L.emailMaxWidth)).toBe(true)
     var layout = plan({ email: email })
@@ -174,11 +209,23 @@ describe('planCardLayout', function () {
     var used = fonts.font.widthOfTextAtSize(email, L.bodySize)
     var remainingToTrim = L.bleed + L.trimW - (L.identityX + used)
     expect(remainingToTrim).toBeGreaterThan(18)
-    expect(L.emailMaxWidth).toBe(130)
+    expect(L.emailMaxWidth).toBe(132)
     expect(L.identityWidth).toBe(130)
   })
 
-  it('rejects an email that is within 50 characters but wider than 130 pt', function () {
+  it('fits hannah.sharpe@colliersprojectleaders.com on one email line', function () {
+    var email = 'hannah.sharpe@colliersprojectleaders.com'
+    expect(email.length).toBeLessThanOrEqual(50)
+    expect(fitsLine(fonts.font, email, L.bodySize, L.emailMaxWidth)).toBe(true)
+    var layout = plan({ email: email })
+    expect(layout.valid).toBe(true)
+    expect(layout.errors).not.toContain(LAYOUT_ERROR.email)
+    var used = fonts.font.widthOfTextAtSize(email, L.bodySize)
+    expect(used).toBeGreaterThan(130)
+    expect(used).toBeLessThanOrEqual(L.emailMaxWidth)
+  })
+
+  it('rejects an email that is within 50 characters but wider than the email lane', function () {
     var wide = 'WWWWWWWWWW@colliersprojectleaders.comWWWW'
     expect(wide.length).toBeLessThanOrEqual(50)
     expect(fitsLine(fonts.font, wide, L.bodySize, L.emailMaxWidth)).toBe(false)

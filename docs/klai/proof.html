@@ -1,0 +1,61 @@
+<div id="proof-root" class="colliers-page-root px-4 py-8 sm:px-6 lg:px-8">
+  <div v-if="!model.product || !model.product.code || !model.proof || !model.proof.code" class="py-20 text-center text-gray-500">{{ BF.i18n('label_colliers_productNotFound') }}</div>
+  <div v-else>
+    <button type="button" class="mb-6 inline-flex items-center gap-1 text-sm text-gray-600 hover:text-gray-900" @click="BF.namedAction('goCustomize')">
+      <span aria-hidden="true">&lsaquo;</span> {{ BF.i18n('label_colliers_back') }}
+    </button>
+    <div class="flex flex-col gap-10 lg:flex-row lg:items-start lg:gap-12">
+      <div class="w-full min-w-0 lg:flex-[1.35]">
+        <h2 class="mb-4 text-lg font-bold text-[#25408F]">{{ BF.i18n('label_colliers_cardPreview') }}</h2>
+        <div class="space-y-5">
+          <div
+            v-for="previewLang in (['Bilingual','Bilingue'].indexOf((model.product && model.product.language) || '') >= 0 ? ['English','French'] : [((model.product && model.product.language) || 'English')])"
+            :key="previewLang"
+            class="card-preview-frame card-preview-frame--proof"
+          >
+            <div id="colliersCardPreview" class="relative aspect-[1.75/1] w-full overflow-hidden rounded-md border border-gray-200 bg-white font-sans text-[#4A4A4A] shadow-sm" style="container-type: inline-size">
+              <img src="https://5t61ut5p19.ucarecd.net/56be9cc0-c8e8-4203-b43f-02a1ba2e1be3/" alt="Colliers" class="absolute object-contain" style="left: 6.968%; bottom: 69.306%; width: 18.488%; height: 18.417%" />
+              <img
+                :src="['French','Français','FR'].indexOf(previewLang) >= 0 ? 'https://5t61ut5p19.ucarecd.net/e4267105-701e-4bd0-a30e-4d7360eef476/' : 'https://5t61ut5p19.ucarecd.net/90e9de45-e966-414c-a05f-d7b537acfb35/'"
+                :alt="['French','Français','FR'].indexOf(previewLang) >= 0 ? 'Maîtres de projets' : 'Project Leaders'"
+                class="absolute"
+                :style="['French','Français','FR'].indexOf(previewLang) >= 0 ? 'left: 27.873%; bottom: 70.347%; width: 18.044%; height: 15.083%' : 'left: 27.917%; bottom: 72.125%; width: 13.96%; height: 13.083%'"
+              />
+              <div
+                v-for="(line, idx) in (model.proof.details && model.proof.details.nameLines && model.proof.details.nameLines.length ? model.proof.details.nameLines : [(model.proof.details && model.proof.details.name) || (['French','Français','FR'].indexOf(previewLang) >= 0 ? 'Prénom Nom' : 'Firstname Lastname')])"
+                :key="'name-' + idx"
+                class="absolute whitespace-nowrap font-bold leading-none text-[#03438C]"
+                :style="'left: 41.28%; right: 6%; bottom: ' + (46.17 + (((model.proof.details && model.proof.details.nameLines && model.proof.details.nameLines.length) ? model.proof.details.nameLines.length : 1) - 1 - idx) * 7.64) + '%; font-size: min(3.7cqw, 18px)'"
+              >
+                <span>{{ line }}</span><span v-if="idx === ((model.proof.details && model.proof.details.nameLines && model.proof.details.nameLines.length) ? model.proof.details.nameLines.length : 1) - 1 && model.proof.details && model.proof.details.inlineCredential" class="align-baseline font-bold" style="font-size: 0.7em">{{ model.proof.details.inlineCredential }}</span>
+              </div>
+              <div v-if="model.proof.details && model.proof.details.credentialLine" class="absolute whitespace-nowrap font-bold leading-none text-[#03438C]" style="left: 41.28%; right: 6%; bottom: 40.27%; font-size: min(2.6cqw, 13px)">{{ model.proof.details.credentialLine }}</div>
+              <div class="absolute whitespace-nowrap leading-none text-[#5F636A]" :style="'left: 41.28%; right: 6%; bottom: ' + ((model.proof.details && model.proof.details.credentialLine) ? '34.72%' : '40.27%') + '; font-size: min(2.15cqw, 11px)'">{{ ((model.proof.details && String(model.proof.details.title || '').split('|')[0].trim()) || (['French','Français','FR'].indexOf(previewLang) >= 0 ? 'Titre' : 'Title')) + ' | ' + ((model.proof.details && String(model.proof.details.region || '').trim()) || (['French','Français','FR'].indexOf(previewLang) >= 0 ? 'Région' : 'Region')) }}</div>
+              <div class="absolute whitespace-nowrap leading-none text-[#5F636A]" :style="'left: 41.28%; right: 6%; bottom: ' + ((model.proof.details && model.proof.details.credentialLine) ? '29.16%' : '34.72%') + '; font-size: min(2.15cqw, 11px)'">{{ (model.proof.details && String(model.proof.details.specializedTeam || '').trim()) || (['French','Français','FR'].indexOf(previewLang) >= 0 ? 'Équipe spécialisée' : 'Specialized team') }}</div>
+              <div class="absolute whitespace-nowrap leading-none text-[#5F636A]" style="left: 41.28%; right: 6%; bottom: 23.6%; font-size: min(2.15cqw, 11px)">{{ (model.proof.details && model.proof.details.email) || (['French','Français','FR'].indexOf(previewLang) >= 0 ? 'prenom.nom@colliersprojectleaders.com' : 'first.lastname@colliersprojectleaders.com') }}</div>
+              <div class="absolute whitespace-nowrap leading-none text-[#5F636A]" style="left: 41.28%; right: 6%; bottom: 18.05%; font-size: min(2.15cqw, 11px)">Mobile: {{ (model.proof.details && model.proof.details.phone) || '+1 555 555 5555' }}</div>
+              <div class="absolute whitespace-nowrap leading-none text-[#5F636A]" style="left: 41.28%; right: 6%; bottom: 12.49%; font-size: min(2.15cqw, 11px)">{{ (['French','Français','FR'].indexOf(previewLang) >= 0 ? ((model.proof.details && model.proof.details.websiteFr) || 'colliersprojectleaders.com/fr') : ((model.proof.details && model.proof.details.website) || 'colliersprojectleaders.com')) }}</div>
+              <div class="absolute whitespace-pre-wrap leading-[1.25] text-[#5F636A]" style="left: 7.14%; right: 58.72%; bottom: 12.5%; font-size: min(2.15cqw, 11px)">{{ (model.proof.details && model.proof.details.address) || (['French','Français','FR'].indexOf(previewLang) >= 0 ? "Nom de l'adresse\nUnité, Rue\nVille, Province\nCode postal, Pays" : "Address name\nUnit, Street\nCity, Province\nPostal Code, Country") }}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="w-full min-w-0 lg:max-w-md lg:flex-1">
+        <h1 class="colliers-page-title mb-4">{{ BF.i18n('label_colliers_proofApproval') }}</h1>
+        <div class="mb-6 rounded-md border border-amber-200 bg-amber-50 px-4 py-4 text-sm text-amber-950">
+          <p class="font-semibold text-red-800">{{ BF.i18n('label_colliers_proofNoticeLead') }}</p>
+          <p class="mt-2 leading-relaxed text-amber-950">{{ BF.i18n('label_colliers_proofNotice') }}</p>
+          <label class="mt-4 flex cursor-pointer items-start gap-3 rounded border border-amber-200 bg-white px-3 py-3 text-sm text-gray-800">
+            <input class="mt-0.5 h-4 w-4 shrink-0" type="checkbox" v-model="model.approved" />
+            <span>{{ BF.i18n('label_colliers_proofCheckbox') }}</span>
+          </label>
+        </div>
+        <div class="space-y-3">
+          <button type="button" class="btn-outline w-full" :disabled="!model.approved" @click="BF.namedAction('addProofToCart')">{{ BF.i18n('label_colliers_addToCart') }}</button>
+          <button type="button" class="btn-primary w-full" :disabled="!model.approved" @click="BF.namedAction('continueToShipping')">{{ BF.i18n('label_colliers_continueToShipping') }}</button>
+          <button type="button" class="btn-outline w-full" @click="BF.namedAction('goCustomize')"><span aria-hidden="true" class="mr-1">&lsaquo;</span>{{ BF.i18n('label_colliers_backToEdit') }}</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
