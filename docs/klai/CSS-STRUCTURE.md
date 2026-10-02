@@ -76,7 +76,7 @@ Reference HTML sources:
 - [`address-book.html`](address-book.html)
 - [`order-history.html`](order-history.html)
 - [`admin-dashboard.html`](admin-dashboard.html)
-- [`manage-designations.html`](manage-designations.html)
+- [`manage-titles.html`](manage-titles.html)
 - [`manage-degrees.html`](manage-degrees.html)
 
 ## Class catalog
@@ -108,7 +108,7 @@ Reference HTML sources:
 | Class | Use |
 |-------|-----|
 | `colliers-content-card` | White card wrapper |
-| `colliers-list-panel` (+ `--viewport`, `-scroll`) | Admin string lists (Designations, Degrees) |
+| `colliers-list-panel` (+ `--viewport`, `-scroll`) | Admin string lists (Titles, Degrees) |
 | `colliers-list-row` (+ `-body`, `-actions`) | List row + hover actions |
 | `colliers-card-toolbar` | Search/filter row |
 | `colliers-tab-nav` / `colliers-tab` / `colliers-tab--active` | Address Book tabs |
@@ -153,12 +153,12 @@ Reference HTML sources:
 - [x] Route `admin` + dashboard i18n keys + `.colliers-admin-tile*` CSS
 - [ ] Turn on `requestHook` when FM `admin` is ready
 
-### Manage Designations (`FR_7B1FE508-…`)
+### Manage Titles (`FR_7B1FE508-…`)
 
 - [x] Shell classes on Page / Body / group (same stack as Order History)
-- [x] HTML: list panel add / inline edit / delete ([`manage-designations.html`](manage-designations.html))
+- [x] HTML: list panel add / inline edit / delete ([`manage-titles.html`](manage-titles.html))
 - [x] Model: `titles`; named actions `addTitle`, `saveEdit`, `cancelEdit`, `deleteTitle`
-- [x] Route `admin/titles` + designation i18n keys in Klai app
+- [x] Route `admin/titles` + title i18n keys in Klai app
 - [ ] Turn on `requestHook` when FM `admintitles` is ready
 
 ### Manage Degrees (`FR_76FD3CED-…`)

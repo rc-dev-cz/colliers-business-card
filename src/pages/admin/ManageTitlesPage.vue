@@ -2,18 +2,18 @@
   <colliers-page-shell viewport-list>
     <div class="colliers-viewport-list mx-auto w-full max-w-2xl">
       <admin-page-header
-        :title="t('manageDesignations')"
-        :subtitle="t('manageDesignationsHint')"
+        :title="t('manageTitles')"
+        :subtitle="t('manageTitlesHint')"
       ></admin-page-header>
 
       <admin-string-list-panel
         viewport-fill
         :items="store.titles"
-        :placeholder="t('newDesignationPlaceholder')"
+        :placeholder="t('newTitlePlaceholder')"
         :empty-label="t('noTitles')"
-        :add-label="t('addDesignation')"
-        :edit-label="t('editDesignation')"
-        :delete-label="t('deleteDesignation')"
+        :add-label="t('addTitle')"
+        :edit-label="t('editTitle')"
+        :delete-label="t('deleteTitle')"
         :confirm-delete-message="t('confirmDeleteTitle')"
         @add="onAdd"
         @update="onUpdate"

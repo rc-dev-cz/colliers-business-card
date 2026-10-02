@@ -324,8 +324,8 @@ export const messages = {
   saving: { EN: 'Saving...', FR: 'Enregistrement...' },
   saveDraft: { EN: 'Save Draft', FR: 'Enregistrer le brouillon' },
   draftSaved: { EN: 'Draft saved. You can finish this address later.', FR: 'Brouillon enregistré. Vous pourrez terminer cette adresse plus tard.' },
-  manageDesignations: { EN: 'Manage Titles', FR: 'Gérer les titres' },
-  manageDesignationsHint: {
+  manageTitles: { EN: 'Manage Titles', FR: 'Gérer les titres' },
+  manageTitlesHint: {
     EN: 'Titles shown on business cards during customization.',
     FR: 'Titres affichés sur les cartes lors de la personnalisation.',
   },
@@ -334,7 +334,7 @@ export const messages = {
     EN: 'Permitted degrees and certifications allowed on business cards.',
     FR: 'Diplômes et certifications autorisés sur les cartes de visite.',
   },
-  newDesignationPlaceholder: {
+  newTitlePlaceholder: {
     EN: 'Enter new title...',
     FR: 'Entrez un nouveau titre...',
   },
@@ -342,9 +342,9 @@ export const messages = {
     EN: 'Enter new degree...',
     FR: 'Entrez le nouveau diplôme...',
   },
-  addDesignation: { EN: 'Add title', FR: 'Ajouter un titre' },
-  editDesignation: { EN: 'Edit title', FR: 'Modifier le titre' },
-  deleteDesignation: { EN: 'Delete title', FR: 'Supprimer le titre' },
+  addTitle: { EN: 'Add title', FR: 'Ajouter un titre' },
+  editTitle: { EN: 'Edit title', FR: 'Modifier le titre' },
+  deleteTitle: { EN: 'Delete title', FR: 'Supprimer le titre' },
   addDegree: { EN: 'Add degree', FR: 'Ajouter un diplôme' },
   editDegree: { EN: 'Edit degree', FR: 'Modifier le diplôme' },
   deleteDegree: { EN: 'Delete degree', FR: 'Supprimer le diplôme' },
@@ -363,7 +363,7 @@ export const messages = {
     EN: '{n} addresses configured',
     FR: '{n} adresses configurées',
   },
-  designationsConfigured: {
+  titlesConfigured: {
     EN: '{n} titles configured',
     FR: '{n} titres configurés',
   },
@@ -387,7 +387,7 @@ export const messages = {
     EN: 'Configure global shipping destinations, office locations, and default addresses for business cards.',
     FR: 'Configurez les destinations d\'expédition, les bureaux et les adresses par défaut pour les cartes.',
   },
-  manageDesignationsTileDesc: {
+  manageTitlesTileDesc: {
     EN: 'Manage permitted job titles allowed on business cards.',
     FR: 'Gérez les titres de poste autorisés sur les cartes de visite.',
   },

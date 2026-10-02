@@ -316,7 +316,6 @@ import {
   addCartItemToSplit,
   updateQty,
   persistOrderNow,
-  persistCartNow,
   loadOffices,
   setProof,
   setEditLineId,
@@ -507,10 +506,7 @@ export default {
       next.forEach(function (loc) {
         split.locations.push(loc)
       })
-      // Drop any cart boxes no longer covered by ship-to rows (empty → clear line).
-      syncCartToAssignedForSplit(split)
       persistOrderNow()
-      persistCartNow()
       this.$nextTick(function () {
         self.destroySortables()
         self.bindSortables()

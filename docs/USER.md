@@ -42,13 +42,13 @@ Each **page** is a tens ticket. Children are the pieces of that page.
 - [x] **USR-030** Customize card `(CustomizePage.vue)` — F-05
   - [x] **USR-031** Live preview
   - [x] **USR-032** Full name (max 50, two lines) — QA. Vue `NAME_MAX=50`
-  - [x] **USR-033** Designation dropdown (one per card)
+  - [x] **USR-033** Title dropdown (one per card)
   - [x] **USR-034** Email (max 50) — QA. Guide was 40; Vue uses 50 for `@colliersprojectleaders.com`
   - [x] **USR-035** Mobile phone Canadian +1
   - [x] **USR-036** Office address dropdown
   - [x] **USR-037** Company and website locked
   - [x] **USR-038** Add to Cart quantity 1
-  - [ ] **USR-039** Multiple designations on one card — F-24
+  - [ ] **USR-039** Multiple titles on one card — F-24
   - [x] **USR-099** View print PDF — QA. Bleed PDF; shared layout planner with preview
   - [x] **USR-100** Degrees and additional credentials on card — QA
 - [x] **USR-040** Cart `(CartDrawer.vue)` — F-06
@@ -59,7 +59,7 @@ Each **page** is a tens ticket. Children are the pieces of that page.
   - [x] **USR-045** Change quantity
   - [x] **USR-046** Printed-card count (qty × 250)
 - [x] **USR-050** Shipping `(ShippingPage.vue)` — F-10
-  - [x] **USR-051** Add / remove / select location
+  - [x] **USR-051** Add / remove / select location (does not delete cart cards)
   - [x] **USR-052** Location qty vs cart qty (location stepper syncs Selected Items to ship-to sum)
   - [x] **USR-053** Shipping $0, no payment (included in the $63 box fee)
   - [x] **USR-054** Split Order — F-09

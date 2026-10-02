@@ -21,7 +21,7 @@ Preview admin login stays `admin` / `123`. Live FileMaker test user and admin ac
 ## How quantity works
 
 - Customize **Add to Cart** adds **quantity 1** each click.
-- Same card + same name/designation(s)/email/phone/office → those clicks **combine into one cart item**. Cart badge icon = total quantity.
+- Same card + same name/title/email/phone/office → those clicks **combine into one cart item**. Cart badge icon = total quantity.
 - **Qty 10** means **one cart item** with quantity 10 — not 10 different products. Cart badge icon **10**, subtotal **$630.00** (10 × $63).
 - Say the SKU, quantity, how many cart items, cart badge icon, and total. Do not say “cart has 10 boxes” as a vague setup.
 
@@ -211,8 +211,8 @@ Shipping page today: Split Order, Remove Split only if more than one split, add/
 - Expected:
   - That address is gone
   - Other locations remain
-  - Cart / Selected Items quantity equals the sum of remaining location qtys
-  - Deleting the last location clears the cart line for that group (no orphan Qty 250 with empty ship-to)
+  - Cart / Selected Items lines and quantities stay (removing an address never deletes cards)
+  - Deleting the last location leaves the cart line in that group
 
 ### TC-16 — Select saved location
 
@@ -305,7 +305,7 @@ Designer preview. Not in this Vue repo yet. Keep these tests.
 - Steps:
   1. Open Manage Titles.
 - Expected:
-  - List of designations (for example PMP, LEED AP)
+  - List of titles (for example Associate, Vice President)
 
 ### TC-25 — Add then remove a title
 

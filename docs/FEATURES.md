@@ -51,7 +51,9 @@ Never say only “bilingual.” That is the **product name**, not the navbar lan
 F-05 — Customize the card in this repo (`src/pages/CustomizePage.vue`). Do not match the AI Studio customize screen.
 
 - Full name (max 50 characters, two lines on the card)
-- Designation (one or more from the list; searchable multi-select with pills)
+- Title (from the managed list)
+- Degree/Certification (optional, up to two from the list)
+- Additional credentials (optional)
 - Email (max 40 characters)
 - Mobile phone (Canadian +1, formatted)
 - Office address (dropdown)
@@ -72,7 +74,7 @@ F-08 — Clear cart.
 
 F-09 — Shipping splits: Split Order, Remove Split only when there is more than one split.
 
-F-10 — Ship-to addresses: add/remove location, select a saved location, qty on a location (location qty stepper syncs Selected Items to the sum of ship-to qtys up or down; empty ship-to clears the line).
+F-10 — Ship-to addresses: add/remove location, select a saved location, qty on a location (location qty stepper may sync Selected Items). Adding or removing an address never deletes cart cards.
 
 F-11 — Order confirmed: success screen; cart and order draft cleared. Review before confirm is F-27. User Order History is F-30.
 

@@ -297,7 +297,7 @@
       "category": "Technical",
       "priority": "high",
       "assignee": "CZ",
-      "description": "Separate browser-test data from future FileMaker operations. Define helper files and named-action contracts for products, addresses, designations, order submission, and order lookup where approved.",
+      "description": "Separate browser-test data from future FileMaker operations. Define helper files and named-action contracts for products, addresses, titles, order submission, and order lookup where approved.",
       "acceptanceCriteria": [
         "The standalone application uses mock adapters with the same request and response shapes as the future FileMaker adapters.",
         "Each external operation has one named action or adapter function with documented input, success output, validation failure, request failure, and timeout behavior.",
@@ -428,13 +428,13 @@
     {
       "id": "DEV-109",
       "title": "FileMaker titles API",
-      "description": "Provide designation records used by card customization and Manage Titles through GET, POST, PATCH, and DELETE /api/titles.",
+      "description": "Provide title records used by card customization and Manage Titles through GET, POST, PATCH, and DELETE /api/titles.",
       "status": "Ideas",
       "category": "FileMaker",
       "priority": "high",
       "assignee": "",
       "acceptanceCriteria": [
-        "GET /api/titles returns the active designation list used by Customize.",
+        "GET /api/titles returns the active title list used by Customize.",
         "Admin can add, update, and delete titles through /api/titles, and Customize picks up the change."
       ],
       "blocked": false,
@@ -792,19 +792,19 @@
     },
     {
       "id": "USR-033",
-      "title": "Designation dropdown (one per card)",
-      "description": "Vue today: one designation per card from the dropdown. Multiple designations is USR-039.",
+      "title": "Title dropdown (one per card)",
+      "description": "Vue today: one title per card from the dropdown. Multiple titles is USR-039.",
       "status": "Done",
       "category": "Customer Portal",
       "priority": "medium",
       "assignee": "CZ",
       "acceptanceCriteria": [
-        "The user can select one available designation from the dropdown.",
-        "The selected designation appears correctly on the live preview and saved cart item."
+        "The user can select one available title from the dropdown.",
+        "The selected title appears correctly on the live preview and saved cart item."
       ],
       "blocked": false,
       "blockedReason": "",
-      "notes": "USER.md · BUSINESS-RULES.md section 4 · CU-02 / CU-03 are USR-039",
+      "notes": "USER.md · BUSINESS-RULES.md section 4. One title from the managed list.",
       "origin": "docs",
       "fresh": false,
       "review": "",
@@ -930,21 +930,21 @@
     },
     {
       "id": "USR-039",
-      "title": "Allow users to select multiple designations",
-      "description": "Allow one or more designations to be selected, displayed on the card preview, and removed before continuing.",
+      "title": "Allow users to select multiple titles",
+      "description": "Allow one or more titles to be selected, displayed on the card preview, and removed before continuing.",
       "status": "Ideas",
       "category": "Customer Portal",
       "priority": "medium",
       "assignee": "",
       "acceptanceCriteria": [
-        "Users can select more than one designation.",
-        "Selected designations appear below the field, on the card preview, and the control shows how many are selected.",
-        "Users can remove a selected designation.",
-        "Removed designations disappear from the preview."
+        "Users can select more than one title.",
+        "Selected titles appear below the field, on the card preview, and the control shows how many are selected.",
+        "Users can remove a selected title.",
+        "Removed titles disappear from the preview."
       ],
       "blocked": false,
       "blockedReason": "",
-      "notes": "USER.md · F-24 · BUSINESS-RULES.md CU-02, CU-03. Current Vue is one designation (USR-033).",
+      "notes": "USER.md · F-24. Current Vue is one title (USR-033). CU-02 / CU-03 cover two degrees, not titles.",
       "origin": "docs",
       "fresh": false,
       "review": "",
@@ -1014,7 +1014,7 @@
       "assignee": "CZ",
       "acceptanceCriteria": [
         "Cards with different names remain separate cart lines.",
-        "Cards with different titles or designation selections remain separate cart lines."
+        "Cards with different titles remain separate cart lines."
       ],
       "blocked": false,
       "blockedReason": "",
@@ -2004,7 +2004,7 @@
     {
       "id": "ADM-010",
       "title": "Admin login and nav",
-      "description": "Vue 2 admin shell. Login admin / 123. Header: Catalogue, Manage Addresses, Designations, Manage Degrees (blue admin bar). Profile: Admin Panel, Address Book, Order History, Log out.",
+      "description": "Vue 2 admin shell. Login admin / 123. Header: Catalogue, Manage Addresses, Manage Titles, Manage Degrees (blue admin bar). Profile: Admin Panel, Address Book, Order History, Log out.",
       "status": "Done",
       "category": "Admin Portal",
       "priority": "medium",
@@ -2052,18 +2052,18 @@
     {
       "id": "ADM-012",
       "title": "Admin header nav",
-      "description": "Admin header shows Catalogue, Manage Addresses, Designations, and Manage Degrees on the blue admin bar. User header is catalogue only.",
+      "description": "Admin header shows Catalogue, Manage Addresses, Manage Titles, and Manage Degrees on the blue admin bar. User header is catalogue only.",
       "status": "Done",
       "category": "Admin Portal",
       "priority": "medium",
       "assignee": "CZ",
       "acceptanceCriteria": [
-        "The admin header shows Catalogue, Manage Addresses, Designations, and Manage Degrees.",
+        "The admin header shows Catalogue, Manage Addresses, Manage Titles, and Manage Degrees.",
         "Each navigation item opens the correct route and indicates the active page."
       ],
       "blocked": false,
       "blockedReason": "",
-      "notes": "ADMIN.md. Renamed Titles → Designations; Degrees added.",
+      "notes": "ADMIN.md. Nav is Manage Titles (FileMaker titles). Degrees added.",
       "origin": "docs",
       "fresh": false,
       "review": "updated",
@@ -2098,7 +2098,7 @@
     {
       "id": "ADM-020",
       "title": "Admin Dashboard",
-      "description": "Provide an Admin Dashboard with System Options for Order History, Invoice History, Reporting, Manage Addresses, Manage Designations, and Manage Degrees. Live counts are handled separately.",
+      "description": "Provide an Admin Dashboard with System Options for Order History, Invoice History, Reporting, Manage Addresses, Manage Titles, and Manage Degrees. Live counts are handled separately.",
       "status": "Done",
       "category": "Admin Portal",
       "priority": "medium",
@@ -2170,14 +2170,14 @@
     {
       "id": "ADM-023",
       "title": "Live title count",
-      "description": "Display the current number of configured designations on the Admin Dashboard.",
+      "description": "Display the current number of configured titles on the Admin Dashboard.",
       "status": "Done",
       "category": "Admin Portal",
       "priority": "medium",
       "assignee": "CZ",
       "acceptanceCriteria": [
-        "The Manage Titles tile displays the current number of available designations.",
-        "The count updates after a designation is added or deleted."
+        "The Manage Titles tile displays the current number of available titles.",
+        "The count updates after a title is added or deleted."
       ],
       "blocked": false,
       "blockedReason": "",
@@ -2740,19 +2740,19 @@
     },
     {
       "id": "ADM-070",
-      "title": "Manage Designations",
-      "description": "Admin screen to list, add, edit, and delete designations used on Customize. Vue route #/admin/titles (nav label Designations).",
+      "title": "Manage Titles",
+      "description": "Admin screen to list, add, edit, and delete titles used on Customize. Vue route #/admin/titles (nav label Manage Titles).",
       "status": "QA",
       "category": "Admin Portal",
       "priority": "medium",
       "assignee": "CZ",
       "acceptanceCriteria": [
-        "Manage Titles lists existing designations and provides add, edit, and delete actions.",
-        "Saved title changes are reflected in the customization designation control."
+        "Manage Titles lists existing titles and provides add, edit, and delete actions.",
+        "Saved title changes are reflected in the Customize title dropdown."
       ],
       "blocked": false,
       "blockedReason": "",
-      "notes": "Vue #/admin/titles implemented 28 Aug 2026. Nav renamed Designations. Titles persist in localStorage until DEV-109.",
+      "notes": "Vue #/admin/titles implemented 28 Aug 2026. Nav is Manage Titles. Titles persist in localStorage until DEV-109.",
       "origin": "docs",
       "fresh": false,
       "review": "updated",
@@ -2767,14 +2767,14 @@
     },
     {
       "id": "ADM-071",
-      "title": "List designations",
-      "description": "List of titles / designations.",
+      "title": "List titles",
+      "description": "List of titles.",
       "status": "QA",
       "category": "Admin Portal",
       "priority": "medium",
       "assignee": "CZ",
       "acceptanceCriteria": [
-        "Each active designation appears once in the list.",
+        "Each active title appears once in the list.",
         "The list updates immediately after a successful add, edit, or delete action."
       ],
       "blocked": false,
@@ -2791,13 +2791,13 @@
     {
       "id": "ADM-072",
       "title": "Add title",
-      "description": "Add a designation to the list.",
+      "description": "Add a title to the list.",
       "status": "QA",
       "category": "Admin Portal",
       "priority": "medium",
       "assignee": "CZ",
       "acceptanceCriteria": [
-        "A non-empty unique designation can be added successfully.",
+        "A non-empty unique title can be added successfully.",
         "Blank or duplicate values are rejected with a clear message."
       ],
       "blocked": false,
@@ -2814,14 +2814,14 @@
     {
       "id": "ADM-073",
       "title": "Delete title",
-      "description": "Remove a designation.",
+      "description": "Remove a title.",
       "status": "QA",
       "category": "Admin Portal",
       "priority": "medium",
       "assignee": "CZ",
       "acceptanceCriteria": [
-        "Deleting a designation requires confirmation and removes the selected value.",
-        "Deleting one designation does not remove or modify any other designation."
+        "Deleting a title requires confirmation and removes the selected value.",
+        "Deleting one title does not remove or modify any other title."
       ],
       "blocked": false,
       "blockedReason": "",
@@ -2866,7 +2866,7 @@
       "priority": "medium",
       "assignee": "CZ",
       "acceptanceCriteria": [
-        "The customization designation control loads active values from Manage Titles.",
+        "The Customize title dropdown loads active values from Manage Titles.",
         "Added, edited, or deleted titles are reflected without changing existing saved cart items."
       ],
       "blocked": false,
@@ -3262,7 +3262,7 @@
       ],
       "blocked": false,
       "blockedReason": "",
-      "notes": "18 Sep 2026: Admin Home, Orders, Invoices, Reporting, Addresses, Designations, Degrees Live UI in Klai. Catalogue/Customize/card-preview/print PDF mirrored. See docs/klai/BACKEND-NAMING.md.",
+      "notes": "18 Sep 2026: Admin Home, Orders, Invoices, Reporting, Addresses, Titles, Degrees Live UI in Klai. Catalogue/Customize/card-preview/print PDF mirrored. See docs/klai/BACKEND-NAMING.md.",
       "origin": "docs",
       "fresh": false,
       "review": "updated",

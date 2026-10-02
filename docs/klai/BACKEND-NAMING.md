@@ -69,7 +69,7 @@ Bus variables (FileMaker side): `$$BF_Payload`, `$$BF_Model`, `$$BF_Actions`, `$
 | --- | --- | --- | --- | --- | --- | --- |
 | Admin Home | `/admin` | `admin` | false (planned true) | `BF - onFormRequest - admin` | Dashboard / tool links; `model.counts` in modelDev | Live UI |
 | Manage Addresses | `/admin/addresses` | `adminaddresses` | false (planned true) | `BF - onFormRequest - adminaddresses` | `create`, `update`, `delete` (offices) — client stub until FM | Live UI |
-| Manage Titles (formName: Manage Designations) | `/admin/titles` | `admintitles` | false (planned true) | `BF - onFormRequest - admintitles` | `create`, `update`, `delete` | Live UI |
+| Manage Titles | `/admin/titles` | `admintitles` | false (planned true) | `BF - onFormRequest - admintitles` | `create`, `update`, `delete` | Live UI |
 | Manage Degrees | `/admin/degrees` | `admindegrees` | false (planned true) | `BF - onFormRequest - admindegrees` | `create`, `update`, `delete` | Live UI |
 | Admin Order History | `/admin/orders` | `adminorders` | false (planned true) | `BF - onFormRequest - adminorders` | Admin-scoped order list (employee); no `repeat` in v1 | Live UI |
 | Invoice History | `/admin/invoices` | `admininvoices` | false (planned true) | `BF - onFormRequest - admininvoices` | Invoice table + download (mock) | Live UI |
@@ -285,7 +285,7 @@ FileMaker should return the same Product rows as Catalogue (`products`, or the o
 }
 ```
 
-`itemIds` point at `cart[].id` so a card can move between shipping groups without copying the line. Location `qty` is boxes to that address. Changing location qty syncs cart quantity to the sum of ship-to qtys (up, down, or clear when empty).
+`itemIds` point at `cart[].id` so a card can move between shipping groups without copying the line. Location `qty` is boxes to that address. The qty stepper may sync cart quantity. Adding or removing a ship-to address must **not** delete cart lines.
 
 **Shipping** (`shipping`) — planned request load (`personalAddresses`, `offices`, `products`). Client keeps cart/splits.
 
@@ -356,7 +356,7 @@ Shipping & handling is always `$0.00` (included in the box price). No payment.
 
 Hook set names below are the agreed Mike / FileMaker contract. Build FM scripts to match; do not invent alternate names without updating this doc.
 
-**Manage Designations** (`admintitles`) — Live UI in Klai (`formName` Manage Designations; route `/admin/titles`). Designation strings. Client stubs for `create` / `update` / `delete` until FM utilities exist (`update` sends old + new string).
+**Manage Titles** (`admintitles`) — Live UI in Klai (`formName` Manage Titles; route `/admin/titles`). Title strings (FileMaker titles, not “designations”). Client stubs for `create` / `update` / `delete` until FM utilities exist (`update` sends old + new string).
 
 ```json
 {
@@ -395,7 +395,7 @@ Tiles are UI-only. Counts may come from this object or from loading the three li
 }
 ```
 
-**Manage Degrees** (`admindegrees`) — Live UI in Klai (route `/admin/degrees`). Same pattern as titles / designations. Client stubs until FM utilities exist.
+**Manage Degrees** (`admindegrees`) — Live UI in Klai (route `/admin/degrees`). Same pattern as titles. Client stubs until FM utilities exist.
 
 ```json
 {
@@ -448,7 +448,7 @@ Tiles are UI-only. Counts may come from this object or from loading the three li
 - **Print PDF** — Customize button → `viewPrintPdf` (anchor download). FM base64 → Mark’s Press later ([PRINT-PDF.md](../PRINT-PDF.md)).
 - **Proof** — Live UI at `/proof`. No request hook. Cart is still a drawer (`CartDrawer`); preview/edit on a line opens Proof or Customize.
 - **Review** — Live UI uses person name + card qty (`qty * 250`), `printOrder`, Place Order. Turn on Shipping `requestHook` when FM fills addresses; Review `submit` is still a stub until FM creates the order.
-- **Admin pages** — Admin Home (`admin`), Admin Order History (`adminorders`), Invoice History (`admininvoices`), Reporting (`adminreporting`), Manage Addresses (`adminaddresses`), Manage Designations (`admintitles`), and Manage Degrees (`admindegrees`) are Live UI. Confirm live FM script names when Mike builds them.
+- **Admin pages** — Admin Home (`admin`), Admin Order History (`adminorders`), Invoice History (`admininvoices`), Reporting (`adminreporting`), Manage Addresses (`adminaddresses`), Manage Titles (`admintitles`), and Manage Degrees (`admindegrees`) are Live UI. Confirm live FM script names when Mike builds them.
 - **Catalogue** — confirm live products payload matches `modelDev` shape.
 - **Script names** — confirm live FM scripts match `BF - onFormRequest - <hookSetName>` / `BF - onUtility - <hookSetName>`; update this doc if they differ.
 

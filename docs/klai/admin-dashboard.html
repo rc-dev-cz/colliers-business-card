@@ -49,11 +49,11 @@
       <span class="colliers-admin-tile__header">
         <span class="colliers-admin-tile__icon" aria-hidden="true"><i class="fa-regular fa-user"></i></span>
         <span class="colliers-admin-tile__heading">
-          <span class="colliers-admin-tile__title">{{ BF.i18n('label_colliers_manageDesignations') }}</span>
-          <span class="colliers-admin-tile__subtitle">{{ (model.counts && model.counts.titles != null ? model.counts.titles : 0) + ' ' + BF.i18n('label_colliers_designationsConfiguredSuffix') }}</span>
+          <span class="colliers-admin-tile__title">{{ BF.i18n('label_colliers_manageTitles') }}</span>
+          <span class="colliers-admin-tile__subtitle">{{ (model.counts && model.counts.titles != null ? model.counts.titles : 0) + ' ' + BF.i18n('label_colliers_titlesConfiguredSuffix') }}</span>
         </span>
       </span>
-      <span class="colliers-admin-tile__desc">{{ BF.i18n('label_colliers_manageDesignationsTileDesc') }}</span>
+      <span class="colliers-admin-tile__desc">{{ BF.i18n('label_colliers_manageTitlesTileDesc') }}</span>
     </button>
     <button type="button" class="colliers-admin-tile" @click="BF.namedAction('goDegrees')">
       <span class="colliers-admin-tile__header">

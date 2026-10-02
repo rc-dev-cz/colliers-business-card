@@ -64,7 +64,7 @@ The Standard image shows the normal finished card:
 - Website
 - Street, city/province, postal Canada (office **name is not printed** on the card)
 
-The card should visually match the generated sample PDF and Cynthia’s reference placement for designations.
+The card should visually match the generated sample PDF and Cynthia’s reference placement for credentials and title.
 
 The last address line and the website share baseline **Y = 27**. Email and mobile stack up from there (43 / 35 / 27).
 

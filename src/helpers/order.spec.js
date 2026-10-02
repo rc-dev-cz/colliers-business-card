@@ -114,12 +114,12 @@ describe('ship-to allocation', function () {
     expect(zeroIds).toEqual(['a'])
   })
 
-  it('syncCartBoxesToAssigned clears leftover cart when ship-to is empty', function () {
+  it('syncCartBoxesToAssigned does not clear cart when ship-to is empty', function () {
     var split = createSplit({ id: 1, itemIds: ['a'], locations: [] })
     var cart = [{ id: 'a', quantity: 1 }]
     var zeroIds = syncCartBoxesToAssigned(cart, split)
-    expect(cart[0].quantity).toBe(0)
-    expect(zeroIds).toEqual(['a'])
+    expect(cart[0].quantity).toBe(1)
+    expect(zeroIds).toEqual([])
   })
 
   it('syncCartBoxesToAssigned drops unallocated cart boxes after a partial remove', function () {

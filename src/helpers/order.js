@@ -241,14 +241,16 @@ export function reduceCartBoxesForSplit(cartLines, split, boxes) {
 }
 
 /**
- * Keep Selected Items boxes equal to the sum of ship-to location qtys.
- * - Location qty up → cart up
- * - Location qty down / remove → cart down (0 → lines removed)
+ * Keep Selected Items boxes equal to the sum of ship-to location qtys
+ * when the user changes a location stepper (up or down).
+ * Empty ship-to does not delete cart lines — add/remove address never
+ * removes cards.
  */
 export function syncCartBoxesToAssigned(cartLines, split) {
   var ordered = orderedBoxesForSplit(split, cartLines)
   var assigned = assignedBoxesForSplit(split)
   if (assigned === ordered) return []
+  if (assigned <= 0) return []
   if (assigned < ordered) {
     return reduceCartBoxesForSplit(cartLines, split, ordered - assigned)
   }

@@ -43,14 +43,16 @@ The order process follows these main steps:
 | Rule | Expected behaviour |
 | --- | --- |
 | Business card product | One of the available card types: English, Bilingual, or French. |
-| Box | One package of 250 printed business cards. |
+| Title | Job title on the card (FileMaker **titles**). Previously called designation — do not use that name. |
+| Degree | Degree or certification on the name line (FileMaker **degrees**). |
 | Quantity | The number of boxes ordered for a cart item. Quantity 3 means 3 boxes, or 750 printed cards. |
 | Cart item | A cart item is one business card shown in the cart. If the same business card is ordered more than once, the quantity can increase without creating another cart item. |
 | Cart count | The number shown on the navbar cart icon. It is the sum of all cart item quantities, not the number of cart rows. |
 | Shipping group | A part of the order that groups business cards going to one or more shipping addresses. |
 | Split Order | Creates an additional shipping group within the same order so business cards can be organized and shipped separately. |
 | Shipping location | The delivery address selected for a shipping group. |
-| Location quantity | The number of boxes assigned to a shipping location. Changing location qty (stepper or delete) syncs Selected Items / cart quantity to the sum of remaining location qtys (empty ship-to clears the cart line). |
+| Location quantity | The number of boxes assigned to a shipping location. The location qty stepper may change Selected Items / cart quantity. |
+| Cart vs addresses | Adding or removing a ship-to address, Address Book row, or office address never deletes cart items. Cards stay until the user removes them from Selected Items or the cart. An empty ship-to is allowed while cards remain. |
 
 ---
 
@@ -94,8 +96,8 @@ The customization page controls the information shown on the business card previ
 | Rule | Expected behaviour |
 | --- | --- |
 | Full Name | Required. Entered manually. Maximum 50 characters. Long names can use two lines on the card. |
-| Title | Required. Selected from the available list. |
-| Designation | Optional. Up to two degrees/certifications from the list. Selected values appear below the field and after the comma on the name line. A selected value can be removed before continuing. |
+| Title | Required. Selected from the available list (FileMaker titles). |
+| Degree/Certification | Optional. Up to two degrees/certifications from the list (FileMaker degrees). Selected values appear below the field and after the comma on the name line. A selected value can be removed before continuing. |
 | Additional Credentials | Optional. Free text shown with degrees on the name line (a third credential when two degrees are selected). |
 | Region | Optional. Shown with the title as “Title \| Region”. |
 | Specialized Team | Optional. Shown under the title line when present. |
@@ -112,8 +114,8 @@ The customization page controls the information shown on the business card previ
 | ID | Test | Expected result |
 | --- | --- | --- |
 | CU-01 | Change the full name. | The preview shows the new name. |
-| CU-02 | Select two designations. | Both designations appear on the preview and the control shows 2 selected. |
-| CU-03 | Remove one selected designation. | It is removed from the selection and from the preview. |
+| CU-02 | Select two degrees or certifications. | Both appear on the preview and the control shows 2 selected. |
+| CU-03 | Remove one selected degree. | It is removed from the selection and from the preview. |
 | CU-04 | Open Address and choose a saved office. | The selected office appears on the card preview. |
 | CU-05 | Try to edit Company Name and Website. | Both fields remain locked with the approved values. |
 | CU-06 | Change email or mobile phone. | The preview updates with the entered information. |
@@ -127,7 +129,7 @@ The customization page controls the information shown on the business card previ
 | Rule | Expected behaviour |
 | --- | --- |
 | Default quantity | A newly added business card starts with quantity 1. |
-| Same card + same details | Adding the same product with the same full name, selected designation(s), email, phone, and office combines into one cart item and increases its quantity. |
+| Same card + same details | Adding the same product with the same full name, title, email, phone, and office combines into one cart item and increases its quantity. |
 | Different details | If the product or any card detail is different, the cards remain separate cart items. |
 | One row, many boxes | One cart item can hold a quantity greater than 1. |
 | Cart count | The cart count is the sum of all cart item quantities. |
@@ -139,7 +141,7 @@ The customization page controls the information shown on the business card previ
 
 - Same Bilingual card, same details, added twice → 1 cart item, quantity 2, cart count 2, total $126.00.
 - Same product, two different names → 2 cart items, quantity 1 each, cart count 2, total $126.00.
-- Same person, different designation selection → separate cart items.
+- Same person, different title → separate cart items.
 - English quantity 5 + French quantity 5 → 2 cart items, cart count 10, total $630.00.
 
 ### Tests
@@ -148,7 +150,7 @@ The customization page controls the information shown on the business card previ
 | --- | --- | --- |
 | CA-01 | Add the same card with the same details twice. | One cart item with quantity 2; cart count 2; total $126.00. |
 | CA-02 | Add the same product for two different names. | Two separate cart items; cart count 2; total $126.00. |
-| CA-03 | Add the same person with different designation selections. | The cards remain separate cart items. |
+| CA-03 | Add the same person with different titles. | The cards remain separate cart items. |
 | CA-04 | Add English quantity 5 and French quantity 5. | Two cart items; cart count 10; total $630.00. |
 | CA-05 | Change one cart item from quantity 1 to 10. | Quantity 10; cart count and total update to 10 and $630.00. |
 | CA-06 | Remove all cart items. | Cart count 0 and total $0.00. |
@@ -167,7 +169,7 @@ The customization page controls the information shown on the business card previ
 | Move a product | A business card can be moved from one shipping group to another without creating an additional copy of the product. |
 | Remove Split | An additional shipping group can be removed. At least one shipping group must remain. |
 | Saved location | Shipping locations are selected from the saved address list. |
-| Add / remove location | Shipping locations can be added to or removed from a shipping group. Location qty and Selected Items stay linked: raise/lower/remove a ship-to qty and cart follows the remaining sum. |
+| Add / remove location | Shipping locations can be added to or removed from a shipping group. That does not remove or empty the cart. |
 
 ### Example
 
@@ -184,6 +186,7 @@ Shipping Group 1 contains the current business cards and shipping location. Sele
 | SH-05 | Select a different saved address for each shipping group. | Each group keeps its selected shipping address. |
 | SH-06 | Remove an extra shipping group. | One group remains; the last group cannot be removed. |
 | SH-07 | Change the location quantity. | The location value changes; the cart quantity remains unchanged. |
+| SH-08 | Add or remove a ship-to address while cards are in the cart. | The address list changes; cart lines and quantities stay. |
 
 ---
 
@@ -288,12 +291,13 @@ Use this section when adding tickets. Do **not** create a second ticket for a ru
 | Printed-card count (qty × 250) | USR-046 | Done |
 | Move a card between shipping groups | USR-056 | Done (SH-04) |
 | Split Order creates an empty group | USR-057 | Done (SH-02, SH-03) |
+| Add/remove ship-to does not delete cart cards | USR-051 | Done (SH-08) |
 
 ### Already ticketed as Ideas — reuse these, do not duplicate
 
 | Guide | Ticket | Notes |
 | --- | --- | --- |
-| One or more designations | `USR-039` | Vue still allows one title |
+| One or more titles | `USR-039` | Vue still allows one title |
 | Colliers offices on shipping | `USR-058` | Not in the PDF; keep |
 | Order review before confirm | `USR-063` | Section 7 / OR-01 |
 | Remove footer language | `F-20` | UI-02 |
@@ -305,7 +309,7 @@ Use this section when adding tickets. Do **not** create a second ticket for a ru
 | Ticket | Change |
 | --- | --- |
 | USR-032 | QA. Full name max **50**. Vue `NAME_MAX=50`. |
-| USR-033 | Still Done (one designation today). Multiple is USR-039. |
+| USR-033 | Still Done (one title today). Multiple is USR-039. |
 | USR-034 | QA. Guide max **40**; Vue email max **50** for `@colliersprojectleaders.com`. |
 | IDEA-01 | Closed (Done). Guide is **40**, not 20 or 30. |
 

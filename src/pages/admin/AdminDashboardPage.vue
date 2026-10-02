@@ -168,9 +168,9 @@ export default {
           to: 'admin-addresses',
         },
         {
-          titleKey: 'manageDesignations',
-          subtitle: withCount('designationsConfigured', titleCount),
-          descKey: 'manageDesignationsTileDesc',
+          titleKey: 'manageTitles',
+          subtitle: withCount('titlesConfigured', titleCount),
+          descKey: 'manageTitlesTileDesc',
           icon: 'user',
           to: 'admin-titles',
         },

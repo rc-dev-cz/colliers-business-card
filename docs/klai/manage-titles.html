@@ -1,8 +1,8 @@
-<div id="manage-designations-root" class="colliers-page-root max-w-2xl">
+<div id="manage-titles-root" class="colliers-page-root max-w-2xl">
   <div class="colliers-page-header">
     <div class="colliers-page-header__main">
-      <h1 class="colliers-page-title">{{ BF.i18n('label_colliers_manageDesignations') }}</h1>
-      <p class="colliers-page-subtitle">{{ BF.i18n('label_colliers_manageDesignationsHint') }}</p>
+      <h1 class="colliers-page-title">{{ BF.i18n('label_colliers_manageTitles') }}</h1>
+      <p class="colliers-page-subtitle">{{ BF.i18n('label_colliers_manageTitlesHint') }}</p>
     </div>
     <div class="colliers-page-header__actions">
       <button type="button" class="colliers-back-link" @click="BF.namedAction('goDashboard')">
@@ -13,9 +13,9 @@
   </div>
   <div class="colliers-list-panel colliers-list-panel--viewport">
     <div class="mb-4 flex gap-2">
-      <label class="sr-only" for="admin-designation-add">{{ BF.i18n('placeholder_colliers_newDesignation') }}</label>
-      <input id="admin-designation-add" type="text" class="field-input flex-1" :placeholder="BF.i18n('placeholder_colliers_newDesignation')" v-model="model.draft" @keydown.enter.prevent="BF.namedAction('addTitle')">
-      <button type="button" class="btn-primary px-4" :aria-label="BF.i18n('label_colliers_addDesignation')" @click="BF.namedAction('addTitle')">
+      <label class="sr-only" for="admin-title-add">{{ BF.i18n('placeholder_colliers_newTitle') }}</label>
+      <input id="admin-title-add" type="text" class="field-input flex-1" :placeholder="BF.i18n('placeholder_colliers_newTitle')" v-model="model.draft" @keydown.enter.prevent="BF.namedAction('addTitle')">
+      <button type="button" class="btn-primary px-4" :aria-label="BF.i18n('label_colliers_addTitle')" @click="BF.namedAction('addTitle')">
         <i class="fa-regular fa-plus" aria-hidden="true"></i>
       </button>
     </div>
@@ -34,10 +34,10 @@
           <template v-else>
             <span class="colliers-list-row-body text-sm text-gray-800">{{ item }}</span>
             <div class="colliers-list-row-actions colliers-list-row-actions--hover">
-              <button type="button" class="rounded p-1.5 text-gray-400 transition-colors hover:text-colliers-primary" :title="BF.i18n('label_colliers_editDesignation')" :aria-label="BF.i18n('label_colliers_editDesignation')" @click="model.editingKey = item; model.editValue = item">
+              <button type="button" class="rounded p-1.5 text-gray-400 transition-colors hover:text-colliers-primary" :title="BF.i18n('label_colliers_editTitle')" :aria-label="BF.i18n('label_colliers_editTitle')" @click="model.editingKey = item; model.editValue = item">
                 <i class="fa-regular fa-pen-to-square" aria-hidden="true"></i>
               </button>
-              <button type="button" class="rounded p-1.5 text-gray-400 transition-colors hover:text-red-500" :title="BF.i18n('label_colliers_deleteDesignation')" :aria-label="BF.i18n('label_colliers_deleteDesignation')" @click="model.actionKey = item; BF.namedAction('deleteTitle')">
+              <button type="button" class="rounded p-1.5 text-gray-400 transition-colors hover:text-red-500" :title="BF.i18n('label_colliers_deleteTitle')" :aria-label="BF.i18n('label_colliers_deleteTitle')" @click="model.actionKey = item; BF.namedAction('deleteTitle')">
                 <i class="fa-regular fa-trash-can" aria-hidden="true"></i>
               </button>
             </div>
@@ -45,6 +45,6 @@
         </li>
       </ul>
     </div>
-    <p v-else class="py-8 text-center text-sm italic text-gray-500">{{ BF.i18n('label_colliers_noDesignations') }}</p>
+    <p v-else class="py-8 text-center text-sm italic text-gray-500">{{ BF.i18n('label_colliers_noTitles') }}</p>
   </div>
 </div>

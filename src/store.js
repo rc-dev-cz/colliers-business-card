@@ -480,8 +480,8 @@ function dropZeroQtyLines(ids) {
 }
 
 /**
- * After ship-to delete/uncheck/modal sync: Selected Items = sum of remaining
- * location qtys. Empty ship-to clears leftover cart qty for this group.
+ * After a location qty stepper change: Selected Items = sum of location qtys.
+ * Do not call this when adding or removing addresses — that must not delete cards.
  */
 export function syncCartToAssignedForSplit(split) {
   var zeroIds = syncCartBoxesToAssigned(store.cart, split)
@@ -491,7 +491,6 @@ export function syncCartToAssignedForSplit(split) {
 
 export function removeShipLocation(split, index) {
   spliceLocation(split, index)
-  syncCartToAssignedForSplit(split)
   persistOrder()
 }
 

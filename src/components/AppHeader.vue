@@ -72,7 +72,7 @@
               :class="navClass('admin-titles')"
               @click="goNamed('admin-titles')"
             >
-              {{ t('manageDesignations') }}
+              {{ t('manageTitles') }}
             </button>
             <button
               type="button"
@@ -256,7 +256,7 @@
             :class="mobileNavClass('admin-titles')"
             @click="onMobileNav('admin-titles')"
           >
-            {{ t('manageDesignations') }}
+            {{ t('manageTitles') }}
           </button>
           <button
             type="button"
