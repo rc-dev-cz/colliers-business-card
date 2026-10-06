@@ -54,10 +54,10 @@
                 class="border-b border-gray-50"
               >
                 <td class="py-3 pr-4 align-top">
-                  <div class="font-medium text-gray-900">{{ lineName(line) }}</div>
-                  <div v-if="personName(line)" class="mt-0.5 text-sm text-gray-500">{{ personName(line) }}</div>
+                  <div class="font-medium text-gray-900">{{ personName(line) || lineName(line) }}</div>
+                  <div v-if="personName(line)" class="mt-0.5 text-sm text-gray-500">{{ lineName(line) }}</div>
                 </td>
-                <td class="px-2 py-3 text-right align-top text-gray-700">{{ cardsQty(line.quantity) }}</td>
+                <td class="px-2 py-3 text-right align-top text-gray-700">{{ cardsQty(billedBoxes(line)) }}</td>
                 <td class="px-2 py-3 text-right align-top text-gray-700">${{ unitPrice(line) }}</td>
                 <td class="py-3 pl-2 text-right align-top font-medium text-gray-900">${{ lineAmount(line) }}</td>
               </tr>
@@ -79,7 +79,7 @@
               class="grid grid-cols-[1fr_auto] gap-4 text-sm text-gray-700"
             >
               <span>{{ loc.address || t('enterAddress') }}</span>
-              <span class="min-w-[3rem] text-right tabular-nums">{{ cardsQty(loc.qty) }}</span>
+              <span class="min-w-[3rem] text-right tabular-nums">{{ cardsQty(boxesPerAddress(split)) }}</span>
             </li>
           </ul>
           <p v-else class="text-sm text-gray-500">{{ t('noShipToAddresses') }}</p>
@@ -120,6 +120,7 @@ import ErrorState from '../components/ErrorState.vue'
 import { store, t, linesInSplit, subtotal, confirmSubmit } from '../store'
 import { productNameKey } from '../i18n/messages'
 import { cardsFromBoxes, lineTotal } from '../helpers/cart'
+import { billedBoxesForLine, boxesPerAddressForSplit } from '../helpers/order'
 import { getProduct } from '../data/products'
 import { go } from '../adapters/nav'
 
@@ -138,6 +139,12 @@ export default {
     t: t,
     linesInSplit: linesInSplit,
     cardsQty: cardsFromBoxes,
+    billedBoxes: function (line) {
+      return billedBoxesForLine(line, store.order)
+    },
+    boxesPerAddress: function (split) {
+      return boxesPerAddressForSplit(split, store.cart)
+    },
     lineName: function (line) {
       return t(productNameKey(line.code))
     },
@@ -150,11 +157,11 @@ export default {
       return Number(price).toFixed(2)
     },
     lineAmount: function (line) {
-      return lineTotal(line).toFixed(2)
+      return lineTotal(line, billedBoxesForLine(line, store.order)).toFixed(2)
     },
     splitSubtotal: function (split) {
       return linesInSplit(split).reduce(function (sum, line) {
-        return sum + lineTotal(line)
+        return sum + lineTotal(line, billedBoxesForLine(line, store.order))
       }, 0)
     },
     back: function () {

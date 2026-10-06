@@ -1,6 +1,6 @@
-import { makeLine, cartSubtotal } from './cart.js'
+import { makeLine, lineTotal } from './cart.js'
+import { billedBoxesCart, billedBoxesForLine, snapshotOrder } from './order.js'
 import { CARD_COMPANY, getProduct } from '../data/products.js'
-import { snapshotOrder } from './order.js'
 import { productNameKey } from '../i18n/messages.js'
 
 export const BOX_PRICE = 63
@@ -123,9 +123,7 @@ export function seedAdminOrderHistory() {
 }
 
 export function boxCount(record) {
-  return (record.cart || []).reduce(function (sum, line) {
-    return sum + (Number(line.quantity) || 0)
-  }, 0)
+  return billedBoxesCart(record.cart || [], record.order)
 }
 
 export function cardsPerBox(code) {
@@ -137,12 +135,14 @@ export function cardsPerBox(code) {
 
 export function cardCount(record) {
   return (record.cart || []).reduce(function (sum, line) {
-    return sum + (Number(line.quantity) || 0) * cardsPerBox(line.code)
+    return sum + billedBoxesForLine(line, record.order) * cardsPerBox(line.code)
   }, 0)
 }
 
 export function orderTotal(record) {
-  return cartSubtotal(record.cart || [])
+  return (record.cart || []).reduce(function (sum, line) {
+    return sum + lineTotal(line, billedBoxesForLine(line, record.order))
+  }, 0)
 }
 
 export function cardholderName(record) {

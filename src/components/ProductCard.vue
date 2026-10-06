@@ -30,7 +30,7 @@
 import CardPreview from './CardPreview.vue'
 import AppButton from './AppButton.vue'
 import { productNameKey } from '../i18n/messages'
-import { t } from '../store'
+import { t, startNewCustomize } from '../store'
 import { go } from '../adapters/nav'
 
 export default {
@@ -52,6 +52,7 @@ export default {
   methods: {
     t: t,
     goCustomize: function () {
+      startNewCustomize()
       go('customize', { code: this.product.code })
     },
     goDetails: function () {

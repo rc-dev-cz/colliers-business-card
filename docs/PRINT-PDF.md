@@ -53,7 +53,7 @@ The download is a **print file**, not a screenshot of the web preview. Screen ca
 - Page is still 3.75″ × 2.25″ (trim + bleed). Bleed is empty white — **no crop marks**; TrimBox/ArtBox mark the 3.5″ × 2″ finish
 - Logo mark + “Project Leaders” / “Maîtres de projets” use the approved artwork at the original coordinates
 - Body type is Open Sans 10 / 7 / 6.5 pt (`#03438C` / `#5F636A`) like the original
-- Layout is planned before draw: credentials are all-or-nothing (inline on the name, one dedicated row, or invalid). Right-column fields do not wrap. Email must fit **130 pt** on one line (character count alone is not enough).
+- Layout is planned before draw: credentials that all fit after the name stay inline; if they do not, shorter tokens fill the name line first (by measured width) and the remainder uses the dedicated credential row when it still fits. Right-column fields do not wrap. Email may use **132 pt** on one line (character count alone is not enough).
 - Bilingual: two pages; both pages must validate before the file is created; French uses `lockup-words-fr.png`
 - Unique filename each click so the browser never reopens a stale Downloads file
 

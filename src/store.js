@@ -2,10 +2,9 @@ import Vue from 'vue'
 import { messages } from './i18n/messages'
 import { readStorage, writeStorage, removeStorage } from './helpers/storage'
 import {
-  cartCount,
-  cartSubtotal,
   cloneCardDetails,
   consolidateCart,
+  lineTotal,
   makeLine,
   sameDetails,
 } from './helpers/cart'
@@ -13,15 +12,19 @@ import {
   addLocation as pushLocation,
   addSplit,
   assignItem,
+  billedBoxesCart,
+  billedBoxesForLine,
+  boxesPerAddressForSplit,
   linesForSplit,
   moveItem,
   normalizeOrder,
-  syncCartBoxesToAssigned,
   removeLocation as spliceLocation,
   removeSplitAt,
   resetOrder,
   snapshotOrder,
+  splitForLineId,
   syncCartAssignments,
+  syncLocationQtyFromOrdered,
   unassignItem,
 } from './helpers/order'
 import { fetchOffices, fetchTitles, submitOrder } from './adapters/api'
@@ -229,11 +232,18 @@ function loadOrderIntoCart(record) {
 }
 
 export function itemCount() {
-  return cartCount(store.cart)
+  return billedBoxesCart(store.cart, store.order)
 }
 
 export function subtotal() {
-  return cartSubtotal(store.cart)
+  return store.cart.reduce(function (sum, line) {
+    return sum + lineTotal(line, billedBoxesForLine(line, store.order))
+  }, 0)
+}
+
+export function startNewCustomize() {
+  store.editLineId = null
+  Vue.set(store, 'proof', null)
 }
 
 export function openCart() {
@@ -385,6 +395,11 @@ export function updateQty(id, quantity) {
   if (!line) return
   line.quantity = Math.max(1, Number(quantity) || 1)
   persistCart()
+  var split = splitForLineId(store.order, id)
+  if (split) {
+    syncLocationQtyFromOrdered(split, store.cart)
+    persistOrder()
+  }
 }
 
 export function removeLine(id) {
@@ -461,32 +476,10 @@ export function addCartItemToSplit(split) {
 }
 
 export function addShipLocation(split, address, qty) {
-  pushLocation(split, address, qty)
+  var boxes = qty != null ? qty : boxesPerAddressForSplit(split, store.cart)
+  pushLocation(split, address, boxes)
+  syncLocationQtyFromOrdered(split, store.cart)
   persistOrder()
-}
-
-function dropZeroQtyLines(ids) {
-  if (!ids || !ids.length) return
-  var drop = {}
-  ids.forEach(function (id) {
-    drop[String(id)] = true
-  })
-  store.cart = store.cart.filter(function (item) {
-    return !drop[String(item.id)]
-  })
-  ids.forEach(function (id) {
-    unassignItem(store.order, id)
-  })
-}
-
-/**
- * After a location qty stepper change: Selected Items = sum of location qtys.
- * Do not call this when adding or removing addresses — that must not delete cards.
- */
-export function syncCartToAssignedForSplit(split) {
-  var zeroIds = syncCartBoxesToAssigned(store.cart, split)
-  dropZeroQtyLines(zeroIds)
-  persistCart()
 }
 
 export function removeShipLocation(split, index) {

@@ -94,8 +94,9 @@ export function cartSubtotal(lines) {
   }, 0)
 }
 
-export function lineTotal(line) {
+export function lineTotal(line, boxes) {
   const product = getProduct(line.code)
   const price = (product && product.price) || line.price || 0
-  return price * (line.quantity || 0)
+  const qty = boxes != null ? Number(boxes) || 0 : line.quantity || 0
+  return price * qty
 }

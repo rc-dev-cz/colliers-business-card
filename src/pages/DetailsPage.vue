@@ -94,7 +94,7 @@ import AppButton from '../components/AppButton.vue'
 import { getProduct } from '../data/products'
 import { isBilingualLanguage } from '../helpers/formatCardIdentity'
 import { productNameKey } from '../i18n/messages'
-import { t } from '../store'
+import { t, startNewCustomize } from '../store'
 import { go } from '../adapters/nav'
 
 export default {
@@ -133,6 +133,7 @@ export default {
       go('catalog')
     },
     customize: function () {
+      startNewCustomize()
       go('customize', { code: this.code })
     },
   },

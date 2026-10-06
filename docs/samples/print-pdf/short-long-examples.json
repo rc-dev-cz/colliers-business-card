@@ -1,5 +1,5 @@
 {
-  "description": "Print PDF test cases. Language defaults to English; each sample may override. Empty details use generic placeholders (Firstname Lastname, Title | Region, C.M.).",
+  "description": "Print PDF test cases. Language defaults to English; each sample may override. Empty details use generic placeholders (Firstname Lastname, Title, C.M.).",
   "outDir": "docs/samples/print-pdf",
   "samples": [
     {
@@ -10,7 +10,7 @@
       "details": {
         "name": "Firstname Lastname",
         "title": "Title",
-        "region": "Region",
+        "region": "",
         "specializedTeam": "Specialized team",
         "degree": [],
         "additionalCredentials": "",
@@ -27,7 +27,7 @@
       "details": {
         "name": "Prénom Nom",
         "title": "Titre",
-        "region": "Région",
+        "region": "",
         "specializedTeam": "Équipe spécialisée",
         "degree": [],
         "additionalCredentials": "",

@@ -17,10 +17,10 @@
           <div class="min-w-0 flex-1">
             <div class="flex items-start justify-between gap-4">
               <div class="min-w-0">
-                <div class="text-[15px] font-semibold leading-snug text-gray-900">{{ lineName(line) }}</div>
-                <div v-if="personName(line)" class="mt-0.5 text-[14px] leading-snug text-gray-900">{{ personName(line) }}</div>
+                <div v-if="personName(line)" class="text-[15px] font-semibold leading-snug text-gray-900">{{ personName(line) }}</div>
+                <div class="mt-0.5 text-[14px] leading-snug text-gray-900">{{ lineName(line) }}</div>
                 <div class="mt-1.5 text-[13px] leading-snug text-gray-500">{{ t('language') }}: {{ line.language }}</div>
-                <div class="mt-0.5 text-[13px] leading-snug text-gray-500">{{ t('qty') }}: {{ cardsQty(line.quantity) }}</div>
+                <div class="mt-0.5 text-[13px] leading-snug text-gray-500">{{ t('qty') }}: {{ cardsQty(billedBoxes(line)) }}</div>
               </div>
               <div class="flex shrink-0 flex-col items-end gap-2">
                 <div class="text-[15px] font-semibold text-gray-900">${{ lineAmount(line) }}</div>
@@ -112,6 +112,7 @@ import CardPreview from './CardPreview.vue'
 import { store, t, closeCart, clearCart, subtotal, setProof, setEditLineId } from '../store'
 import { productNameKey } from '../i18n/messages'
 import { cardsFromBoxes, lineTotal } from '../helpers/cart'
+import { billedBoxesForLine } from '../helpers/order'
 import { isBilingualLanguage, WEBSITE_FR } from '../helpers/formatCardIdentity'
 import { go } from '../adapters/nav'
 
@@ -137,8 +138,11 @@ export default {
     personName: function (line) {
       return String((line.details && line.details.name) || '').trim()
     },
+    billedBoxes: function (line) {
+      return billedBoxesForLine(line, store.order)
+    },
     lineAmount: function (line) {
-      return lineTotal(line).toFixed(2)
+      return lineTotal(line, billedBoxesForLine(line, store.order)).toFixed(2)
     },
     previewSlots: function (line) {
       var details = line.details || {}

@@ -3,7 +3,7 @@ import { MOCK_OFFICES } from '../data/offices.js'
 
 export const OFFICES_STORAGE_KEY = 'managedOffices'
 /** Bump when the official Excel office seed changes so local stubs refresh. */
-export const OFFICES_SEED_VERSION = 2
+export const OFFICES_SEED_VERSION = 3
 export const OFFICES_SEED_VERSION_KEY = 'managedOfficesVersion'
 
 function createId() {

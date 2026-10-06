@@ -276,12 +276,13 @@ function applyPrintAddressPlaceholder(productPlan, details) {
   })
 }
 
-export async function buildPrintPdfBytes(details, language) {
+export async function buildPrintPdfBytes(details, language, opts) {
   var snapshot = snapshotCardDetails(details)
   var measureFonts = await loadLayoutFonts()
   var productPlan = planProductLayout(snapshot, language, measureFonts)
   applyPrintCredentialPlaceholder(productPlan, snapshot)
   applyPrintAddressPlaceholder(productPlan, snapshot)
+  if (opts && typeof opts.adjustPlan === 'function') opts.adjustPlan(productPlan)
   if (!productPlan.valid) throwLayoutError(productPlan)
 
   var pdfDoc = await PDFDocument.create()

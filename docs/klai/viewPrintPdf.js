@@ -166,7 +166,7 @@ async function viewPrintPdfBody() {
     if (titlePart && regionPart) return titlePart + ' | ' + regionPart;
     if (titlePart) return titlePart;
     if (regionPart) return (sampleTitle || 'Title') + ' | ' + regionPart;
-    return (sampleTitle || 'Title') + ' | ' + (sampleRegion || 'Region');
+    return sampleTitle || 'Title';
   }
   function formatCardPhone(value) {
     if (!value) return '';
@@ -252,6 +252,55 @@ async function viewPrintPdfBody() {
     var credW = fontBold.widthOfTextAtSize(', ' + credentialText, L.credentialSize);
     return used + credW <= L.identityWidth;
   }
+  function packCredentials(fontBold, lastNameLine, credText) {
+    var parts = String(credText || '')
+      .split(/,\s*/)
+      .map(function (part) {
+        return part.trim();
+      })
+      .filter(Boolean);
+    if (!parts.length) return { mode: 'none', inline: '', row: '' };
+    var joined = parts.join(', ');
+    if (fitsAfterName(fontBold, lastNameLine, joined)) return { mode: 'inline', inline: joined, row: '' };
+    var order = parts.map(function (text, index) {
+      return { text: text, index: index, w: fontBold.widthOfTextAtSize(text, L.credentialSize) };
+    });
+    order.sort(function (a, b) {
+      if (a.w !== b.w) return a.w - b.w;
+      return a.index - b.index;
+    });
+    var inlineItems = [];
+    var taken = {};
+    order.forEach(function (item) {
+      var trial = inlineItems
+        .map(function (row) {
+          return row.text;
+        })
+        .concat([item.text])
+        .join(', ');
+      if (fitsAfterName(fontBold, lastNameLine, trial)) {
+        inlineItems.push(item);
+        taken[item.index] = true;
+      }
+    });
+    var inline = inlineItems
+      .map(function (item) {
+        return item.text;
+      })
+      .join(', ');
+    var row = parts
+      .filter(function (_text, index) {
+        return !taken[index];
+      })
+      .join(', ');
+    if (!row) return { mode: 'inline', inline: inline, row: '' };
+    if (!inline) {
+      if (fitsLine(fontBold, joined, L.credentialSize, L.identityWidth)) return { mode: 'own-row', inline: '', row: joined };
+      return { mode: 'error', inline: '', row: '' };
+    }
+    if (!fitsLine(fontBold, row, L.credentialSize, L.identityWidth)) return { mode: 'error', inline: '', row: '' };
+    return { mode: 'split', inline: inline, row: row };
+  }
   function planCardLayout(fields, fonts, opts) {
     var font = fonts.font;
     var fontBold = fonts.fontBold;
@@ -264,17 +313,14 @@ async function viewPrintPdfBody() {
     if (nameLines.length > L.nameMaxLines) nameLines = nameLines.slice(0, L.nameMaxLines);
     var lastNameLine = nameLines[nameLines.length - 1] || '';
     var credText = String(fields.credentialSuffix || '').trim();
-    var credMode = 'none';
-    if (credText) {
-      if (fitsAfterName(fontBold, lastNameLine, credText)) credMode = 'inline';
-      else if (fitsLine(fontBold, credText, L.credentialSize, L.identityWidth)) credMode = 'own-row';
-      else errors.push('credentials');
-    }
+    var packed = packCredentials(fontBold, lastNameLine, credText);
+    var credMode = packed.mode === 'error' ? 'none' : packed.mode;
+    if (packed.mode === 'error') errors.push('credentials');
     if (!fitsLine(font, fields.website, L.bodySize, L.identityWidth)) errors.push('website');
     if (!fitsLine(font, fields.email, L.bodySize, L.emailMaxWidth)) errors.push('email');
     if (String(fields.email || '').length > EMAIL_MAX) errors.push('email');
     var addressWrap = wrapAddress(font, fields.address, L.bodySize, L.addressMaxWidth);
-    var ownCred = credMode === 'own-row';
+    var ownCred = credMode === 'own-row' || credMode === 'split';
     var titleY = ownCred ? L.titleYWithCred : L.titleYNoCred;
     var teamY = ownCred ? L.teamYWithCred : L.teamYNoCred;
     var lastNameY = L.nameY;
@@ -289,8 +335,8 @@ async function viewPrintPdfBody() {
       nameLines: nameLines,
       nameLineYs: nameLineYs,
       lastNameY: lastNameY,
-      inlineCredential: credMode === 'inline' ? ', ' + credText : '',
-      credentialLine: ownCred ? credText : '',
+      inlineCredential: packed.inline ? ', ' + packed.inline : '',
+      credentialLine: ownCred ? packed.row : '',
       credentialY: ownCred ? L.credentialY : null,
       title: fields.title,
       titleY: titleY,

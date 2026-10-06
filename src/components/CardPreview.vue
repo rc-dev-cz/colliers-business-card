@@ -214,7 +214,7 @@ export default {
         left: trimLeftPct(CARD_LAYOUT.addressX) + '%',
         right: 100 - trimLeftPct(CARD_LAYOUT.identityX) + '%',
         bottom: trimBottomPct(this.view.addressY) + '%',
-        fontSize: 'min(2.15cqw, 11px)',
+        fontSize: '2.15cqw',
       }
     },
   },
@@ -226,7 +226,8 @@ export default {
         left: this.identityLeft,
         right: '7%',
         bottom: trimBottomPct(y) + '%',
-        fontSize: 'min(3.7cqw, 18px)',
+        // Pure cqw so larger frames (Proof) scale type with the card.
+        fontSize: '3.7cqw',
       }
     },
     emailStyle: function () {
@@ -237,7 +238,7 @@ export default {
         left: this.identityLeft,
         right: right || '7%',
         bottom: trimBottomPct(y) + '%',
-        fontSize: cred ? 'min(2.6cqw, 13px)' : 'min(2.15cqw, 11px)',
+        fontSize: cred ? '2.6cqw' : '2.15cqw',
       }
     },
     withOptionalPlaceholders: function (view) {

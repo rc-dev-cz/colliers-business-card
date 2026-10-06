@@ -109,6 +109,20 @@ describe('planCardLayout', function () {
     expect(layout.emailY).toBe(43)
   })
 
+  it('puts shorter credentials after the name and the long remainder on its own row', function () {
+    var layout = plan({
+      name: 'Connor Gillies',
+      degree: ['BSc Civil Engineering'],
+      additionalCredentials: 'PMP, EIT',
+    })
+    expect(layout.valid).toBe(true)
+    expect(layout.credMode).toBe('split')
+    expect(layout.inlineCredential).toBe(', EIT, PMP')
+    expect(layout.credentialLine).toBe('BSc Civil Engineering')
+    expect(layout.credentialY).toBe(66.99)
+    expect(layout.titleY).toBe(58.99)
+  })
+
   it('moves the entire credential string to its own row when it cannot sit on the name', function () {
     var cred = padToWidth(fonts.fontBold, L.credentialSize, L.identityWidth - 8, 'Arch. Tech ')
     var last = 'Ada Lovelace'

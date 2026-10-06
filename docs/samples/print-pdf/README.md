@@ -6,8 +6,8 @@
 
 | File | What to look at |
 | --- | --- |
-| `Colliers-Sample-Placeholder-EN.pdf` | Empty card: Firstname Lastname, Title \| Region, Specialized team, C.M. |
-| `Colliers-Sample-Placeholder-FR.pdf` | Empty French card: Prénom Nom, Titre \| Région, Équipe spécialisée, C.M. |
+| `Colliers-Sample-Placeholder-EN.pdf` | Empty card: Firstname Lastname, Title, Specialized team, C.M. |
+| `Colliers-Sample-Placeholder-FR.pdf` | Empty French card: Prénom Nom, Titre, Équipe spécialisée, C.M. |
 | `Colliers-Sample-EN.pdf` | Typical English finished card (Hannah, inline degrees, **no** team) + blue back |
 | `Colliers-Sample-FR.pdf` | Same person, French wordmark + back |
 | `Colliers-Sample-Bilingual.pdf` | EN face + FR face (2 pages, no blue backs) |

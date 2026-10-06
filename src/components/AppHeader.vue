@@ -299,8 +299,7 @@
 <script>
 import { brandLockupAlt, brandMarkUrl, brandWordmarkUrl } from '../helpers/brandLockup'
 import { isFrenchLanguage } from '../helpers/formatCardIdentity'
-import { store, t, setLocale, openCart, logout, userEmail, isAdmin } from '../store'
-import { cartCount } from '../helpers/cart'
+import { store, t, setLocale, openCart, logout, userEmail, isAdmin, itemCount } from '../store'
 import { go, currentRouteName } from '../adapters/nav'
 
 export default {
@@ -314,7 +313,7 @@ export default {
   },
   computed: {
     badge: function () {
-      const count = cartCount(this.store.cart)
+      const count = itemCount()
       return count > 0 ? String(count) : ''
     },
     email: function () {

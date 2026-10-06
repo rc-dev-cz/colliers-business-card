@@ -241,7 +241,7 @@ export const messages = {
   allRights: { EN: 'All Rights Reserved', FR: 'Tous droits réservés' },
   itemsIncluded: { EN: 'Items Included', FR: 'Articles Inclus' },
   materials: { EN: 'Materials', FR: 'Matériaux' },
-  premiumStock: { EN: 'Premium 16pt cardstock', FR: 'Carton de qualité supérieure 16 pt' },
+  premiumStock: { EN: 'Premium 14pt cardstock', FR: 'Carton de qualité supérieure 14 pt' },
   trainings: { EN: 'Trainings', FR: 'Formations' },
   brandCompliance: { EN: 'Brand guidelines compliance', FR: 'Conformité aux directives de la marque' },
   itemNumber: { EN: 'Item Number / Description', FR: "Numéro d'article / Description" },

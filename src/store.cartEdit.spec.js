@@ -3,6 +3,7 @@ import {
   addProofToCart,
   setEditLineId,
   setProof,
+  startNewCustomize,
   store,
 } from './store.js'
 import { makeLine } from './helpers/cart.js'
@@ -93,5 +94,38 @@ describe('edit cart line from proof', function () {
 
     expect(store.cart.length).toBe(1)
     expect(store.cart[0].details.title).toBe('Director')
+  })
+
+  it('catalog customize clears edit so add to cart does not overwrite the line', function () {
+    setEditLineId('line-1')
+    setProof({
+      code: 'BCAD-PL-FR',
+      language: 'French',
+      details: store.cart[0].details,
+    })
+    startNewCustomize()
+    expect(store.editLineId).toBe(null)
+    expect(store.proof).toBe(null)
+
+    setProof({
+      code: 'BCAD-PL-FR',
+      language: 'French',
+      details: {
+        name: 'Firstname Lastname',
+        title: 'Director',
+        region: '',
+        degree: [],
+        additionalCredentials: '',
+        email: 'first.lastname@colliersprojectleaders.com',
+        phone: '416 555-1234',
+        address: '300-5515 North Service Road',
+      },
+    })
+    addProofToCart()
+
+    expect(store.cart.length).toBe(2)
+    expect(store.cart[0].id).toBe('line-1')
+    expect(store.cart[0].details.name).toBe('Carlos Zabaleta Copa')
+    expect(store.cart[1].details.name).toBe('Firstname Lastname')
   })
 })

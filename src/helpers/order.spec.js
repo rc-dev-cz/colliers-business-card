@@ -1,18 +1,18 @@
 import { describe, expect, it } from 'vitest'
 import {
   addSplit,
-  assignedBoxesForSplit,
   assignItem,
+  billedBoxesCart,
+  billedBoxesForLine,
   createLocation,
   createSplit,
   defaultOrder,
   moveItem,
   nextLocationQty,
   orderedBoxesForSplit,
-  reduceCartBoxesForSplit,
   removeSplitAt,
   syncCartAssignments,
-  syncCartBoxesToAssigned,
+  syncLocationQtyFromOrdered,
 } from './order.js'
 
 describe('shipping groups', function () {
@@ -84,63 +84,50 @@ describe('shipping groups', function () {
 })
 
 describe('ship-to allocation', function () {
-  it('defaults new location qty to remaining ordered boxes', function () {
+  it('copies Selected Items qty onto each new address', function () {
     var split = createSplit({ id: 1, itemIds: ['a'] })
     var cart = [{ id: 'a', quantity: 3 }]
     expect(orderedBoxesForSplit(split, cart)).toBe(3)
-    expect(assignedBoxesForSplit(split)).toBe(0)
     expect(nextLocationQty(split, cart)).toBe(3)
 
-    split.locations.push(createLocation('One', 2))
-    expect(nextLocationQty(split, cart)).toBe(1)
+    split.locations.push(createLocation('One', nextLocationQty(split, cart)))
+    expect(nextLocationQty(split, cart)).toBe(3)
 
-    split.locations.push(createLocation('Two', 1))
-    expect(nextLocationQty(split, cart)).toBe(1)
+    split.locations.push(createLocation('Two', nextLocationQty(split, cart)))
+    expect(split.locations[0].qty).toBe(3)
+    expect(split.locations[1].qty).toBe(3)
   })
 
-  it('reduceCartBoxesForSplit lowers cart qty when a ship-to is removed', function () {
-    var split = createSplit({ id: 1, itemIds: ['a'] })
-    var cart = [{ id: 'a', quantity: 4 }]
-    var zeroIds = reduceCartBoxesForSplit(cart, split, 1)
-    expect(cart[0].quantity).toBe(3)
-    expect(zeroIds).toEqual([])
-  })
-
-  it('reduceCartBoxesForSplit drops lines that reach zero boxes', function () {
-    var split = createSplit({ id: 1, itemIds: ['a'] })
+  it('bills Selected Items qty times the number of addresses', function () {
     var cart = [{ id: 'a', quantity: 1 }]
-    var zeroIds = reduceCartBoxesForSplit(cart, split, 1)
-    expect(cart[0].quantity).toBe(0)
-    expect(zeroIds).toEqual(['a'])
+    var order = {
+      splits: [
+        createSplit({
+          id: 1,
+          itemIds: ['a'],
+          locations: [createLocation('One', 1), createLocation('Two', 1), createLocation('Three', 1)],
+        }),
+      ],
+    }
+    expect(billedBoxesForLine(cart[0], order)).toBe(3)
+    expect(billedBoxesCart(cart, order)).toBe(3)
   })
 
-  it('syncCartBoxesToAssigned does not clear cart when ship-to is empty', function () {
-    var split = createSplit({ id: 1, itemIds: ['a'], locations: [] })
-    var cart = [{ id: 'a', quantity: 1 }]
-    var zeroIds = syncCartBoxesToAssigned(cart, split)
-    expect(cart[0].quantity).toBe(1)
-    expect(zeroIds).toEqual([])
+  it('bills Selected Items qty when there are no addresses yet', function () {
+    var cart = [{ id: 'a', quantity: 2 }]
+    var order = { splits: [createSplit({ id: 1, itemIds: ['a'], locations: [] })] }
+    expect(billedBoxesForLine(cart[0], order)).toBe(2)
   })
 
-  it('syncCartBoxesToAssigned drops unallocated cart boxes after a partial remove', function () {
+  it('syncLocationQtyFromOrdered copies Selected Items onto every ship-to', function () {
     var split = createSplit({
       id: 1,
       itemIds: ['a'],
-      locations: [createLocation('Calgary', 1)],
+      locations: [createLocation('One', 1), createLocation('Two', 9)],
     })
-    var cart = [{ id: 'a', quantity: 4 }]
-    syncCartBoxesToAssigned(cart, split)
-    expect(cart[0].quantity).toBe(1)
-  })
-
-  it('syncCartBoxesToAssigned raises cart when ship-to qty goes up', function () {
-    var split = createSplit({
-      id: 1,
-      itemIds: ['a'],
-      locations: [createLocation('Burlington', 2)],
-    })
-    var cart = [{ id: 'a', quantity: 1 }]
-    syncCartBoxesToAssigned(cart, split)
-    expect(cart[0].quantity).toBe(2)
+    var cart = [{ id: 'a', quantity: 2 }]
+    syncLocationQtyFromOrdered(split, cart)
+    expect(split.locations[0].qty).toBe(2)
+    expect(split.locations[1].qty).toBe(2)
   })
 })

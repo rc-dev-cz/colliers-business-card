@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { CARDS_PER_BOX, cardsFromBoxes, boxesFromCards, cloneCardDetails } from './cart.js'
+import { CARDS_PER_BOX, cardsFromBoxes, boxesFromCards, cloneCardDetails, lineTotal } from './cart.js'
 
 describe('cardsFromBoxes', function () {
   it('converts stored boxes to printed cards', function () {
@@ -25,5 +25,12 @@ describe('cloneCardDetails', function () {
     copy.name = 'Grace'
     expect(source.degree).toEqual(['P.Eng'])
     expect(source.name).toBe('Ada')
+  })
+})
+
+describe('lineTotal', function () {
+  it('uses billed boxes when provided', function () {
+    expect(lineTotal({ code: 'BCAD-PL-ENG', quantity: 1, price: 63 }, 3)).toBe(189)
+    expect(lineTotal({ code: 'BCAD-PL-ENG', quantity: 2, price: 63 })).toBe(126)
   })
 })

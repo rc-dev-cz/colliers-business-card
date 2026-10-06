@@ -81,7 +81,9 @@ describe('approval guide PDFs', function () {
         expect(dump.nameLineYs[0]).toBe(75.49)
         expect(dump.team).toBe('')
       } else {
-        expect(dump.credMode).toBe('own-row')
+        expect(dump.credMode).toBe('split')
+        expect(dump.inlineCredential).toMatch(/CPA/)
+        expect(dump.credentialLine).toMatch(/P\. Eng\./)
         expect(dump.emailY).toBe(43)
         expect(dump.phoneY).toBe(35)
         expect(dump.websiteY).toBe(27)

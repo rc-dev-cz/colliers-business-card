@@ -45,14 +45,14 @@ The order process follows these main steps:
 | Business card product | One of the available card types: English, Bilingual, or French. |
 | Title | Job title on the card (FileMaker **titles**). Previously called designation — do not use that name. |
 | Degree | Degree or certification on the name line (FileMaker **degrees**). |
-| Quantity | The number of boxes ordered for a cart item. Quantity 3 means 3 boxes, or 750 printed cards. |
+| Quantity | The number of boxes of that card on Selected Items. Quantity 3 means 3 boxes (750 printed cards) **per shipping address**. |
 | Cart item | A cart item is one business card shown in the cart. If the same business card is ordered more than once, the quantity can increase without creating another cart item. |
-| Cart count | The number shown on the navbar cart icon. It is the sum of all cart item quantities, not the number of cart rows. |
+| Cart count | The number shown on the navbar cart icon. It is billed boxes: Selected Items quantity × ship-to addresses in that item’s shipping group (minimum ×1 when there are no addresses yet). |
 | Shipping group | A part of the order that groups business cards going to one or more shipping addresses. |
 | Split Order | Creates an additional shipping group within the same order so business cards can be organized and shipped separately. |
 | Shipping location | The delivery address selected for a shipping group. |
-| Location quantity | The number of boxes assigned to a shipping location. The location qty stepper may change Selected Items / cart quantity. |
-| Cart vs addresses | Adding or removing a ship-to address, Address Book row, or office address never deletes cart items. Cards stay until the user removes them from Selected Items or the cart. An empty ship-to is allowed while cards remain. |
+| Location quantity | Read-only. Each selected address receives the full Selected Items quantity for that group. It is not edited on Ship To. |
+| Cart vs addresses | Adding or removing a ship-to address, Address Book row, or office address never deletes cart items. Cards stay until the user removes them from Selected Items or the cart. An empty ship-to is allowed while cards remain. Adding addresses multiplies billed boxes; removing an address lowers billed boxes and does not change Selected Items quantity. |
 
 ---
 
@@ -63,15 +63,16 @@ The order process follows these main steps:
 | Available products | Business Card English, Business Card Bilingual, and Business Card French. |
 | Packaging | 1 box = 250 printed business cards. |
 | Price | Each box costs $63.00. The same price applies to all three products. |
-| Price calculation | Total price = quantity × $63.00. |
+| Price calculation | Total price = billed boxes × $63.00. Billed boxes = Selected Items quantity × number of ship-to addresses in that item’s shipping group (or ×1 if none). No volume discount: two boxes are $126.00. |
 | Billing | Orders are billed to the Colliers account. The portal does not collect credit-card or payment information. |
 
 ### Examples
 
-- Quantity 1 = 250 cards = $63.00
-- Quantity 2 = 500 cards = $126.00
-- Quantity 3 = 750 cards = $189.00
-- Quantity 10 = 2,500 cards = $630.00
+- Quantity 1, one address = 250 cards = $63.00
+- Quantity 1, three addresses = 750 cards = $189.00
+- Quantity 2, one address = 500 cards = $126.00
+- Quantity 3, one address = 750 cards = $189.00
+- Quantity 10, one address = 2,500 cards = $630.00
 
 ### Tests
 
@@ -107,7 +108,7 @@ The customization page controls the information shown on the business card previ
 | Address | Required. Selected from the saved Colliers office address list; it is not entered manually on this screen. |
 | Website | Locked as colliersprojectleaders.com (French card uses /fr) and cannot be edited. |
 | Live preview | Changes to editable card information are reflected on the card preview. |
-| Optional empty fields | Until a degree or credential is entered, the preview and the print PDF show the ICT sample “C.M.” after the comma on the name line. Empty title, region, and team use “Title \| Region” and “Specialized team”. Until an office is selected, every card preview and the print PDF show the four-line sample “Address name / Unit, Street / City, Province / Postal Code, Country” (FR: Nom de l’adresse / …). |
+| Optional empty fields | Until a degree or credential is entered, the preview and the print PDF show the ICT sample “C.M.” after the comma on the name line. Empty title shows “Title” (FR: “Titre”). Region is omitted until filled; then it appears as “Title \| Region”. Empty specialized team uses “Specialized team”. Until an office is selected, every card preview and the print PDF show the four-line sample “Address name / Unit, Street / City, Province / Postal Code, Country” (FR: Nom de l’adresse / …). |
 
 ### Tests
 
@@ -119,7 +120,7 @@ The customization page controls the information shown on the business card previ
 | CU-04 | Open Address and choose a saved office. | The selected office appears on the card preview. |
 | CU-05 | Try to edit Company Name and Website. | Both fields remain locked with the approved values. |
 | CU-06 | Change email or mobile phone. | The preview updates with the entered information. |
-| CU-07 | Open Customize before filling optional fields. | The name line reads “Firstname Lastname, C.M.”. Title shows “Title \| Region”. Team shows “Specialized team”. Address shows “Address name”, “Unit, Street”, “City, Province”, and “Postal Code, Country”. The customize preview does not show the card back. The print PDF includes the blue legal panel. |
+| CU-07 | Open Customize before filling optional fields. | The name line reads “Firstname Lastname, C.M.”. Title shows “Title” (no region). Team shows “Specialized team”. Address shows “Address name”, “Unit, Street”, “City, Province”, and “Postal Code, Country”. The customize preview does not show the card back. The print PDF includes the blue legal panel. |
 | CU-08 | Enter additional credentials only. | That label is replaced by the typed text. The degree label stays until a degree is selected. |
 
 ---
@@ -132,8 +133,8 @@ The customization page controls the information shown on the business card previ
 | Same card + same details | Adding the same product with the same full name, title, email, phone, and office combines into one cart item and increases its quantity. |
 | Different details | If the product or any card detail is different, the cards remain separate cart items. |
 | One row, many boxes | One cart item can hold a quantity greater than 1. |
-| Cart count | The cart count is the sum of all cart item quantities. |
-| Change quantity | Changing a cart item quantity updates the cart count and price. |
+| Cart count | The cart count is billed boxes (Selected Items quantity × addresses, minimum ×1). |
+| Change quantity | Changing a cart item quantity on Selected Items updates billed boxes, the cart count, and price. Ship To is not used to edit quantity. |
 | Remove item | Removing a cart item recalculates the cart count and total. |
 | Empty cart | When no items remain, the cart count is 0 and the total is $0.00. |
 
@@ -169,7 +170,7 @@ The customization page controls the information shown on the business card previ
 | Move a product | A business card can be moved from one shipping group to another without creating an additional copy of the product. |
 | Remove Split | An additional shipping group can be removed. At least one shipping group must remain. |
 | Saved location | Shipping locations are selected from the saved address list. |
-| Add / remove location | Shipping locations can be added to or removed from a shipping group. That does not remove or empty the cart. |
+| Add / remove location | Shipping locations can be added to or removed from a shipping group. That does not remove or empty the cart. Each address receives the full Selected Items quantity for the group (multiply). Qty is edited only on Selected Items; Ship To shows the same read-only card count on every address. |
 
 ### Example
 
@@ -185,8 +186,8 @@ Shipping Group 1 contains the current business cards and shipping location. Sele
 | SH-04 | Move a product from Shipping Group 1 to Shipping Group 2. | The product appears in Group 2 and the total ordered quantity does not change. |
 | SH-05 | Select a different saved address for each shipping group. | Each group keeps its selected shipping address. |
 | SH-06 | Remove an extra shipping group. | One group remains; the last group cannot be removed. |
-| SH-07 | Change the location quantity. | The location value changes; the cart quantity remains unchanged. |
-| SH-08 | Add or remove a ship-to address while cards are in the cart. | The address list changes; cart lines and quantities stay. |
+| SH-07 | Add a second and third ship-to address while Selected Items quantity is 1. | Selected Items stays 1 box / 250 cards. Each address shows 250 cards (read-only). Billed total is 3 boxes / 750 cards / $189.00. |
+| SH-08 | Add or remove a ship-to address while cards are in the cart. | The address list changes; cart lines and Selected Items quantities stay. |
 
 ---
 
@@ -291,7 +292,7 @@ Use this section when adding tickets. Do **not** create a second ticket for a ru
 | Printed-card count (qty × 250) | USR-046 | Done |
 | Move a card between shipping groups | USR-056 | Done (SH-04) |
 | Split Order creates an empty group | USR-057 | Done (SH-02, SH-03) |
-| Add/remove ship-to does not delete cart cards | USR-051 | Done (SH-08) |
+| Add/remove ship-to does not delete cart cards | USR-051 | Done (SH-08). Qty × addresses for billed boxes (SH-07). |
 
 ### Already ticketed as Ideas — reuse these, do not duplicate
 

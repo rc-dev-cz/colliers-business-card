@@ -65,13 +65,13 @@ export function previewCredentialText(degree, extra, language) {
   return optionalPreview(language).credential
 }
 
-/** Title line for the customize preview. Empty region keeps its label. */
+/** Title line for the customize preview. Empty region omits "| Region". */
 export function previewTitleText(title, region, language) {
   var french = isFrenchLanguage(language)
   var labels = optionalPreview(language)
   var sampleTitle = french ? 'Titre' : 'Title'
   var regionPart = region != null ? String(region).trim() : ''
-  return formatTitleLine(title, regionPart || labels.region, sampleTitle, labels.region)
+  return formatTitleLine(title, regionPart, sampleTitle, labels.region)
 }
 
 /** Team line. Empty specialized team keeps the generic sample. */
@@ -112,7 +112,7 @@ export function formatTitleLine(title, region, sampleTitle, sampleRegion) {
   if (titlePart && regionPart) return titlePart + ' | ' + regionPart
   if (titlePart) return titlePart
   if (regionPart) return (sampleTitle || 'Title') + ' | ' + regionPart
-  return (sampleTitle || 'Title') + ' | ' + (sampleRegion || 'Region')
+  return sampleTitle || 'Title'
 }
 
 export var WEBSITE_EN = 'colliersprojectleaders.com'

@@ -12,7 +12,7 @@ When no real card has been selected (Klai builder, `modelDev`, empty Customize/P
 | Field | English | French |
 | --- | --- | --- |
 | Name | `Firstname Lastname` | `Prénom Nom` |
-| Title / region / team | `Title` / `Region` / `Specialized team` | `Titre` / `Région` / `Équipe spécialisée` |
+| Title / region / team | `Title` (region omitted until filled) / `Specialized team` | `Titre` / `Équipe spécialisée` |
 | Email | `first.lastname@colliersprojectleaders.com` | `prenom.nom@colliersprojectleaders.com` |
 | Phone | `+1 555 555 5555` (or `555 555 5555`) | same |
 | Address | `Address name` / `Unit, Street` / … | `Nom de l'adresse` / … |

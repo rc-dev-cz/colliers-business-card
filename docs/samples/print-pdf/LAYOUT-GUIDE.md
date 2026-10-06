@@ -57,6 +57,7 @@ Do not convert production coordinates back to MASTER coordinates.
 The Standard image shows the normal finished card:
 
 - One-line name with short credentials **inline** after the name (e.g. `Hannah Sharpe, B.Comm, PMP`)
+- When the full credential list does not fit after the name, **shorter tokens** (by measured width) stay on the name line and the remainder uses the credential row
 - Title | Region
 - Team when present
 - Email
@@ -85,7 +86,7 @@ It should demonstrate the most demanding supported content while remaining insid
 Expected behavior:
 
 - Name can use up to two lines
-- A long credential can move to its own row (up to **2 selected degrees** plus optional Additional Credentials as a third text)
+- Credentials pack by measured width: shorter tokens after the name, remainder on the credential row (up to **2 selected degrees** plus optional Additional Credentials)
 - Title | Region remains below the name / credential area
 - Team remains optional
 - Email stays on one line
@@ -93,9 +94,7 @@ Expected behavior:
 - Website stays on one line
 - Address can use up to five lines and remains bottom-aligned
 - No field may cross the approved content width or enter the bleed area
-- Own-row + team lifts the identity block so the last line sits at **58.99**, leaving ~16 pt above email (Cynthia, Oct 2026). Contacts stay at 43 / 35 / 27.
-
-The Maximum approval fixture uses two list degrees plus Additional Credentials (`CPA`). Email is name-derived and must still fit the 132 pt email lane. When name + credentials do not fit in the 130 pt identity lane, credentials use their **own row** — that is the approved fallback, not an overflow.
+- Own-row / split + team lifts the identity block so the last line sits at **58.99**, leaving ~16 pt above email (Cynthia, Oct 2026). Contacts stay at 43 / 35 / 27.
 
 The exact vertical positions should come from the generated production PDF. Do **not** invent new spacing rules from the diagram.
 

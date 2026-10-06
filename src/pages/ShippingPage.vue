@@ -61,8 +61,8 @@
                   <card-preview :details="line.details || {}" :language="line.language"></card-preview>
                 </div>
                 <div class="min-w-0 flex-1 pt-0.5">
-                  <div class="text-[15px] font-semibold leading-snug text-gray-900">{{ lineName(line) }}</div>
-                  <div v-if="personName(line)" class="mt-0.5 text-[14px] leading-snug text-gray-900">{{ personName(line) }}</div>
+                  <div v-if="personName(line)" class="text-[15px] font-semibold leading-snug text-gray-900">{{ personName(line) }}</div>
+                  <div class="mt-0.5 text-[14px] leading-snug text-gray-900">{{ lineName(line) }}</div>
                   <label class="mt-1.5 inline-flex items-center gap-1 text-[13px] leading-snug text-gray-500">
                     <span>{{ t('qty') }}:</span>
                     <input
@@ -134,8 +134,8 @@
                       class="block w-full px-3 py-2 text-left text-sm text-gray-800 hover:bg-gray-100"
                       @click="onAddCartLine(split, line.id)"
                     >
-                      <span class="block font-medium">{{ lineName(line) }}</span>
-                      <span class="block truncate text-gray-500">{{ personName(line) || t('qty') + ' ' + cardsQty(line.quantity) }}</span>
+                      <span class="block font-medium">{{ personName(line) || lineName(line) }}</span>
+                      <span class="block truncate text-gray-500">{{ personName(line) ? lineName(line) : t('qty') + ' ' + cardsQty(line.quantity) }}</span>
                     </button>
                   </li>
                 </ul>
@@ -204,17 +204,10 @@
                   :placeholder="t('selectShipToAddress')"
                   readonly
                 />
-                <label class="shipping-qty-field shrink-0">
+                <span class="shipping-qty-field shrink-0">
                   <span>{{ t('qty') }}:</span>
-                  <input
-                    type="number"
-                    min="250"
-                    step="250"
-                    :value="cardsQty(loc.qty)"
-                    @input="onLocCardsQty(split, loc, $event.target.value)"
-                    @change="onLocCardsQty(split, loc, $event.target.value)"
-                  />
-                </label>
+                  <span class="tabular-nums font-semibold text-gray-900">{{ cardsQty(boxesPerAddress(split)) }}</span>
+                </span>
                 <button
                   type="button"
                   class="shrink-0 rounded border border-gray-200 p-2 text-gray-500 hover:text-red-600"
@@ -299,7 +292,8 @@ import { productNameKey } from '../i18n/messages'
 import { cardsFromBoxes, boxesFromCards } from '../helpers/cart'
 import {
   createLocation,
-  nextLocationQty,
+  boxesPerAddressForSplit,
+  syncLocationQtyFromOrdered,
 } from '../helpers/order'
 import {
   store,
@@ -310,7 +304,6 @@ import {
   removeSplit,
   removeLine,
   removeShipLocation,
-  syncCartToAssignedForSplit,
   moveLineToSplit,
   cartLinesOutsideSplit,
   addCartItemToSplit,
@@ -418,6 +411,9 @@ export default {
     onLineCardsQty: function (id, cards) {
       updateQty(id, boxesFromCards(cards))
     },
+    boxesPerAddress: function (split) {
+      return boxesPerAddressForSplit(split, store.cart)
+    },
     editLine: function (line) {
       setEditLineId(line.id)
       setProof({
@@ -457,14 +453,8 @@ export default {
       this.selectMenuIndex = null
       this.addItemMenuIndex = this.addItemMenuIndex === splitIndex ? null : splitIndex
     },
-    onLocCardsQty: function (split, loc, cards) {
-      loc.qty = boxesFromCards(cards)
-      // Arrows / typed qty: Selected Items follows ship-to sum (up or down).
-      syncCartToAssignedForSplit(split)
-      persistOrderNow()
-    },
     defaultLocQty: function (split) {
-      return nextLocationQty(split, store.cart)
+      return boxesPerAddressForSplit(split, store.cart)
     },
     isSplitAddress: function (split, address) {
       return (split.locations || []).some(function (row) {
@@ -500,12 +490,13 @@ export default {
           return
         }
         var draft = { itemIds: split.itemIds, locations: next }
-        next.push(createLocation(addr, nextLocationQty(draft, store.cart)))
+        next.push(createLocation(addr, boxesPerAddressForSplit(draft, store.cart)))
       })
       split.locations.splice(0, split.locations.length)
       next.forEach(function (loc) {
         split.locations.push(loc)
       })
+      syncLocationQtyFromOrdered(split, store.cart)
       persistOrderNow()
       this.$nextTick(function () {
         self.destroySortables()
@@ -516,6 +507,7 @@ export default {
       if (checked) {
         if (!this.isSplitAddress(split, address)) {
           split.locations.push(createLocation(address, this.defaultLocQty(split)))
+          syncLocationQtyFromOrdered(split, store.cart)
           persistOrderNow()
         }
         return

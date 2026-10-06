@@ -57,8 +57,8 @@ describe('formatTitleLine', function () {
     expect(formatTitleLine('Broker | Canada', '', 'Title', 'Region')).toBe('Broker')
   })
 
-  it('falls back to sample title and region when both empty', function () {
-    expect(formatTitleLine('', '', 'Title', 'Region')).toBe('Title | Region')
+  it('falls back to sample title only when both empty', function () {
+    expect(formatTitleLine('', '', 'Title', 'Region')).toBe('Title')
   })
 })
 
@@ -71,9 +71,9 @@ describe('customize optional placeholders', function () {
     expect(previewCredentialText([], '', 'French')).toBe('C.M.')
   })
 
-  it('keeps region and team samples until those fields are filled', function () {
-    expect(previewTitleText('', '', 'English')).toBe('Title | Region')
-    expect(previewTitleText('Broker', '', 'English')).toBe('Broker | Region')
+  it('shows title alone when region is empty; blank card keeps Title only', function () {
+    expect(previewTitleText('', '', 'English')).toBe('Title')
+    expect(previewTitleText('Broker', '', 'English')).toBe('Broker')
     expect(previewTitleText('Broker | Canada', 'Ontario', 'English')).toBe('Broker | Ontario')
     expect(previewTeamText('', 'English')).toBe('Specialized team')
     expect(previewTeamText('Industrial', 'English')).toBe('Industrial')
@@ -87,7 +87,8 @@ describe('customize optional placeholders', function () {
 
   it('uses French labels on the French preview', function () {
     expect(previewCredentialText([], '', 'French')).toBe('C.M.')
-    expect(previewTitleText('', '', 'French')).toBe('Titre | Région')
+    expect(previewTitleText('', '', 'French')).toBe('Titre')
+    expect(previewTitleText('Directrice', '', 'French')).toBe('Directrice')
     expect(previewTeamText('', 'French')).toBe('Équipe spécialisée')
     expect(previewAddressText('', 'French')).toBe(
       "Nom de l'adresse\nUnité, Rue\nVille, Province\nCode postal, Pays",

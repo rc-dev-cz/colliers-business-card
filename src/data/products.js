@@ -66,16 +66,14 @@ export function catalogCodeFromLine(line) {
 
 /** Seed for Manage Titles / Customize titleOptions until FileMaker loads. */
 export const jobTitles = [
-  'Associate',
-  'Associate Director',
-  'Business Services Administrator',
-  'Senior Associate',
-  'Vice President',
-  'Managing Director',
-  'Director',
-  'Principal',
-  'Broker',
-  'Sales Representative',
+  'Responsable du développement commercial',
+  'Directrice',
+  'Gestionnaire de projets Senior',
+  "Chef d'équipe",
+  'Gestionnaire de Projet',
+  'Gestionnaire de projets principal',
+  'Gestionnaire de projet adjoint',
+  "Partenaire d'affaires sénior en acquisition de talent",
 ]
 
 /** Empty customize card. degree is always an array. */

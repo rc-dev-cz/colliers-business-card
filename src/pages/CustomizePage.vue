@@ -267,6 +267,7 @@ export default {
       immediate: true,
       handler: function (product) {
         if (!product) return
+        this.hydrateFromStore()
         this.details.website = websiteForProduct(product.language)
         this.replan()
       },
@@ -332,6 +333,7 @@ export default {
     },
     hydrateFromStore: function () {
       if (!this.product) return
+      var language = this.product.language || 'English'
       var editId = store.editLineId || (store.proof && store.proof.editLineId)
       var line = null
       if (editId != null && editId !== '') {
@@ -353,7 +355,10 @@ export default {
       if (store.proof && store.proof.code === this.product.code) {
         this.details = cloneCardDetails(store.proof.details)
         this.emailEdited = true
+        return
       }
+      this.details = emptyDetails(language)
+      this.emailEdited = false
     },
     clearDesign: function () {
       var language = (this.product && this.product.language) || 'English'

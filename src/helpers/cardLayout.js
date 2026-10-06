@@ -221,6 +221,77 @@ function fitsAfterName(fontBold, lastNameLine, credentialText, L) {
   return used + credW <= L.identityWidth
 }
 
+export function splitCredentialParts(text) {
+  return String(text || '')
+    .split(/,\s*/)
+    .map(function (part) {
+      return part.trim()
+    })
+    .filter(Boolean)
+}
+
+/**
+ * Shorter credentials fill the name line first (by measured width). Leftovers
+ * stay on the own-row in listed order. Geometry is unchanged.
+ */
+export function packCredentials(fontBold, lastNameLine, credText, L) {
+  var layout = L || CARD_LAYOUT
+  var parts = splitCredentialParts(credText)
+  if (!parts.length) {
+    return { mode: 'none', inline: '', row: '' }
+  }
+
+  var joined = parts.join(', ')
+  if (fitsAfterName(fontBold, lastNameLine, joined, layout)) {
+    return { mode: 'inline', inline: joined, row: '' }
+  }
+
+  var order = parts.map(function (text, index) {
+    return { text: text, index: index, w: fontBold.widthOfTextAtSize(text, layout.credentialSize) }
+  })
+  order.sort(function (a, b) {
+    if (a.w !== b.w) return a.w - b.w
+    return a.index - b.index
+  })
+
+  var inlineItems = []
+  var taken = {}
+  order.forEach(function (item) {
+    var trial = inlineItems
+      .map(function (row) {
+        return row.text
+      })
+      .concat([item.text])
+      .join(', ')
+    if (fitsAfterName(fontBold, lastNameLine, trial, layout)) {
+      inlineItems.push(item)
+      taken[item.index] = true
+    }
+  })
+
+  var inline = inlineItems
+    .map(function (item) {
+      return item.text
+    })
+    .join(', ')
+  var rest = parts.filter(function (_text, index) {
+    return !taken[index]
+  })
+  var row = rest.join(', ')
+
+  if (!row) return { mode: 'inline', inline: inline, row: '' }
+  if (!inline) {
+    if (fitsLine(fontBold, joined, layout.credentialSize, layout.identityWidth)) {
+      return { mode: 'own-row', inline: '', row: joined }
+    }
+    return { mode: 'error', inline: '', row: '' }
+  }
+  if (!fitsLine(fontBold, row, layout.credentialSize, layout.identityWidth)) {
+    return { mode: 'error', inline: '', row: '' }
+  }
+  return { mode: 'split', inline: inline, row: row }
+}
+
 /**
  * Plan one language page. fields = resolveCardFields(...).
  */
@@ -241,16 +312,9 @@ export function planCardLayout(fields, fonts, opts) {
   var lastNameLine = nameLines[nameLines.length - 1] || ''
 
   var credText = String(fields.credentialSuffix || '').trim()
-  var credMode = 'none'
-  if (credText) {
-    if (fitsAfterName(fontBold, lastNameLine, credText, L)) {
-      credMode = 'inline'
-    } else if (fitsLine(fontBold, credText, L.credentialSize, L.identityWidth)) {
-      credMode = 'own-row'
-    } else {
-      errors.push(LAYOUT_ERROR.credentials)
-    }
-  }
+  var packed = packCredentials(fontBold, lastNameLine, credText, L)
+  var credMode = packed.mode === 'error' ? 'none' : packed.mode
+  if (packed.mode === 'error') errors.push(LAYOUT_ERROR.credentials)
 
   requireOneLine(font, fields.website, L.bodySize, L.identityWidth, LAYOUT_ERROR.website, errors)
   requireOneLine(font, fields.email, L.bodySize, L.emailMaxWidth, LAYOUT_ERROR.email, errors)
@@ -258,7 +322,7 @@ export function planCardLayout(fields, fonts, opts) {
 
   var addressWrap = wrapAddress(font, fields.address, L.bodySize, L.addressMaxWidth)
 
-  var ownCred = credMode === 'own-row'
+  var ownCred = credMode === 'own-row' || credMode === 'split'
   var titleY = ownCred ? L.titleYWithCred : L.titleYNoCred
   var teamY = ownCred ? L.teamYWithCred : L.teamYNoCred
   var lastNameY = L.nameY
@@ -289,8 +353,8 @@ export function planCardLayout(fields, fonts, opts) {
     nameLines: nameLines,
     nameLineYs: nameLineYs,
     lastNameY: lastNameY,
-    inlineCredential: credMode === 'inline' ? ', ' + credText : '',
-    credentialLine: ownCred ? credText : '',
+    inlineCredential: packed.inline ? ', ' + packed.inline : '',
+    credentialLine: ownCred ? packed.row : '',
     credentialY: credentialY,
     title: fields.title,
     titleY: titleY,

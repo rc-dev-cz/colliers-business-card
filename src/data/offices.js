@@ -151,6 +151,16 @@ export const MOCK_OFFICES = [
   },
   {
     id: 14,
+    addressName: 'Saskatoon Office',
+    addressStreet: '728 Spadina Crescent E',
+    addressStreet2: '',
+    addressCity: 'Saskatoon',
+    addressProvince: 'SK',
+    addressPostalZip: 'S7K 3H2',
+    addressCountry: 'Canada',
+  },
+  {
+    id: 15,
     addressName: "St. John's Office",
     addressStreet: "306-10 Rowan Street, Terrace on the Square, PO Box 23076 Churchill Square",
     addressStreet2: '',
@@ -160,7 +170,7 @@ export const MOCK_OFFICES = [
     addressCountry: 'Canada',
   },
   {
-    id: 15,
+    id: 16,
     addressName: 'Thunder Bay Office',
     addressStreet: '2002-715 Hewitson Street',
     addressStreet2: '',
@@ -170,7 +180,7 @@ export const MOCK_OFFICES = [
     addressCountry: 'Canada',
   },
   {
-    id: 16,
+    id: 17,
     addressName: 'Toronto Office',
     addressStreet: '1400-181 Bay Street',
     addressStreet2: '',
@@ -180,7 +190,7 @@ export const MOCK_OFFICES = [
     addressCountry: 'Canada',
   },
   {
-    id: 17,
+    id: 18,
     addressName: 'Toronto North Office',
     addressStreet: '400-3389 Steeles Avenue East',
     addressStreet2: '',
@@ -190,7 +200,7 @@ export const MOCK_OFFICES = [
     addressCountry: 'Canada',
   },
   {
-    id: 18,
+    id: 19,
     addressName: 'Vancouver Office',
     addressStreet: '1066 West Hastings Street, 23rd Floor',
     addressStreet2: '',
@@ -200,7 +210,7 @@ export const MOCK_OFFICES = [
     addressCountry: 'Canada',
   },
   {
-    id: 19,
+    id: 20,
     addressName: 'Victoria Office',
     addressStreet: '1110-1175 Douglas Street',
     addressStreet2: '',
@@ -210,7 +220,7 @@ export const MOCK_OFFICES = [
     addressCountry: 'Canada',
   },
   {
-    id: 20,
+    id: 21,
     addressName: 'Whitehorse Office',
     addressStreet: '205-2237 2nd Avenue',
     addressStreet2: '',
@@ -220,7 +230,7 @@ export const MOCK_OFFICES = [
     addressCountry: 'Canada',
   },
   {
-    id: 21,
+    id: 22,
     addressName: 'Winnipeg Office',
     addressStreet: '600-330 St. Mary Avenue',
     addressStreet2: '',
@@ -230,7 +240,7 @@ export const MOCK_OFFICES = [
     addressCountry: 'Canada',
   },
   {
-    id: 22,
+    id: 23,
     addressName: 'Yellowknife Office',
     addressStreet: '204-5204 Franklin Ave',
     addressStreet2: '',
