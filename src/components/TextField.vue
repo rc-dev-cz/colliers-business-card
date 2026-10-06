@@ -37,7 +37,7 @@ export default {
   },
   methods: {
     onInput: function (event) {
-      this.$emit('input', event.target.value)
+      this.$emit('input', event.target.value, event)
     },
   },
 }

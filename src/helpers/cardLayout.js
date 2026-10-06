@@ -70,8 +70,6 @@ export var CARD_LAYOUT = {
   addressBottomY: 27,
   addressMaxWidth: 80,
   addressMaxLines: 5,
-
-  maxDegrees: 2,
 }
 
 /** Blank-card copy from the ICT master (3.5×2). Address uses the four-line sample. */
@@ -109,7 +107,6 @@ export var LAYOUT_ERROR = {
   phone: 'layoutErrorPhone',
   website: 'layoutErrorWebsite',
   address: 'layoutErrorAddress',
-  degrees: 'layoutErrorDegrees',
 }
 
 export var LAYOUT_ERROR_EN = {
@@ -121,7 +118,6 @@ export var LAYOUT_ERROR_EN = {
   layoutErrorPhone: 'This mobile number is too long for the card.',
   layoutErrorWebsite: 'This website is too long for the card.',
   layoutErrorAddress: 'This office address is too long for the card.',
-  layoutErrorDegrees: 'You can select up to 2 degrees or certifications.',
 }
 
 export function snapshotCardDetails(details) {
@@ -134,15 +130,6 @@ export function snapshotCardDetails(details) {
   else if (src.degree) out.degree = [src.degree]
   else out.degree = []
   return out
-}
-
-export function degreeCount(details) {
-  var list = snapshotCardDetails(details).degree || []
-  var n = 0
-  list.forEach(function (item) {
-    if (String(item || '').trim()) n += 1
-  })
-  return n
 }
 
 export function resolveCardFields(details, language) {
@@ -292,6 +279,21 @@ export function packCredentials(fontBold, lastNameLine, credText, L) {
   return { mode: 'split', inline: inline, row: row }
 }
 
+/** Whether all selected degrees + additional credentials fit the two credential lanes. */
+export function credentialsFitOnCard(details, fonts, language) {
+  if (!fonts || !fonts.fontBold) return true
+  var fields = resolveCardFields(details || {}, language || (details && details.language) || 'English')
+  var nameWrap = wrapByWords(fonts.fontBold, fields.name, CARD_LAYOUT.nameSize, CARD_LAYOUT.identityWidth)
+  if (!nameWrap.ok || nameWrap.lines.length > CARD_LAYOUT.nameMaxLines) return false
+  var lastNameLine = nameWrap.lines[nameWrap.lines.length - 1] || ''
+  return packCredentials(
+    fonts.fontBold,
+    lastNameLine,
+    fields.credentialSuffix,
+    CARD_LAYOUT,
+  ).mode !== 'error'
+}
+
 /**
  * Plan one language page. fields = resolveCardFields(...).
  */
@@ -300,9 +302,6 @@ export function planCardLayout(fields, fonts, opts) {
   var font = fonts.font
   var fontBold = fonts.fontBold
   var errors = []
-  var count = (opts && opts.degreeCount) || 0
-  if (count > L.maxDegrees) errors.push(LAYOUT_ERROR.degrees)
-
   var nameWrap = wrapByWords(fontBold, fields.name, L.nameSize, L.identityWidth)
   if (!nameWrap.ok || nameWrap.lines.length > L.nameMaxLines) {
     errors.push(LAYOUT_ERROR.name)
@@ -362,7 +361,7 @@ export function planCardLayout(fields, fonts, opts) {
     teamY: teamY,
     email: fields.email,
     emailY: L.emailY,
-    phone: 'Mobile: ' + fields.phone,
+    phone: fields.phone,
     phoneY: L.phoneY,
     website: fields.website,
     websiteY: L.websiteY,
@@ -378,7 +377,6 @@ export function planCardLayout(fields, fonts, opts) {
 
 export function planProductLayout(details, language, fonts) {
   var snapshot = snapshotCardDetails(details)
-  var count = degreeCount(snapshot)
   var langs = isBilingualLanguage(language)
     ? ['English', 'French']
     : [language || 'English']
@@ -388,7 +386,7 @@ export function planProductLayout(details, language, fonts) {
       pageDetails = Object.assign({}, snapshot, { website: WEBSITE_FR })
     }
     var fields = resolveCardFields(pageDetails, lang)
-    var layout = planCardLayout(fields, fonts, { degreeCount: count })
+    var layout = planCardLayout(fields, fonts)
     return { language: lang, fields: fields, layout: layout }
   })
   var errors = []

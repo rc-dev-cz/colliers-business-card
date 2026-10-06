@@ -86,7 +86,7 @@ It should demonstrate the most demanding supported content while remaining insid
 Expected behavior:
 
 - Name can use up to two lines
-- Credentials pack by measured width: shorter tokens after the name, remainder on the credential row (up to **2 selected degrees** plus optional Additional Credentials)
+- Credentials have no fixed count cap. They pack by measured width: shorter tokens after the name, remainder on the credential row. Degree options and Additional Credentials share that same two-line space budget.
 - Title | Region remains below the name / credential area
 - Team remains optional
 - Email stays on one line

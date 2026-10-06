@@ -119,7 +119,7 @@ function fallbackView(fields) {
     team: fields.team,
     teamY: L.teamYNoCred,
     email: fields.email,
-    phone: 'Mobile: ' + fields.phone,
+    phone: fields.phone,
     website: fields.website,
     emailY: L.emailY,
     phoneY: L.phoneY,

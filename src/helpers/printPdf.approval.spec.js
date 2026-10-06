@@ -65,6 +65,7 @@ describe('approval guide PDFs', function () {
       var row = cases[i]
       var dump = dumpLayout(row.key, row.details, 'English', fonts)
       expect(dump.valid, row.key + ' ' + dump.errors.join(',')).toBe(true)
+      expect(dump.phone).not.toMatch(/^Mobile:/)
       if (row.key === 'standard') {
         expect(dump.credMode).toBe('inline')
         expect(dump.nameLines.length).toBe(1)

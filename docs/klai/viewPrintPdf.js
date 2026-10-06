@@ -61,8 +61,7 @@ async function viewPrintPdfBody() {
     addressX: 27,
     addressBottomY: 27,
     addressMaxWidth: 80,
-    addressMaxLines: 5,
-    maxDegrees: 2
+    addressMaxLines: 5
   };
   var PAGE_W = L.pageW;
   var PAGE_H = L.pageH;
@@ -187,13 +186,6 @@ async function viewPrintPdfBody() {
     else out.degree = [];
     return out;
   }
-  function degreeCount(details) {
-    var n = 0;
-    (snapshotCardDetails(details).degree || []).forEach(function (item) {
-      if (String(item || '').trim()) n += 1;
-    });
-    return n;
-  }
   function resolveCardFields(details, language) {
     var card = details || {};
     var isFrench = isFrenchLanguage(language || card.language);
@@ -305,8 +297,6 @@ async function viewPrintPdfBody() {
     var font = fonts.font;
     var fontBold = fonts.fontBold;
     var errors = [];
-    var count = (opts && opts.degreeCount) || 0;
-    if (count > L.maxDegrees) errors.push('degrees');
     var nameWrap = wrapByWords(fontBold, fields.name, L.nameSize, L.identityWidth);
     if (!nameWrap.ok || nameWrap.lines.length > L.nameMaxLines) errors.push('name');
     var nameLines = nameWrap.ok ? nameWrap.lines : [fields.name];
@@ -344,7 +334,7 @@ async function viewPrintPdfBody() {
       teamY: teamY,
       email: fields.email,
       emailY: L.emailY,
-      phone: 'Mobile: ' + fields.phone,
+      phone: fields.phone,
       phoneY: L.phoneY,
       website: fields.website,
       websiteY: L.websiteY,
@@ -359,13 +349,12 @@ async function viewPrintPdfBody() {
   }
   function planProductLayout(details, language, fonts) {
     var snapshot = snapshotCardDetails(details);
-    var count = degreeCount(snapshot);
     var langs = isBilingualLanguage(language) ? ['English', 'French'] : [language || 'English'];
     var pages = langs.map(function (lang) {
       var pageDetails = snapshot;
       if (isFrenchLanguage(lang)) pageDetails = Object.assign({}, snapshot, { website: WEBSITE_FR });
       var fields = resolveCardFields(pageDetails, lang);
-      return { language: lang, fields: fields, layout: planCardLayout(fields, fonts, { degreeCount: count }) };
+      return { language: lang, fields: fields, layout: planCardLayout(fields, fonts) };
     });
     var errors = [];
     pages.forEach(function (page) {

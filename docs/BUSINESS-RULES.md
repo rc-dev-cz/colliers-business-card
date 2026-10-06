@@ -98,12 +98,12 @@ The customization page controls the information shown on the business card previ
 | --- | --- |
 | Full Name | Required. Entered manually. Maximum 50 characters. Long names can use two lines on the card. |
 | Title | Required. Selected from the available list (FileMaker titles). |
-| Degree/Certification | Optional. Up to two degrees/certifications from the list (FileMaker degrees). Selected values appear below the field and after the comma on the name line. A selected value can be removed before continuing. |
-| Additional Credentials | Optional. Free text shown with degrees on the name line (a third credential when two degrees are selected). |
+| Degree/Certification | Optional. No fixed count cap. Selected values share the available credential space: after the name plus one line underneath. Options that no longer fit are locked; selected values can still be removed. |
+| Additional Credentials | Optional. Free text shares the same measured space as selected degrees. Input stops with a “no more space” message when the name line plus credential row are full. |
 | Region | Optional. Shown with the title as “Title \| Region”. |
 | Specialized Team | Optional. Shown under the title line when present. |
 | Email | Required. When the full name has a first and last name, the email fills in as firstname.lastname@colliersprojectleaders.com. The field stays editable. After the user changes it, further name edits do not replace it. Up to 50 characters is allowed. Print/preview also require the address to fit one line in the 130 pt identity lane (Open Sans 6.5 pt). |
-| Mobile Phone | Required. Shown on the card as a Canadian 10-digit local number (no +1). |
+| Mobile Phone | Required. Shown on the card as the Canadian 10-digit local number only (no “Mobile:” label and no +1). |
 | Company Name | Locked as Colliers Project Leaders and cannot be edited. |
 | Address | Required. Selected from the saved Colliers office address list; it is not entered manually on this screen. |
 | Website | Locked as colliersprojectleaders.com (French card uses /fr) and cannot be edited. |
@@ -115,7 +115,7 @@ The customization page controls the information shown on the business card previ
 | ID | Test | Expected result |
 | --- | --- | --- |
 | CU-01 | Change the full name. | The preview shows the new name. |
-| CU-02 | Select two degrees or certifications. | Both appear on the preview and the control shows 2 selected. |
+| CU-02 | Select degrees or certifications until the card is full. | Every value that fits appears in the preview. Options that would overflow are locked and a no-space message is shown. |
 | CU-03 | Remove one selected degree. | It is removed from the selection and from the preview. |
 | CU-04 | Open Address and choose a saved office. | The selected office appears on the card preview. |
 | CU-05 | Try to edit Company Name and Website. | Both fields remain locked with the approved values. |

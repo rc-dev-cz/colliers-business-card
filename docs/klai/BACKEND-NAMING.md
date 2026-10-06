@@ -105,7 +105,7 @@ Shapes the request/utility hooks should put on `$$BF_Model` (Klai `model`). Incl
 
 **CardPreview usage:** Catalogue, Product Detail, CartDrawer, and Shipping embed `<bfcomp name="CardPreview" :model="…">`. Customize and Proof **inline** the same face (live `model.card` / `model.proof.details`) because `bfcomp` scopes/clones `model` and does not track form edits. Do **not** add Catalogue or Admin Home page namedActions for preview layout — that lives on the component (`onUpdated` / `onMount`). HTML also falls back to CU-07 samples when `name` is empty.
 
-**Card** — customize form. `degree` is always an array (max 2). `websiteFr` is the French face URL.
+**Card** — customize form. `degree` is always an array with no fixed count cap; selected degrees and Additional Credentials are limited by the measured name-line + credential-row space. `websiteFr` is the French face URL.
 
 ```json
 {

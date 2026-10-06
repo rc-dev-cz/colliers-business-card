@@ -102,10 +102,13 @@ describe('printPdf', function () {
     ).rejects.toThrow(/credentials|too long/i)
   })
 
-  it('refuses a third degree even if each is short', async function () {
-    await expect(
-      buildPrintPdfBytes(Object.assign({}, base, { degree: ['A', 'B', 'C'] }), 'English'),
-    ).rejects.toThrow(/up to 2 degrees/i)
+  it('builds a PDF with more than two short degrees when they fit', async function () {
+    var bytes = await buildPrintPdfBytes(
+      Object.assign({}, base, { degree: ['A', 'B', 'C', 'D', 'E', 'F', 'G'] }),
+      'English',
+    )
+    var doc = await PDFDocument.load(bytes)
+    expect(doc.getPageCount()).toBe(2)
   })
 })
 

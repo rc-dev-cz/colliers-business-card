@@ -40,6 +40,10 @@ export const messages = {
     EN: 'These degrees and credentials are too long for the card.',
     FR: 'Ces diplômes et mentions sont trop longs pour la carte.',
   },
+  credentialsNoSpace: {
+    EN: 'No more space for credentials on the card.',
+    FR: 'Il n’y a plus d’espace pour les diplômes et mentions sur la carte.',
+  },
   layoutErrorTitle: {
     EN: 'This title and region are too long for the card.',
     FR: 'Ce titre et cette région sont trop longs pour la carte.',
@@ -63,11 +67,6 @@ export const messages = {
   layoutErrorAddress: {
     EN: 'This office address is too long for the card.',
     FR: 'Cette adresse de bureau est trop longue pour la carte.',
-  },
-  degreeMax: { EN: '2 maximum, shown after the name', FR: '2 maximum, après le nom' },
-  layoutErrorDegrees: {
-    EN: 'You can select up to 2 degrees or certifications.',
-    FR: 'Vous pouvez sélectionner jusqu’à 2 diplômes ou certifications.',
   },
   mobilePhone: { EN: 'Mobile', FR: 'Mobile' },
   mobilePhoneHint: { EN: '10-digit Canadian number', FR: 'Numéro canadien à 10 chiffres' },

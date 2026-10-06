@@ -69,7 +69,10 @@ if (merged.length !== 2 || merged[0].quantity !== 3) {
   errors.push('cart helper must merge matching product + details')
 }
 
-if (clipName('x'.repeat(40)).length !== NAME_MAX || clipEmail('e'.repeat(50)).length !== EMAIL_MAX) {
+if (
+  clipName('x'.repeat(NAME_MAX + 10)).length !== NAME_MAX ||
+  clipEmail('e'.repeat(EMAIL_MAX + 10)).length !== EMAIL_MAX
+) {
   errors.push('validate helper must clip name and email to prototype limits')
 }
 

@@ -33,6 +33,7 @@
           class="flex cursor-pointer items-center gap-2 px-3 py-2 text-sm hover:bg-gray-50"
           role="option"
           :aria-selected="isSelected(option) ? 'true' : 'false'"
+          :aria-disabled="isLocked(option) ? 'true' : 'false'"
           :class="isLocked(option) ? 'cursor-not-allowed opacity-40' : ''"
           @click.stop="toggleOption(option)"
         >
@@ -100,6 +101,7 @@ export default {
     hint: { type: String, default: '' },
     error: { type: String, default: '' },
     max: { type: Number, default: 0 },
+    lockedValues: { type: Array, default: function () { return [] } },
   },
   data: function () {
     return {
@@ -133,7 +135,12 @@ export default {
       return this.selectedValues.indexOf(this.optionValue(option)) !== -1
     },
     isLocked: function (option) {
-      return this.max > 0 && this.selectedValues.length >= this.max && !this.isSelected(option)
+      if (this.isSelected(option)) return false
+      var value = this.optionValue(option)
+      return (
+        this.lockedValues.indexOf(value) !== -1 ||
+        (this.max > 0 && this.selectedValues.length >= this.max)
+      )
     },
     toggle: function () {
       if (this.disabled) return
@@ -157,7 +164,10 @@ export default {
       var next = this.selectedValues.slice()
       var idx = next.indexOf(val)
       if (idx === -1) {
-        if (this.max > 0 && next.length >= this.max) return
+        if (this.isLocked(option)) {
+          this.$emit('locked', val)
+          return
+        }
         next.push(val)
       } else next.splice(idx, 1)
       this.emitValues(next)

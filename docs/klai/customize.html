@@ -31,7 +31,7 @@
               <div class="absolute whitespace-nowrap leading-none text-[#5F636A]" :style="'left: 41.28%; right: 6%; bottom: ' + (model.card.credentialLine ? '34.72%' : '40.27%') + '; font-size: 2.15cqw'">{{ (String(model.card.title || '').split('|')[0].trim() || (['French','Français','FR'].indexOf(previewLang) >= 0 ? 'Titre' : 'Title')) + (String(model.card.region || '').trim() ? ' | ' + String(model.card.region || '').trim() : '') }}</div>
               <div class="absolute whitespace-nowrap leading-none text-[#5F636A]" :style="'left: 41.28%; right: 6%; bottom: ' + (model.card.credentialLine ? '29.16%' : '34.72%') + '; font-size: 2.15cqw'">{{ String(model.card.specializedTeam || '').trim() || (['French','Français','FR'].indexOf(previewLang) >= 0 ? 'Équipe spécialisée' : 'Specialized team') }}</div>
               <div class="absolute whitespace-nowrap leading-none text-[#5F636A]" style="left: 41.28%; right: 6%; bottom: 23.6%; font-size: 2.15cqw">{{ model.card.email || (['French','Français','FR'].indexOf(previewLang) >= 0 ? 'prenom.nom@colliersprojectleaders.com' : 'first.lastname@colliersprojectleaders.com') }}</div>
-              <div class="absolute whitespace-nowrap leading-none text-[#5F636A]" style="left: 41.28%; right: 6%; bottom: 18.05%; font-size: 2.15cqw">Mobile: {{ model.card.phone || '+1 555 555 5555' }}</div>
+              <div class="absolute whitespace-nowrap leading-none text-[#5F636A]" style="left: 41.28%; right: 6%; bottom: 18.05%; font-size: 2.15cqw">{{ model.card.phone || '+1 555 555 5555' }}</div>
               <div class="absolute whitespace-nowrap leading-none text-[#5F636A]" style="left: 41.28%; right: 6%; bottom: 12.49%; font-size: 2.15cqw">{{ (['French','Français','FR'].indexOf(previewLang) >= 0 ? (model.card.websiteFr || 'colliersprojectleaders.com/fr') : (model.card.website || 'colliersprojectleaders.com')) }}</div>
               <div class="absolute whitespace-pre-wrap leading-[1.25] text-[#5F636A]" style="left: 7.14%; right: 58.72%; bottom: 12.5%; font-size: 2.15cqw">{{ model.card.address || (['French','Français','FR'].indexOf(previewLang) >= 0 ? "Nom de l'adresse\nUnité, Rue\nVille, Province\nCode postal, Pays" : "Address name\nUnit, Street\nCity, Province\nPostal Code, Country") }}</div>
             </div>
@@ -68,10 +68,9 @@
                   v-for="opt in (model.degreeOptions || []).filter(function (opt) { var q = String(model.degreeQuery || '').trim().toLowerCase(); return !q || String(opt).toLowerCase().indexOf(q) !== -1; })"
                   :key="opt"
                   class="flex cursor-pointer items-center gap-2 px-3 py-2 text-sm hover:bg-gray-50"
-                  :class="Array.isArray(model.card.degree) && model.card.degree.length >= 2 && model.card.degree.indexOf(opt) === -1 ? 'cursor-not-allowed opacity-40' : ''"
-                  @click.stop="if (!Array.isArray(model.card.degree)) model.card.degree = []; if (model.card.degree.indexOf(opt) === -1) { if (model.card.degree.length >= 2) return; model.card.degree.push(opt); } else { model.card.degree = model.card.degree.filter(function (d) { return d !== opt; }); } BF.namedAction('wrapCardName');"
+                  @click.stop="if (!Array.isArray(model.card.degree)) model.card.degree = []; if (model.card.degree.indexOf(opt) === -1) { model.card.degree.push(opt); } else { model.card.degree = model.card.degree.filter(function (d) { return d !== opt; }); } BF.namedAction('wrapCardName');"
                 >
-                  <input type="checkbox" class="h-4 w-4 rounded border-gray-300" :checked="Array.isArray(model.card.degree) && model.card.degree.indexOf(opt) !== -1" :disabled="Array.isArray(model.card.degree) && model.card.degree.length >= 2 && model.card.degree.indexOf(opt) === -1" tabindex="-1" @click.stop.prevent="if (!Array.isArray(model.card.degree)) model.card.degree = []; if (model.card.degree.indexOf(opt) === -1) { if (model.card.degree.length >= 2) return; model.card.degree.push(opt); } else { model.card.degree = model.card.degree.filter(function (d) { return d !== opt; }); } BF.namedAction('wrapCardName');" />
+                  <input type="checkbox" class="h-4 w-4 rounded border-gray-300" :checked="Array.isArray(model.card.degree) && model.card.degree.indexOf(opt) !== -1" tabindex="-1" @click.stop.prevent="if (!Array.isArray(model.card.degree)) model.card.degree = []; if (model.card.degree.indexOf(opt) === -1) { model.card.degree.push(opt); } else { model.card.degree = model.card.degree.filter(function (d) { return d !== opt; }); } BF.namedAction('wrapCardName');" />
                   <span>{{ opt }}</span>
                 </li>
               </ul>
@@ -79,7 +78,6 @@
             <div v-if="Array.isArray(model.card.degree) && model.card.degree.length" class="mt-2 flex flex-wrap gap-2">
               <span v-for="d in model.card.degree" :key="d" class="inline-flex items-center gap-1 rounded-md bg-[#E8EEF7] px-2.5 py-1 text-sm text-[#24418A]">{{ d }} <button type="button" class="ml-0.5 inline-flex h-4 w-4 items-center justify-center rounded text-[#24418A] hover:bg-[#d4deef]" @click="model.card.degree = model.card.degree.filter(function (x) { return x !== d; }); BF.namedAction('wrapCardName')">×</button></span>
             </div>
-            <p class="mt-1 text-xs text-gray-500">{{ BF.i18n('label_colliers_degreeMax') }}</p>
           </div>
           <div>
             <label class="field-label text-[14px] font-normal text-gray-700" for="card-credentials">{{ BF.i18n('label_colliers_additionalCredentialsOptional') }}</label>

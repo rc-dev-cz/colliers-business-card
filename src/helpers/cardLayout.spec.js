@@ -3,6 +3,7 @@ import { loadLayoutFonts } from './cardFonts.js'
 import {
   CARD_LAYOUT,
   LAYOUT_ERROR,
+  credentialsFitOnCard,
   fitsLine,
   planCardLayout,
   planProductLayout,
@@ -265,21 +266,35 @@ describe('planCardLayout', function () {
     expect(bad.errors).toContain(LAYOUT_ERROR.email)
   })
 
-  it('rejects two very long degrees when the count is within the cap', function () {
+  it('rejects degrees only when their combined rendered width does not fit', function () {
     var longA = padToWidth(fonts.fontBold, L.credentialSize, L.identityWidth + 20, 'Dipl. Architectural ')
-    var layout = plan(
-      { degree: [longA, longA] },
-      'English',
-      2,
-    )
+    var layout = plan({ degree: [longA, longA] }, 'English')
     expect(layout.valid).toBe(false)
     expect(layout.errors).toContain(LAYOUT_ERROR.credentials)
   })
 
-  it('rejects a third degree because of the selection cap', function () {
-    var layout = plan({ degree: ['A', 'B', 'C'] }, 'English', 3)
-    expect(layout.valid).toBe(false)
-    expect(layout.errors).toContain(LAYOUT_ERROR.degrees)
+  it('accepts more than two short degrees when they fit the available space', function () {
+    var details = { name: 'Ada Lovelace', degree: ['A', 'B', 'C', 'D', 'E', 'F', 'G'] }
+    var layout = plan(details, 'English')
+    expect(layout.valid).toBe(true)
+    expect(layout.errors).not.toContain(LAYOUT_ERROR.credentials)
+    expect(credentialsFitOnCard(details, fonts, 'English')).toBe(true)
+  })
+
+  it('reports when adding credentials exhausts the shared two-line budget', function () {
+    var longA = padToWidth(fonts.fontBold, L.credentialSize, L.identityWidth + 20, 'Dipl. Architectural ')
+    expect(
+      credentialsFitOnCard(
+        { name: 'Ada Lovelace', degree: ['PMP'], additionalCredentials: longA },
+        fonts,
+        'English',
+      ),
+    ).toBe(false)
+  })
+
+  it('returns the formatted number without a Mobile label', function () {
+    var layout = plan({ phone: '4165550100' })
+    expect(layout.phone).toBe('416 555 0100')
   })
 
   it('does not block on a long region, team, mobile, or office', function () {

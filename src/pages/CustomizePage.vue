@@ -60,16 +60,20 @@
               :label="t('degree')"
               :value="details.degree"
               :options="degreeOptions"
-              :max="maxDegrees"
+              :locked-values="lockedDegreeValues"
               :placeholder="t('selectDegree')"
               :search-placeholder="t('selectDegree')"
               :empty-label="t('noDegrees')"
+              :error="credentialSpaceError"
               @input="onDegrees"
+              @locked="onCredentialLocked"
             ></multi-select-field>
             <text-field
               :label="t('additionalCredentials')"
               :value="details.additionalCredentials"
-              @input="details.additionalCredentials = $event"
+              :disabled="additionalCredentialsDisabled"
+              :error="credentialSpaceError"
+              @input="onAdditionalCredentials"
             ></text-field>
             <select-field
               :label="t('region')"
@@ -134,8 +138,8 @@ import { go, goBack } from '../adapters/nav'
 import { viewPrintPdf } from '../helpers/printPdf'
 import { loadLayoutFonts } from '../helpers/cardFonts'
 import {
-  CARD_LAYOUT,
   LAYOUT_ERROR,
+  credentialsFitOnCard,
   layoutErrorMessage,
   planProductLayout,
 } from '../helpers/cardLayout'
@@ -190,6 +194,7 @@ export default {
       layoutFonts: null,
       details: emptyDetails('English'),
       emailEdited: false,
+      credentialSpaceRejected: false,
     }
   },
   computed: {
@@ -226,6 +231,16 @@ export default {
       if (this.layoutErrorCode !== LAYOUT_ERROR.email) return ''
       return this.layoutError
     },
+    credentialSpaceError: function () {
+      if (
+        !this.credentialSpaceRejected &&
+        this.layoutErrorCode !== LAYOUT_ERROR.credentials &&
+        !this.additionalCredentialsDisabled
+      ) {
+        return ''
+      }
+      return t('credentialsNoSpace')
+    },
     layoutReady: function () {
       return this.layoutStatus === 'valid'
     },
@@ -248,13 +263,28 @@ export default {
     regionOptions: function () {
       return CANADIAN_REGION_OPTIONS
     },
-    maxDegrees: function () {
-      return CARD_LAYOUT.maxDegrees
-    },
     degreeOptions: function () {
       return (store.degrees || []).map(function (degree) {
         return { value: degree, label: degree }
       })
+    },
+    lockedDegreeValues: function () {
+      if (!this.layoutFonts || !this.product) return []
+      var self = this
+      var selected = Array.isArray(this.details.degree) ? this.details.degree : []
+      return (store.degrees || []).filter(function (degree) {
+        if (selected.indexOf(degree) !== -1) return false
+        var candidate = Object.assign({}, self.details, {
+          degree: selected.concat([degree]),
+        })
+        return !credentialsFitOnCard(candidate, self.layoutFonts, self.product.language)
+      })
+    },
+    additionalCredentialsDisabled: function () {
+      if (!this.layoutFonts || !this.product) return false
+      if (String(this.details.additionalCredentials || '').length) return false
+      var candidate = Object.assign({}, this.details, { additionalCredentials: 'i' })
+      return !credentialsFitOnCard(candidate, this.layoutFonts, this.product.language)
     },
     officeOptions: function () {
       return store.offices.map(function (office) {
@@ -299,6 +329,7 @@ export default {
     t: t,
     onName: function (value) {
       this.details.name = clipName(value)
+      this.credentialSpaceRejected = !this.credentialsFit(this.details)
       if (this.emailEdited) return
       this.details.email = emailFromFullName(this.details.name)
     },
@@ -308,10 +339,37 @@ export default {
     },
     onDegrees: function (degrees) {
       var next = Array.isArray(degrees) ? degrees.slice() : []
-      if (next.length > CARD_LAYOUT.maxDegrees) {
-        next = next.slice(0, CARD_LAYOUT.maxDegrees)
+      var current = Array.isArray(this.details.degree) ? this.details.degree : []
+      var isRemoval = next.length < current.length
+      var candidate = Object.assign({}, this.details, { degree: next })
+      var fits = this.credentialsFit(candidate)
+      if (!fits && !isRemoval) {
+        this.credentialSpaceRejected = true
+        return
       }
       this.details.degree = next
+      this.credentialSpaceRejected = !fits
+    },
+    onCredentialLocked: function () {
+      this.credentialSpaceRejected = true
+    },
+    onAdditionalCredentials: function (value, event) {
+      var current = String(this.details.additionalCredentials || '')
+      var next = String(value || '')
+      var candidate = Object.assign({}, this.details, { additionalCredentials: next })
+      var fits = this.credentialsFit(candidate)
+      var isShorter = next.length < current.length
+      if (!fits && !isShorter) {
+        this.credentialSpaceRejected = true
+        if (event && event.target) event.target.value = current
+        return
+      }
+      this.details.additionalCredentials = next
+      this.credentialSpaceRejected = !fits
+    },
+    credentialsFit: function (details) {
+      if (!this.layoutFonts || !this.product) return true
+      return credentialsFitOnCard(details, this.layoutFonts, this.product.language)
     },
     replan: function () {
       this.printPdfError = ''
@@ -364,6 +422,7 @@ export default {
       var language = (this.product && this.product.language) || 'English'
       this.details = emptyDetails(language)
       this.emailEdited = false
+      this.credentialSpaceRejected = false
       this.printPdfError = ''
     },
     back: function () {
