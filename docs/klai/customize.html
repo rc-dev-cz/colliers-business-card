@@ -58,11 +58,11 @@
               <span class="ml-2 shrink-0 text-gray-400" aria-hidden="true">▾</span>
             </button>
             <div v-if="model.degreeMenuOpen" class="fixed inset-0 z-10" @click="model.degreeMenuOpen = false"></div>
-            <div v-if="model.degreeMenuOpen" class="absolute z-20 mt-1 max-h-56 w-full overflow-auto rounded border border-gray-200 bg-white shadow-lg" @click.stop>
-              <div class="sticky top-0 border-b border-gray-100 bg-white p-2">
+            <div v-if="model.degreeMenuOpen" class="absolute z-20 mt-1 flex max-h-56 w-full flex-col overflow-hidden rounded border border-gray-200 bg-white shadow-lg" @click.stop>
+              <div class="shrink-0 border-b border-gray-100 bg-white p-2">
                 <input type="search" class="field-input py-2" :placeholder="BF.i18n('label_colliers_selectDegree')" :value="model.degreeQuery" @input="model.degreeQuery = $event.target.value" @click.stop />
               </div>
-              <ul class="py-1">
+              <ul class="min-h-0 flex-1 overflow-auto py-1">
                 <li v-if="!(model.degreeOptions || []).filter(function (opt) { var q = String(model.degreeQuery || '').trim().toLowerCase(); return !q || String(opt).toLowerCase().indexOf(q) !== -1; }).length" class="px-3 py-2 text-sm text-gray-500">{{ BF.i18n('label_colliers_noDegrees') }}</li>
                 <li
                   v-for="opt in (model.degreeOptions || []).filter(function (opt) { var q = String(model.degreeQuery || '').trim().toLowerCase(); return !q || String(opt).toLowerCase().indexOf(q) !== -1; })"

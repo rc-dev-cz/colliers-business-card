@@ -13,9 +13,9 @@
     </button>
     <div
       v-if="open"
-      class="absolute z-20 mt-1 max-h-56 w-full overflow-auto rounded border border-gray-200 bg-white shadow-lg"
+      class="absolute z-20 mt-1 flex max-h-56 w-full flex-col overflow-hidden rounded border border-gray-200 bg-white shadow-lg"
     >
-      <div class="sticky top-0 border-b border-gray-100 bg-white p-2">
+      <div class="shrink-0 border-b border-gray-100 bg-white p-2">
         <input
           ref="search"
           v-model="query"
@@ -25,7 +25,7 @@
           @click.stop
         />
       </div>
-      <ul class="py-1" role="listbox">
+      <ul class="min-h-0 flex-1 overflow-auto py-1" role="listbox">
         <li v-if="!filteredOptions.length" class="px-3 py-2 text-sm text-gray-500">{{ emptyLabel }}</li>
         <li
           v-for="option in filteredOptions"
