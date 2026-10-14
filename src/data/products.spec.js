@@ -40,5 +40,6 @@ describe('products catalogue', function () {
     expect(card.websiteFr).toBe('colliersprojectleaders.com/fr')
     expect(card.company).toBe('Colliers Project Leaders')
     expect(emptyCard('French').website).toBe('colliersprojectleaders.com/fr')
+    expect(emptyCard('Bilingual').titleFr).toBe('')
   })
 })

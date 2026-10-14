@@ -1,4 +1,5 @@
 import { WEBSITE_EN, WEBSITE_FR, websiteForProduct } from '../helpers/formatCardIdentity.js'
+import { TITLE_EN_TO_FR } from '../helpers/titleLocale.js'
 
 export const CARD_COMPANY = 'Colliers Project Leaders'
 
@@ -65,28 +66,12 @@ export function catalogCodeFromLine(line) {
 }
 
 /** English title seed (English + Bilingual Customize / Manage Titles) until FileMaker loads. */
-export const jobTitlesEn = [
-  'Associate',
-  'Senior Associate',
-  'Vice President',
-  'Managing Director',
-  'Director',
-  'Principal',
-  'Broker',
-  'Sales Representative',
-]
+export const jobTitlesEn = Object.keys(TITLE_EN_TO_FR)
 
 /** French title seed (French Customize) until FileMaker loads. */
-export const jobTitlesFr = [
-  'Responsable du développement commercial',
-  'Directrice',
-  'Gestionnaire de projets Senior',
-  "Chef d'équipe",
-  'Gestionnaire de Projet',
-  'Gestionnaire de projets principal',
-  'Gestionnaire de projet adjoint',
-  "Partenaire d'affaires sénior en acquisition de talent",
-]
+export const jobTitlesFr = jobTitlesEn.map(function (title) {
+  return TITLE_EN_TO_FR[title]
+})
 
 /** @deprecated Prefer jobTitlesEn / jobTitlesFr. Defaults to English for admin + bilingual. */
 export const jobTitles = jobTitlesEn
@@ -101,6 +86,7 @@ export function emptyCard(language) {
     degree: [],
     additionalCredentials: '',
     title: '',
+    titleFr: '',
     region: '',
     specializedTeam: '',
     email: '',
@@ -120,6 +106,7 @@ export function emptyPreviewCard(language) {
     degree: [],
     additionalCredentials: '',
     title: '',
+    titleFr: '',
     region: '',
     specializedTeam: '',
     email: '',

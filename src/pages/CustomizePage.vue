@@ -52,6 +52,8 @@
               :label="t('fullName')"
               :value="details.name"
               :maxlength="NAME_MAX"
+              name="name"
+              autocomplete="name"
               required
               @input="onName"
             ></text-field>
@@ -62,8 +64,17 @@
               :placeholder="t('selectTitle')"
               :error="titleFieldError"
               required
-              @input="details.title = $event"
+              @input="onTitle"
             ></select-field>
+            <text-field
+              v-if="isBilingual"
+              :label="t('titleFr')"
+              :value="details.titleFr"
+              name="titleFr"
+              autocomplete="off"
+              required
+              @input="onTitleFr"
+            ></text-field>
             <multi-select-field
               :label="t('degree')"
               :value="details.degree"
@@ -89,11 +100,15 @@
               :options="regionOptions"
               :placeholder="t('selectRegion')"
               :error="titleFieldError"
+              name="colliersCardRegion"
+              autocomplete="address-level1"
               @input="details.region = $event"
             ></select-field>
             <text-field
               :label="t('specializedTeam')"
               :value="details.specializedTeam"
+              name="colliersSpecializedTeam"
+              autocomplete="organization"
               @input="details.specializedTeam = $event"
             ></text-field>
             <text-field
@@ -102,6 +117,8 @@
               :value="details.email"
               :maxlength="EMAIL_MAX"
               :error="emailFieldError"
+              name="email"
+              autocomplete="email"
               required
               @input="onEmail"
             ></text-field>
@@ -155,7 +172,7 @@ import {
   planProductLayout,
 } from '../helpers/cardLayout'
 import { isBilingualLanguage, websiteForProduct } from '../helpers/formatCardIdentity'
-import { bilingualFrenchPreviewDetails } from '../helpers/titleLocale'
+import { bilingualFrenchPreviewDetails, suggestFrenchTitle } from '../helpers/titleLocale'
 import { titlesForProductLanguage } from '../helpers/titleAdmin'
 import { CANADIAN_REGION_OPTIONS } from '../helpers/canadianProvinces'
 
@@ -164,6 +181,7 @@ function emptyDetails(language) {
   return {
     name: card.name,
     title: card.title,
+    titleFr: card.titleFr,
     degree: card.degree.slice(),
     additionalCredentials: card.additionalCredentials,
     region: card.region,
@@ -217,6 +235,9 @@ export default {
     product: function () {
       return getProduct(this.code)
     },
+    isBilingual: function () {
+      return isBilingualLanguage(this.product && this.product.language)
+    },
     previewSlots: function () {
       if (!this.product) return []
       var lang = this.product.language
@@ -233,8 +254,7 @@ export default {
           {
             language: 'French',
             details: bilingualFrenchPreviewDetails(this.details),
-            // Replan from resolved FR title so preview (and title/region split) match the face.
-            plan: null,
+            plan: planFor('French'),
           },
         ]
       }
@@ -271,6 +291,7 @@ export default {
         this.layoutReady &&
         Boolean(String(details.name || '').trim()) &&
         Boolean(String(details.title || '').trim()) &&
+        (!this.isBilingual || Boolean(String(details.titleFr || '').trim())) &&
         Boolean(String(details.email || '').trim()) &&
         Boolean(String(details.phone || '').trim()) &&
         Boolean(String(details.address || '').trim())
@@ -349,6 +370,18 @@ export default {
   },
   methods: {
     t: t,
+    onTitle: function (value) {
+      this.details.title = value
+      this.details.titleFr = suggestFrenchTitle(value)
+    },
+    onTitleFr: function (value) {
+      this.details.titleFr = value
+    },
+    fillMissingTitleFr: function () {
+      if (!this.isBilingual) return
+      if (String(this.details.titleFr || '').trim()) return
+      this.details.titleFr = suggestFrenchTitle(this.details.title)
+    },
     onName: function (value) {
       this.details.name = clipName(value)
       this.credentialSpaceRejected = !this.credentialsFit(this.details)
@@ -430,6 +463,7 @@ export default {
           language
         )
         this.emailEdited = true
+        this.fillMissingTitleFr()
         return
       }
       if (editId && !line) {
@@ -447,6 +481,7 @@ export default {
           language
         )
         this.emailEdited = true
+        this.fillMissingTitleFr()
         return
       }
       this.details = emptyDetails(language)

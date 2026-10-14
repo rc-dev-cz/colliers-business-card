@@ -412,6 +412,48 @@ describe('planProductLayout', function () {
       expect(page.layout.valid).toBe(true)
     })
   })
+
+  it('uses titleFr on the bilingual French page', function () {
+    var product = planProductLayout(
+      {
+        name: 'Ada Lovelace',
+        title: 'Director',
+        titleFr: 'Directrice',
+        region: 'Ontario',
+        email: 'ada@example.com',
+        phone: '4165550100',
+      },
+      'Bilingual',
+      fonts,
+    )
+    expect(product.pages[0].fields.title).toContain('Director')
+    expect(product.pages[1].fields.title).toContain('Directrice')
+    expect(product.pages[1].fields.title).not.toContain('Director |')
+  })
+})
+
+describe('preview empty-team and title/region split', function () {
+  it('closes the unused team row so one gap sits under the title', function () {
+    var layout = plan({})
+    expect(layout.team).toBe('')
+    expect(layout.titleY).toBe(L.titleYNoCred)
+    var preview = applyEmptyTeamIdentityLayout(layout)
+    expect(preview.titleY).toBeCloseTo(L.teamYNoCred, 2)
+    expect(preview.emailY).toBe(43)
+  })
+
+  it('splits a wide title and region with no pipe', function () {
+    var layout = applyEmptyTeamIdentityLayout(
+      plan({
+        title: 'Responsable du développement commercial',
+        region: 'Quebec',
+      })
+    )
+    var preview = applyPreviewTitleRegionSplit(layout, fonts)
+    expect(preview.title).toBe('Responsable du développement commercial')
+    expect(preview.regionLine).toBe('Quebec')
+    expect(String(preview.title)).not.toContain('|')
+  })
 })
 
 describe('previewContactYs', function () {

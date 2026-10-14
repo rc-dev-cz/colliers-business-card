@@ -5,7 +5,7 @@ import { titlesForProductLanguage } from './titleAdmin.js'
 describe('titlesForProductLanguage', function () {
   it('returns English titles for bilingual Customize', function () {
     expect(titlesForProductLanguage('Bilingual', [])).toEqual(jobTitlesEn)
-    expect(titlesForProductLanguage('Bilingual', [])[0]).toBe('Associate')
+    expect(titlesForProductLanguage('Bilingual', [])[0]).toBe('Business Development Manager')
     expect(titlesForProductLanguage('Bilingual', [])).not.toContain(
       'Responsable du développement commercial'
     )

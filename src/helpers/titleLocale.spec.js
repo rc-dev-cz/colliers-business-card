@@ -14,10 +14,12 @@ import {
   bilingualFrenchPreviewDetails,
   resolveBilingualFrenchTitle,
   resolveTitleForLanguage,
+  suggestFrenchTitle,
 } from './titleLocale.js'
 import { WEBSITE_FR } from './formatCardIdentity.js'
 
 var fonts
+var seededPairs = Object.assign({}, TITLE_EN_TO_FR)
 
 beforeAll(async function () {
   fonts = await loadLayoutFonts()
@@ -27,15 +29,39 @@ afterEach(function () {
   Object.keys(TITLE_EN_TO_FR).forEach(function (key) {
     delete TITLE_EN_TO_FR[key]
   })
+  Object.keys(seededPairs).forEach(function (key) {
+    TITLE_EN_TO_FR[key] = seededPairs[key]
+  })
+})
+
+describe('suggestFrenchTitle', function () {
+  it('returns Cynthia mapped French titles', function () {
+    expect(suggestFrenchTitle('Director')).toBe('Directrice')
+    expect(suggestFrenchTitle('Project Manager')).toBe('Gestionnaire de Projet')
+    expect(suggestFrenchTitle('Team Lead')).toBe("Chef d'équipe")
+  })
+
+  it('falls back to the English title when no pair exists', function () {
+    expect(suggestFrenchTitle('Managing Director')).toBe('Managing Director')
+  })
+
+  it('keeps a title that is already a French map value', function () {
+    expect(suggestFrenchTitle('Directrice')).toBe('Directrice')
+  })
+
+  it('leaves an empty title empty for Titre placeholders', function () {
+    expect(suggestFrenchTitle('')).toBe('')
+    expect(suggestFrenchTitle('   ')).toBe('')
+  })
 })
 
 describe('resolveBilingualFrenchTitle', function () {
-  it('returns the long French placeholder when the English title has no pair', function () {
-    expect(resolveBilingualFrenchTitle('Managing Director')).toBe(TITLE_TODO)
-    expect(TITLE_TODO.length).toBeGreaterThan(40)
+  it('uses the seeded map instead of TITLE_TODO', function () {
+    expect(resolveBilingualFrenchTitle('Director')).toBe('Directrice')
+    expect(resolveBilingualFrenchTitle('Director')).not.toBe(TITLE_TODO)
   })
 
-  it('is long enough that Title | Region splits with no pipe on preview', function () {
+  it('TITLE_TODO is long enough that Title | Region splits with no pipe on preview', function () {
     var joined = TITLE_TODO + ' | Ontario'
     expect(fitsLine(fonts.font, joined, CARD_LAYOUT.bodySize, CARD_LAYOUT.titleMaxWidth)).toBe(
       false
@@ -62,47 +88,49 @@ describe('resolveBilingualFrenchTitle', function () {
     expect(String(preview.regionLine)).not.toContain('|')
   })
 
-  it('returns the mapped French title when a pair exists', function () {
+  it('returns a custom mapped French title when a pair is added', function () {
     TITLE_EN_TO_FR['Managing Director'] = 'Directeur général'
     expect(resolveBilingualFrenchTitle('Managing Director')).toBe('Directeur général')
-  })
-
-  it('keeps a title that is already a French map value', function () {
-    TITLE_EN_TO_FR['Managing Director'] = 'Directeur général'
-    expect(resolveBilingualFrenchTitle('Directeur général')).toBe('Directeur général')
-  })
-
-  it('leaves an empty title empty for Titre placeholders', function () {
-    expect(resolveBilingualFrenchTitle('')).toBe('')
-    expect(resolveBilingualFrenchTitle('   ')).toBe('')
   })
 })
 
 describe('resolveTitleForLanguage', function () {
   it('returns the selected title for English', function () {
-    expect(resolveTitleForLanguage('Managing Director', 'English')).toBe('Managing Director')
+    expect(resolveTitleForLanguage('Director', 'English')).toBe('Director')
   })
 
-  it('returns the French placeholder for a French face when unmapped', function () {
-    expect(resolveTitleForLanguage('Managing Director', 'French')).toBe(TITLE_TODO)
+  it('returns the mapped French title for a French-only face', function () {
+    expect(resolveTitleForLanguage('Director', 'French')).toBe('Directrice')
   })
 })
 
 describe('bilingualFrenchPreviewDetails', function () {
-  it('sets the French website and resolves the title', function () {
+  it('prefers titleFr over the English map', function () {
     var next = bilingualFrenchPreviewDetails({
-      title: 'Associate',
+      title: 'Director',
+      titleFr: 'Directeur',
       region: 'Ontario',
       website: 'colliersprojectleaders.com',
     })
     expect(next.website).toBe(WEBSITE_FR)
-    expect(next.title).toBe(TITLE_TODO)
+    expect(next.title).toBe('Directeur')
     expect(next.region).toBe('Ontario')
   })
 
+  it('maps the English title when titleFr is empty', function () {
+    var next = bilingualFrenchPreviewDetails({
+      title: 'Director',
+      titleFr: '',
+      website: 'colliersprojectleaders.com',
+    })
+    expect(next.title).toBe('Directrice')
+    expect(next.website).toBe(WEBSITE_FR)
+  })
+
   it('does not mutate the source details object', function () {
-    var src = { title: 'Associate' }
+    var src = { title: 'Director', titleFr: '' }
     bilingualFrenchPreviewDetails(src)
-    expect(src.title).toBe('Associate')
+    expect(src.title).toBe('Director')
+    expect(src.titleFr).toBe('')
   })
 })

@@ -53,7 +53,7 @@
       </div>
 
       <footer class="flex shrink-0 justify-end border-t border-gray-100 px-5 py-4 sm:px-6">
-        <button type="button" class="btn-split min-w-[7rem]" @click="done">
+        <button type="button" class="btn-primary min-w-[7rem]" @click="done">
           {{ t('done') }}
         </button>
       </footer>

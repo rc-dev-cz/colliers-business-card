@@ -8,6 +8,7 @@ import {
   WEBSITE_FR,
 } from './formatCardIdentity.js'
 import { EMAIL_MAX, formatCardPhone } from './validate.js'
+import { suggestFrenchTitle } from './titleLocale.js'
 
 var IN = 72
 
@@ -411,6 +412,11 @@ export function planProductLayout(details, language, fonts) {
     var pageDetails = snapshot
     if (isFrenchLanguage(lang)) {
       pageDetails = Object.assign({}, snapshot, { website: WEBSITE_FR })
+      if (isBilingualLanguage(language)) {
+        var frenchTitle = String(snapshot.titleFr || '').trim()
+        if (!frenchTitle) frenchTitle = suggestFrenchTitle(snapshot.title)
+        pageDetails.title = frenchTitle
+      }
     }
     var fields = resolveCardFields(pageDetails, lang)
     var layout = planCardLayout(fields, fonts)

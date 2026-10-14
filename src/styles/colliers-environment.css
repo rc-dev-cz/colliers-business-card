@@ -562,6 +562,14 @@ body.colliers-mobile-menu-open {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
 }
 
+.card-preview-frame--thumb {
+  width: 8.5rem;
+  max-width: 8.5rem;
+  margin-left: 0;
+  margin-right: 0;
+  padding: 0;
+}
+
 .colliers-card-toolbar {
   display: flex;
   flex-direction: column;

@@ -121,7 +121,7 @@ export default {
           {
             language: 'French',
             details: bilingualFrenchPreviewDetails(details),
-            plan: null,
+            plan: planFor('French'),
           },
         ]
       }

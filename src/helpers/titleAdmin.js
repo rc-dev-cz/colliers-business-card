@@ -5,7 +5,7 @@ import { uniqueLabels } from './labels.js'
 
 export const TITLES_STORAGE_KEY = 'managedTitles'
 /** Bump when the official title seed changes so local stubs refresh. */
-export const TITLES_SEED_VERSION = 4
+export const TITLES_SEED_VERSION = 5
 export const TITLES_SEED_VERSION_KEY = 'managedTitlesVersion'
 
 function normalizeTitle(title) {

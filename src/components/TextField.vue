@@ -7,6 +7,8 @@
       :id="id || undefined"
       class="field-input"
       :type="type"
+      :name="name || undefined"
+      :autocomplete="autocomplete || undefined"
       :value="value"
       :maxlength="maxlength"
       :disabled="disabled"
@@ -33,6 +35,9 @@ export default {
     hint: { type: String, default: '' },
     error: { type: String, default: '' },
     id: { type: String, default: '' },
+    name: { type: String, default: '' },
+    /** Browser autofill token; use "off" for non-address free-text fields. */
+    autocomplete: { type: String, default: '' },
     required: { type: Boolean, default: false },
   },
   methods: {

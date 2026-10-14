@@ -19,6 +19,7 @@ import {
   removeLocation as spliceLocation,
   removeSplitAt,
   resetOrder,
+  setLocationQtyAt,
   snapshotOrder,
   splitForLineId,
   syncCartAssignments,
@@ -703,6 +704,11 @@ export function removeShipLocation(split, index) {
   fitGroupToLimit(split, store.cart)
   syncAllLineQuantities()
   persistCart()
+  persistOrder()
+}
+
+export function setLocationQty(split, locIndex, qty) {
+  setLocationQtyAt(split, locIndex, qty)
   persistOrder()
 }
 

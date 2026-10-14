@@ -6,6 +6,15 @@ export function cardsFromBoxes(boxes) {
   return Math.max(0, Number(boxes) || 0) * CARDS_PER_BOX
 }
 
+export function formatBoxLabel(boxes, t) {
+  var qty = Math.max(0, Number(boxes) || 0)
+  return qty === 1 ? '1 ' + t('box') : qty + ' ' + t('boxes')
+}
+
+export function formatCardsLabel(boxes, t) {
+  return cardsFromBoxes(boxes) + ' ' + t('cards')
+}
+
 export function boxesFromCards(cards) {
   var n = Number(cards) || 0
   return Math.max(1, Math.round(n / CARDS_PER_BOX))

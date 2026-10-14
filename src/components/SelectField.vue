@@ -5,6 +5,8 @@
     </label>
     <select
       class="field-input"
+      :name="name || undefined"
+      :autocomplete="autocomplete || undefined"
       :value="value"
       :disabled="disabled"
       :required="required"
@@ -35,6 +37,8 @@ export default {
     optionValueKey: { type: String, default: 'value' },
     optionLabelKey: { type: String, default: 'label' },
     placeholder: { type: String, default: '' },
+    name: { type: String, default: '' },
+    autocomplete: { type: String, default: '' },
     disabled: { type: Boolean, default: false },
     required: { type: Boolean, default: false },
     hint: { type: String, default: '' },
