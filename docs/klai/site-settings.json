@@ -43,13 +43,41 @@
                 "en": "Add degree",
                 "fr": "Ajouter un diplôme"
             },
+            "label_colliers_addLocation": {
+                "en": "Add location",
+                "fr": "Ajouter un lieu"
+            },
             "label_colliers_addOfficeAddress": {
                 "en": "Add office address",
                 "fr": "Ajouter une adresse de bureau"
             },
+            "label_colliers_box": {
+                "en": "box",
+                "fr": "boîte"
+            },
+            "label_colliers_boxes": {
+                "en": "boxes",
+                "fr": "boîtes"
+            },
+            "label_colliers_cards": {
+                "en": "cards",
+                "fr": "cartes"
+            },
             "label_colliers_addToCart": {
                 "en": "Add to Cart",
                 "fr": "Ajouter au panier"
+            },
+            "label_colliers_updateCart": {
+                "en": "Update cart",
+                "fr": "Mettre à jour le panier"
+            },
+            "label_colliers_done": {
+                "en": "Done",
+                "fr": "Terminé"
+            },
+            "label_colliers_moveToGroup": {
+                "en": "Move to",
+                "fr": "Déplacer vers"
             },
             "label_colliers_additionalCredentialsOptional": {
                 "en": "Additional Credentials",
@@ -228,8 +256,8 @@
                 "fr": "Courriel"
             },
             "label_colliers_emailHint": {
-                "en": "One line, 132 pt max",
-                "fr": "Une ligne, 132 pt max."
+                "en": "One line, 141.52 pt max",
+                "fr": "Une ligne, 141,52 pt max."
             },
             "label_colliers_employee": {
                 "en": "Employee",
@@ -252,8 +280,8 @@
                 "fr": "L'export sera disponible lorsque les rapports FileMaker seront connectés."
             },
             "label_colliers_finishOptions": {
-                "en": "Matte or glossy finish options",
-                "fr": "Options de finition mate ou brillante"
+                "en": "Glossy finish",
+                "fr": "Finition brillante"
             },
             "label_colliers_french": {
                 "en": "French",
@@ -464,8 +492,8 @@
                 "fr": "Emballage"
             },
             "label_colliers_premiumStock": {
-                "en": "Premium 16pt cardstock",
-                "fr": "Carton de qualité supérieure 16 pt"
+                "en": "Premium 14pt cardstock",
+                "fr": "Carton de qualité supérieure 14 pt"
             },
             "label_colliers_previewCard": {
                 "en": "Preview",
@@ -598,6 +626,10 @@
             "label_colliers_selectAddress": {
                 "en": "Select an office address",
                 "fr": "Sélectionner une adresse de bureau"
+            },
+            "label_colliers_selectLocation": {
+                "en": "Select location",
+                "fr": "Sélectionner un lieu"
             },
             "label_colliers_selectDegree": {
                 "en": "Search or select degree...",

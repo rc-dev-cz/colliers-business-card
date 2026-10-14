@@ -4,7 +4,7 @@ Shared reference for frontend and FileMaker: **page name → route → `hookSetN
 
 **Source of truth for hook names:** live Klai Studio when the page exists there; otherwise the **Planned** rows below (from this Cursor/Vue app). FileMaker script names are **convention-derived** from BetterForms (`assistantGuide_fileMaker`), not verified against live FM scripts in this workspace.
 
-Last MCP refresh: 2026-10-01 (Proof page + Customize Preview Proof + CartDrawer preview/edit).
+Last MCP refresh: 2026-10-07 (Shipping Vue parity: two-line modelDev, billed itemCount, empty Split Order, addToCart assigns itemIds).
 
 **Status:** Live = in Klai today · Planned = in Cursor/Vue, not in Klai yet.
 
@@ -14,9 +14,9 @@ Cart is a drawer, not a page.
 
 ## Naming rules
 
-| Layer | Pattern |
-| --- | --- |
-| Page load (`requestHook: true`) | `BF - onFormRequest - <HookSetName>` |
+| Layer                             | Pattern                                                     |
+| --------------------------------- | ----------------------------------------------------------- |
+| Page load (`requestHook: true`)   | `BF - onFormRequest - <HookSetName>`                        |
 | Utility action (`runUtilityHook`) | `BF - onUtility - <HookSetName>` (branch on `options.type`) |
 
 Local style:
@@ -34,46 +34,46 @@ Bus variables (FileMaker side): `$$BF_Payload`, `$$BF_Model`, `$$BF_Actions`, `$
 
 ### Order flow
 
-| Page (`formName`) | Route | `hookSetName` | `requestHook` | Expected FM onFormRequest | Utility / notes | Status |
-| --- | --- | --- | --- | --- | --- | --- |
-| Catalogue | `/` (`default`) | `catalogue` | true | `BF - onFormRequest - catalogue` | Named actions: `goDetails`, `goCustomize` | Live |
-| Product Detail | `/product-detail` | `catalogueitem` | true | `BF - onFormRequest - catalogueitem` | Query `?code=` and `?id=` (`store_catalogue::id`). Page keeps a product when either matches | Live |
-| Customize | `/customize` | `customize` | true | `BF - onFormRequest - customize` | Query `?code=` and `?id=`. Form submit is `previewProof` (not add-to-cart). Layout lock + `viewPrintPdf`. Shared draft: `app.proof` | Live UI |
-| Proof | `/proof` | `proof` | false | — | Client-only. Reads `app.proof`. Checkbox then `addProofToCart` / `continueToShipping`. No FileMaker hook | Live UI |
-| Shipping | `/shipping` | `shipping` | true (planned; false in Klai today) | `BF - onFormRequest - shipping` | Load personal + office addresses. Split/qty client until submit. Shared draft: `app.cart` + `app.order` | Live UI |
-| Review | `/review` | `review` | false | — | `submit` → create order → `BF - onUtility - review` | Live UI |
-| Confirmed | `/confirmed` | `confirmed` | false | — | Display-only; clears `app.cart` / `app.order` | Live UI |
+| Page (`formName`) | Route             | `hookSetName`   | `requestHook`                       | Expected FM onFormRequest            | Utility / notes                                                                                                                     | Status  |
+| ----------------- | ----------------- | --------------- | ----------------------------------- | ------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------- | ------- |
+| Catalogue         | `/` (`default`)   | `catalogue`     | true                                | `BF - onFormRequest - catalogue`     | Named actions: `goDetails`, `goCustomize`                                                                                           | Live    |
+| Product Detail    | `/product-detail` | `catalogueitem` | true                                | `BF - onFormRequest - catalogueitem` | Query `?code=` and `?id=` (`store_catalogue::id`). Page keeps a product when either matches                                         | Live    |
+| Customize         | `/customize`      | `customize`     | true                                | `BF - onFormRequest - customize`     | Query `?code=` and `?id=`. Form submit is `previewProof` (not add-to-cart). Layout lock + `viewPrintPdf`. Shared draft: `app.proof` | Live UI |
+| Proof             | `/proof`          | `proof`         | false                               | —                                    | Client-only. Reads `app.proof`. Checkbox then site globals `addProofToCart` / `applyProofToCart`. No FileMaker hook                 | Live UI |
+| Shipping          | `/shipping`       | `shipping`      | true (planned; false in Klai today) | `BF - onFormRequest - shipping`      | Load personal + office addresses. Split/qty client until submit. Shared draft: `app.cart` + `app.order`                             | Live UI |
+| Review            | `/review`         | `review`        | false                               | —                                    | `submit` → create order → `BF - onUtility - review`                                                                                 | Live UI |
+| Confirmed         | `/confirmed`      | `confirmed`     | false                               | —                                    | Display-only; clears `app.cart` / `app.order`                                                                                       | Live UI |
 
 ### Profile
 
-| Page (`formName`) | Route | `hookSetName` | `requestHook` | Expected FM onFormRequest | Utility / notes | Status |
-| --- | --- | --- | --- | --- | --- | --- |
-| Address Book | `/address-book` | `addresses` | true | `BF - onFormRequest - addresses` | Planned: `create`, `update`, `delete` (personal). Save/edit/delete still client-side today | Live |
-| Order History | `/order-history` | `orders` | true (planned; false in Klai today) | `BF - onFormRequest - orders` | `repeat` → `BF - onUtility - orders` (utility already wired in Klai) | Live UI |
+| Page (`formName`) | Route            | `hookSetName` | `requestHook`                       | Expected FM onFormRequest        | Utility / notes                                                                            | Status  |
+| ----------------- | ---------------- | ------------- | ----------------------------------- | -------------------------------- | ------------------------------------------------------------------------------------------ | ------- |
+| Address Book      | `/address-book`  | `addresses`   | true                                | `BF - onFormRequest - addresses` | Planned: `create`, `update`, `delete` (personal). Save/edit/delete still client-side today | Live    |
+| Order History     | `/order-history` | `orders`      | true (planned; false in Klai today) | `BF - onFormRequest - orders`    | `repeat` → `BF - onUtility - orders` (utility already wired in Klai)                       | Live UI |
 
 ### Auth
 
-| Page (`formName`) | Route | `hookSetName` | `requestHook` | Expected FM onFormRequest | Utility / notes | Status |
-| --- | --- | --- | --- | --- | --- | --- |
-| Auth - Login | `/login` | `login` | false | — | Planned: login utility when wired | Live |
-| Auth - Forgot | `/login/forgot` | `forgot` | false | — | — | Live |
-| Recovery Email Sent | `/login/forgot/sent` | `login` | false | — | — | Live |
-| Auth - Reset | `/login/reset` | `login` | false | — | — | Live |
-| Create new password Success | `/login/reset/success` | `login` | false | — | — | Live |
-| Auth - Signup / Register | `/login/signup` | `signup` | false | — | — | Live |
-| Auth - Verify | `/login/verify` | `login` | false | — | — | Live |
+| Page (`formName`)           | Route                  | `hookSetName` | `requestHook` | Expected FM onFormRequest | Utility / notes                   | Status |
+| --------------------------- | ---------------------- | ------------- | ------------- | ------------------------- | --------------------------------- | ------ |
+| Auth - Login                | `/login`               | `login`       | false         | —                         | Planned: login utility when wired | Live   |
+| Auth - Forgot               | `/login/forgot`        | `forgot`      | false         | —                         | —                                 | Live   |
+| Recovery Email Sent         | `/login/forgot/sent`   | `login`       | false         | —                         | —                                 | Live   |
+| Auth - Reset                | `/login/reset`         | `login`       | false         | —                         | —                                 | Live   |
+| Create new password Success | `/login/reset/success` | `login`       | false         | —                         | —                                 | Live   |
+| Auth - Signup / Register    | `/login/signup`        | `signup`      | false         | —                         | —                                 | Live   |
+| Auth - Verify               | `/login/verify`        | `login`       | false         | —                         | —                                 | Live   |
 
 ### Admin
 
-| Page (`formName`) | Route | `hookSetName` | `requestHook` | Expected FM onFormRequest | Utility / notes | Status |
-| --- | --- | --- | --- | --- | --- | --- |
-| Admin Home | `/admin` | `admin` | false (planned true) | `BF - onFormRequest - admin` | Dashboard / tool links; `model.counts` in modelDev | Live UI |
-| Manage Addresses | `/admin/addresses` | `adminaddresses` | false (planned true) | `BF - onFormRequest - adminaddresses` | `create`, `update`, `delete` (offices) — client stub until FM | Live UI |
-| Manage Titles | `/admin/titles` | `admintitles` | false (planned true) | `BF - onFormRequest - admintitles` | `create`, `update`, `delete` | Live UI |
-| Manage Degrees | `/admin/degrees` | `admindegrees` | false (planned true) | `BF - onFormRequest - admindegrees` | `create`, `update`, `delete` | Live UI |
-| Admin Order History | `/admin/orders` | `adminorders` | false (planned true) | `BF - onFormRequest - adminorders` | Admin-scoped order list (employee); no `repeat` in v1 | Live UI |
-| Invoice History | `/admin/invoices` | `admininvoices` | false (planned true) | `BF - onFormRequest - admininvoices` | Invoice table + download (mock) | Live UI |
-| Reporting | `/admin/reporting` | `adminreporting` | false (planned true) | `BF - onFormRequest - adminreporting` | Charts / activity / export CTA (mock) | Live UI |
+| Page (`formName`)   | Route              | `hookSetName`    | `requestHook`        | Expected FM onFormRequest             | Utility / notes                                               | Status  |
+| ------------------- | ------------------ | ---------------- | -------------------- | ------------------------------------- | ------------------------------------------------------------- | ------- |
+| Admin Home          | `/admin`           | `admin`          | false (planned true) | `BF - onFormRequest - admin`          | Dashboard / tool links; `model.counts` in modelDev            | Live UI |
+| Manage Addresses    | `/admin/addresses` | `adminaddresses` | false (planned true) | `BF - onFormRequest - adminaddresses` | `create`, `update`, `delete` (offices) — client stub until FM | Live UI |
+| Manage Titles       | `/admin/titles`    | `admintitles`    | false (planned true) | `BF - onFormRequest - admintitles`    | `create`, `update`, `delete`                                  | Live UI |
+| Manage Degrees      | `/admin/degrees`   | `admindegrees`   | false (planned true) | `BF - onFormRequest - admindegrees`   | `create`, `update`, `delete`                                  | Live UI |
+| Admin Order History | `/admin/orders`    | `adminorders`    | false (planned true) | `BF - onFormRequest - adminorders`    | Admin-scoped order list (employee); no `repeat` in v1         | Live UI |
+| Invoice History     | `/admin/invoices`  | `admininvoices`  | false (planned true) | `BF - onFormRequest - admininvoices`  | Invoice table + download (mock)                               | Live UI |
+| Reporting           | `/admin/reporting` | `adminreporting` | false (planned true) | `BF - onFormRequest - adminreporting` | Charts / activity / export CTA (mock)                         | Live UI |
 
 ---
 
@@ -156,7 +156,7 @@ Shapes the request/utility hooks should put on `$$BF_Model` (Klai `model`). Incl
 }
 ```
 
-**CartDrawer** — not a page. Component `CartDrawer` on the site header. Line qty is boxes; UI shows `qty * 250` cards plus person name. Preview navigates to `/proof`; edit sets `app.editLineId` and opens Customize.
+**CartDrawer** — not a page. Component `CartDrawer` on the site header. Line qty is boxes; UI shows `qty * 250` cards plus person name. Preview navigates to `/proof`; edit sets `app.editLineId` and opens Customize. Cart mutations live on site `content.namedActions`: `addToCart`, `applyProofToCart`, `addProofToCart`, `ensureProofInCart`, `syncCartHeader`, `openCart`, `clearCart` (frontend `app.cart` only; `loadCart` / `saveCart` unchanged).
 
 **Order**
 
@@ -201,7 +201,12 @@ Personal Order History uses this shape. Admin Order History adds `employeeName` 
 ```json
 {
   "products": [
-    { "code": "BCAD-PL-ENG", "nameKey": "label_colliers_productEnglish", "price": 63, "previewKey": "previews.eng" }
+    {
+      "code": "BCAD-PL-ENG",
+      "nameKey": "label_colliers_productEnglish",
+      "price": 63,
+      "previewKey": "previews.eng"
+    }
   ],
   "previews": {
     "eng": { "language": "English" },
@@ -219,8 +224,8 @@ Preview objects may include empty card fields the `CardPreview` component reads.
 {
   "code": "BCAD-PL-ENG",
   "notFound": 0,
-  "product": { /* full Product */ },
-  "products": [ /* full Product rows, lookup for ?code= */ ],
+  "product": {/* full Product */},
+  "products": [/* full Product rows, lookup for ?code= */],
   "card": { "language": "English" }
 }
 ```
@@ -233,8 +238,12 @@ Preview objects may include empty card fields the `CardPreview` component reads.
 {
   "code": "BCAD-PL-ENG",
   "notFound": 0,
-  "product": { "code": "BCAD-PL-ENG", "language": "English", "nameKey": "label_colliers_productEnglish" },
-  "card": { /* Card */ },
+  "product": {
+    "code": "BCAD-PL-ENG",
+    "language": "English",
+    "nameKey": "label_colliers_productEnglish"
+  },
+  "card": {/* Card */},
   "cart": [],
   "titleOptions": [],
   "degreeOptions": [],
@@ -278,14 +287,14 @@ FileMaker should return the same Product rows as Catalogue (`products`, or the o
       {
         "id": 1,
         "itemIds": ["line-1"],
-        "locations": [{ "id": "loc-1", "address": "181 Bay Street, Toronto, ON M5J 2T3", "qty": 2 }]
+        "locations": []
       }
     ]
   }
 }
 ```
 
-`itemIds` point at `cart[].id` so a card can move between shipping groups without copying the line. Location `qty` is boxes to that address. The qty stepper may sync cart quantity. Adding or removing a ship-to address must **not** delete cart lines.
+`itemIds` point at `cart[].id` so a card can move between shipping groups without copying the line. Location `qty` is boxes **per address** (editable; defaults to Selected Items sum). Selected Items Qty is a readout (`quantity × 250`). Billed boxes = sum of location qty (×1 Selected Items if none). Adding or removing a ship-to address must **not** delete cart lines.
 
 **Shipping** (`shipping`) — planned request load (`personalAddresses`, `offices`, `products`). Client keeps cart/splits.
 
@@ -293,7 +302,15 @@ FileMaker should return the same Product rows as Catalogue (`products`, or the o
 {
   "cart": [],
   "order": { "splits": [] },
-  "products": [{ "code": "BCAD-PL-ENG", "language": "English", "nameKey": "label_colliers_productEnglish", "image": "", "price": 63 }],
+  "products": [
+    {
+      "code": "BCAD-PL-ENG",
+      "language": "English",
+      "nameKey": "label_colliers_productEnglish",
+      "image": "",
+      "price": 63
+    }
+  ],
   "personalAddresses": [],
   "offices": [],
   "header": { "cartCount": 0 },
@@ -339,8 +356,8 @@ Shipping & handling is always `$0.00` (included in the box price). No payment.
 
 ```json
 {
-  "addresses": [ /* Address */ ],
-  "offices": [ /* Address */ ]
+  "addresses": [/* Address */],
+  "offices": [/* Address */]
 }
 ```
 
@@ -348,7 +365,7 @@ Shipping & handling is always `$0.00` (included in the box price). No payment.
 
 ```json
 {
-  "orders": [ /* Order */ ]
+  "orders": [/* Order */]
 }
 ```
 
@@ -382,7 +399,7 @@ Tiles are UI-only. Counts may come from this object or from loading the three li
 
 ```json
 {
-  "offices": [ /* Address */ ],
+  "offices": [/* Address */],
   "form": {
     "id": "",
     "addressName": "",
@@ -414,7 +431,7 @@ Tiles are UI-only. Counts may come from this object or from loading the three li
       "status": "Delivered",
       "employeeName": "Alex Johnson",
       "ownerEmail": "alex.johnson@colliers.com",
-      "cart": [ /* same as Order.cart */ ]
+      "cart": [/* same as Order.cart */]
     }
   ]
 }
@@ -425,7 +442,14 @@ Tiles are UI-only. Counts may come from this object or from loading the three li
 ```json
 {
   "monthlySpend": [{ "month": "Aug", "amount": 441 }],
-  "recentActivity": [{ "name": "Sarah Jenkins", "action": "Ordered Standard Cards", "department": "Marketing", "when": "2 hours ago" }],
+  "recentActivity": [
+    {
+      "name": "Sarah Jenkins",
+      "action": "Ordered Standard Cards",
+      "department": "Marketing",
+      "when": "2 hours ago"
+    }
+  ],
   "spendByDepartment": [{ "department": "Marketing", "amount": 1260 }]
 }
 ```
@@ -434,7 +458,7 @@ Tiles are UI-only. Counts may come from this object or from loading the three li
 
 ```json
 {
-  "invoices": [ /* Invoice */ ]
+  "invoices": [/* Invoice */]
 }
 ```
 
@@ -445,7 +469,8 @@ Tiles are UI-only. Counts may come from this object or from loading the three li
 - **Order History** — turn on `requestHook` + `BF - onFormRequest - orders` when live load is ready (`repeat` utility already exists).
 - **Address Book** — wire `create` / `update` / `delete` utilities; load already uses request hook.
 - **Customize / Product Detail** — Catalogue opens both with `?code=` and `?id=` (`store_catalogue::id`, such as `13616` for `CPL-13616`). If `product.id` is missing, the click uses the trailing number on `code`. Each page shows the form from that query even when the dev product list does not contain the code. FileMaker should still set `model.product` with the same `code`.
-- **Print PDF** — Customize button → `viewPrintPdf` (anchor download). FM base64 → Mark’s Press later ([PRINT-PDF.md](../PRINT-PDF.md)).
+- **FM (you): `BF - onFormRequest - customize`** — do **not** hardcode `"language" ; "English"`. After the catalogue find, set `$$BF_Model.product` `{ id, code, language, price, nameKey }` from `store_catalogue`, and `$$BF_Model.card.language` to match. Bilingual SKUs (e.g. `/#/customize?code=CPL-13616&id=13616`) need `language: "Bilingual"` or Klai shows one face. Leave `BF - onUtility - customize` `type: "addToCart"` alone; cart stays frontend until Review `submit`.
+- **Print PDF** — Customize button → `viewPrintPdf` (anchor download; Klai synced to Vue layout 2026-10-06). FM base64 → Mark’s Press later ([PRINT-PDF.md](../PRINT-PDF.md)).
 - **Proof** — Live UI at `/proof`. No request hook. Cart is still a drawer (`CartDrawer`); preview/edit on a line opens Proof or Customize.
 - **Review** — Live UI uses person name + card qty (`qty * 250`), `printOrder`, Place Order. Turn on Shipping `requestHook` when FM fills addresses; Review `submit` is still a stub until FM creates the order.
 - **Admin pages** — Admin Home (`admin`), Admin Order History (`adminorders`), Invoice History (`admininvoices`), Reporting (`adminreporting`), Manage Addresses (`adminaddresses`), Manage Titles (`admintitles`), and Manage Degrees (`admindegrees`) are Live UI. Confirm live FM script names when Mike builds them.
