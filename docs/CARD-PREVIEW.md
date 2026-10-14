@@ -5,7 +5,7 @@
 **Source in code today:** `src/components/CardPreview.vue` (responsive stand-in only)  
 **Related:** [BUSINESS-RULES.md](BUSINESS-RULES.md) §4 · `USR-031` live preview · `USR-095` View order card preview
 
-**Preview-only layout (Oct 2026):** When `Title | Region` does not fit **141.52 pt**, the on-screen preview stacks region under the title (no `|`) and lifts the identity block one body line (`applyPreviewTitleRegionSplit`). Same rule for English and French. Print PDF still enforces one line. Bilingual Customize lists **English** titles; EN face shows the selection; FR face uses `titleLocale` EN→FR pairs, or the long placeholder **Titre à compléter — équivalent français requis** when unmapped (so the region-split is visible).
+**Title / region split (Oct 2026):** When `Title | Region` does not fit **141.52 pt** but each part fits alone, preview and print stack region under the title (no `|`) and lift the identity block one body line — valid, not an error. Bilingual Customize lists **English** titles; EN face shows the selection; FR face uses `titleLocale` EN→FR pairs, or the long placeholder **Titre à compléter — équivalent français requis** when unmapped.
 
 ---
 

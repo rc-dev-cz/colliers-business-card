@@ -5,6 +5,7 @@ import {
   CARD_BACK_LEGAL,
   CARD_LAYOUT,
   applyEmptyTeamIdentityLayout,
+  applyPreviewTitleRegionSplit,
   layoutErrorMessage,
   planProductLayout,
   snapshotCardDetails,
@@ -147,6 +148,15 @@ function drawCardPage(pdfDoc, pagePlan, assets) {
     font: font,
     color: GRAY,
   })
+  if (layout.regionLine) {
+    drawText(page, layout.regionLine, {
+      x: identityX,
+      y: layout.regionY,
+      size: L.bodySize,
+      font: font,
+      color: GRAY,
+    })
+  }
   if (layout.team) {
     drawText(page, layout.team, {
       x: identityX,
@@ -284,7 +294,10 @@ export async function buildPrintPdfBytes(details, language, opts) {
   applyPrintCredentialPlaceholder(productPlan, snapshot)
   applyPrintAddressPlaceholder(productPlan, snapshot)
   productPlan.pages.forEach(function (page) {
-    page.layout = applyEmptyTeamIdentityLayout(page.layout)
+    page.layout = applyPreviewTitleRegionSplit(
+      applyEmptyTeamIdentityLayout(page.layout),
+      measureFonts
+    )
   })
   if (opts && typeof opts.adjustPlan === 'function') opts.adjustPlan(productPlan)
   if (!productPlan.valid) throwLayoutError(productPlan)

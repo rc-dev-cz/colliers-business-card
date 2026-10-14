@@ -200,6 +200,24 @@ function requireOneLine(font, text, size, maxWidth, code, errors) {
   if (!fitsLine(font, text, size, maxWidth)) errors.push(code)
 }
 
+/**
+ * Joined `Title | Region` may overflow when each part still fits alone — preview/print
+ * stack region under title in that case, so do not treat it as a layout error.
+ */
+function titleRegionFitsOrSplits(font, joined, size, maxWidth) {
+  var text = String(joined || '')
+  if (fitsLine(font, text, size, maxWidth)) return true
+  var sep = ' | '
+  var idx = text.indexOf(sep)
+  if (idx === -1) return false
+  var titlePart = text.slice(0, idx).trim()
+  var regionPart = text.slice(idx + sep.length).trim()
+  if (!titlePart || !regionPart) return false
+  return (
+    fitsLine(font, titlePart, size, maxWidth) && fitsLine(font, regionPart, size, maxWidth)
+  )
+}
+
 function fitsAfterName(fontBold, lastNameLine, credentialText, L) {
   var prefix = ', '
   var used = fontBold.widthOfTextAtSize(lastNameLine, L.nameSize)
@@ -321,7 +339,9 @@ export function planCardLayout(fields, fonts) {
   if (packed.mode === 'error') errors.push(LAYOUT_ERROR.credentials)
 
   requireOneLine(font, fields.website, L.bodySize, L.identityWidth, LAYOUT_ERROR.website, errors)
-  requireOneLine(font, fields.title, L.bodySize, L.titleMaxWidth, LAYOUT_ERROR.title, errors)
+  if (!titleRegionFitsOrSplits(font, fields.title, L.bodySize, L.titleMaxWidth)) {
+    errors.push(LAYOUT_ERROR.title)
+  }
   if (String(fields.team || '').trim()) {
     requireOneLine(font, fields.team, L.bodySize, L.identityWidth, LAYOUT_ERROR.team, errors)
   }
@@ -462,12 +482,13 @@ export function applyEmptyTeamIdentityLayout(view) {
 }
 
 /**
- * Preview-only: when `Title | Region` does not fit titleMaxWidth, put region on its
- * own line and lift name / credentials / title by one body line. Language-agnostic.
- * Print PDF keeps the one-line title rule (planCardLayout).
+ * When `Title | Region` does not fit titleMaxWidth, put region on its own line and
+ * lift name / credentials / title by one body line. Used by CardPreview and print PDF.
+ * No-op when already split or when title alone cannot fit.
  */
 export function applyPreviewTitleRegionSplit(view, fonts) {
   if (!view || !fonts || !fonts.font) return view
+  if (view.regionLine) return view
   var L = CARD_LAYOUT
   var joined = String(view.title || '')
   var sep = ' | '

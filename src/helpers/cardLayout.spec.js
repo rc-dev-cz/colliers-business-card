@@ -321,13 +321,17 @@ describe('planCardLayout', function () {
     expect(L.titleMaxWidth).toBe(141.52)
   })
 
-  it('rejects Responsable du développement commercial | Quebec as too wide for title', function () {
+  it('accepts Responsable du développement commercial | Quebec when region can split', function () {
     var layout = plan({
       title: 'Responsable du développement commercial',
       region: 'Quebec',
     })
-    expect(layout.valid).toBe(false)
-    expect(layout.errors).toContain(LAYOUT_ERROR.title)
+    expect(layout.valid).toBe(true)
+    expect(layout.errors).not.toContain(LAYOUT_ERROR.title)
+    expect(layout.title).toBe('Responsable du développement commercial | Quebec')
+    var preview = applyPreviewTitleRegionSplit(applyEmptyTeamIdentityLayout(layout), fonts)
+    expect(preview.regionLine).toBe('Quebec')
+    expect(preview.title).toBe('Responsable du développement commercial')
   })
 
   it('rejects a specialized team that is wider than the right-column cap', function () {
