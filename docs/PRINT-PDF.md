@@ -2,7 +2,7 @@
 
 **Status:** view + download (Sep 2026); **print layout LOCKED** for approval — see [LAYOUT-GUIDE.md](samples/print-pdf/LAYOUT-GUIDE.md)  
 **Primary runtime:** **Vue web app** (`CustomizePage` → View print PDF)  
-**Klai:** Customize button → `viewPrintPdf` named action (anchor download; Studio-safe) — **sync pending (separate job)**  
+**Klai:** Customize button → `viewPrintPdf` named action (anchor download; Studio-safe) — **synced 2026-10-06** (`identityWidth` 141.52, `emailGapMin` 15.99, `packCredentials`, no `Mobile:` prefix)  
 **Code:** [src/helpers/printPdf.js](../src/helpers/printPdf.js) · Klai mirror [docs/klai/viewPrintPdf.js](klai/viewPrintPdf.js)  
 **Samples:** [docs/samples/print-pdf/](samples/print-pdf/) (`npm run export:print-pdfs`)  
 **Approval images (locked):** [LAYOUT-GUIDE.md](samples/print-pdf/LAYOUT-GUIDE.md) (`npm run export:approval-guide`)  
@@ -28,22 +28,22 @@
 
 ## Geometry
 
-| Spec | Value |
-| --- | --- |
-| Trim | 3.5″ × 2″ |
-| Bleed | 0.125″ (⅛″) each side |
-| Media box | **3.75″ × 2.25″** (270 × 162 pt at 72 pt/in) |
+| Spec       | Value                                                                                            |
+| ---------- | ------------------------------------------------------------------------------------------------ |
+| Trim       | 3.5″ × 2″                                                                                        |
+| Bleed      | 0.125″ (⅛″) each side                                                                            |
+| Media box  | **3.75″ × 2.25″** (270 × 162 pt at 72 pt/in)                                                     |
 | Page boxes | Media/Crop/Bleed = full media; **TrimBox/ArtBox** = 9,9 → 261,153 (matches approved EN InDesign) |
-| Safe inset | ~0.125″ inside trim |
-| Marks | None (no crop marks) |
+| Safe inset | ~0.125″ inside trim                                                                              |
+| Marks      | None (no crop marks)                                                                             |
 
 ## Stack
 
-| Layer | Choice |
-| --- | --- |
-| Vue | `pdf-lib` + **Open Sans** (vector text) + original Colliers lockup artwork |
-| Klai | `pdf-lib` + `@pdf-lib/fontkit` + Open Sans TTFs (CDN). **Not** html2canvas. |
-| Fonts | Open Sans Regular / Bold for the card. Wordmarks are the print PNGs from the official lockup |
+| Layer        | Choice                                                                                                                                                   |
+| ------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Vue          | `pdf-lib` + **Open Sans** (vector text) + original Colliers lockup artwork                                                                               |
+| Klai         | `pdf-lib` + `@pdf-lib/fontkit` + Open Sans TTFs (CDN). **Not** html2canvas.                                                                              |
+| Fonts        | Open Sans Regular / Bold for the card. Wordmarks are the print PNGs from the official lockup                                                             |
 | Klai artwork | Same **mark + wordmark PNGs** as Vue (`colliers-logo-mark.png`, `lockup-words-en.png`, `lockup-words-fr.png`) from Klai file assets. pdf-lib embeds PNG. |
 
 ## Layout parity (preview ↔ PDF)
@@ -53,7 +53,7 @@ The download is a **print file**, not a screenshot of the web preview. Screen ca
 - Page is still 3.75″ × 2.25″ (trim + bleed). Bleed is empty white — **no crop marks**; TrimBox/ArtBox mark the 3.5″ × 2″ finish
 - Logo mark + “Project Leaders” / “Maîtres de projets” use the approved artwork at the original coordinates
 - Body type is Open Sans 10 / 7 / 6.5 pt (`#03438C` / `#5F636A`) like the original
-- Layout is planned before draw: credentials that all fit after the name stay inline; if they do not, shorter tokens fill the name line first (by measured width) and the remainder uses the dedicated credential row when it still fits. Right-column fields do not wrap. Email may use **132 pt** on one line (character count alone is not enough).
+- Layout is planned before draw: credentials that all fit after the name stay inline; if they do not, shorter tokens fill the name line first (by measured width) and the remainder uses the dedicated credential row when it still fits. Right-column fields do not wrap. Name, degrees, title | region, team, email, and website may use **141.52 pt** on one line (character count alone is not enough).
 - Bilingual: two pages; both pages must validate before the file is created; French uses `lockup-words-fr.png`
 - Unique filename each click so the browser never reopens a stale Downloads file
 
@@ -69,7 +69,7 @@ Sample PDFs for Kevin → Cynthia → Mark live in [docs/samples/print-pdf/](sam
 
 - Files are **RGB proofs** (not DeviceCMYK). Mark’s press RIP converts color; physical cards answer CMYK match vs Colliers samples.
 - Geometry: trim 3.5″ × 2″, ⅛″ bleed, TrimBox/ArtBox set; no crop marks.
-- Vue is the source of truth for this milestone. **Klai `viewPrintPdf` sync is a separate follow-up.**
+- Vue remains the geometry source of truth. Klai `viewPrintPdf` on Customize matches the locked layout (verify downloads against [docs/samples/print-pdf/](samples/print-pdf/); locked samples have no `Mobile:` label).
 
 ## Later
 

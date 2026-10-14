@@ -12,11 +12,11 @@ Preview admin login stays `admin` / `123`. Live FileMaker test user and admin ac
 
 ## Terms
 
-| Term | Meaning |
-| --- | --- |
-| **cart item** | One row in the cart drawer |
-| **cart badge icon** | Red number on the header shopping-cart icon (total quantity). Never write only “badge.” |
-| **Business Card Bilingual** | Product `BCAD-PL-BIL`, not the navbar EN/FR toggle |
+| Term                        | Meaning                                                                                 |
+| --------------------------- | --------------------------------------------------------------------------------------- |
+| **cart item**               | One row in the cart drawer                                                              |
+| **cart badge icon**         | Red number on the header shopping-cart icon (total quantity). Never write only “badge.” |
+| **Business Card Bilingual** | Product `BCAD-PL-BIL`, not the navbar EN/FR toggle                                      |
 
 ## How quantity works
 
@@ -166,7 +166,7 @@ TC-04 vs TC-05 / TC-05b: cart badge icon is 2 and $126 either way. TC-04 is **on
 
 ## Splits
 
-Shipping page today: Split Order, Remove Split only if more than one split, add/remove location, select location.
+Shipping page today: Split Order, Remove Split only if more than one split, add/remove location. No default ship-to until Add location. Split Order and add/remove location require at least one selected card in that group. Box/card totals stay hidden until a ship-to is added. The header “Total N items” is hidden when no cards are selected. Cart lines from the drawer always appear on Shipping Group 1 if they are not already in a group. The Selected Items trash control removes the card from Shipping and from the cart drawer.
 
 ### TC-11 — Create second split (P0)
 
@@ -197,11 +197,20 @@ Shipping page today: Split Order, Remove Split only if more than one split, add/
 
 ### TC-14 — Add location on a split
 
-- Preconditions: Shipping page open, at least one split.
+- Preconditions: Shipping page open, that split has at least one selected card.
 - Steps:
   1. Click Add Location.
 - Expected:
-  - That split has one more address row (blank address, qty 1)
+  - Address picker opens; chosen addresses appear on that split
+
+### TC-14b — Empty group cannot split or edit addresses
+
+- Preconditions: A shipping group with no selected items (after Split Order or after removing its cards).
+- Expected:
+  - Split Order is disabled
+  - Add location is disabled
+  - Location delete is disabled
+  - Removing the last card from a group clears its ship-to rows
 
 ### TC-15 — Remove a location
 
@@ -221,19 +230,19 @@ Shipping page today: Split Order, Remove Split only if more than one split, add/
   1. Click Select Location.
   2. Pick a saved address.
 - Expected:
-  - That split lists that address, qty 1
+  - That split lists that address
+  - Location qty is the Selected Items card count (read-only)
 
-### TC-17 — Location qty
+### TC-17 — Location qty (read-only, multiply)
 
-- Preconditions: A ship-to row exists with one cart line in the split.
+- Preconditions: One cart line at qty 1 box (250 cards) in the split, one ship-to.
 - Steps:
-  1. Raise that location qty with the stepper (e.g. 250 → 500).
+  1. Confirm the ship-to row shows 250 and is not a stepper.
+  2. Add a second ship-to address.
 - Expected:
-  - That row shows 500
-  - Selected Items / cart quantity updates to match (500)
-  2. Lower location qty (500 → 250).
-- Expected:
-  - Cart quantity follows down to 250
+  - Selected Items quantity stays 1 box / 250 cards
+  - Each address shows 250 (read-only)
+  - Header / cart count is 2 billed boxes (500 cards / $126)
 
 ---
 

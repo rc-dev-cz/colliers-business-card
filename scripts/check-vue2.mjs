@@ -58,7 +58,8 @@ walk(join(appRoot, 'src'), []).forEach(function (file) {
 
 const { consolidateCart } = await import('../src/helpers/cart.js')
 const { clipName, clipEmail, NAME_MAX, EMAIL_MAX } = await import('../src/helpers/validate.js')
-const { defaultOrder, addSplit, removeSplitAt, syncCartAssignments } = await import('../src/helpers/order.js')
+const { defaultOrder, addSplit, removeSplitAt, syncCartAssignments } =
+  await import('../src/helpers/order.js')
 
 const merged = consolidateCart([
   { id: 'a', code: 'BCAD-PL-ENG', quantity: 1, details: { name: 'Ada' } },
@@ -88,7 +89,8 @@ if (order.splits[0].itemIds.indexOf('line-1') === -1) {
   errors.push('new cart lines must land in shipping group 1')
 }
 
-const { nextOrderId, seedOrderHistory, seedAdminOrderHistory, boxCount, cardCount, orderTotal } = await import('../src/helpers/orderHistory.js')
+const { nextOrderId, seedOrderHistory, seedAdminOrderHistory, boxCount, cardCount, orderTotal } =
+  await import('../src/helpers/orderHistory.js')
 const { profileStorageKey } = await import('../src/helpers/storage.js')
 const { seedPersonalAddresses } = await import('../src/helpers/addressBook.js')
 if (profileStorageKey('addressBook', 'Demo') !== 'addressBook:demo') {
@@ -120,4 +122,3 @@ if (errors.length) {
 }
 
 console.log('Vue 2 check passed')
-

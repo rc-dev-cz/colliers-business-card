@@ -4,23 +4,23 @@ Stories for the **regular user** — the person who orders business cards. Admin
 
 **User** is not a third role. The login screen says Colliers Partner Portal; that is the **product name**. The person using catalogue / customize / cart / shipping is the user. The person managing addresses and titles is the **admin**.
 
-| Layer | Role |
-| --- | --- |
-| [FEATURES.md](FEATURES.md) | What the product is |
-| [BUSINESS-RULES.md](BUSINESS-RULES.md) | Agreed behaviour and test IDs |
-| [BACKLOG.md](BACKLOG.md) | F-code feature index → board tickets |
-| **This file** | User order-flow stories |
-| [ADMIN.md](ADMIN.md) | Admin port stories |
-| [TESTING.md](TESTING.md) | Use cases |
+| Layer                                  | Role                                 |
+| -------------------------------------- | ------------------------------------ |
+| [FEATURES.md](FEATURES.md)             | What the product is                  |
+| [BUSINESS-RULES.md](BUSINESS-RULES.md) | Agreed behaviour and test IDs        |
+| [BACKLOG.md](BACKLOG.md)               | F-code feature index → board tickets |
+| **This file**                          | User order-flow stories              |
+| [ADMIN.md](ADMIN.md)                   | Admin port stories                   |
+| [TESTING.md](TESTING.md)               | Use cases                            |
 
 This flow is already in **this Vue app**. Do not copy customize from AI Studio.
 
 ## Status key
 
-| Mark | Meaning |
-| --- | --- |
+| Mark  | Meaning            |
+| ----- | ------------------ |
 | `[ ]` | Not started in Vue |
-| `[x]` | Done in Vue |
+| `[x]` | Done in Vue        |
 
 **Stories:** epic **USR**, then one story per page (`USR-010`, `USR-020`, …) with related tickets (`USR-011`). Related ids are in the ticket index.
 
@@ -59,8 +59,8 @@ Each **page** is a tens ticket. Children are the pieces of that page.
   - [x] **USR-045** Change quantity
   - [x] **USR-046** Printed-card count (qty × 250)
 - [x] **USR-050** Shipping `(ShippingPage.vue)` — F-10
-  - [x] **USR-051** Add / remove / select location (does not delete cart cards)
-  - [x] **USR-052** Location qty vs cart qty (location stepper syncs Selected Items to ship-to sum)
+  - [x] **USR-051** Add / remove location (does not delete cart cards)
+  - [x] **USR-052** Selected Items Qty is a readout; boxes/cards are set per ship-to (billed boxes = sum of location qty)
   - [x] **USR-053** Shipping $0, no payment (included in the $63 box fee)
   - [x] **USR-054** Split Order — F-09
   - [x] **USR-055** Cannot remove the last split

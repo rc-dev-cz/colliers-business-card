@@ -6,24 +6,24 @@ Verified in the designer preview on **13 Aug 2026** (`admin` / `123`). Address B
 
 **Designer vs Vue sync 31 Aug 2026:** Aug 28 designer adds **Manage Degrees/Certifications** (`#/admin/degrees`). Vue titles admin screen is **Manage Titles** (nav: **Titles**); blue admin header replaces the ADMIN badge. Vue `#/address-book` keeps **My Address Book + Office Addresses** tabs. Manage Addresses uses list + modal form. Order flow / customize: follow Vue, not designer.
 
-| Layer | Role |
-| --- | --- |
-| [FEATURES.md](FEATURES.md) | What the product is |
-| [BUSINESS-RULES.md](BUSINESS-RULES.md) | Agreed behaviour and test IDs |
-| [BACKLOG.md](BACKLOG.md) | F-code feature index → board tickets |
-| [USER.md](USER.md) | User order-flow stories |
-| **This file** | Admin port checklist + story codes |
-| [TESTING.md](TESTING.md) | Use cases (admin cases still catch up) |
+| Layer                                  | Role                                   |
+| -------------------------------------- | -------------------------------------- |
+| [FEATURES.md](FEATURES.md)             | What the product is                    |
+| [BUSINESS-RULES.md](BUSINESS-RULES.md) | Agreed behaviour and test IDs          |
+| [BACKLOG.md](BACKLOG.md)               | F-code feature index → board tickets   |
+| [USER.md](USER.md)                     | User order-flow stories                |
+| **This file**                          | Admin port checklist + story codes     |
+| [TESTING.md](TESTING.md)               | Use cases (admin cases still catch up) |
 
 Admin login, nav, dashboard tiles, and Address Book are in this Vue 2 app. Address Book on the admin profile is the same page as the user (Done). **Manage Addresses, Manage Titles, Manage Degrees, Order History, Invoice History, and Reporting** are implemented in Vue 2. Designer UI is the **behavior reference**, not a pixel match.
 
 ## Status key
 
-| Mark | Meaning |
-| --- | --- |
-| `[ ]` | Not started in Vue |
-| `[x]` | Done in Vue |
-| Designer: **Mock** | Screen exists; data / some actions are fake |
+| Mark                 | Meaning                                             |
+| -------------------- | --------------------------------------------------- |
+| `[ ]`                | Not started in Vue                                  |
+| `[x]`                | Done in Vue                                         |
+| Designer: **Mock**   | Screen exists; data / some actions are fake         |
 | Designer: **Exists** | Screen exists; list add/remove works in the preview |
 
 **Stories:** one page per tens ticket (`ADM-010`, `ADM-020`, …) with related tickets (`ADM-011`). Related ids are in the ticket index. **ADM-001** is the scoping ticket (stories written; not Vue).
@@ -92,12 +92,12 @@ Designer 19 Aug 2026: Manage Addresses list is one-line add plus hover Edit/Remo
 
 Fix or drop in the designer; do not ship these as-is.
 
-| Code | Issue |
-| --- | --- |
+| Code   | Issue                                                                                                           |
+| ------ | --------------------------------------------------------------------------------------------------------------- |
 | ADM-N1 | Edit now fills City and Province; Address Name and Postal stay empty. Country still United States (19 Aug 2026) |
-| ADM-N2 | Country still defaults to United States on a Canadian office (19 Aug 2026) |
-| ADM-N3 | Save Draft is still on the structured form (19 Aug 2026) |
-| ADM-N4 | Repeat Order used NJ sample addresses, not Colliers offices |
-| ADM-N5 | View preview: employee name and card email did not match |
+| ADM-N2 | Country still defaults to United States on a Canadian office (19 Aug 2026)                                      |
+| ADM-N3 | Save Draft is still on the structured form (19 Aug 2026)                                                        |
+| ADM-N4 | Repeat Order used NJ sample addresses, not Colliers offices                                                     |
+| ADM-N5 | View preview: employee name and card email did not match                                                        |
 
 Footer English/Français is still in the designer — Vue 2 already dropped it (**F-20**). Do not copy the footer control.

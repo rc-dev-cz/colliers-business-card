@@ -17,14 +17,14 @@ Preview login (`demo` / any email in Vue) is for designer and us only. It is **n
 
 ## Terms
 
-| Term | Meaning |
-| --- | --- |
-| **user** | Regular person who orders cards (catalogue → confirm). Not an admin. Stories: [USER.md](USER.md) |
-| **admin** | Person who manages addresses, titles, and dashboard apps. Stories: [ADMIN.md](ADMIN.md) |
-| **Partner Portal** | Product name on the login screen. It is not a third role |
-| **cart item** | One row in the cart drawer |
-| **cart badge icon** | Red number on the shopping-cart icon in the header (total quantity of all cart items) |
-| **Business Card Bilingual** | A product (`BCAD-PL-BIL`), not the website EN/FR toggle |
+| Term                        | Meaning                                                                                          |
+| --------------------------- | ------------------------------------------------------------------------------------------------ |
+| **user**                    | Regular person who orders cards (catalogue → confirm). Not an admin. Stories: [USER.md](USER.md) |
+| **admin**                   | Person who manages addresses, titles, and dashboard apps. Stories: [ADMIN.md](ADMIN.md)          |
+| **Partner Portal**          | Product name on the login screen. It is not a third role                                         |
+| **cart item**               | One row in the cart drawer                                                                       |
+| **cart badge icon**         | Red number on the shopping-cart icon in the header (total quantity of all cart items)            |
+| **Business Card Bilingual** | A product (`BCAD-PL-BIL`), not the website EN/FR toggle                                          |
 
 ## Order flow (user)
 
@@ -36,11 +36,11 @@ Profile: Address Book (F-29) is QA. This user's Order History (F-30) is QA in lo
 
 Three products. Same in Vue and the designer. $63 per box (shipping included), 250 cards per box, details page with pricing tiers.
 
-| ID | Product | SKU |
-| --- | --- | --- |
-| F-01 | Business Card English | `BCAD-PL-ENG` |
+| ID   | Product                 | SKU           |
+| ---- | ----------------------- | ------------- |
+| F-01 | Business Card English   | `BCAD-PL-ENG` |
 | F-02 | Business Card Bilingual | `BCAD-PL-BIL` |
-| F-03 | Business Card French | `BCAD-PL-FR` |
+| F-03 | Business Card French    | `BCAD-PL-FR`  |
 
 F-04 — Details page: packaging (250/BX), print on demand, pricing table, materials / brand notes.
 
@@ -74,7 +74,7 @@ F-08 — Clear cart.
 
 F-09 — Shipping splits: Split Order, Remove Split only when there is more than one split.
 
-F-10 — Ship-to addresses: add/remove location, select a saved location, qty on a location (location qty stepper may sync Selected Items). Adding or removing an address never deletes cart cards.
+F-10 — Ship-to addresses: add/remove location from the Address Book. There is no default ship-to until Add location. Each address receives a copy of Selected Items (1 box / 250 cards per design). Box/card qty is edited on the location row. Adding or removing an address never deletes cart cards; billed boxes are the sum of location qty.
 
 F-11 — Order confirmed: success screen; cart and order draft cleared. Review before confirm is F-27. User Order History is F-30.
 
