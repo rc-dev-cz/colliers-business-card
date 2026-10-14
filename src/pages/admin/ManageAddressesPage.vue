@@ -25,7 +25,14 @@
             :aria-label="t('addOfficeAddress')"
             @click="openNew"
           >
-            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <svg
+              class="h-5 w-5"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              stroke-width="2"
+              aria-hidden="true"
+            >
               <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
             </svg>
           </button>
@@ -33,19 +40,17 @@
 
         <div v-if="filteredOffices.length" class="colliers-list-panel-scroll">
           <ul class="space-y-2">
-          <li
-            v-for="row in filteredOffices"
-            :key="row.id"
-            class="colliers-list-row group"
-          >
-            <span class="colliers-list-row-body text-sm text-gray-800">{{ officeListLabel(row) }}</span>
-            <colliers-list-row-actions
-              :edit-label="t('editOfficeAddress')"
-              :delete-label="t('removeOfficeAddress')"
-              @edit="openEdit(row.id)"
-              @delete="confirmDelete(row.id)"
-            ></colliers-list-row-actions>
-          </li>
+            <li v-for="row in filteredOffices" :key="row.id" class="colliers-list-row group">
+              <span class="colliers-list-row-body text-sm text-gray-800">{{
+                officeListLabel(row)
+              }}</span>
+              <colliers-list-row-actions
+                :edit-label="t('editOfficeAddress')"
+                :delete-label="t('removeOfficeAddress')"
+                @edit="openEdit(row.id)"
+                @delete="confirmDelete(row.id)"
+              ></colliers-list-row-actions>
+            </li>
           </ul>
         </div>
         <p v-else class="py-8 text-center text-sm italic text-gray-500">
@@ -86,7 +91,14 @@ import { formatAddressLine } from '../../helpers/addressBook'
 
 export default {
   name: 'ManageAddressesPage',
-  components: { ColliersPageShell, AdminPageHeader, LoadingState, ErrorState, OfficeAddressFormModal, ColliersListRowActions },
+  components: {
+    ColliersPageShell,
+    AdminPageHeader,
+    LoadingState,
+    ErrorState,
+    OfficeAddressFormModal,
+    ColliersListRowActions,
+  },
   data: function () {
     return {
       store: store,

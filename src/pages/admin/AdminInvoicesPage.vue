@@ -5,7 +5,9 @@
 
       <div class="overflow-x-auto rounded-xl border border-gray-200 bg-white shadow-sm">
         <table class="min-w-full text-left text-sm">
-          <thead class="border-b border-gray-200 bg-gray-50 text-xs font-medium uppercase tracking-wide text-gray-500">
+          <thead
+            class="border-b border-gray-200 bg-gray-50 text-xs font-medium uppercase tracking-wide text-gray-500"
+          >
             <tr>
               <th class="px-4 py-3">{{ t('invoiceId') }}</th>
               <th class="px-4 py-3">{{ t('date') }}</th>
@@ -16,7 +18,11 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-for="row in invoices" :key="row.id" class="border-b border-gray-100 last:border-0">
+            <tr
+              v-for="row in invoices"
+              :key="row.id"
+              class="border-b border-gray-100 last:border-0"
+            >
               <td class="px-4 py-3 font-medium text-colliers-primary">{{ row.id }}</td>
               <td class="px-4 py-3 text-gray-700">{{ formatInvoiceDate(row.date) }}</td>
               <td class="px-4 py-3 text-gray-700">{{ row.department }}</td>
@@ -30,7 +36,11 @@
                 </span>
               </td>
               <td class="px-4 py-3 text-right">
-                <button type="button" class="text-colliers-primary hover:underline" @click="download(row)">
+                <button
+                  type="button"
+                  class="text-colliers-primary hover:underline"
+                  @click="download(row)"
+                >
                   {{ t('download') }}
                 </button>
               </td>
@@ -59,7 +69,10 @@ export default {
   methods: {
     t: t,
     formatAmount: function (n) {
-      return Number(n).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+      return Number(n).toLocaleString('en-US', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      })
     },
     formatInvoiceDate: function (iso) {
       const parts = String(iso || '').split('-')

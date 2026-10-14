@@ -43,7 +43,11 @@ function hashFor(name, params) {
   const source = params || {}
   const path = PATHS[name] || '/'
   if (QUERY_CODE_ROUTES[name] && source.code != null && source.code !== '') {
-    return path + '?code=' + encodeURIComponent(source.code)
+    var qs = '?code=' + encodeURIComponent(source.code)
+    if (source.lineId != null && source.lineId !== '') {
+      qs += '&lineId=' + encodeURIComponent(source.lineId)
+    }
+    return path + qs
   }
   return fill(path, source)
 }
@@ -61,7 +65,9 @@ export function go(name, params) {
   }
   if (router) {
     if (QUERY_CODE_ROUTES[name] && source.code != null && source.code !== '') {
-      router.push({ name: name, query: { code: source.code } })
+      var query = { code: source.code }
+      if (source.lineId != null && source.lineId !== '') query.lineId = source.lineId
+      router.push({ name: name, query: query })
       return
     }
     router.push({ name: name, params: source })

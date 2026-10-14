@@ -1,5 +1,11 @@
 import { describe, expect, it } from 'vitest'
-import { CARDS_PER_BOX, cardsFromBoxes, boxesFromCards, cloneCardDetails, lineTotal } from './cart.js'
+import {
+  CARDS_PER_BOX,
+  cardsFromBoxes,
+  boxesFromCards,
+  cloneCardDetails,
+  lineTotal,
+} from './cart.js'
 
 describe('cardsFromBoxes', function () {
   it('converts stored boxes to printed cards', function () {

@@ -342,14 +342,11 @@ function fromJsonTicket(ticket) {
 
 export const tickets = trackerData.tickets.map(fromJsonTicket)
 
-
 export function isAssigned(ticket) {
   return Boolean(ticket.assignee)
 }
 
-const ticketDefaults = Object.fromEntries(
-  tickets.map((ticket) => [ticket.id, ticket.status]),
-)
+const ticketDefaults = Object.fromEntries(tickets.map((ticket) => [ticket.id, ticket.status]))
 
 function migrateStatus(saved) {
   const next = { ...ticketDefaults, ...(saved || {}) }
@@ -390,7 +387,8 @@ function asLogs(value) {
 
 export function normalizeLog(item) {
   if (!item || typeof item !== 'object') return null
-  const type = item.type === 'created' || item.type === 'moved' || item.type === 'updated' ? item.type : ''
+  const type =
+    item.type === 'created' || item.type === 'moved' || item.type === 'updated' ? item.type : ''
   if (!type || !item.ticketId || !item.at) return null
   const changes = Array.isArray(item.changes)
     ? item.changes

@@ -4,6 +4,7 @@ import { loadBytes, loadLayoutFonts, loadOpenSansBytes } from './cardFonts.js'
 import {
   CARD_BACK_LEGAL,
   CARD_LAYOUT,
+  applyEmptyTeamIdentityLayout,
   layoutErrorMessage,
   planProductLayout,
   snapshotCardDetails,
@@ -282,6 +283,9 @@ export async function buildPrintPdfBytes(details, language, opts) {
   var productPlan = planProductLayout(snapshot, language, measureFonts)
   applyPrintCredentialPlaceholder(productPlan, snapshot)
   applyPrintAddressPlaceholder(productPlan, snapshot)
+  productPlan.pages.forEach(function (page) {
+    page.layout = applyEmptyTeamIdentityLayout(page.layout)
+  })
   if (opts && typeof opts.adjustPlan === 'function') opts.adjustPlan(productPlan)
   if (!productPlan.valid) throwLayoutError(productPlan)
 
@@ -302,7 +306,7 @@ function printPdfFileName(details) {
   var stamp = Date.now()
   var raw = String((details && details.name) || 'card')
     .trim()
-    .replace(/[^\w\-]+/g, '_')
+    .replace(/[^\w-]+/g, '_')
     .replace(/^_+|_+$/g, '')
     .slice(0, 40)
   var label = raw || 'card'
@@ -318,7 +322,7 @@ export async function viewPrintPdf(details, language) {
   if (lastPrintPdfUrl) {
     try {
       URL.revokeObjectURL(lastPrintPdfUrl)
-    } catch (e) {}
+    } catch {}
     lastPrintPdfUrl = ''
   }
   var url = URL.createObjectURL(blob)
@@ -342,7 +346,7 @@ export async function viewPrintPdf(details, language) {
         URL.revokeObjectURL(url)
         lastPrintPdfUrl = ''
       }
-    } catch (e) {}
+    } catch {}
   }, 120000)
 }
 

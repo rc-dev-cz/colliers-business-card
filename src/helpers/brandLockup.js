@@ -20,7 +20,5 @@ export function brandWordmarkUrl(language) {
 }
 
 export function brandLockupAlt(language) {
-  return isFrenchLanguage(language)
-    ? 'Colliers Maîtres de projets'
-    : 'Colliers Project Leaders'
+  return isFrenchLanguage(language) ? 'Colliers Maîtres de projets' : 'Colliers Project Leaders'
 }

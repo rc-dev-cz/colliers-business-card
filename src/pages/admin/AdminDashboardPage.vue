@@ -1,7 +1,9 @@
 <template>
   <colliers-page-shell>
     <div class="mx-auto w-full max-w-5xl">
-      <div class="mb-6 flex flex-col gap-1 sm:mb-8 sm:flex-row sm:items-baseline sm:justify-between">
+      <div
+        class="mb-6 flex flex-col gap-1 sm:mb-8 sm:flex-row sm:items-baseline sm:justify-between"
+      >
         <h1 class="colliers-page-title">{{ t('adminDashboard') }}</h1>
         <p class="text-sm font-normal text-gray-400">{{ t('lastUpdatedJustNow') }}</p>
       </div>

@@ -40,7 +40,7 @@ export function resetAddressBookStore(options) {
   logout()
   try {
     localStorage.clear()
-  } catch (error) {
+  } catch {
     /* ignore */
   }
   Vue.set(store, 'session', {

@@ -1,6 +1,11 @@
 import { describe, expect, it } from 'vitest'
 import { PDFDocument } from 'pdf-lib'
-import { buildPrintPdfBytes, printAddressLines, printInlineCredential, PRINT_PDF_PAGE } from './printPdf.js'
+import {
+  buildPrintPdfBytes,
+  printAddressLines,
+  printInlineCredential,
+  PRINT_PDF_PAGE,
+} from './printPdf.js'
 import { CARD_LAYOUT } from './cardLayout.js'
 
 var base = {
@@ -25,6 +30,21 @@ describe('printPdf', function () {
     expect(doc.getPageCount()).toBe(2)
   })
 
+  it('closes the empty team row while keeping PDF contacts bottom-locked', async function () {
+    var captured
+    await buildPrintPdfBytes(base, 'English', {
+      adjustPlan: function (plan) {
+        captured = plan.pages[0].layout
+      },
+    })
+    expect(captured.team).toBe('')
+    expect(captured.titleY).toBe(CARD_LAYOUT.teamYNoCred)
+    expect(captured.emailY).toBe(43)
+    expect(captured.phoneY).toBe(35)
+    expect(captured.websiteY).toBe(27)
+    expect(captured.address.bottomY).toBe(27)
+  })
+
   it('sets trim/bleed/art boxes like the approved EN card', async function () {
     var bytes = await buildPrintPdfBytes(base, 'English')
     var doc = await PDFDocument.load(bytes)
@@ -38,16 +58,24 @@ describe('printPdf', function () {
   it('joins short degrees inline on the identity line', async function () {
     var bytes = await buildPrintPdfBytes(
       Object.assign({}, base, { degree: ['CPA'], additionalCredentials: 'C.M.' }),
-      'English',
+      'English'
     )
     expect(bytes.byteLength).toBeGreaterThan(500)
   })
 
   it('keeps the C.M. sample and comma when no credential is entered', function () {
-    expect(printInlineCredential({ degree: [], additionalCredentials: '' }, 'English')).toBe(', C.M.')
-    expect(printInlineCredential({ degree: [], additionalCredentials: '' }, 'French')).toBe(', C.M.')
-    expect(printInlineCredential({ degree: ['CPA'], additionalCredentials: '' }, 'English')).toBe(null)
-    expect(printInlineCredential({ degree: [], additionalCredentials: 'P.Eng' }, 'English')).toBe(null)
+    expect(printInlineCredential({ degree: [], additionalCredentials: '' }, 'English')).toBe(
+      ', C.M.'
+    )
+    expect(printInlineCredential({ degree: [], additionalCredentials: '' }, 'French')).toBe(
+      ', C.M.'
+    )
+    expect(printInlineCredential({ degree: ['CPA'], additionalCredentials: '' }, 'English')).toBe(
+      null
+    )
+    expect(printInlineCredential({ degree: [], additionalCredentials: 'P.Eng' }, 'English')).toBe(
+      null
+    )
   })
 
   it('uses the address placeholder when no office is selected', function () {
@@ -97,15 +125,15 @@ describe('printPdf', function () {
             'Dipl Architectural Technology Extra Long',
           ],
         }),
-        'English',
-      ),
+        'English'
+      )
     ).rejects.toThrow(/credentials|too long/i)
   })
 
   it('builds a PDF with more than two short degrees when they fit', async function () {
     var bytes = await buildPrintPdfBytes(
       Object.assign({}, base, { degree: ['A', 'B', 'C', 'D', 'E', 'F', 'G'] }),
-      'English',
+      'English'
     )
     var doc = await PDFDocument.load(bytes)
     expect(doc.getPageCount()).toBe(2)

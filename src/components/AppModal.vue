@@ -1,7 +1,7 @@
 <template>
   <div
     v-if="open"
-    class="fixed inset-0 z-[60] flex items-end justify-center bg-black/40 p-0 sm:items-center sm:p-4"
+    class="pointer-events-auto fixed inset-0 z-[80] flex items-end justify-center bg-black/40 p-0 sm:items-center sm:p-4"
     role="dialog"
     aria-modal="true"
     :aria-labelledby="titleId"
@@ -55,6 +55,15 @@ export default {
       return 'max-w-lg sm:max-w-2xl'
     },
   },
+  watch: {
+    open: function (open) {
+      if (open) document.addEventListener('keydown', this.onKey, true)
+      else document.removeEventListener('keydown', this.onKey, true)
+    },
+  },
+  beforeDestroy: function () {
+    document.removeEventListener('keydown', this.onKey, true)
+  },
   methods: {
     t: t,
     onClose: function () {
@@ -62,6 +71,12 @@ export default {
     },
     onBackdrop: function () {
       if (this.closeOnBackdrop) this.onClose()
+    },
+    onKey: function (event) {
+      if (!this.open || event.key !== 'Escape') return
+      event.preventDefault()
+      if (event.stopImmediatePropagation) event.stopImmediatePropagation()
+      this.onClose()
     },
   },
 }

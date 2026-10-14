@@ -24,7 +24,7 @@ export var APPROVAL_MAXIMUM = {
   specializedTeam: 'Project Management Advisory',
   degree: ['P. Eng.', 'LEED AP BD+C'],
   additionalCredentials: 'CPA',
-  // Longest clean name-derived local that still fits the 132 pt email lane.
+  // Longest clean name-derived local that still fits the 141.52 pt email lane.
   email: 'christopher.hw@colliersprojectleaders.com',
   phone: '6045550199',
   address: VANCOUVER_OFFICE_CARD,

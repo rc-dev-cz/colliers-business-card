@@ -3,11 +3,13 @@ import { catalogCodeFromLine, emptyCard, getProduct, products } from './products
 
 describe('products catalogue', function () {
   it('has three language SKUs', function () {
-    expect(products.map(function (row) { return row.code }).sort()).toEqual([
-      'BCAD-PL-BIL',
-      'BCAD-PL-ENG',
-      'BCAD-PL-FR',
-    ])
+    expect(
+      products
+        .map(function (row) {
+          return row.code
+        })
+        .sort()
+    ).toEqual(['BCAD-PL-BIL', 'BCAD-PL-ENG', 'BCAD-PL-FR'])
   })
 
   it('getProduct resolves by code', function () {

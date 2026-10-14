@@ -39,7 +39,11 @@ export default {
         { name: 'rc-web-dev-board', label: 'Board', to: { name: 'rc-web-dev-board' } },
         { name: 'rc-web-dev-roadmap', label: 'Roadmap', to: { name: 'rc-web-dev-roadmap' } },
         { name: 'rc-web-dev-logs', label: 'Logs', to: { name: 'rc-web-dev-logs' } },
-        { name: 'rc-web-dev-architecture', label: 'Delivery', to: { name: 'rc-web-dev-architecture' } },
+        {
+          name: 'rc-web-dev-architecture',
+          label: 'Delivery',
+          to: { name: 'rc-web-dev-architecture' },
+        },
       ],
     }
   },

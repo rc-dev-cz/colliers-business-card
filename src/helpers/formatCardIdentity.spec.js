@@ -17,7 +17,7 @@ import {
 describe('formatCredentialSuffix', function () {
   it('joins degree array and additional credentials', function () {
     expect(formatCredentialSuffix(['Arch. Tech', 'Architect'], 'C.M.')).toBe(
-      'Arch. Tech, Architect, C.M.',
+      'Arch. Tech, Architect, C.M.'
     )
   })
 
@@ -31,7 +31,7 @@ describe('formatCredentialSuffix', function () {
 describe('formatNameLine', function () {
   it('builds Name, degrees, additional credentials', function () {
     expect(formatNameLine('Firstname Lastname', ['Arch. Tech', 'Architect'], 'C.M.')).toBe(
-      'Firstname Lastname, Arch. Tech, Architect, C.M.',
+      'Firstname Lastname, Arch. Tech, Architect, C.M.'
     )
   })
 
@@ -46,19 +46,19 @@ describe('formatNameLine', function () {
 
 describe('formatTitleLine', function () {
   it('uses region field, not a pipe suffix in the title', function () {
-    expect(formatTitleLine('Broker | Canada', 'USA', 'Title', 'Region')).toBe('Broker | USA')
+    expect(formatTitleLine('Broker | Canada', 'USA', 'Title')).toBe('Broker | USA')
   })
 
   it('joins plain title and region', function () {
-    expect(formatTitleLine('Broker', 'USA', 'Title', 'Region')).toBe('Broker | USA')
+    expect(formatTitleLine('Broker', 'USA', 'Title')).toBe('Broker | USA')
   })
 
   it('shows title alone when region is empty', function () {
-    expect(formatTitleLine('Broker | Canada', '', 'Title', 'Region')).toBe('Broker')
+    expect(formatTitleLine('Broker | Canada', '', 'Title')).toBe('Broker')
   })
 
   it('falls back to sample title only when both empty', function () {
-    expect(formatTitleLine('', '', 'Title', 'Region')).toBe('Title')
+    expect(formatTitleLine('', '', 'Title')).toBe('Title')
   })
 })
 
@@ -78,10 +78,10 @@ describe('customize optional placeholders', function () {
     expect(previewTeamText('', 'English')).toBe('Specialized team')
     expect(previewTeamText('Industrial', 'English')).toBe('Industrial')
     expect(previewAddressText('', 'English')).toBe(
-      'Address name\nUnit, Street\nCity, Province\nPostal Code, Country',
+      'Address name\nUnit, Street\nCity, Province\nPostal Code, Country'
     )
     expect(previewAddressText('181 Bay Street\nToronto, ON', 'English')).toBe(
-      '181 Bay Street\nToronto, ON',
+      '181 Bay Street\nToronto, ON'
     )
   })
 
@@ -91,7 +91,7 @@ describe('customize optional placeholders', function () {
     expect(previewTitleText('Directrice', '', 'French')).toBe('Directrice')
     expect(previewTeamText('', 'French')).toBe('Équipe spécialisée')
     expect(previewAddressText('', 'French')).toBe(
-      "Nom de l'adresse\nUnité, Rue\nVille, Province\nCode postal, Pays",
+      "Nom de l'adresse\nUnité, Rue\nVille, Province\nCode postal, Pays"
     )
   })
 })

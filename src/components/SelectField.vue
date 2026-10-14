@@ -11,11 +11,7 @@
       @change="onChange"
     >
       <option v-if="placeholder" value="">{{ placeholder }}</option>
-      <option
-        v-for="option in options"
-        :key="optionValue(option)"
-        :value="optionValue(option)"
-      >
+      <option v-for="option in options" :key="optionValue(option)" :value="optionValue(option)">
         {{ optionLabel(option) }}
       </option>
     </select>
@@ -30,7 +26,12 @@ export default {
   props: {
     value: { type: [String, Number], default: '' },
     label: { type: String, default: '' },
-    options: { type: Array, default: function () { return [] } },
+    options: {
+      type: Array,
+      default: function () {
+        return []
+      },
+    },
     optionValueKey: { type: String, default: 'value' },
     optionLabelKey: { type: String, default: 'label' },
     placeholder: { type: String, default: '' },

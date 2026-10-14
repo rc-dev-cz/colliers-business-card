@@ -8,7 +8,9 @@
       :aria-expanded="open ? 'true' : 'false'"
       @click="toggle"
     >
-      <span :class="selectedValues.length ? 'text-gray-900' : 'text-gray-400'">{{ placeholder }}</span>
+      <span :class="selectedValues.length ? 'text-gray-900' : 'text-gray-400'">{{
+        placeholder
+      }}</span>
       <span class="ml-2 shrink-0 text-gray-400" aria-hidden="true">▾</span>
     </button>
     <div
@@ -26,7 +28,9 @@
         />
       </div>
       <ul class="min-h-0 flex-1 overflow-auto py-1" role="listbox">
-        <li v-if="!filteredOptions.length" class="px-3 py-2 text-sm text-gray-500">{{ emptyLabel }}</li>
+        <li v-if="!filteredOptions.length" class="px-3 py-2 text-sm text-gray-500">
+          {{ emptyLabel }}
+        </li>
         <li
           v-for="option in filteredOptions"
           :key="optionValue(option)"
@@ -61,7 +65,9 @@
           class="ml-0.5 inline-flex h-4 w-4 items-center justify-center rounded text-[#24418A] hover:bg-[#d4deef]"
           :aria-label="'Remove ' + item"
           @click="remove(item)"
-        >×</button>
+        >
+          ×
+        </button>
       </span>
     </div>
     <p v-if="hint" class="field-hint">{{ hint }}</p>
@@ -89,9 +95,19 @@ export default {
     'click-outside': ClickOutside,
   },
   props: {
-    value: { type: Array, default: function () { return [] } },
+    value: {
+      type: Array,
+      default: function () {
+        return []
+      },
+    },
     label: { type: String, default: '' },
-    options: { type: Array, default: function () { return [] } },
+    options: {
+      type: Array,
+      default: function () {
+        return []
+      },
+    },
     optionValueKey: { type: String, default: 'value' },
     optionLabelKey: { type: String, default: 'label' },
     placeholder: { type: String, default: '' },
@@ -101,7 +117,12 @@ export default {
     hint: { type: String, default: '' },
     error: { type: String, default: '' },
     max: { type: Number, default: 0 },
-    lockedValues: { type: Array, default: function () { return [] } },
+    lockedValues: {
+      type: Array,
+      default: function () {
+        return []
+      },
+    },
   },
   data: function () {
     return {
@@ -114,7 +135,9 @@ export default {
       return Array.isArray(this.value) ? this.value.slice() : []
     },
     filteredOptions: function () {
-      var q = String(this.query || '').trim().toLowerCase()
+      var q = String(this.query || '')
+        .trim()
+        .toLowerCase()
       var self = this
       if (!q) return this.options
       return this.options.filter(function (option) {
@@ -176,7 +199,7 @@ export default {
       this.emitValues(
         this.selectedValues.filter(function (v) {
           return v !== item
-        }),
+        })
       )
     },
   },

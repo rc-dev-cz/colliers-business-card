@@ -68,11 +68,7 @@
               required
             >
               <option disabled value="">{{ t('selectProvince') }}</option>
-              <option
-                v-for="province in provinces"
-                :key="province.value"
-                :value="province.value"
-              >
+              <option v-for="province in provinces" :key="province.value" :value="province.value">
                 {{ province.label }}
               </option>
             </select>
@@ -102,11 +98,7 @@
               class="field-input"
               required
             >
-              <option
-                v-for="country in countries"
-                :key="country.value"
-                :value="country.value"
-              >
+              <option v-for="country in countries" :key="country.value" :value="country.value">
                 {{ country.label }}
               </option>
             </select>

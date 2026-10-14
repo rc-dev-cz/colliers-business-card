@@ -1,9 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import {
-  createPersonalRecord,
-  emptyPersonal,
-  matchesSearch,
-} from './addressBook'
+import { createPersonalRecord, emptyPersonal, matchesSearch } from './addressBook'
 
 const HOME = {
   addressName: 'Home Office',

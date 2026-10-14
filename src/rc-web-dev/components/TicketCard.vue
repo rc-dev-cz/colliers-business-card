@@ -1,7 +1,11 @@
 <template>
   <div
     class="ticket-card min-w-0 cursor-grab rounded-md border border-gray-200 bg-white px-3 py-2 shadow-sm select-none hover:shadow-md active:cursor-grabbing"
-    :class="{ 'ticket-moved': moved, 'ticket-review': showsReview(ticket), 'ring-1 ring-rose-300': ticket.blocked }"
+    :class="{
+      'ticket-moved': moved,
+      'ticket-review': showsReview(ticket),
+      'ring-1 ring-rose-300': ticket.blocked,
+    }"
     :style="vars"
   >
     <div class="flex items-start justify-between gap-2">
@@ -26,7 +30,9 @@
         {{ label }}
       </span>
     </div>
-    <p class="mt-0.5 line-clamp-2 break-words text-sm font-medium text-gray-900">{{ ticket.title }}</p>
+    <p class="mt-0.5 line-clamp-2 break-words text-sm font-medium text-gray-900">
+      {{ ticket.title }}
+    </p>
     <div class="mt-1.5 flex justify-end">
       <span
         class="inline-flex h-5 w-5 items-center justify-center rounded-full text-[9px] font-bold"
@@ -47,7 +53,12 @@ export default {
   props: {
     ticket: { type: Object, required: true },
     moved: { type: Boolean, default: false },
-    vars: { type: Object, default: function () { return {} } },
+    vars: {
+      type: Object,
+      default: function () {
+        return {}
+      },
+    },
   },
   computed: {
     label: function () {

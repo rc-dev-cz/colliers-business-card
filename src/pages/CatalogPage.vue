@@ -1,6 +1,8 @@
 <template>
   <colliers-page-shell>
-    <h1 class="colliers-page-title colliers-page-title--center mb-12 text-[32px] font-medium tracking-tight text-black sm:mb-16 sm:text-[40px]">
+    <h1
+      class="colliers-page-title colliers-page-title--center mb-12 text-[32px] font-medium tracking-tight text-black sm:mb-16 sm:text-[40px]"
+    >
       {{ t('exploreCatalog') }}
     </h1>
     <h2 class="mb-6 text-2xl font-medium text-colliers-primary sm:text-3xl">

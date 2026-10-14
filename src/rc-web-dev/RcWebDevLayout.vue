@@ -14,7 +14,10 @@
           {{ board.persistError }}
         </p>
       </div>
-      <div class="rc-web-dev-main" :class="isBoard ? 'rc-web-dev-main--board' : 'rc-web-dev-chrome'">
+      <div
+        class="rc-web-dev-main"
+        :class="isBoard ? 'rc-web-dev-main--board' : 'rc-web-dev-chrome'"
+      >
         <div
           v-if="!board.ticketsReady"
           class="flex h-full min-h-[12rem] items-center justify-center text-sm text-slate-500"
