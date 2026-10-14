@@ -25,6 +25,7 @@ docs/*.docx
 !.cursor/rules/**
 .vscode/*
 !.vscode/extensions.json
+!.vscode/settings.json
 .idea
 .DS_Store
 *.suo
@@ -32,6 +33,9 @@ docs/*.docx
 *.njsproj
 *.sln
 *.sw?
+
+# Klai MCP scratch ops (local only)
+docs/klai/.tmp-*
 
 # Local dumps (keep on disk, out of git)
 docs/meetings/
