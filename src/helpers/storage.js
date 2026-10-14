@@ -1,10 +1,22 @@
 const PREFIX = 'colliers-v2.'
 
-const TICKET_STORAGE_KEYS = ['rcTicketLogs', 'rcDeletedTicketIds', 'devTrackerV4', 'rcStorageVersion']
-const TICKET_STORAGE_RAW_KEYS = ['colliers.devTrackerV4', 'colliers.rcDeletedTicketIds', 'colliers.rcTicketLogs']
+const TICKET_STORAGE_KEYS = [
+  'rcTicketLogs',
+  'rcDeletedTicketIds',
+  'devTrackerV4',
+  'rcStorageVersion',
+]
+const TICKET_STORAGE_RAW_KEYS = [
+  'colliers.devTrackerV4',
+  'colliers.rcDeletedTicketIds',
+  'colliers.rcTicketLogs',
+]
 
 export function profileStorageKey(base, email) {
-  const slug = String(email || 'demo').trim().toLowerCase() || 'demo'
+  const slug =
+    String(email || 'demo')
+      .trim()
+      .toLowerCase() || 'demo'
   return base + ':' + slug
 }
 
@@ -16,7 +28,7 @@ export function clearTicketLocalStorage() {
   TICKET_STORAGE_RAW_KEYS.forEach(function (key) {
     try {
       localStorage.removeItem(key)
-    } catch (error) {
+    } catch {
       /* ignore */
     }
   })
@@ -28,7 +40,7 @@ export function readStorage(key, fallback) {
     const raw = localStorage.getItem(PREFIX + key)
     if (raw == null) return nextFallback
     return JSON.parse(raw)
-  } catch (error) {
+  } catch {
     return nextFallback
   }
 }
@@ -36,7 +48,7 @@ export function readStorage(key, fallback) {
 export function writeStorage(key, value) {
   try {
     localStorage.setItem(PREFIX + key, JSON.stringify(value))
-  } catch (error) {
+  } catch {
     /* ignore quota / private mode */
   }
 }
@@ -44,7 +56,7 @@ export function writeStorage(key, value) {
 export function removeStorage(key) {
   try {
     localStorage.removeItem(PREFIX + key)
-  } catch (error) {
+  } catch {
     /* ignore */
   }
 }

@@ -1,4 +1,4 @@
-import { jobTitles } from '../data/products.js'
+import { jobTitlesEn } from '../data/products.js'
 import { MOCK_OFFICES } from '../data/offices.js'
 
 export { MOCK_OFFICES }
@@ -10,7 +10,7 @@ const FETCH_TIMEOUT_MS = 10000
 function isDev() {
   try {
     return Boolean(import.meta.env && import.meta.env.DEV)
-  } catch (error) {
+  } catch {
     return false
   }
 }
@@ -20,20 +20,41 @@ function apiBase() {
 }
 
 function field(address, camel, snake) {
-  return String((address && (address[camel] != null ? address[camel] : address[snake])) || '').trim()
+  return String(
+    (address && (address[camel] != null ? address[camel] : address[snake])) || ''
+  ).trim()
 }
 
 export function formatAddressLine(address) {
   if (!address) return ''
-  const street = [field(address, 'addressStreet', 'address_street'), field(address, 'addressStreet2', 'address_street2')]
+  const street = [
+    field(address, 'addressStreet', 'address_street'),
+    field(address, 'addressStreet2', 'address_street2'),
+  ]
     .filter(Boolean)
     .join(', ')
   const city = field(address, 'addressCity', 'address_city')
-  const region = [field(address, 'addressProvince', 'address_province'), field(address, 'addressPostalZip', 'address_postal_zip')]
+  const region = [
+    field(address, 'addressProvince', 'address_province'),
+    field(address, 'addressPostalZip', 'address_postal_zip'),
+  ]
     .filter(Boolean)
     .join(' ')
   const cityLine = [city, region].filter(Boolean).join(', ')
-  return [street, cityLine].filter(Boolean).join(', ')
+  const fromFields = [street, cityLine].filter(Boolean).join(', ')
+  if (fromFields) return fromFields
+  if (address.line) return String(address.line).trim()
+  if (address.cardAddress) {
+    return String(address.cardAddress)
+      .replace(/\r/g, '')
+      .split('\n')
+      .filter(Boolean)
+      .join(', ')
+      .trim()
+  }
+  if (address.line) return String(address.line).trim()
+  if (address.listLabel) return String(address.listLabel).trim()
+  return ''
 }
 
 export function formatAddressCard(address) {
@@ -56,6 +77,7 @@ export function formatAddressCard(address) {
 }
 
 export function officeLabel(address) {
+  if (address && String(address.listLabel || '').trim()) return String(address.listLabel).trim()
   const name = field(address, 'addressName', 'address_name')
   const line = formatAddressLine(address)
   return [name, line].filter(Boolean).join(' — ')
@@ -103,7 +125,7 @@ export async function fetchOffices() {
 }
 
 export async function fetchTitles() {
-  return { data: jobTitles.slice(), source: 'mock', error: '' }
+  return { data: jobTitlesEn.slice(), source: 'mock', error: '' }
 }
 
 export async function submitOrder(payload) {

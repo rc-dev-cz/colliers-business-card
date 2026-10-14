@@ -12,8 +12,9 @@ export const supabaseConfigured = Boolean(urlLooksReal && keyLooksReal)
 /** Ticket create/edit Save writes to rc_tickets when true. */
 export const SUPABASE_SYNC = true
 
-export const supabase =
-  supabaseConfigured ? createClient(supabaseUrl, supabasePublishableKey) : null
+export const supabase = supabaseConfigured
+  ? createClient(supabaseUrl, supabasePublishableKey)
+  : null
 
 export async function pingSupabase() {
   if (!supabaseConfigured) return false

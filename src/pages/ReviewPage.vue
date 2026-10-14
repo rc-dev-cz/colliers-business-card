@@ -9,9 +9,18 @@
         <span aria-hidden="true">‹</span> {{ t('backToShipping') }}
       </button>
       <button type="button" class="btn-secondary print:hidden" @click="printOrder">
-        <svg class="mr-2 h-4 w-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+        <svg
+          class="mr-2 h-4 w-4 shrink-0"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          aria-hidden="true"
+        >
           <path d="M6 9V2h12v7"></path>
-          <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
+          <path
+            d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"
+          ></path>
           <path d="M6 14h12v8H6z"></path>
         </svg>
         {{ t('printOrder') }}
@@ -54,12 +63,20 @@
                 class="border-b border-gray-50"
               >
                 <td class="py-3 pr-4 align-top">
-                  <div class="font-medium text-gray-900">{{ personName(line) || lineName(line) }}</div>
-                  <div v-if="personName(line)" class="mt-0.5 text-sm text-gray-500">{{ lineName(line) }}</div>
+                  <div class="font-medium text-gray-900">
+                    {{ personName(line) || lineName(line) }}
+                  </div>
+                  <div v-if="personName(line)" class="mt-0.5 text-sm text-gray-500">
+                    {{ lineName(line) }}
+                  </div>
                 </td>
-                <td class="px-2 py-3 text-right align-top text-gray-700">{{ cardsQty(billedBoxes(line)) }}</td>
+                <td class="px-2 py-3 text-right align-top text-gray-700">
+                  {{ splitLineQty(split, line) }}
+                </td>
                 <td class="px-2 py-3 text-right align-top text-gray-700">${{ unitPrice(line) }}</td>
-                <td class="py-3 pl-2 text-right align-top font-medium text-gray-900">${{ lineAmount(line) }}</td>
+                <td class="py-3 pl-2 text-right align-top font-medium text-gray-900">
+                  ${{ lineAmount(split, line) }}
+                </td>
               </tr>
             </tbody>
           </table>
@@ -79,14 +96,18 @@
               class="grid grid-cols-[1fr_auto] gap-4 text-sm text-gray-700"
             >
               <span>{{ loc.address || t('enterAddress') }}</span>
-              <span class="min-w-[3rem] text-right tabular-nums">{{ cardsQty(boxesPerAddress(split)) }}</span>
+              <span class="min-w-[3rem] text-right tabular-nums">{{
+                Number(loc.qty) > 0 ? loc.qty : boxesPerAddress(split)
+              }}</span>
             </li>
           </ul>
           <p v-else class="text-sm text-gray-500">{{ t('noShipToAddresses') }}</p>
         </div>
       </section>
 
-      <aside class="ml-auto w-full max-w-sm overflow-hidden rounded-xl border border-gray-200 bg-white p-5 shadow-sm print:hidden">
+      <aside
+        class="ml-auto w-full max-w-sm overflow-hidden rounded-xl border border-gray-200 bg-white p-5 shadow-sm print:hidden"
+      >
         <div class="flex justify-between text-sm text-gray-700">
           <span>{{ t('subtotal') }}</span>
           <span>${{ cartTotal.toFixed(2) }}</span>
@@ -95,7 +116,9 @@
           <span>{{ t('shipping') }}</span>
           <span>{{ t('shippingTbd') }}</span>
         </div>
-        <div class="mt-4 flex justify-between border-t border-gray-200 pt-4 text-base font-semibold text-colliers-primary">
+        <div
+          class="mt-4 flex justify-between border-t border-gray-200 pt-4 text-base font-semibold text-colliers-primary"
+        >
           <span>{{ t('total') }}</span>
           <span>${{ cartTotal.toFixed(2) }}</span>
         </div>
@@ -119,8 +142,7 @@ import EmptyState from '../components/EmptyState.vue'
 import ErrorState from '../components/ErrorState.vue'
 import { store, t, linesInSplit, subtotal, confirmSubmit } from '../store'
 import { productNameKey } from '../i18n/messages'
-import { cardsFromBoxes, lineTotal } from '../helpers/cart'
-import { billedBoxesForLine, boxesPerAddressForSplit } from '../helpers/order'
+import { boxesPerAddressForSplit, readSplitQty } from '../helpers/order'
 import { getProduct } from '../data/products'
 import { go } from '../adapters/nav'
 
@@ -138,10 +160,6 @@ export default {
   methods: {
     t: t,
     linesInSplit: linesInSplit,
-    cardsQty: cardsFromBoxes,
-    billedBoxes: function (line) {
-      return billedBoxesForLine(line, store.order)
-    },
     boxesPerAddress: function (split) {
       return boxesPerAddressForSplit(split, store.cart)
     },
@@ -156,12 +174,18 @@ export default {
       var price = (product && product.price) || line.price || 0
       return Number(price).toFixed(2)
     },
-    lineAmount: function (line) {
-      return lineTotal(line, billedBoxesForLine(line, store.order)).toFixed(2)
+    splitLineQty: function (split, line) {
+      return readSplitQty(split, line)
+    },
+    lineAmount: function (split, line) {
+      var product = getProduct(line.code)
+      var price = (product && product.price) || line.price || 0
+      return (Number(price) * readSplitQty(split, line)).toFixed(2)
     },
     splitSubtotal: function (split) {
+      var self = this
       return linesInSplit(split).reduce(function (sum, line) {
-        return sum + lineTotal(line, billedBoxesForLine(line, store.order))
+        return sum + Number(self.lineAmount(split, line))
       }, 0)
     },
     back: function () {

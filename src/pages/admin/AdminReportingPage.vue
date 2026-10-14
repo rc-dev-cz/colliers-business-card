@@ -6,7 +6,9 @@
       <div class="grid grid-cols-1 gap-6 lg:grid-cols-3">
         <div class="flex flex-col gap-6 lg:col-span-2">
           <section class="rounded-lg border border-gray-200 bg-white p-5 shadow-sm sm:p-6">
-            <h2 class="mb-4 text-base font-semibold text-gray-900">{{ t('monthlySpendOverview') }}</h2>
+            <h2 class="mb-4 text-base font-semibold text-gray-900">
+              {{ t('monthlySpendOverview') }}
+            </h2>
             <div class="flex h-48 items-end gap-2 border-b border-gray-100 px-1 sm:h-56 sm:gap-3">
               <div
                 v-for="row in reporting.monthlySpend"

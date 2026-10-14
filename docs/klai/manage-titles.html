@@ -6,38 +6,93 @@
     </div>
     <div class="colliers-page-header__actions">
       <button type="button" class="colliers-back-link" @click="BF.namedAction('goDashboard')">
-        <svg class="colliers-back-link__icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" /></svg>
+        <svg
+          class="colliers-back-link__icon"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+          stroke-width="2"
+          aria-hidden="true"
+        >
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
+        </svg>
         {{ BF.i18n('label_colliers_backToDashboard') }}
       </button>
     </div>
   </div>
   <div class="colliers-list-panel colliers-list-panel--viewport">
     <div class="mb-4 flex gap-2">
-      <label class="sr-only" for="admin-title-add">{{ BF.i18n('placeholder_colliers_newTitle') }}</label>
-      <input id="admin-title-add" type="text" class="field-input flex-1" :placeholder="BF.i18n('placeholder_colliers_newTitle')" v-model="model.draft" @keydown.enter.prevent="BF.namedAction('addTitle')">
-      <button type="button" class="btn-primary px-4" :aria-label="BF.i18n('label_colliers_addTitle')" @click="BF.namedAction('addTitle')">
+      <label class="sr-only" for="admin-title-add"
+        >{{ BF.i18n('placeholder_colliers_newTitle') }}</label
+      >
+      <input
+        id="admin-title-add"
+        type="text"
+        class="field-input flex-1"
+        :placeholder="BF.i18n('placeholder_colliers_newTitle')"
+        v-model="model.draft"
+        @keydown.enter.prevent="BF.namedAction('addTitle')"
+      />
+      <button
+        type="button"
+        class="btn-primary px-4"
+        :aria-label="BF.i18n('label_colliers_addTitle')"
+        @click="BF.namedAction('addTitle')"
+      >
         <i class="fa-regular fa-plus" aria-hidden="true"></i>
       </button>
     </div>
     <div v-if="model.titles && model.titles.length" class="colliers-list-panel-scroll">
       <ul class="space-y-2">
-        <li v-for="(item, index) in model.titles" :key="item + '-' + index" class="colliers-list-row group">
+        <li
+          v-for="(item, index) in model.titles"
+          :key="item + '-' + index"
+          class="colliers-list-row group"
+        >
           <div v-if="model.editingKey === item" class="flex w-full gap-2">
-            <input type="text" class="field-input flex-1" v-model="model.editValue" @keydown.enter.prevent="BF.namedAction('saveEdit')" @keydown.esc.prevent="BF.namedAction('cancelEdit')">
-            <button type="button" class="btn-primary p-1.5" :aria-label="BF.i18n('label_general_save')" @click="BF.namedAction('saveEdit')">
+            <input
+              type="text"
+              class="field-input flex-1"
+              v-model="model.editValue"
+              @keydown.enter.prevent="BF.namedAction('saveEdit')"
+              @keydown.esc.prevent="BF.namedAction('cancelEdit')"
+            />
+            <button
+              type="button"
+              class="btn-primary p-1.5"
+              :aria-label="BF.i18n('label_general_save')"
+              @click="BF.namedAction('saveEdit')"
+            >
               <i class="fa-solid fa-check" aria-hidden="true"></i>
             </button>
-            <button type="button" class="btn-outline p-1.5" :aria-label="BF.i18n('label_colliers_cancel')" @click="BF.namedAction('cancelEdit')">
+            <button
+              type="button"
+              class="btn-outline p-1.5"
+              :aria-label="BF.i18n('label_colliers_cancel')"
+              @click="BF.namedAction('cancelEdit')"
+            >
               <i class="fa-solid fa-xmark" aria-hidden="true"></i>
             </button>
           </div>
           <template v-else>
             <span class="colliers-list-row-body text-sm text-gray-800">{{ item }}</span>
             <div class="colliers-list-row-actions colliers-list-row-actions--hover">
-              <button type="button" class="rounded p-1.5 text-gray-400 transition-colors hover:text-colliers-primary" :title="BF.i18n('label_colliers_editTitle')" :aria-label="BF.i18n('label_colliers_editTitle')" @click="model.editingKey = item; model.editValue = item">
+              <button
+                type="button"
+                class="rounded p-1.5 text-gray-400 transition-colors hover:text-colliers-primary"
+                :title="BF.i18n('label_colliers_editTitle')"
+                :aria-label="BF.i18n('label_colliers_editTitle')"
+                @click="model.editingKey = item; model.editValue = item"
+              >
                 <i class="fa-regular fa-pen-to-square" aria-hidden="true"></i>
               </button>
-              <button type="button" class="rounded p-1.5 text-gray-400 transition-colors hover:text-red-500" :title="BF.i18n('label_colliers_deleteTitle')" :aria-label="BF.i18n('label_colliers_deleteTitle')" @click="model.actionKey = item; BF.namedAction('deleteTitle')">
+              <button
+                type="button"
+                class="rounded p-1.5 text-gray-400 transition-colors hover:text-red-500"
+                :title="BF.i18n('label_colliers_deleteTitle')"
+                :aria-label="BF.i18n('label_colliers_deleteTitle')"
+                @click="model.actionKey = item; BF.namedAction('deleteTitle')"
+              >
                 <i class="fa-regular fa-trash-can" aria-hidden="true"></i>
               </button>
             </div>
@@ -45,6 +100,8 @@
         </li>
       </ul>
     </div>
-    <p v-else class="py-8 text-center text-sm italic text-gray-500">{{ BF.i18n('label_colliers_noTitles') }}</p>
+    <p v-else class="py-8 text-center text-sm italic text-gray-500">
+      {{ BF.i18n('label_colliers_noTitles') }}
+    </p>
   </div>
 </div>

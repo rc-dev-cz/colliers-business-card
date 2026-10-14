@@ -16,11 +16,11 @@ Do not copy RC Web Dev into `colliers-environment.css` or the Klai port. In this
 
 RC Web Dev always has **four pages**:
 
-| Page | URL | What it is |
-| --- | --- | --- |
-| Board | `#/rc-web-dev/board` | Scrum columns. Drag tickets. |
-| Roadmap | `#/rc-web-dev/roadmap` | Progress bar + assigned tickets by category. Unassigned Ideas sit below, grouped by category. |
-| Logs | `#/rc-web-dev/logs` | History of creates, moves, and edits |
+| Page     | URL                         | What it is                                                                                                                                                                                                                                              |
+| -------- | --------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Board    | `#/rc-web-dev/board`        | Scrum columns. Drag tickets.                                                                                                                                                                                                                            |
+| Roadmap  | `#/rc-web-dev/roadmap`      | Progress bar + assigned tickets by category. Unassigned Ideas sit below, grouped by category.                                                                                                                                                           |
+| Logs     | `#/rc-web-dev/logs`         | History of creates, moves, and edits                                                                                                                                                                                                                    |
 | Delivery | `#/rc-web-dev/architecture` | Five summary cards (Pages, Built, QA, Not started, Approved) + five paths + 16 pages with status (Not started → In development → QA → Approved → Klai). Path status is the bottleneck of its pages. FileMaker scripts. Checkboxes stay in this browser. |
 
 After login, Profile → rainbow **RC Web Dev**, or open `#/rc-web-dev`. The rainbow user ring lives on RC Web Dev’s own header.
@@ -38,19 +38,19 @@ Only tickets with someone **assigned** count on the roadmap and in the percentag
 
 **Editable source of truth:** [devTracker.json](devTracker.json) — imported by `src/rc-web-dev/data/devTracker.js`. Edit tickets there only. Supabase `rc_tickets` is an optional runtime overlay (board Save across browsers); not git truth. When they disagree, reseed from the JSON (or clear the table and reload).
 
-| Field | Meaning |
-| --- | --- |
-| `id` | `USR-039`, `ADM-010`, `RC-01`, … |
-| `title` | Short name |
-| `description` | What we are building |
-| `status` | Workflow column |
-| `category` | Customer Portal, Admin Portal, Shared UI/UX, Quality Assurance, FileMaker, Technical |
-| `priority` | high / medium / low |
-| `assignee` | CZ, KC, or empty |
-| `acceptanceCriteria` | List of testable lines |
-| `relatedIds` | Other ticket ids this one is related to. Two-way. No parent/child |
-| `blocked` / `blockedReason` | Flag, not a status |
-| `notes` | Extra context. Not the requirement |
+| Field                       | Meaning                                                                              |
+| --------------------------- | ------------------------------------------------------------------------------------ |
+| `id`                        | `USR-039`, `ADM-010`, `RC-01`, …                                                     |
+| `title`                     | Short name                                                                           |
+| `description`               | What we are building                                                                 |
+| `status`                    | Workflow column                                                                      |
+| `category`                  | Customer Portal, Admin Portal, Shared UI/UX, Quality Assurance, FileMaker, Technical |
+| `priority`                  | high / medium / low                                                                  |
+| `assignee`                  | CZ, KC, or empty                                                                     |
+| `acceptanceCriteria`        | List of testable lines                                                               |
+| `relatedIds`                | Other ticket ids this one is related to. Two-way. No parent/child                    |
+| `blocked` / `blockedReason` | Flag, not a status                                                                   |
+| `notes`                     | Extra context. Not the requirement                                                   |
 
 `origin` stays internal. It is not on the ticket form. `fresh` parks a newly created ticket at the top of Ideas until you open it. `review` / `reviewedAt` power the bouncing **New** / **Updated** / **In progress** pill; click the pill to clear it.
 
@@ -58,13 +58,13 @@ Related tickets that share a column sit together. Related tickets in another col
 
 ## Board columns
 
-| Column | Meaning |
-| --- | --- |
-| Ideas | Still needs discussion. Don't write code. |
-| Ready for development | Approved and clear enough. Assigned. |
-| In progress | Development has started |
-| QA | Built. Ready for testing |
-| Done | Development and testing are complete |
+| Column                | Meaning                                   |
+| --------------------- | ----------------------------------------- |
+| Ideas                 | Still needs discussion. Don't write code. |
+| Ready for development | Approved and clear enough. Assigned.      |
+| In progress           | Development has started                   |
+| QA                    | Built. Ready for testing                  |
+| Done                  | Development and testing are complete      |
 
 Click a ticket to open it. **Edit ticket** changes the fields above. Drag a ticket out of Ideas when the requirement is approved; it is assigned to **CZ** automatically.
 
@@ -84,11 +84,11 @@ Creates, column moves (board drag or roadmap checkbox), and ticket edits are wri
 
 ## Docs split
 
-| File | Owner |
-| --- | --- |
-| `docs/BUSINESS-RULES.md` | Agreed product behaviour and test IDs (V2) |
+| File                                                                  | Owner                                                                                                                            |
+| --------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| `docs/BUSINESS-RULES.md`                                              | Agreed product behaviour and test IDs (V2)                                                                                       |
 | `docs/FEATURES.md`, `BACKLOG.md`, `USER.md`, `ADMIN.md`, `TESTING.md` | The product (what goes to Klai). BACKLOG is an F-code feature index that points at board tickets — not a second workflow backlog |
-| `docs/devTracker.json` | **Only** editable ticket backlog (board source of truth) |
-| `docs/RC-WEB-DEV.md` | How RC Dev works (this Vue app only) |
+| `docs/devTracker.json`                                                | **Only** editable ticket backlog (board source of truth)                                                                         |
+| `docs/RC-WEB-DEV.md`                                                  | How RC Dev works (this Vue app only)                                                                                             |
 
 When we start a new project, copy `src/rc-web-dev/`, the `#/rc-web-dev` routes, and this file. Do not copy them into Klai.

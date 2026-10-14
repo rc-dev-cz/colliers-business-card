@@ -115,12 +115,16 @@ describe('AddressBookPage', function () {
     buttonByText(wrapper, 'Office Addresses').trigger('click')
     await wrapper.vm.$nextTick()
     expect(wrapper.text()).not.toContain('Cabin')
-    expect(store.personalAddresses.some(function (row) {
-      return row.addressName === 'Cabin'
-    })).toBe(true)
-    expect(store.offices.some(function (row) {
-      return row.addressName === 'Cabin'
-    })).toBe(false)
+    expect(
+      store.personalAddresses.some(function (row) {
+        return row.addressName === 'Cabin'
+      })
+    ).toBe(true)
+    expect(
+      store.offices.some(function (row) {
+        return row.addressName === 'Cabin'
+      })
+    ).toBe(false)
   })
 
   it('AB-07 form uses Canada labels / default', async function () {
@@ -177,9 +181,11 @@ describe('AddressBookPage', function () {
     const wrapper = mountPage()
     buttonByAriaLabel(wrapper, 'Delete').trigger('click')
     await wrapper.vm.$nextTick()
-    expect(store.personalAddresses.some(function (row) {
-      return row.id === TEST_HOME.id
-    })).toBe(false)
+    expect(
+      store.personalAddresses.some(function (row) {
+        return row.id === TEST_HOME.id
+      })
+    ).toBe(false)
     expect(wrapper.text()).not.toContain('Home Office')
     expect(wrapper.text()).toContain('Temporary Location')
   })

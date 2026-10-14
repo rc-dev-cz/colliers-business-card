@@ -39,6 +39,6 @@ export function saveOrderHistory(email, rows) {
     historyKey(email),
     (Array.isArray(rows) ? rows : []).map(function (row) {
       return cloneHistoryRecord(row)
-    }),
+    })
   )
 }

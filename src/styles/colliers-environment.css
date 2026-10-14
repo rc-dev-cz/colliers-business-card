@@ -145,6 +145,12 @@ body.colliers-mobile-menu-open {
   min-height: auto;
 }
 
+/* tabindex="-1" lets keyboard/skip focus land on <main>; hide the giant page outline */
+.colliers-main:focus,
+.colliers-main:focus-visible {
+  outline: none;
+}
+
 .colliers-site-footer {
   flex: 0 0 auto;
   width: 100%;
@@ -390,6 +396,12 @@ body.colliers-mobile-menu-open {
   gap: 1rem;
 }
 
+.colliers-page-header > .btn-primary,
+.colliers-page-header__actions > .btn-primary {
+  flex: 0 0 auto;
+  white-space: nowrap;
+}
+
 @media (min-width: 640px) {
   .colliers-page-header {
     flex-direction: row;
@@ -585,7 +597,9 @@ body.colliers-mobile-menu-open {
   border-left: none;
   border-right: none;
   cursor: pointer;
-  transition: color 0.15s ease, border-color 0.15s ease;
+  transition:
+    color 0.15s ease,
+    border-color 0.15s ease;
 }
 
 .colliers-tab:hover {
@@ -713,7 +727,9 @@ body.colliers-mobile-menu-open {
   overflow-y: auto;
   border-radius: 0.5rem 0.5rem 0 0;
   background: #fff;
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+  box-shadow:
+    0 20px 25px -5px rgba(0, 0, 0, 0.1),
+    0 8px 10px -6px rgba(0, 0, 0, 0.1);
 }
 
 @media (min-width: 640px) {

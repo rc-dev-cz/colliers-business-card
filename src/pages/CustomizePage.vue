@@ -2,7 +2,11 @@
   <colliers-page-shell>
     <div v-if="!product" class="py-20 text-center text-gray-500">{{ t('productNotFound') }}</div>
     <div v-else>
-      <button type="button" class="mb-6 inline-flex items-center gap-1 text-sm text-gray-600 hover:text-gray-900" @click="back">
+      <button
+        type="button"
+        class="mb-6 inline-flex items-center gap-1 text-sm text-gray-600 hover:text-gray-900"
+        @click="back"
+      >
         <span aria-hidden="true">‹</span> {{ t('back') }}
       </button>
 
@@ -28,7 +32,8 @@
             block
             :disabled="printPdfBusy || !layoutReady"
             @click="openPrintPdf"
-          >{{ printPdfBusy ? t('loading') : t('viewPrintPdf') }}</app-button>
+            >{{ printPdfBusy ? t('loading') : t('viewPrintPdf') }}</app-button
+          >
         </div>
 
         <div class="min-w-0 flex-1">
@@ -38,7 +43,9 @@
               type="button"
               class="shrink-0 text-sm text-gray-500 underline-offset-2 hover:text-gray-800 hover:underline"
               @click="clearDesign"
-            >{{ t('clearDesign') }}</button>
+            >
+              {{ t('clearDesign') }}
+            </button>
           </div>
           <form class="space-y-4" @submit.prevent="previewProof">
             <text-field
@@ -53,6 +60,7 @@
               :value="details.title"
               :options="titleOptions"
               :placeholder="t('selectTitle')"
+              :error="titleFieldError"
               required
               @input="details.title = $event"
             ></select-field>
@@ -80,6 +88,7 @@
               :value="details.region"
               :options="regionOptions"
               :placeholder="t('selectRegion')"
+              :error="titleFieldError"
               @input="details.region = $event"
             ></select-field>
             <text-field
@@ -102,8 +111,6 @@
               required
               @input="details.phone = $event"
             ></phone-field>
-            <text-field :label="t('website')" :value="details.website" disabled></text-field>
-            <text-field :label="t('companyName')" :value="details.company" disabled></text-field>
             <select-field
               :label="t('officeLocation')"
               :value="details.address"
@@ -113,7 +120,11 @@
               required
               @input="details.address = $event"
             ></select-field>
-            <app-button html-type="submit" block :disabled="!canPreviewProof">{{ t('previewProof') }}</app-button>
+            <text-field :label="t('website')" :value="details.website" disabled></text-field>
+            <text-field :label="t('companyName')" :value="details.company" disabled></text-field>
+            <app-button html-type="submit" block :disabled="!canPreviewProof">{{
+              t('previewProof')
+            }}</app-button>
           </form>
         </div>
       </div>
@@ -143,11 +154,9 @@ import {
   layoutErrorMessage,
   planProductLayout,
 } from '../helpers/cardLayout'
-import {
-  isBilingualLanguage,
-  websiteForProduct,
-  WEBSITE_FR,
-} from '../helpers/formatCardIdentity'
+import { isBilingualLanguage, websiteForProduct } from '../helpers/formatCardIdentity'
+import { bilingualFrenchPreviewDetails } from '../helpers/titleLocale'
+import { titlesForProductLanguage } from '../helpers/titleAdmin'
 import { CANADIAN_REGION_OPTIONS } from '../helpers/canadianProvinces'
 
 function emptyDetails(language) {
@@ -165,6 +174,13 @@ function emptyDetails(language) {
     address: card.address,
     website: card.website,
   }
+}
+
+function applyLockedBrand(details, language) {
+  var next = details || {}
+  next.company = CARD_COMPANY
+  next.website = websiteForProduct(language)
+  return next
 }
 
 export default {
@@ -216,8 +232,9 @@ export default {
           { language: 'English', details: this.details, plan: planFor('English') },
           {
             language: 'French',
-            details: Object.assign({}, this.details, { website: WEBSITE_FR }),
-            plan: planFor('French'),
+            details: bilingualFrenchPreviewDetails(this.details),
+            // Replan from resolved FR title so preview (and title/region split) match the face.
+            plan: null,
           },
         ]
       }
@@ -229,6 +246,10 @@ export default {
     },
     emailFieldError: function () {
       if (this.layoutErrorCode !== LAYOUT_ERROR.email) return ''
+      return this.layoutError
+    },
+    titleFieldError: function () {
+      if (this.layoutErrorCode !== LAYOUT_ERROR.title) return ''
       return this.layoutError
     },
     credentialSpaceError: function () {
@@ -256,7 +277,8 @@ export default {
       )
     },
     titleOptions: function () {
-      return (store.titles || []).map(function (title) {
+      var lang = (this.product && this.product.language) || 'English'
+      return titlesForProductLanguage(lang, store.titles).map(function (title) {
         return { value: title, label: title }
       })
     },
@@ -298,7 +320,7 @@ export default {
       handler: function (product) {
         if (!product) return
         this.hydrateFromStore()
-        this.details.website = websiteForProduct(product.language)
+        applyLockedBrand(this.details, product.language)
         this.replan()
       },
     },
@@ -392,7 +414,8 @@ export default {
     hydrateFromStore: function () {
       if (!this.product) return
       var language = this.product.language || 'English'
-      var editId = store.editLineId || (store.proof && store.proof.editLineId)
+      var queryLineId = this.$route && this.$route.query && this.$route.query.lineId
+      var editId = store.editLineId || (store.proof && store.proof.editLineId) || queryLineId
       var line = null
       if (editId != null && editId !== '') {
         line =
@@ -401,17 +424,28 @@ export default {
           }) || null
         if (line) store.editLineId = line.id
       }
-      if (line && line.code === this.product.code) {
-        this.details = cloneCardDetails(line.details)
+      if (line) {
+        this.details = applyLockedBrand(
+          Object.assign(emptyDetails(language), cloneCardDetails(line.details)),
+          language
+        )
         this.emailEdited = true
         return
       }
-      if (editId && (!line || (line && line.code !== this.product.code))) {
+      if (editId && !line) {
         store.editLineId = null
         if (store.proof) store.proof.editLineId = null
       }
-      if (store.proof && store.proof.code === this.product.code) {
-        this.details = cloneCardDetails(store.proof.details)
+      if (
+        !queryLineId &&
+        !store.editLineId &&
+        store.proof &&
+        store.proof.code === this.product.code
+      ) {
+        this.details = applyLockedBrand(
+          Object.assign(emptyDetails(language), cloneCardDetails(store.proof.details)),
+          language
+        )
         this.emailEdited = true
         return
       }
@@ -443,9 +477,12 @@ export default {
       if (!this.product || this.printPdfBusy || !this.layoutReady) return
       this.printPdfBusy = true
       this.printPdfError = ''
-      viewPrintPdf(Object.assign({}, this.details, {
-        degree: Array.isArray(this.details.degree) ? this.details.degree.slice() : [],
-      }), this.product.language)
+      viewPrintPdf(
+        Object.assign({}, this.details, {
+          degree: Array.isArray(this.details.degree) ? this.details.degree.slice() : [],
+        }),
+        this.product.language
+      )
         .catch(function (err) {
           self.printPdfError = (err && err.message) || String(err)
         })

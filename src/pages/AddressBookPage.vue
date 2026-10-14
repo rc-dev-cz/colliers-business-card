@@ -3,7 +3,11 @@
     <div class="colliers-viewport-list mx-auto w-full max-w-5xl">
       <div class="colliers-page-header">
         <h1 class="colliers-page-title">{{ t('addressBook') }}</h1>
-        <app-button v-if="activeTab === 'personal'" class="w-full sm:w-auto" @click="openNew">{{ t('newAddress') }}</app-button>
+        <div class="colliers-page-header__actions">
+          <app-button v-if="activeTab === 'personal'" class="w-full sm:w-auto" @click="openNew">{{
+            t('newAddress')
+          }}</app-button>
+        </div>
       </div>
 
       <p
@@ -15,11 +19,18 @@
       </p>
 
       <div class="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
-        <nav class="flex gap-6 border-b border-gray-200 px-5 pt-4" :aria-label="t('addressBookTabsAria')">
+        <nav
+          class="flex gap-6 border-b border-gray-200 px-5 pt-4"
+          :aria-label="t('addressBookTabsAria')"
+        >
           <button
             type="button"
             class="border-b-[3px] px-1 pb-3 text-sm font-medium transition-colors sm:text-base"
-            :class="activeTab === 'personal' ? 'border-colliers-primary text-colliers-primary' : 'border-transparent text-gray-500 hover:text-gray-800'"
+            :class="
+              activeTab === 'personal'
+                ? 'border-colliers-primary text-colliers-primary'
+                : 'border-transparent text-gray-500 hover:text-gray-800'
+            "
             @click="setTab('personal')"
           >
             {{ t('myAddressBook') }}
@@ -27,7 +38,11 @@
           <button
             type="button"
             class="border-b-[3px] px-1 pb-3 text-sm font-medium transition-colors sm:text-base"
-            :class="activeTab === 'offices' ? 'border-colliers-primary text-colliers-primary' : 'border-transparent text-gray-500 hover:text-gray-800'"
+            :class="
+              activeTab === 'offices'
+                ? 'border-colliers-primary text-colliers-primary'
+                : 'border-transparent text-gray-500 hover:text-gray-800'
+            "
             @click="setTab('offices')"
           >
             {{ t('officeAddresses') }}
@@ -44,12 +59,20 @@
           ></search-field>
         </div>
 
-        <loading-state v-if="activeTab === 'offices' && store.officesLoading" :message="t('loading')"></loading-state>
-        <error-state v-else-if="activeTab === 'offices' && store.officesError" :message="store.officesError"></error-state>
+        <loading-state
+          v-if="activeTab === 'offices' && store.officesLoading"
+          :message="t('loading')"
+        ></loading-state>
+        <error-state
+          v-else-if="activeTab === 'offices' && store.officesError"
+          :message="store.officesError"
+        ></error-state>
 
         <div v-else class="overflow-x-auto">
           <table class="min-w-full text-left text-sm">
-            <thead class="border-b border-gray-200 bg-gray-50 text-xs font-medium uppercase tracking-wide text-gray-500">
+            <thead
+              class="border-b border-gray-200 bg-gray-50 text-xs font-medium uppercase tracking-wide text-gray-500"
+            >
               <tr>
                 <th class="w-48 px-4 py-3 sm:w-56">{{ t('locationName') }}</th>
                 <th class="px-4 py-3">{{ t('officeLocation') }}</th>
@@ -58,7 +81,9 @@
             </thead>
             <tbody>
               <tr v-if="!activeRows.length">
-                <td colspan="3" class="px-4 py-10 text-center text-sm italic text-gray-500">{{ emptyListLabel }}</td>
+                <td colspan="3" class="px-4 py-10 text-center text-sm italic text-gray-500">
+                  {{ emptyListLabel }}
+                </td>
               </tr>
               <tr
                 v-for="row in activeRows"
@@ -68,16 +93,34 @@
                 <td class="px-4 py-3 font-semibold text-gray-900">{{ row.addressName }}</td>
                 <td class="px-4 py-3 text-gray-700">{{ formatAddressLine(row) }}</td>
                 <td class="whitespace-nowrap px-4 py-3 text-right">
-                  <div v-if="activeTab === 'personal'" class="inline-flex items-center justify-end gap-2">
+                  <div
+                    v-if="activeTab === 'personal'"
+                    class="inline-flex items-center justify-end gap-2"
+                  >
                     <button
                       type="button"
                       class="inline-flex items-center gap-1.5 rounded bg-colliers-primary px-3 py-1.5 text-xs font-medium text-white transition-colors hover:bg-colliers-primary-hover"
                       :aria-label="t('edit')"
                       @click="openEdit(row.id)"
                     >
-                      <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931z" />
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 7.125L16.862 4.487" />
+                      <svg
+                        class="h-3.5 w-3.5"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        aria-hidden="true"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931z"
+                        />
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          d="M19.5 7.125L16.862 4.487"
+                        />
                       </svg>
                       {{ t('edit') }}
                     </button>
@@ -87,8 +130,19 @@
                       :aria-label="t('delete')"
                       @click="confirmDelete(row.id)"
                     >
-                      <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
+                      <svg
+                        class="h-4 w-4"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        aria-hidden="true"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0"
+                        />
                       </svg>
                     </button>
                   </div>
@@ -150,20 +204,34 @@
           <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
             <div>
               <label class="field-label" for="addr-province">{{ t('province') }}</label>
-              <text-field id="addr-province" :value="form.addressProvince" @input="onFieldInput('addressProvince', $event)"></text-field>
+              <text-field
+                id="addr-province"
+                :value="form.addressProvince"
+                @input="onFieldInput('addressProvince', $event)"
+              ></text-field>
             </div>
             <div>
               <label class="field-label" for="addr-postal">{{ t('postalCode') }}</label>
-              <text-field id="addr-postal" :value="form.addressPostalZip" @input="onFieldInput('addressPostalZip', $event)"></text-field>
+              <text-field
+                id="addr-postal"
+                :value="form.addressPostalZip"
+                @input="onFieldInput('addressPostalZip', $event)"
+              ></text-field>
             </div>
             <div>
               <label class="field-label" for="addr-country">{{ t('country') }}</label>
-              <text-field id="addr-country" :value="form.addressCountry" @input="onFieldInput('addressCountry', $event)"></text-field>
+              <text-field
+                id="addr-country"
+                :value="form.addressCountry"
+                @input="onFieldInput('addressCountry', $event)"
+              ></text-field>
             </div>
           </div>
         </div>
         <div class="modal-footer">
-          <app-button variant="outline" class="sm:w-auto" @click="closeForm">{{ t('cancel') }}</app-button>
+          <app-button variant="outline" class="sm:w-auto" @click="closeForm">{{
+            t('cancel')
+          }}</app-button>
           <div class="modal-footer-actions">
             <app-button html-type="submit" class="sm:w-auto">{{ t('save') }}</app-button>
           </div>
@@ -181,12 +249,28 @@ import TextField from '../components/TextField.vue'
 import SearchField from '../components/SearchField.vue'
 import LoadingState from '../components/LoadingState.vue'
 import ErrorState from '../components/ErrorState.vue'
-import { store, t, loadOffices, addPersonal, updatePersonal, deletePersonal, getPersonal } from '../store'
+import {
+  store,
+  t,
+  loadOffices,
+  addPersonal,
+  updatePersonal,
+  deletePersonal,
+  getPersonal,
+} from '../store'
 import { emptyPersonal, matchesSearch, formatAddressLine } from '../helpers/addressBook'
 
 export default {
   name: 'AddressBookPage',
-  components: { ColliersPageShell, AppButton, AppModal, TextField, SearchField, LoadingState, ErrorState },
+  components: {
+    ColliersPageShell,
+    AppButton,
+    AppModal,
+    TextField,
+    SearchField,
+    LoadingState,
+    ErrorState,
+  },
   data: function () {
     return {
       store: store,

@@ -4,11 +4,11 @@ Vue 2 Options API + Tailwind app for the Colliers Partner Portal (business cards
 
 **Environments**
 
-| Layer | What it is |
-| --- | --- |
-| **Development** | This Vue 2 repo (`npm run dev`). Cursor + local Vite. |
-| **QA / staging** | The GitHub Pages build. Product + RC Web Dev. |
-| **Klai / Clay** | Final FileMaker / Klai Studio app. Port **product pages only** — never `src/rc-web-dev/`. |
+| Layer            | What it is                                                                                |
+| ---------------- | ----------------------------------------------------------------------------------------- |
+| **Development**  | This Vue 2 repo (`npm run dev`). Cursor + local Vite.                                     |
+| **QA / staging** | The GitHub Pages build. Product + RC Web Dev.                                             |
+| **Klai / Clay**  | Final FileMaker / Klai Studio app. Port **product pages only** — never `src/rc-web-dev/`. |
 
 Delivery board: after login, Profile → **RC Web Dev** → **Delivery**, or `#/rc-web-dev/architecture`.
 
@@ -83,14 +83,14 @@ If the secrets are missing, QA still loads. The board uses the bundled ticket se
 
 ## localStorage keys
 
-| Key | Purpose |
-|-----|---------|
-| `colliers-v2.locale` | `EN` / `FR` |
-| `colliers-v2.cart` | Cart line items |
-| `colliers-v2.order` | Shipping splits / addresses |
-| `colliers-v2.session` | Mock login session |
-| `colliers-v2.addressBook:<email>` | Personal Address Book |
-| `colliers-v2.orderHistory:<email>` | User Order History |
+| Key                                | Purpose                     |
+| ---------------------------------- | --------------------------- |
+| `colliers-v2.locale`               | `EN` / `FR`                 |
+| `colliers-v2.cart`                 | Cart line items             |
+| `colliers-v2.order`                | Shipping splits / addresses |
+| `colliers-v2.session`              | Mock login session          |
+| `colliers-v2.addressBook:<email>`  | Personal Address Book       |
+| `colliers-v2.orderHistory:<email>` | User Order History          |
 
 ## Later (Clay / Klai)
 

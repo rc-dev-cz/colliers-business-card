@@ -76,7 +76,9 @@ export function createPersonalRecord(fields) {
 }
 
 export function matchesSearch(address, query) {
-  const q = String(query || '').trim().toLowerCase()
+  const q = String(query || '')
+    .trim()
+    .toLowerCase()
   if (!q) return true
   const haystack = [
     address.addressName,

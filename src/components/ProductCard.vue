@@ -1,5 +1,7 @@
 <template>
-  <article class="catalog-product-card group flex flex-col overflow-hidden rounded-md border border-gray-200 bg-white shadow-sm">
+  <article
+    class="catalog-product-card group flex flex-col overflow-hidden rounded-md border border-gray-200 bg-white shadow-sm"
+  >
     <div class="cursor-pointer bg-white p-1" @click="goDetails">
       <card-preview :details="{}" :language="product.language" placeholders></card-preview>
     </div>
@@ -19,7 +21,9 @@
           class="text-[14px] text-gray-500 transition-colors hover:text-gray-900 focus:underline focus:outline-none"
           @click="goDetails"
         >
-          <span class="border-b border-gray-300 pb-0.5 hover:border-gray-900">{{ t('details') }}</span>
+          <span class="border-b border-gray-300 pb-0.5 hover:border-gray-900">{{
+            t('details')
+          }}</span>
         </button>
       </div>
     </div>
@@ -45,7 +49,9 @@ export default {
     },
     price: function () {
       var amount = Number(this.product.price)
-      var priceStr = Number.isFinite(amount) ? String(Math.round(amount)) : String(this.product.price)
+      var priceStr = Number.isFinite(amount)
+        ? String(Math.round(amount))
+        : String(this.product.price)
       return t('pricePerBox').replace('{price}', priceStr)
     },
   },

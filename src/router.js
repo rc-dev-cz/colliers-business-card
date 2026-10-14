@@ -122,7 +122,11 @@ const router = new VueRouter({
         { path: 'board', name: 'rc-web-dev-board', component: RcWebDevPage },
         { path: 'roadmap', name: 'rc-web-dev-roadmap', component: RcWebDevRoadmapPage },
         { path: 'logs', name: 'rc-web-dev-logs', component: RcWebDevLogsPage },
-        { path: 'architecture', name: 'rc-web-dev-architecture', component: RcWebDevArchitecturePage },
+        {
+          path: 'architecture',
+          name: 'rc-web-dev-architecture',
+          component: RcWebDevArchitecturePage,
+        },
       ],
     },
     { path: '/admin-work', redirect: { name: 'rc-web-dev-roadmap' } },

@@ -1,5 +1,12 @@
 import { supabase } from './supabaseClient'
-import { asCriteria, asRelatedIds, relatedIdsFromRecord, categoryToEpic, normalizeCategory, statusToRow } from '../data/devTracker'
+import {
+  asCriteria,
+  asRelatedIds,
+  relatedIdsFromRecord,
+  categoryToEpic,
+  normalizeCategory,
+  statusToRow,
+} from '../data/devTracker'
 
 function encodeSource(ticket) {
   const notes = ticket.notes || ''
@@ -115,10 +122,7 @@ export function rowToLog(row) {
 
 export async function fetchRcTickets() {
   if (!supabase) return []
-  const { data, error } = await supabase
-    .from('rc_tickets')
-    .select('*')
-    .order('code')
+  const { data, error } = await supabase.from('rc_tickets').select('*').order('code')
   if (error) throw error
   return (data || []).map(rowToTicket)
 }

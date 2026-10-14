@@ -23,7 +23,7 @@ function demoDetails(overrides) {
       website: 'colliersprojectleaders.com',
       address: TORONTO_CARD,
     },
-    overrides || {},
+    overrides || {}
   )
 }
 
@@ -95,11 +95,51 @@ export function seedOrderHistory() {
 
 export function seedAdminOrderHistory() {
   const rows = [
-    { id: 'ORD-8472', date: '2026-08-28', status: 'Delivered', employeeName: 'Alex Johnson', ownerEmail: 'alex.johnson@colliers.com', boxes: 2, shipTo: BURLINGTON },
-    { id: 'ORD-8471', date: '2026-08-25', status: 'Shipped', employeeName: 'Samantha Lee', ownerEmail: 'samantha.lee@colliers.com', boxes: 1, shipTo: TORONTO_OFFICE },
-    { id: 'ORD-8465', date: '2026-08-20', status: 'Processing', employeeName: 'Alex Johnson', ownerEmail: 'alex.johnson@colliers.com', boxes: 4, shipTo: TORONTO_OFFICE },
-    { id: 'ORD-8460', date: '2026-08-15', status: 'Delivered', employeeName: 'Alex Johnson', ownerEmail: 'alex.johnson@colliers.com', boxes: 2, shipTo: HOME_OFFICE },
-    { id: 'ORD-8455', date: '2026-08-10', status: 'Delivered', employeeName: 'Samantha Lee', ownerEmail: 'samantha.lee@colliers.com', boxes: 1, shipTo: BURLINGTON },
+    {
+      id: 'ORD-8472',
+      date: '2026-08-28',
+      status: 'Delivered',
+      employeeName: 'Alex Johnson',
+      ownerEmail: 'alex.johnson@colliers.com',
+      boxes: 2,
+      shipTo: BURLINGTON,
+    },
+    {
+      id: 'ORD-8471',
+      date: '2026-08-25',
+      status: 'Shipped',
+      employeeName: 'Samantha Lee',
+      ownerEmail: 'samantha.lee@colliers.com',
+      boxes: 1,
+      shipTo: TORONTO_OFFICE,
+    },
+    {
+      id: 'ORD-8465',
+      date: '2026-08-20',
+      status: 'Processing',
+      employeeName: 'Alex Johnson',
+      ownerEmail: 'alex.johnson@colliers.com',
+      boxes: 4,
+      shipTo: TORONTO_OFFICE,
+    },
+    {
+      id: 'ORD-8460',
+      date: '2026-08-15',
+      status: 'Delivered',
+      employeeName: 'Alex Johnson',
+      ownerEmail: 'alex.johnson@colliers.com',
+      boxes: 2,
+      shipTo: HOME_OFFICE,
+    },
+    {
+      id: 'ORD-8455',
+      date: '2026-08-10',
+      status: 'Delivered',
+      employeeName: 'Samantha Lee',
+      ownerEmail: 'samantha.lee@colliers.com',
+      boxes: 1,
+      shipTo: BURLINGTON,
+    },
   ]
   return rows.map(function (row) {
     const record = seedRecord({
@@ -135,20 +175,22 @@ export function cardsPerBox(code) {
 
 export function cardCount(record) {
   return (record.cart || []).reduce(function (sum, line) {
-    return sum + billedBoxesForLine(line, record.order) * cardsPerBox(line.code)
+    return sum + billedBoxesForLine(line, record.order, record.cart) * cardsPerBox(line.code)
   }, 0)
 }
 
 export function orderTotal(record) {
   return (record.cart || []).reduce(function (sum, line) {
-    return sum + lineTotal(line, billedBoxesForLine(line, record.order))
+    return sum + lineTotal(line, billedBoxesForLine(line, record.order, record.cart))
   }, 0)
 }
 
 export function cardholderName(record) {
   const line = record.cart && record.cart[0]
   const name = line && line.details && line.details.name
-  return String(name || '').replace(/\n/g, ' ').trim()
+  return String(name || '')
+    .replace(/\n/g, ' ')
+    .trim()
 }
 
 export function itemLabel(record, t) {
@@ -213,7 +255,9 @@ export function nextOrderId(records) {
 }
 
 export function matchesOrderSearch(record, query) {
-  const q = String(query || '').trim().toLowerCase()
+  const q = String(query || '')
+    .trim()
+    .toLowerCase()
   if (!q) return true
   const haystack = [record.id, cardholderName(record), itemLabel(record)]
     .filter(Boolean)
@@ -226,7 +270,20 @@ export function formatOrderDate(value) {
   const raw = String(value || '')
   const match = raw.match(/^(\d{4})-(\d{2})-(\d{2})/)
   if (!match) return raw
-  const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+  const months = [
+    'Jan',
+    'Feb',
+    'Mar',
+    'Apr',
+    'May',
+    'Jun',
+    'Jul',
+    'Aug',
+    'Sep',
+    'Oct',
+    'Nov',
+    'Dec',
+  ]
   const month = months[Number(match[2]) - 1]
   if (!month) return raw
   return month + ' ' + Number(match[3]) + ', ' + match[1]

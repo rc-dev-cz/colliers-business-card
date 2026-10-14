@@ -1,10 +1,11 @@
 import { readStorage, writeStorage } from './storage'
-import { jobTitles } from '../data/products.js'
+import { jobTitlesEn, jobTitlesFr } from '../data/products.js'
+import { isBilingualLanguage, isFrenchLanguage } from './formatCardIdentity.js'
 import { uniqueLabels } from './labels.js'
 
 export const TITLES_STORAGE_KEY = 'managedTitles'
 /** Bump when the official title seed changes so local stubs refresh. */
-export const TITLES_SEED_VERSION = 3
+export const TITLES_SEED_VERSION = 4
 export const TITLES_SEED_VERSION_KEY = 'managedTitlesVersion'
 
 function normalizeTitle(title) {
@@ -19,7 +20,7 @@ export function loadManagedTitles() {
   const source =
     Array.isArray(stored) && stored.length && version === TITLES_SEED_VERSION
       ? stored.slice()
-      : jobTitles.slice()
+      : jobTitlesEn.slice()
   // Strip legacy "| Region" suffixes; Region is a separate customize field.
   const titles = uniqueLabels(source.map(normalizeTitle))
   if (version !== TITLES_SEED_VERSION) {
@@ -27,6 +28,19 @@ export function loadManagedTitles() {
     writeStorage(TITLES_SEED_VERSION_KEY, TITLES_SEED_VERSION)
   }
   return titles
+}
+
+/**
+ * Titles shown in Customize for a product language.
+ * English + Bilingual → managed / English seed. French-only → French seed.
+ */
+export function titlesForProductLanguage(language, managedTitles) {
+  if (isFrenchLanguage(language) && !isBilingualLanguage(language)) {
+    return uniqueLabels(jobTitlesFr.map(normalizeTitle))
+  }
+  var managed = Array.isArray(managedTitles) ? managedTitles : []
+  if (managed.length) return uniqueLabels(managed.map(normalizeTitle))
+  return uniqueLabels(jobTitlesEn.map(normalizeTitle))
 }
 
 export function saveManagedTitles(rows) {

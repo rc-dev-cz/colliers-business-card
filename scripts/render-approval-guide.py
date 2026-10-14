@@ -18,7 +18,7 @@ TRIM_H = 144.0
 ADDRESS_X = 27.0
 IDENTITY_X = 113.03
 ADDRESS_W = 80.0
-IDENTITY_W = 130.0
+IDENTITY_W = 141.52
 BODY_LH = 8.0
 ADDRESS_MAX_LINES = 5
 EMAIL_GAP_MIN = 15.99
@@ -319,7 +319,7 @@ def compose(kind: str, card_path: Path, out_path: Path):
 
     y3 = y2 + 58
     h_bracket(draw, sx(ADDRESS_X), sx(ADDRESS_X + ADDRESS_W), y3, "Address area  80 pt", ADDR_C, label_f)
-    h_bracket(draw, sx(IDENTITY_X), sx(IDENTITY_X + IDENTITY_W), y3, "Identity / content  130 pt", ID_C, label_f)
+    h_bracket(draw, sx(IDENTITY_X), sx(IDENTITY_X + IDENTITY_W), y3, "Identity / content  141.52 pt", ID_C, label_f)
 
     legend = (
         "Y = PDF baseline (0 at page bottom). Solid = used line. Dashed = empty optional / unused address max slot. "
@@ -378,7 +378,7 @@ def compose_credentials_spacing(standard_path: Path, maximum_path: Path, out_pat
     )
     draw.text(
         (48, 114),
-        "Address X = 27 · Identity X = 113.03 · Address 80 pt · Identity 130 pt · Email lane 132 pt",
+        "Address X = 27 · Identity X = 113.03 · Address 80 pt · Identity 141.52 pt",
         font=small_f,
         fill=MUTED,
     )

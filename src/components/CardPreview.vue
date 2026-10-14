@@ -3,18 +3,8 @@
     class="card-preview-face relative aspect-[1.75/1] w-full overflow-hidden rounded-md border border-gray-200 bg-white text-[#4A4A4A] shadow-sm"
     style="container-type: inline-size; font-family: 'ColliersOpenSans', sans-serif"
   >
-    <img
-      :src="logoSrc"
-      alt="Colliers"
-      class="absolute object-contain"
-      :style="logoStyle"
-    />
-    <img
-      :src="wordsSrc"
-      :alt="wordsAlt"
-      class="absolute object-contain"
-      :style="wordsStyle"
-    />
+    <img :src="logoSrc" alt="Colliers" class="absolute object-contain" :style="logoStyle" />
+    <img :src="wordsSrc" :alt="wordsAlt" class="absolute object-contain" :style="wordsStyle" />
 
     <div
       v-for="(line, idx) in view.nameLines"
@@ -22,46 +12,63 @@
       class="absolute whitespace-nowrap font-bold leading-none text-[#03438C]"
       :style="nameLineStyle(idx)"
     >
-      <span>{{ line }}</span><span
+      <span>{{ line }}</span
+      ><span
         v-if="idx === view.nameLines.length - 1 && view.inlineCredential"
         class="align-baseline font-bold"
         style="font-size: 0.7em"
-      >{{ view.inlineCredential }}</span>
+        >{{ view.inlineCredential }}</span
+      >
     </div>
 
     <div
       v-if="view.credentialLine"
       class="absolute whitespace-nowrap font-bold leading-none text-[#03438C]"
       :style="rowStyle(view.credentialY, true)"
-    >{{ view.credentialLine }}</div>
+    >
+      {{ view.credentialLine }}
+    </div>
 
     <div
       class="absolute whitespace-nowrap leading-none text-[#5F636A]"
       :style="rowStyle(view.titleY, false)"
-    >{{ view.title }}</div>
+    >
+      {{ view.title }}
+    </div>
+    <div
+      v-if="view.regionLine"
+      class="absolute whitespace-nowrap leading-none text-[#5F636A]"
+      :style="rowStyle(view.regionY, false)"
+    >
+      {{ view.regionLine }}
+    </div>
     <div
       v-if="view.team"
       class="absolute whitespace-nowrap leading-none text-[#5F636A]"
       :style="rowStyle(view.teamY, false)"
-    >{{ view.team }}</div>
+    >
+      {{ view.team }}
+    </div>
 
-    <div
-      class="absolute whitespace-nowrap leading-none text-[#5F636A]"
-      :style="emailStyle()"
-    >{{ view.email }}</div>
+    <div class="absolute whitespace-nowrap leading-none text-[#5F636A]" :style="emailStyle()">
+      {{ view.email }}
+    </div>
     <div
       class="absolute whitespace-nowrap leading-none text-[#5F636A]"
       :style="rowStyle(view.phoneY, false)"
-    >{{ view.phone }}</div>
+    >
+      {{ view.phone }}
+    </div>
     <div
       class="absolute whitespace-nowrap leading-none text-[#5F636A]"
       :style="rowStyle(view.websiteY, false)"
-    >{{ view.website }}</div>
+    >
+      {{ view.website }}
+    </div>
 
-    <div
-      class="absolute whitespace-pre-wrap leading-[1.25] text-[#5F636A]"
-      :style="addressStyle"
-    >{{ view.addressText }}</div>
+    <div class="absolute overflow-hidden whitespace-pre-wrap text-[#5F636A]" :style="addressStyle">{{
+      view.addressText
+    }}</div>
   </div>
 </template>
 
@@ -73,6 +80,8 @@ import { loadLayoutFonts, getLayoutFontsSync } from '../helpers/cardFonts'
 import {
   CARD_LAYOUT,
   planProductLayout,
+  applyEmptyTeamIdentityLayout,
+  applyPreviewTitleRegionSplit,
   resolveCardFields,
   trimBottomPct,
   trimLeftPct,
@@ -82,7 +91,6 @@ import {
   isFrenchLanguage,
   previewAddressText,
   previewCredentialText,
-  previewTeamText,
   previewTitleText,
 } from '../helpers/formatCardIdentity'
 
@@ -92,6 +100,11 @@ function viewFromPlan(layout) {
     addressText: (layout.address && layout.address.lines ? layout.address.lines : []).join('\n'),
     addressY: layout.address ? layout.address.bottomY : CARD_LAYOUT.addressBottomY,
   })
+}
+
+/** Extra name/credential rows grow up. Contacts stay bottom-locked with the address. */
+function withPreviewContacts(view, fonts) {
+  return applyPreviewTitleRegionSplit(applyEmptyTeamIdentityLayout(view), fonts)
 }
 
 function plannedLayout(details, language, fonts) {
@@ -105,6 +118,11 @@ function plannedLayout(details, language, fonts) {
   return pages[0] && pages[0].layout
 }
 
+/** Print point size as a fraction of the 252 pt trim width (true-size preview). */
+function ptCqw(pt) {
+  return (pt / CARD_LAYOUT.trimW) * 100 + 'cqw'
+}
+
 function fallbackView(fields) {
   var L = CARD_LAYOUT
   var cred = fields.credentialSuffix
@@ -116,6 +134,8 @@ function fallbackView(fields) {
     credentialY: null,
     title: fields.title,
     titleY: L.titleYNoCred,
+    regionLine: '',
+    regionY: null,
     team: fields.team,
     teamY: L.teamYNoCred,
     email: fields.email,
@@ -197,6 +217,11 @@ export default {
     identityLeft: function () {
       return trimLeftPct(CARD_LAYOUT.identityX) + '%'
     },
+    identityRight: function () {
+      var L = CARD_LAYOUT
+      var inset = L.trimW - (L.identityX + L.identityWidth - L.bleed)
+      return (inset / L.trimW) * 100 + '%'
+    },
     emailRight: function () {
       var L = CARD_LAYOUT
       var inset = L.trimW - (L.identityX + L.emailMaxWidth - L.bleed)
@@ -206,15 +231,16 @@ export default {
       var base = viewFromPlan(this.plan)
       if (!base) base = viewFromPlan(plannedLayout(this.details, this.language, this.layoutFonts))
       if (!base) base = fallbackView(resolveCardFields(this.details, this.language))
-      if (!this.placeholders) return base
-      return this.withOptionalPlaceholders(base)
+      if (this.placeholders) base = this.withOptionalPlaceholders(base)
+      return withPreviewContacts(base, this.layoutFonts)
     },
     addressStyle: function () {
       return {
         left: trimLeftPct(CARD_LAYOUT.addressX) + '%',
         right: 100 - trimLeftPct(CARD_LAYOUT.identityX) + '%',
         bottom: trimBottomPct(this.view.addressY) + '%',
-        fontSize: '2.15cqw',
+        fontSize: ptCqw(CARD_LAYOUT.bodySize),
+        lineHeight: String(CARD_LAYOUT.bodyLineHeight / CARD_LAYOUT.bodySize),
       }
     },
   },
@@ -224,10 +250,9 @@ export default {
       if (y == null) y = CARD_LAYOUT.nameY
       return {
         left: this.identityLeft,
-        right: '7%',
+        right: this.identityRight,
         bottom: trimBottomPct(y) + '%',
-        // Pure cqw so larger frames (Proof) scale type with the card.
-        fontSize: '3.7cqw',
+        fontSize: ptCqw(CARD_LAYOUT.nameSize),
       }
     },
     emailStyle: function () {
@@ -236,9 +261,9 @@ export default {
     rowStyle: function (y, cred, right) {
       return {
         left: this.identityLeft,
-        right: right || '7%',
+        right: right || this.identityRight,
         bottom: trimBottomPct(y) + '%',
-        fontSize: cred ? '2.6cqw' : '2.15cqw',
+        fontSize: ptCqw(cred ? CARD_LAYOUT.credentialSize : CARD_LAYOUT.bodySize),
       }
     },
     withOptionalPlaceholders: function (view) {
@@ -248,7 +273,7 @@ export default {
       var cred = previewCredentialText(details.degree, details.additionalCredentials, language)
       var next = Object.assign({}, view, {
         title: previewTitleText(details.title, details.region, language),
-        team: previewTeamText(details.specializedTeam, language),
+        team: String(details.specializedTeam || '').trim(),
       })
       var address = details.address != null ? String(details.address).trim() : ''
       if (!address) next.addressText = previewAddressText('', language)

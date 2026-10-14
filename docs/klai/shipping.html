@@ -1,78 +1,488 @@
-<div id="shipping-root" class="colliers-page-root px-4 py-8 sm:px-6 lg:px-8">
-  <button type="button" class="mb-4 inline-flex items-center gap-1 text-sm text-gray-600 hover:text-gray-900" @click="BF.namedAction('goBack')"><span aria-hidden="true">&lsaquo;</span> {{ BF.i18n('label_colliers_back') }}</button>
-  <div class="colliers-page-header">
-    <div class="flex flex-wrap items-baseline gap-3">
+<div id="shipping-root" class="colliers-page-root px-4 py-6 sm:px-6 lg:px-8">
+  <div class="colliers-page-header mb-5">
+    <div class="min-w-0">
+      <button
+        type="button"
+        class="mb-1 inline-flex items-center gap-1 text-xs leading-none text-gray-500 hover:text-gray-800"
+        @click="BF.namedAction('goBack')"
+      >
+        <span aria-hidden="true">&lsaquo;</span> {{ BF.i18n('label_colliers_back') }}
+      </button>
       <h1 class="colliers-page-title">{{ BF.i18n('label_colliers_shipping') }}</h1>
-      <span class="text-sm text-gray-500">{{ BF.i18n('label_colliers_total') }} {{ model.view.itemCount }} {{ BF.i18n('label_colliers_items') }}</span>
     </div>
-    <button type="button" class="btn-primary" @click="BF.namedAction('goReview')">{{ BF.i18n('label_colliers_reviewCheckout') }}</button>
+    <div class="colliers-page-header__actions">
+      <div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-gray-500">
+        <span
+          v-if="(model.cart || []).filter(function (row) { return (model.order.splits || []).some(function (s) { return (s.itemIds || []).map(String).indexOf(String(row.id)) >= 0; }); }).length"
+          >{{ BF.i18n('label_colliers_total') }} {{ (model.cart || []).filter(function (row) {
+          return (model.order.splits || []).some(function (s) { return (s.itemIds ||
+          []).map(String).indexOf(String(row.id)) >= 0; }); }).length }} {{
+          BF.i18n('label_colliers_items') }}</span
+        >
+        <template v-if="model.view.hasAssignedBoxes">
+          <span class="hidden h-3 w-px bg-gray-300 sm:inline-block" aria-hidden="true"></span>
+          <span
+            >{{ model.view.cardsTotal }} {{ BF.i18n('label_colliers_cards') }} · {{
+            model.view.boxesLabel }}</span
+          >
+        </template>
+      </div>
+      <button
+        type="button"
+        class="btn-primary inline-flex items-center gap-2"
+        :disabled="!model.view.canReview"
+        @click="BF.namedAction('goReview')"
+      >
+        <svg
+          class="h-4 w-4 shrink-0"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+          stroke-width="1.75"
+          aria-hidden="true"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 00-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 00-16.536-1.84M7.5 14.25L5.106 5.272M6 20.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm12.75 0a.75.75 0 11-1.5 0 .75.75 0 011.5 0z"
+          />
+        </svg>
+        {{ BF.i18n('label_colliers_reviewCheckout') }}
+      </button>
+    </div>
   </div>
   <div class="space-y-6">
-    <div v-for="(split, splitIndex) in model.order.splits" :key="split.id" class="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
-      <div class="grid grid-cols-1 divide-y divide-gray-200 lg:grid-cols-2 lg:divide-x lg:divide-y-0">
-        <section class="p-4 sm:p-6">
+    <div
+      v-for="(split, splitIndex) in model.order.splits"
+      :key="split.id"
+      class="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm"
+    >
+      <div
+        class="grid grid-cols-1 divide-y divide-gray-200 lg:grid-cols-2 lg:divide-x lg:divide-y-0"
+      >
+        <section class="flex min-h-[300px] flex-col p-5 sm:p-6">
           <h2 class="mb-4 text-lg font-semibold text-gray-900">
             {{ BF.i18n('label_colliers_selectedItems') }}
-            <span class="ml-2 text-sm font-normal text-gray-500">{{ BF.i18n('label_colliers_shippingGroup') }} {{ splitIndex + 1 }}</span>
           </h2>
-          <div v-if="!(split.lines && split.lines.length)" class="py-8 text-center text-sm text-gray-400">{{ BF.i18n('label_colliers_noItemsSelected') }}</div>
-          <ul v-else class="space-y-3">
-            <li v-for="(line, lineIndex) in split.lines" :key="line.id" class="flex flex-wrap items-center gap-2 rounded-md border border-gray-100 bg-white p-2">
-              <div class="w-16 shrink-0 overflow-hidden rounded">
-                <bfcomp name="CardPreview" :model="'order.splits[' + splitIndex + '].lines[' + lineIndex + '].details'"></bfcomp>
+          <div class="relative flex-1">
+            <div
+              v-if="!(split.lines && split.lines.length) && !((split.itemIds || []).some(function (id) { return (model.cart || []).some(function (row) { return String(row.id) === String(id); }); }))"
+              class="pointer-events-none absolute inset-0 z-0 flex items-center justify-center py-10 text-center text-sm text-gray-400"
+            >
+              {{ BF.i18n('label_colliers_noItemsSelected') }}
+            </div>
+            <ul
+              class="js-cart-sortable relative z-10 min-h-[8rem] space-y-3"
+              :data-split-id="split.id"
+            >
+              <li
+                v-for="(line, lineIndex) in (split.lines && split.lines.length ? split.lines : (model.cart || []).filter(function (row) { return (split.itemIds || []).map(String).indexOf(String(row.id)) >= 0; }))"
+                :key="line.id"
+                class="flex items-start gap-3 rounded-md"
+                :data-line-id="line.id"
+              >
+                <div
+                  class="drag-handle mt-2 flex shrink-0 cursor-grab touch-none items-center justify-center rounded p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600"
+                  role="button"
+                  tabindex="0"
+                  aria-label="Move item"
+                >
+                  <svg
+                    width="10"
+                    height="16"
+                    viewBox="0 0 10 16"
+                    fill="currentColor"
+                    aria-hidden="true"
+                  >
+                    <circle cx="2" cy="2" r="1.5" />
+                    <circle cx="8" cy="2" r="1.5" />
+                    <circle cx="2" cy="8" r="1.5" />
+                    <circle cx="8" cy="8" r="1.5" />
+                    <circle cx="2" cy="14" r="1.5" />
+                    <circle cx="8" cy="14" r="1.5" />
+                  </svg>
+                </div>
+                <div class="card-preview-frame card-preview-frame--thumb overflow-hidden">
+                  <div
+                    class="card-preview-face relative w-full overflow-hidden rounded-md border border-gray-200 bg-white font-sans text-[#4A4A4A] shadow-sm"
+                    style="container-type: inline-size; aspect-ratio: 1.75 / 1"
+                  >
+                    <img
+                      src="https://5t61ut5p19.ucarecd.net/66049ddf-e639-4104-9b94-5f1d96fc29a5/"
+                      alt="Colliers"
+                      class="absolute object-contain"
+                      style="left: 6.968%; bottom: 69.306%; width: 18.488%; height: 18.417%"
+                    />
+                    <img
+                      :src="['French','Français','FR'].indexOf(String(line.language || '')) >= 0 ? 'https://5t61ut5p19.ucarecd.net/701d97ba-48e3-4b7b-a448-1ecee3b72a6e/' : 'https://5t61ut5p19.ucarecd.net/5c2ce46d-e9a5-441c-ad9a-8010efc9c9bf/'"
+                      :alt="['French','Français','FR'].indexOf(String(line.language || '')) >= 0 ? 'Maîtres de projets' : 'Project Leaders'"
+                      class="absolute object-contain"
+                      :style="['French','Français','FR'].indexOf(String(line.language || '')) >= 0 ? 'left: 27.873%; bottom: 70.347%; width: 18.044%; height: 15.083%' : 'left: 27.917%; bottom: 72.125%; width: 13.96%; height: 13.083%'"
+                    />
+                    <div
+                      class="absolute overflow-hidden whitespace-nowrap font-bold leading-none text-[#03438C]"
+                      :style="'left: 41.28%; right: 4%; bottom: ' + (line.details && String(line.details.specializedTeam || '').trim() ? 46.17 : 40.62) + '%; font-size: 3.7cqw'"
+                    >
+                      {{ (line.details && (line.details.nameWrapped || line.details.name)) ||
+                      line.personName || (['French','Français','FR'].indexOf(String(line.language || '')) >= 0 ? 'Prénom Nom' :
+                      'Firstname Lastname') }}
+                    </div>
+                    <div
+                      class="absolute overflow-hidden whitespace-nowrap leading-none text-[#5F636A]"
+                      :style="'left: 41.28%; right: 4%; bottom: ' + (line.details && String(line.details.specializedTeam || '').trim() ? 40.27 : 34.72) + '%; font-size: 2.4cqw'"
+                    >
+                      {{ (line.details && (line.details.displayTitle || line.details.title)) ||
+                      (['French','Français','FR'].indexOf(String(line.language || '')) >= 0 ? 'Titre' : 'Title') }}
+                    </div>
+                    <div
+                      v-if="line.details && line.details.specializedTeam"
+                      class="absolute overflow-hidden whitespace-nowrap leading-none text-[#5F636A]"
+                      style="left: 41.28%; right: 4%; bottom: 34.72%; font-size: 2.4cqw"
+                    >
+                      {{ line.details.specializedTeam }}
+                    </div>
+                    <div
+                      class="absolute overflow-hidden whitespace-nowrap leading-none text-[#5F636A]"
+                      style="left: 41.28%; right: 4%; bottom: 23.61%; font-size: 2.4cqw"
+                    >
+                      {{ (line.details && line.details.email) ||
+                      (['French','Français','FR'].indexOf(String(line.language || '')) >= 0 ?
+                      'prenom.nom@colliersprojectleaders.com' :
+                      'first.lastname@colliersprojectleaders.com') }}
+                    </div>
+                    <div
+                      class="absolute overflow-hidden whitespace-nowrap leading-none text-[#5F636A]"
+                      style="left: 41.28%; right: 4%; bottom: 18.06%; font-size: 2.4cqw"
+                    >
+                      {{ (line.details && line.details.phone) || '+1 555 555 5555' }}
+                    </div>
+                    <div
+                      class="absolute overflow-hidden whitespace-nowrap leading-none text-[#5F636A]"
+                      style="left: 41.28%; right: 4%; bottom: 12.5%; font-size: 2.4cqw"
+                    >
+                      {{ (['French','Français','FR'].indexOf(String(line.language || '')) >= 0 ? ((line.details &&
+                      line.details.websiteFr) || 'colliersprojectleaders.com/fr') : ((line.details
+                      && line.details.website) || 'colliersprojectleaders.com')) }}
+                    </div>
+                    <div
+                      class="absolute overflow-hidden whitespace-pre leading-[1.2] text-[#5F636A]"
+                      style="left: 7.14%; right: 58%; bottom: 12.5%; font-size: 2.2cqw"
+                    >
+                      {{ (line.details && line.details.address) ||
+                      (['French','Français','FR'].indexOf(String(line.language || '')) >= 0 ? "Nom de l'adresse" :
+                      'Address name') }}
+                    </div>
+                  </div>
+                </div>
+                <div class="min-w-0 flex-1">
+                  <div class="flex items-start gap-3">
+                    <div class="min-w-0 flex-1">
+                      <div
+                        v-if="(line.details && line.details.name) || line.personName"
+                        class="truncate text-[15px] font-semibold leading-snug text-gray-900"
+                      >
+                        {{ (line.details && line.details.name) || line.personName }}
+                      </div>
+                      <div class="mt-0.5 truncate text-[14px] leading-snug text-gray-900">
+                        {{ line.lineName || BF.i18n('label_colliers_productEnglish') +
+                        (line.language ? ' - ' + line.language : '') }}
+                      </div>
+                    </div>
+                    <div
+                      v-if="split.locations && split.locations.length"
+                      class="shrink-0 pt-0.5 text-right"
+                    >
+                      <div class="text-sm font-medium tabular-nums text-gray-900">
+                        {{ line.boxLabel }}
+                      </div>
+                      <div class="mt-0.5 text-xs tabular-nums text-gray-500">
+                        {{ line.cardsLabel }}
+                      </div>
+                    </div>
+                  </div>
+                  <div class="mt-2 flex items-center gap-1">
+                    <button
+                      type="button"
+                      class="inline-flex h-8 w-8 items-center justify-center rounded border border-gray-200 text-gray-400 hover:bg-gray-50 hover:text-[#25408F]"
+                      :aria-label="BF.i18n('label_colliers_previewCard')"
+                      @click="BF.namedAction('previewLine', { lineId: line.id })"
+                    >
+                      <svg
+                        width="15"
+                        height="15"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        aria-hidden="true"
+                      >
+                        <circle cx="11" cy="11" r="7"></circle>
+                        <path d="M20 20l-3.5-3.5"></path>
+                      </svg>
+                    </button>
+                    <button
+                      type="button"
+                      class="inline-flex h-8 w-8 items-center justify-center rounded border border-gray-200 text-gray-400 hover:bg-gray-50 hover:text-[#25408F]"
+                      :aria-label="BF.i18n('label_colliers_editItem')"
+                      @click="BF.namedAction('editLine', { lineId: line.id })"
+                    >
+                      <svg
+                        width="15"
+                        height="15"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        aria-hidden="true"
+                      >
+                        <path d="M12 20h9"></path>
+                        <path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z"></path>
+                      </svg>
+                    </button>
+                    <button
+                      type="button"
+                      class="inline-flex h-8 w-8 items-center justify-center rounded border border-gray-200 text-gray-400 hover:bg-gray-50 hover:text-red-600"
+                      :aria-label="BF.i18n('label_colliers_removeFromCart') || 'Remove from cart'"
+                      @click.stop="BF.namedAction('removeLine', { splitId: split.id, lineId: line.id })"
+                    >
+                      <svg
+                        width="15"
+                        height="15"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        aria-hidden="true"
+                      >
+                        <polyline points="3 6 5 6 21 6"></polyline>
+                        <path d="M8 6V4h8v2"></path>
+                        <path d="M19 6l-1 14H6L5 6"></path>
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+              </li>
+            </ul>
+          </div>
+          <div class="relative mt-auto flex flex-wrap items-center justify-between gap-3 pt-6">
+            <div class="flex flex-wrap items-center gap-3">
+              <button
+                type="button"
+                class="btn-split"
+                :disabled="!split.hasCards"
+                @click="BF.namedAction('splitOrder', { splitIndex: splitIndex })"
+              >
+                {{ BF.i18n('label_colliers_splitOrder') }}
+              </button>
+              <button
+                v-if="model.order.splits.length > 1"
+                type="button"
+                class="btn-remove-split"
+                @click="BF.namedAction('removeSplit', { splitIndex: splitIndex })"
+              >
+                {{ BF.i18n('label_colliers_removeSplit') }}
+              </button>
+            </div>
+            <div class="relative">
+              <div
+                v-if="model.view.addItemMenuIndex === splitIndex && split.outsideLines && split.outsideLines.length"
+                class="absolute bottom-full right-0 z-20 mb-2 w-[min(100%,22rem)] overflow-hidden rounded-md border border-gray-200 bg-white shadow-lg"
+              >
+                <ul class="max-h-64 overflow-y-auto py-1">
+                  <li v-for="line in split.outsideLines" :key="line.id">
+                    <button
+                      type="button"
+                      class="block w-full px-3 py-2 text-left text-sm text-gray-800 hover:bg-gray-100"
+                      @click="BF.namedAction('addCartLine', { splitId: split.id, lineId: line.id })"
+                    >
+                      <span class="block font-medium">{{ line.personName || line.lineName }}</span>
+                      <span class="block truncate text-gray-500">{{ line.lineName }}</span>
+                    </button>
+                  </li>
+                </ul>
               </div>
-              <div class="inline-flex items-center overflow-hidden rounded border border-gray-300">
-                <button type="button" class="px-2 py-1 text-sm" @click="BF.namedAction('setLineQty', { lineId: line.id, delta: -1 })">−</button>
-                <span class="min-w-[2rem] px-1 text-center text-sm">{{ line.quantity }}</span>
-                <button type="button" class="px-2 py-1 text-sm" @click="BF.namedAction('setLineQty', { lineId: line.id, delta: 1 })">+</button>
-              </div>
-              <select class="min-w-0 flex-1 rounded border border-gray-300 px-2 py-1 text-sm" :value="line.code" @change="BF.namedAction('changeProduct', { lineId: line.id, code: $event.target.value })">
-                <option v-for="p in model.products" :key="p.code" :value="p.code">{{ BF.i18n(p.nameKey) }} - {{ p.language }}</option>
-              </select>
-              <select v-if="model.order.splits.length > 1" class="rounded border border-gray-300 px-2 py-1 text-sm" :value="split.id" @change="BF.namedAction('moveLine', { lineId: line.id, splitId: $event.target.value })">
-                <option v-for="(group, groupIndex) in model.order.splits" :key="group.id" :value="group.id">{{ BF.i18n('label_colliers_shippingGroup') }} {{ groupIndex + 1 }}</option>
-              </select>
-              <button type="button" class="rounded border border-gray-200 p-2 text-gray-500 hover:text-red-600" :aria-label="BF.i18n('label_general_delete')" @click="BF.namedAction('removeLine', { lineId: line.id })">🗑</button>
-            </li>
-          </ul>
-          <div class="mt-4">
-            <button type="button" class="text-sm text-[#25408F] hover:underline" @click="BF.namedAction('addItem', { splitIndex: splitIndex })">+ {{ BF.i18n('label_colliers_addItem') }}</button>
+              <button
+                type="button"
+                class="text-sm font-medium text-[#25408F] hover:underline"
+                @click="BF.namedAction('addItem', { splitIndex: splitIndex })"
+              >
+                {{ BF.i18n('label_colliers_addItem') }} +
+              </button>
+            </div>
           </div>
         </section>
-        <section class="p-4 sm:p-6">
-          <h2 class="mb-4 text-lg font-semibold text-gray-900">{{ BF.i18n('label_colliers_shipToAddress') }}</h2>
-          <p v-if="!(split.locations && split.locations.length)" class="py-4 text-sm text-gray-500">{{ BF.i18n('label_colliers_noShipToAddresses') }}</p>
-          <ul v-else class="space-y-3">
-            <li v-for="(loc, locIndex) in split.locations" :key="loc.id" class="flex flex-wrap items-center gap-2">
-              <select class="field-input min-w-0 flex-1" :value="loc.address" @change="BF.namedAction('setLocationAddress', { splitIndex: splitIndex, locIndex: locIndex, address: $event.target.value })">
-                <option value="" disabled>{{ BF.i18n('label_colliers_selectShipToAddress') }}</option>
-                <optgroup v-if="model.view.addressOptions.personal.length" :label="BF.i18n('label_colliers_myAddressBook')">
-                  <option v-for="opt in model.view.addressOptions.personal" :key="opt.value" :value="opt.value">{{ opt.label }}</option>
-                </optgroup>
-                <optgroup v-if="model.view.addressOptions.offices.length" :label="BF.i18n('label_colliers_officeAddresses')">
-                  <option v-for="opt in model.view.addressOptions.offices" :key="opt.value" :value="opt.value">{{ opt.label }}</option>
-                </optgroup>
-                <optgroup v-if="loc.address && model.view.knownAddresses.indexOf(loc.address) === -1" :label="BF.i18n('label_colliers_savedAddress')">
-                  <option :value="loc.address">{{ loc.address }}</option>
-                </optgroup>
-              </select>
-              <div class="inline-flex items-center overflow-hidden rounded border border-gray-300">
-                <button type="button" class="px-2 py-1 text-sm" @click="BF.namedAction('setLocationQty', { splitIndex: splitIndex, locIndex: locIndex, delta: -1 })">−</button>
-                <span class="min-w-[2rem] px-1 text-center text-sm">{{ loc.qty }}</span>
-                <button type="button" class="px-2 py-1 text-sm" @click="BF.namedAction('setLocationQty', { splitIndex: splitIndex, locIndex: locIndex, delta: 1 })">+</button>
-              </div>
-              <button type="button" class="rounded border border-gray-200 p-2 text-gray-500 hover:text-red-600" :aria-label="BF.i18n('label_general_delete')" @click="BF.namedAction('removeLocation', { splitIndex: splitIndex, locIndex: locIndex })">🗑</button>
-            </li>
-          </ul>
-          <div class="mt-4">
-            <button type="button" class="rounded border border-gray-300 bg-white px-3 py-2 text-sm hover:bg-gray-50" @click="BF.namedAction('addLocation', { splitIndex: splitIndex })">+ {{ BF.i18n('label_colliers_addLocation') }}</button>
+        <section class="flex min-h-[300px] flex-col p-5 sm:p-6">
+          <h2 class="mb-4 text-lg font-semibold text-gray-900">
+            {{ BF.i18n('label_colliers_shipToAddress') }}
+          </h2>
+          <div class="relative flex-1">
+            <p
+              v-if="!(split.locations && split.locations.length)"
+              class="pointer-events-none absolute inset-0 z-0 flex items-center justify-center py-10 text-center text-sm text-gray-400"
+            >
+              {{ BF.i18n('label_colliers_noShipToAddresses') }}
+            </p>
+            <ul
+              class="js-loc-sortable relative z-10 min-h-[8rem] space-y-3"
+              :data-split-id="split.id"
+              :data-has-items="split.hasCards ? '1' : '0'"
+            >
+              <li
+                v-for="(loc, locIndex) in split.locations"
+                :key="loc.id"
+                class="flex items-center gap-2"
+                :data-loc-id="loc.id"
+              >
+                <div
+                  class="drag-handle flex shrink-0 cursor-grab touch-none items-center justify-center rounded p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600"
+                  :class="{ 'pointer-events-none cursor-not-allowed opacity-40': !split.hasCards }"
+                  role="button"
+                  tabindex="0"
+                  aria-label="Move address"
+                >
+                  <svg
+                    width="10"
+                    height="16"
+                    viewBox="0 0 10 16"
+                    fill="currentColor"
+                    aria-hidden="true"
+                  >
+                    <circle cx="2" cy="2" r="1.5" />
+                    <circle cx="8" cy="2" r="1.5" />
+                    <circle cx="2" cy="8" r="1.5" />
+                    <circle cx="8" cy="8" r="1.5" />
+                    <circle cx="2" cy="14" r="1.5" />
+                    <circle cx="8" cy="14" r="1.5" />
+                  </svg>
+                </div>
+                <input
+                  type="text"
+                  class="min-w-0 flex-1 truncate rounded-lg border border-gray-200 bg-white px-3 py-2.5 text-sm text-gray-800"
+                  :value="loc.address"
+                  :placeholder="BF.i18n('label_colliers_selectShipToAddress')"
+                  readonly
+                />
+                <span class="relative inline-flex min-w-[7.25rem] shrink-0">
+                  <select
+                    class="w-full appearance-none rounded-lg border border-gray-200 bg-white py-2.5 pl-3 pr-8 text-sm text-gray-800"
+                    :value="String(loc.qty)"
+                    :disabled="!split.hasCards"
+                    @change="BF.namedAction('setLocationQty', { splitIndex: splitIndex, locIndex: locIndex, qty: $event.target.value })"
+                  >
+                    <option
+                      v-for="opt in loc.boxOptions"
+                      :key="'box-' + opt.value"
+                      :value="opt.value"
+                    >
+                      {{ opt.label }}
+                    </option>
+                  </select>
+                  <svg
+                    class="pointer-events-none absolute right-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-500"
+                    viewBox="0 0 20 20"
+                    fill="currentColor"
+                    aria-hidden="true"
+                  >
+                    <path
+                      fill-rule="evenodd"
+                      d="M5.23 7.21a.75.75 0 011.06.02L10 11.17l3.71-3.94a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
+                      clip-rule="evenodd"
+                    />
+                  </svg>
+                </span>
+                <span
+                  class="hidden min-w-[4.5rem] shrink-0 text-right text-xs tabular-nums text-gray-500 sm:inline"
+                  >{{ loc.cardsCountLabel }}</span
+                >
+                <button
+                  type="button"
+                  class="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-gray-200 text-gray-400 hover:bg-gray-50 hover:text-red-600 disabled:cursor-not-allowed disabled:opacity-40"
+                  :disabled="!split.hasCards"
+                  :aria-label="BF.i18n('label_general_delete')"
+                  @click.stop="BF.namedAction('removeLocation', { splitIndex: splitIndex, locIndex: locIndex, locId: loc.id })"
+                >
+                  <svg
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    aria-hidden="true"
+                  >
+                    <polyline points="3 6 5 6 21 6"></polyline>
+                    <path d="M8 6V4h8v2"></path>
+                    <path d="M19 6l-1 14H6L5 6"></path>
+                  </svg>
+                </button>
+              </li>
+            </ul>
+          </div>
+          <div class="relative mt-auto border-t border-gray-200 pt-4">
+            <div class="flex flex-wrap items-center justify-end gap-3">
+              <button
+                type="button"
+                class="btn-location"
+                :disabled="!split.hasCards"
+                @click="BF.namedAction('openAddModal', { splitIndex: splitIndex })"
+              >
+                {{ BF.i18n('label_colliers_addLocation') }} +
+              </button>
+            </div>
           </div>
         </section>
       </div>
-      <div class="flex flex-wrap items-center gap-3 border-t border-gray-200 bg-gray-50 px-4 py-4 sm:px-6">
-        <button type="button" class="btn-primary text-sm" @click="BF.namedAction('splitOrder', { splitIndex: splitIndex })">{{ BF.i18n('label_colliers_splitOrder') }}</button>
-        <button v-if="model.order.splits.length > 1" type="button" class="text-sm text-gray-500 hover:text-red-600" @click="BF.namedAction('removeSplit', { splitIndex: splitIndex })">{{ BF.i18n('label_colliers_removeSplit') }}</button>
+    </div>
+  </div>
+  <div
+    v-if="model.view.modalOpen"
+    class="fixed inset-0 z-[60] flex items-center justify-center bg-black/40 p-4"
+    @click.self="BF.namedAction('closeAddModal')"
+  >
+    <div
+      class="flex max-h-[90vh] w-full max-w-xl flex-col overflow-hidden rounded-lg bg-white shadow-xl"
+    >
+      <header class="flex shrink-0 items-center justify-between px-5 pb-2 pt-5">
+        <h2 class="text-lg font-bold text-gray-900">{{ BF.i18n('label_colliers_addLocation') }}</h2>
+        <button
+          type="button"
+          class="rounded p-1 text-gray-400 hover:bg-gray-100"
+          @click="BF.namedAction('closeAddModal')"
+        >
+          ×
+        </button>
+      </header>
+      <div class="min-h-0 flex-1 overflow-y-auto px-5 pb-4">
+        <p
+          v-if="!(model.view.addressOptions && model.view.addressOptions.all && model.view.addressOptions.all.length)"
+          class="py-6 text-sm text-gray-500"
+        >
+          {{ BF.i18n('label_colliers_noShipToAddresses') }}
+        </p>
+        <ul v-else class="max-h-64 space-y-2 overflow-y-auto">
+          <li v-for="opt in model.view.addressOptions.all" :key="'m-' + opt.value">
+            <button
+              type="button"
+              class="flex w-full cursor-pointer items-start gap-3 rounded-md border border-gray-200 px-3 py-2.5 text-left text-sm hover:bg-gray-50"
+              @click.stop="BF.namedAction('toggleModalAddress', { address: opt.value })"
+            >
+              <span
+                class="mt-0.5 inline-flex h-4 w-4 shrink-0 items-center justify-center rounded border border-gray-300"
+                :class="(model.view.modalSelected || []).indexOf(opt.value) >= 0 ? 'border-blue-600 bg-blue-600 text-white' : 'bg-white'"
+                aria-hidden="true"
+              >
+                <span v-if="(model.view.modalSelected || []).indexOf(opt.value) >= 0">✓</span>
+              </span>
+              <span>{{ opt.label }}</span>
+            </button>
+          </li>
+        </ul>
       </div>
+      <footer class="flex shrink-0 justify-end border-t border-gray-100 px-5 py-4">
+        <button type="button" class="btn-primary" @click="BF.namedAction('applyModalAddresses')">
+          {{ BF.i18n('label_colliers_done') }}
+        </button>
+      </footer>
     </div>
   </div>
 </div>

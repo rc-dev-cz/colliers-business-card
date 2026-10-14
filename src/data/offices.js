@@ -9,11 +9,9 @@ export function officeDisplayName(raw) {
   return name + ' Office'
 }
 
-export var TORONTO_OFFICE_CARD =
-  '1400-181 Bay Street\nToronto, ON\nM5J 2V1 Canada'
+export var TORONTO_OFFICE_CARD = '1400-181 Bay Street\nToronto, ON\nM5J 2V1 Canada'
 
-export var OTTAWA_OFFICE_CARD =
-  '2720 Iris Street\nOttawa, ON\nK2C 1E6 Canada'
+export var OTTAWA_OFFICE_CARD = '2720 Iris Street\nOttawa, ON\nK2C 1E6 Canada'
 
 export var VANCOUVER_OFFICE_CARD =
   '1066 West Hastings Street, 23rd Floor\nVancouver, BC\nV6E 3X1 Canada'
@@ -162,7 +160,7 @@ export const MOCK_OFFICES = [
   {
     id: 15,
     addressName: "St. John's Office",
-    addressStreet: "306-10 Rowan Street, Terrace on the Square, PO Box 23076 Churchill Square",
+    addressStreet: '306-10 Rowan Street, Terrace on the Square, PO Box 23076 Churchill Square',
     addressStreet2: '',
     addressCity: "St. John's",
     addressProvince: 'NL',

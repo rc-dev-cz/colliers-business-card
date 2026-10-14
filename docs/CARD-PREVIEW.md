@@ -5,6 +5,8 @@
 **Source in code today:** `src/components/CardPreview.vue` (responsive stand-in only)  
 **Related:** [BUSINESS-RULES.md](BUSINESS-RULES.md) §4 · `USR-031` live preview · `USR-095` View order card preview
 
+**Title / region split (Oct 2026):** When `Title | Region` does not fit **141.52 pt** but each part fits alone, preview and print stack region under the title (no `|`) and lift the identity block one body line — valid, not an error. Bilingual Customize lists **English** titles; EN face shows the selection; FR face uses `titleLocale` EN→FR pairs, or the long placeholder **Titre à compléter — équivalent français requis** when unmapped.
+
 ---
 
 ## The pivot
@@ -33,13 +35,13 @@ The responsive tile preview can stay for catalogue / cart chrome. **Customize, p
 
 ### Core experience
 
-| Piece | Intent |
-| --- | --- |
-| **True-size stage** | Card rendered at physical trim (default target: **3.5″ × 2″** / 89 × 51 mm) on a calm surface, not stretched to the column. |
-| **Place-your-card affordance** | Clear “lay a real card here” silhouette or corner marks so the gesture is obvious. |
-| **Live data** | Same fields as today: name, title(s), company, licence (if real), office, email, mobile, website — matching the order (`USR-031`, `USR-095`). |
-| **Optional calibrate** | One-time (or per device) slider / “match this to a credit card” so CSS inches track the real screen PPI. Without this, “3.5in” in CSS is often wrong. |
-| **Front first** | Front only until design locks the back. |
+| Piece                          | Intent                                                                                                                                                |
+| ------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **True-size stage**            | Card rendered at physical trim (default target: **3.5″ × 2″** / 89 × 51 mm) on a calm surface, not stretched to the column.                           |
+| **Place-your-card affordance** | Clear “lay a real card here” silhouette or corner marks so the gesture is obvious.                                                                    |
+| **Live data**                  | Same fields as today: name, title(s), company, licence (if real), office, email, mobile, website — matching the order (`USR-031`, `USR-095`).         |
+| **Optional calibrate**         | One-time (or per device) slider / “match this to a credit card” so CSS inches track the real screen PPI. Without this, “3.5in” in CSS is often wrong. |
+| **Front first**                | Front only until design locks the back.                                                                                                               |
 
 ### Explicitly later (not this pivot)
 
@@ -49,11 +51,11 @@ The responsive tile preview can stay for catalogue / cart chrome. **Customize, p
 
 ### Modes vs current component
 
-| Context | Preview mode |
-| --- | --- |
-| Catalogue tile, cart row | Keep **fluid** aspect `1.75 : 1` (current `CardPreview.vue`) |
-| Customize | **True-size** primary; fluid optional if space is tight (mobile) |
-| Order proof / USR-095 | **True-size** |
+| Context                  | Preview mode                                                     |
+| ------------------------ | ---------------------------------------------------------------- |
+| Catalogue tile, cart row | Keep **fluid** aspect `1.75 : 1` (current `CardPreview.vue`)     |
+| Customize                | **True-size** primary; fluid optional if space is tight (mobile) |
+| Order proof / USR-095    | **True-size**                                                    |
 
 ---
 
@@ -108,23 +110,23 @@ Keep answering:
 
 ### Field map (current prototype)
 
-| Zone | Position (of card) | Content today |
-| --- | --- | --- |
-| Logo | Left 6.5%, top 12%, width 25.5% | Colliers wordmark on navy + cyan / yellow / orange bars |
-| Identity | Left 42%, right 4%, top 14% | Name, title, company, licence placeholder |
-| Address | Bottom 13%, left 6.5%, right 57% | Selected office |
-| Contact | Bottom 13%, left 42%, right 4% | Email (truncated today), mobile, website |
+| Zone     | Position (of card)               | Content today                                           |
+| -------- | -------------------------------- | ------------------------------------------------------- |
+| Logo     | Left 6.5%, top 12%, width 25.5%  | Colliers wordmark on navy + cyan / yellow / orange bars |
+| Identity | Left 42%, right 4%, top 14%      | Name, title, company, licence placeholder               |
+| Address  | Bottom 13%, left 6.5%, right 57% | Selected office                                         |
+| Contact  | Bottom 13%, left 42%, right 4%   | Email (truncated today), mobile, website                |
 
 Full colour / type / overflow checklists and the email stress set remain the designer handoff; true-size is how we **review** those mocks, not a replacement for them.
 
 ### Suggested stress set (design at real trim)
 
-| # | Name | Email | Why |
-| --- | --- | --- | --- |
-| 1 | Jane Doe | `jane.doe@colliers.com` | Short |
-| 2 | Christopher Montgomery | `christopher.montgomery@colliers.com` | Typical long Colliers email |
-| 3 | Hubert Blaine Wolfeschlegelstein | `hubert.wolfeschlegelstein@colliers.com` | Max name + max email |
-| 4 | Marie-Claire Jean-Baptiste | `marie-claire.jean-baptiste@colliers.com` | Hyphens; may exceed 40 |
+| #   | Name                             | Email                                     | Why                         |
+| --- | -------------------------------- | ----------------------------------------- | --------------------------- |
+| 1   | Jane Doe                         | `jane.doe@colliers.com`                   | Short                       |
+| 2   | Christopher Montgomery           | `christopher.montgomery@colliers.com`     | Typical long Colliers email |
+| 3   | Hubert Blaine Wolfeschlegelstein | `hubert.wolfeschlegelstein@colliers.com`  | Max name + max email        |
+| 4   | Marie-Claire Jean-Baptiste       | `marie-claire.jean-baptiste@colliers.com` | Hyphens; may exceed 40      |
 
 Use **matching** name + email. Plus the longest real office from Manage Addresses.
 
@@ -142,18 +144,18 @@ Use **matching** name + email. Plus the longest real office from Manage Addresse
 
 ## Decision log
 
-| Topic | Decision | Date |
-| --- | --- | --- |
-| Preview product goal | **True-size / place-card-on-screen** (not only fluid CSS mock) | 2026-08-24 |
-| Trim size | | |
-| Nominal vs calibrated v1 | | |
-| True-size default on Customize | | |
-| Mobile behaviour when card &gt; viewport | | |
-| USR-095 = true-size UI vs vendor PDF | | |
-| Bleed / safe area | | |
-| Email: wrap / shrink / limit | | |
-| Email character max | 40 until changed | |
-| Mobile label + format | | |
-| Licence line | | |
-| EN / FR / Bilingual layout | | |
-| Front vs back | | |
+| Topic                                    | Decision                                                       | Date       |
+| ---------------------------------------- | -------------------------------------------------------------- | ---------- |
+| Preview product goal                     | **True-size / place-card-on-screen** (not only fluid CSS mock) | 2026-08-24 |
+| Trim size                                |                                                                |            |
+| Nominal vs calibrated v1                 |                                                                |            |
+| True-size default on Customize           |                                                                |            |
+| Mobile behaviour when card &gt; viewport |                                                                |            |
+| USR-095 = true-size UI vs vendor PDF     |                                                                |            |
+| Bleed / safe area                        |                                                                |            |
+| Email: wrap / shrink / limit             |                                                                |            |
+| Email character max                      | 40 until changed                                               |            |
+| Mobile label + format                    |                                                                |            |
+| Licence line                             |                                                                |            |
+| EN / FR / Bilingual layout               |                                                                |            |
+| Front vs back                            |                                                                |            |

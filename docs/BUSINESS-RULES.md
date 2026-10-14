@@ -30,57 +30,55 @@ The order process follows these main steps:
 4. **Review the order** — Confirm the business cards, quantities, and shipping information.
 5. **Submit the order** — Submit the order and receive the confirmation.
 
-| Rule | Expected behaviour |
-| --- | --- |
-| One order | All selected business cards and shipping groups remain part of the same order. |
+| Rule                   | Expected behaviour                                                                                                |
+| ---------------------- | ----------------------------------------------------------------------------------------------------------------- |
+| One order              | All selected business cards and shipping groups remain part of the same order.                                    |
 | Default shipping group | Every order starts with Shipping Group 1. A newly added business card is assigned to Shipping Group 1 by default. |
-| Order completion | After a successful submission, the confirmation screen is shown and the cart is cleared. |
+| Order completion       | After a successful submission, the confirmation screen is shown and the cart is cleared.                          |
 
 ---
 
 ## 2. Important Terms
 
-| Rule | Expected behaviour |
-| --- | --- |
-| Business card product | One of the available card types: English, Bilingual, or French. |
-| Title | Job title on the card (FileMaker **titles**). Previously called designation — do not use that name. |
-| Degree | Degree or certification on the name line (FileMaker **degrees**). |
-| Quantity | The number of boxes of that card on Selected Items. Quantity 3 means 3 boxes (750 printed cards) **per shipping address**. |
-| Cart item | A cart item is one business card shown in the cart. If the same business card is ordered more than once, the quantity can increase without creating another cart item. |
-| Cart count | The number shown on the navbar cart icon. It is billed boxes: Selected Items quantity × ship-to addresses in that item’s shipping group (minimum ×1 when there are no addresses yet). |
-| Shipping group | A part of the order that groups business cards going to one or more shipping addresses. |
-| Split Order | Creates an additional shipping group within the same order so business cards can be organized and shipped separately. |
-| Shipping location | The delivery address selected for a shipping group. |
-| Location quantity | Read-only. Each selected address receives the full Selected Items quantity for that group. It is not edited on Ship To. |
-| Cart vs addresses | Adding or removing a ship-to address, Address Book row, or office address never deletes cart items. Cards stay until the user removes them from Selected Items or the cart. An empty ship-to is allowed while cards remain. Adding addresses multiplies billed boxes; removing an address lowers billed boxes and does not change Selected Items quantity. |
+| Rule                  | Expected behaviour                                                                                                                                                                                                                                                           |
+| --------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Business card product | One of the available card types: English, Bilingual, or French.                                                                                                                                                                                                              |
+| Title                 | Job title on the card (FileMaker **titles**). Previously called designation — do not use that name.                                                                                                                                                                          |
+| Degree                | Degree or certification on the name line (FileMaker **degrees**).                                                                                                                                                                                                            |
+| Quantity              | Boxes of a design. One box is 250 cards at $63. On Shipping, the address row is the only editor. Each Selected Items line in that group copies the address total.                                                                                                            |
+| Cart item             | A cart item is one business card shown in the cart. If the same business card is ordered more than once, the quantity can increase without creating another cart item.                                                                                                       |
+| Cart count            | The number on the navbar cart icon. It is the number of cart items. Address boxes and item quantities do not change it.                                                                                                                                                      |
+| Shipping group        | A part of the order that groups business cards going to one or more shipping addresses.                                                                                                                                                                                      |
+| Split Order           | Creates an additional shipping group within the same order so business cards can be organized and shipped separately.                                                                                                                                                        |
+| Shipping location     | The delivery address selected for a shipping group.                                                                                                                                                                                                                          |
+| Location quantity     | Boxes of each selected design at that address. The Selected Items readout is the sum of those boxes. Two designs in one group each copy that sum. Different box counts per design use Split Order. Box and card counts stay hidden until the group has at least one ship-to. |
+| Cart vs addresses     | Adding or removing a ship-to address, Address Book row, or office address never deletes cart items. Changing an address quantity updates every Selected Items line in that group to the new address total.                                                                   |
 
 ---
 
 ## 3. Products, Packaging & Pricing
 
-| Rule | Expected behaviour |
-| --- | --- |
-| Available products | Business Card English, Business Card Bilingual, and Business Card French. |
-| Packaging | 1 box = 250 printed business cards. |
-| Price | Each box costs $63.00. The same price applies to all three products. |
-| Price calculation | Total price = billed boxes × $63.00. Billed boxes = Selected Items quantity × number of ship-to addresses in that item’s shipping group (or ×1 if none). No volume discount: two boxes are $126.00. |
-| Billing | Orders are billed to the Colliers account. The portal does not collect credit-card or payment information. |
+| Rule               | Expected behaviour                                                                                                                                                                                           |
+| ------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Available products | Business Card English, Business Card Bilingual, and Business Card French.                                                                                                                                    |
+| Packaging          | 1 box = 250 printed business cards.                                                                                                                                                                          |
+| Price              | Each box costs $63.00. The same price applies to all three products.                                                                                                                                         |
+| Price calculation  | Total price = billed boxes × $63.00. One design billed boxes are that group’s address total. Two designs in the same group each copy that total, so the bill is designs × address total. No volume discount. |
+| Billing            | Orders are billed to the Colliers account. The portal does not collect credit-card or payment information.                                                                                                   |
 
 ### Examples
 
-- Quantity 1, one address = 250 cards = $63.00
-- Quantity 1, three addresses = 750 cards = $189.00
-- Quantity 2, one address = 500 cards = $126.00
-- Quantity 3, one address = 750 cards = $189.00
-- Quantity 10, one address = 2,500 cards = $630.00
+- One card, no address, quantity 1 = 1 box = $63.00. Packaging is 250 printed cards per box.
+- One card, addresses totalling 4 boxes = 4 boxes / 1000 cards = $252.00.
+- Two designs in one group, addresses totalling 4 boxes = each design shows 4 boxes. Billed boxes are 8. Total $504.00. The navbar stays at 2.
 
 ### Tests
 
-| ID | Test | Expected result |
-| --- | --- | --- |
-| PR-01 | Set one cart item to quantity 3. | 750 printed cards and a total of $189.00. |
-| PR-02 | Set one cart item to quantity 10. | 2,500 printed cards and a total of $630.00. |
-| PR-03 | Complete an order. | No payment or credit-card step is shown. |
+| ID    | Test                                    | Expected result                                                                   |
+| ----- | --------------------------------------- | --------------------------------------------------------------------------------- |
+| PR-01 | One card, addresses totalling 3 boxes.  | Selected Items shows 3 boxes / 750 cards. Total $189.00. The navbar stays at 1.   |
+| PR-02 | One card, addresses totalling 10 boxes. | Selected Items shows 10 boxes / 2500 cards. Total $630.00. The navbar stays at 1. |
+| PR-03 | Complete an order.                      | No payment or credit-card step is shown.                                          |
 
 ---
 
@@ -94,83 +92,85 @@ The customization page controls the information shown on the business card previ
 
 **Locked** (no asterisk): Company Name, Website.
 
-| Rule | Expected behaviour |
-| --- | --- |
-| Full Name | Required. Entered manually. Maximum 50 characters. Long names can use two lines on the card. |
-| Title | Required. Selected from the available list (FileMaker titles). |
-| Degree/Certification | Optional. No fixed count cap. Selected values share the available credential space: after the name plus one line underneath. Options that no longer fit are locked; selected values can still be removed. |
-| Additional Credentials | Optional. Free text shares the same measured space as selected degrees. Input stops with a “no more space” message when the name line plus credential row are full. |
-| Region | Optional. Shown with the title as “Title \| Region”. |
-| Specialized Team | Optional. Shown under the title line when present. |
-| Email | Required. When the full name has a first and last name, the email fills in as firstname.lastname@colliersprojectleaders.com. The field stays editable. After the user changes it, further name edits do not replace it. Up to 50 characters is allowed. Print/preview also require the address to fit one line in the 130 pt identity lane (Open Sans 6.5 pt). |
-| Mobile Phone | Required. Shown on the card as the Canadian 10-digit local number only (no “Mobile:” label and no +1). |
-| Company Name | Locked as Colliers Project Leaders and cannot be edited. |
-| Address | Required. Selected from the saved Colliers office address list; it is not entered manually on this screen. |
-| Website | Locked as colliersprojectleaders.com (French card uses /fr) and cannot be edited. |
-| Live preview | Changes to editable card information are reflected on the card preview. |
-| Optional empty fields | Until a degree or credential is entered, the preview and the print PDF show the ICT sample “C.M.” after the comma on the name line. Empty title shows “Title” (FR: “Titre”). Region is omitted until filled; then it appears as “Title \| Region”. Empty specialized team uses “Specialized team”. Until an office is selected, every card preview and the print PDF show the four-line sample “Address name / Unit, Street / City, Province / Postal Code, Country” (FR: Nom de l’adresse / …). |
+| Rule                   | Expected behaviour                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| ---------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Full Name              | Required. Entered manually. Maximum 50 characters. Long names can use two lines on the card.                                                                                                                                                                                                                                                                                                                                                                                                             |
+| Title                  | Required. Selected from the available list (FileMaker titles). English and bilingual Customize show the **English** title list; French-only Customize shows the French list. Bilingual: EN face shows the selected English title; FR face shows the mapped French equivalent, or the long placeholder **Titre à compléter — équivalent français requis** until Colliers supplies pairs. Title plus region share one line at **141.52 pt** when they fit (lock: “Gestionnaire de projets principal \| Nova Scotia”). When the joined line overflows but each part still fits alone, preview and print stack region under the title (no pipe) and shift the identity block up one body line — that is valid, not an error. Only combinations where title or region alone cannot fit show “This title and region are too long for the card.”                                                                                                                                                                                                                      |
+| Degree/Certification   | Optional. No fixed count cap. Selected values share the available credential space: after the name plus one line underneath. Options that no longer fit are locked; selected values can still be removed.                                                                                                                                                                                                                                                                                                |
+| Additional Credentials | Optional. Free text shares the same measured space as selected degrees. Input stops with a “no more space” message when the name line plus credential row are full.                                                                                                                                                                                                                                                                                                                                      |
+| Region                 | Optional. Shown with the title as “Title \| Region” when both fit one line. Preview may stack region under the title when the joined line overflows (print still one line until approved).                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| Specialized Team       | Optional. Shown under the title line when present.                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| Email                  | Required. When the full name has a first and last name, the email fills in as firstname.lastname@colliersprojectleaders.com. The field stays editable. After the user changes it, further name edits do not replace it. Up to 50 characters is allowed. Print/preview also require the address to fit one line at **141.52 pt** (Open Sans 6.5 pt), the same right edge as title                                                                                                                         | region. |
+| Mobile Phone           | Required. Shown on the card as the Canadian 10-digit local number only (no “Mobile:” label and no +1).                                                                                                                                                                                                                                                                                                                                                                                                   |
+| Company Name           | Locked as Colliers Project Leaders and cannot be edited.                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| Address                | Required. Selected from the saved Colliers office address list; it is not entered manually on this screen.                                                                                                                                                                                                                                                                                                                                                                                               |
+| Website                | Locked as colliersprojectleaders.com (French card uses /fr) and cannot be edited.                                                                                                                                                                                                                                                                                                                                                                                                                        |
+| Live preview           | Changes to editable card information are reflected on the card preview.                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| Optional empty fields  | Until a degree or credential is entered, the preview and the print PDF show the ICT sample “C.M.” after the comma on the name line. Empty title shows “Title” (FR: “Titre”). Region is omitted until filled; then it appears as “Title \| Region”. Empty specialized team is omitted on preview and print. Until an office is selected, every card preview and the print PDF show the four-line sample “Address name / Unit, Street / City, Province / Postal Code, Country” (FR: Nom de l’adresse / …). |
 
 ### Tests
 
-| ID | Test | Expected result |
-| --- | --- | --- |
-| CU-01 | Change the full name. | The preview shows the new name. |
-| CU-02 | Select degrees or certifications until the card is full. | Every value that fits appears in the preview. Options that would overflow are locked and a no-space message is shown. |
-| CU-03 | Remove one selected degree. | It is removed from the selection and from the preview. |
-| CU-04 | Open Address and choose a saved office. | The selected office appears on the card preview. |
-| CU-05 | Try to edit Company Name and Website. | Both fields remain locked with the approved values. |
-| CU-06 | Change email or mobile phone. | The preview updates with the entered information. |
-| CU-07 | Open Customize before filling optional fields. | The name line reads “Firstname Lastname, C.M.”. Title shows “Title” (no region). Team shows “Specialized team”. Address shows “Address name”, “Unit, Street”, “City, Province”, and “Postal Code, Country”. The customize preview does not show the card back. The print PDF includes the blue legal panel. |
-| CU-08 | Enter additional credentials only. | That label is replaced by the typed text. The degree label stays until a degree is selected. |
+| ID    | Test                                                     | Expected result                                                                                                                                                                                                                                                                                                 |
+| ----- | -------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| CU-01 | Change the full name.                                    | The preview shows the new name.                                                                                                                                                                                                                                                                                 |
+| CU-02 | Select degrees or certifications until the card is full. | Every value that fits appears in the preview. Options that would overflow are locked and a no-space message is shown.                                                                                                                                                                                           |
+| CU-03 | Remove one selected degree.                              | It is removed from the selection and from the preview.                                                                                                                                                                                                                                                          |
+| CU-04 | Open Address and choose a saved office.                  | The selected office appears on the card preview.                                                                                                                                                                                                                                                                |
+| CU-05 | Try to edit Company Name and Website.                    | Both fields remain locked with the approved values.                                                                                                                                                                                                                                                             |
+| CU-06 | Change email or mobile phone.                            | The preview updates with the entered information.                                                                                                                                                                                                                                                               |
+| CU-07 | Open Customize before filling optional fields.           | The name line reads “Firstname Lastname, C.M.”. Title shows “Title” (no region). Empty specialized team is omitted. Address shows “Address name”, “Unit, Street”, “City, Province”, and “Postal Code, Country”. The customize preview does not show the card back. The print PDF includes the blue legal panel. |
+| CU-08 | Enter additional credentials only.                       | That label is replaced by the typed text. The degree label stays until a degree is selected.                                                                                                                                                                                                                    |
 
 ---
 
 ## 5. Cart & Quantity Rules
 
-| Rule | Expected behaviour |
-| --- | --- |
-| Default quantity | A newly added business card starts with quantity 1. |
-| Same card + same details | Adding the same product with the same full name, title, email, phone, and office combines into one cart item and increases its quantity. |
-| Different details | If the product or any card detail is different, the cards remain separate cart items. |
-| One row, many boxes | One cart item can hold a quantity greater than 1. |
-| Cart count | The cart count is billed boxes (Selected Items quantity × addresses, minimum ×1). |
-| Change quantity | Changing a cart item quantity on Selected Items updates billed boxes, the cart count, and price. Ship To is not used to edit quantity. |
-| Remove item | Removing a cart item recalculates the cart count and total. |
-| Empty cart | When no items remain, the cart count is 0 and the total is $0.00. |
+| Rule                     | Expected behaviour                                                                                                                                                                                                |
+| ------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Default quantity         | A newly added business card starts with quantity 1.                                                                                                                                                               |
+| Same card + same details | Adding the same product with the same full name, title, email, phone, and office combines into one cart item and increases its quantity.                                                                          |
+| Different details        | If the product or any card detail is different, the cards remain separate cart items.                                                                                                                             |
+| One row, many boxes      | One cart item can hold a quantity greater than 1.                                                                                                                                                                 |
+| Cart count               | The navbar cart count is the number of cart items. It does not follow address boxes or item quantity.                                                                                                             |
+| Change quantity          | Address boxes are the quantity editor. Selected Items shows boxes and cards and follows the address total. It does not change the navbar count.                                                                   |
+| Remove from shipment     | The Shipping Selected Items trash control removes that card from the cart, every shipping group, and the cart drawer. The navbar count drops.                                                                      |
+| Remove from cart         | The cart drawer trash control removes the card from the cart and from every shipping group. The navbar count drops. Shipping trash does the same.                                                                  |
+| Empty cart               | When no items remain, the cart count is 0 and the total is $0.00.                                                                                                                                                 |
 
 ### Examples
 
-- Same Bilingual card, same details, added twice → 1 cart item, quantity 2, cart count 2, total $126.00.
+- Same Bilingual card, same details, added twice with no address → 1 cart item, quantity stays 1, cart count 1, total $63.00.
 - Same product, two different names → 2 cart items, quantity 1 each, cart count 2, total $126.00.
 - Same person, different title → separate cart items.
-- English quantity 5 + French quantity 5 → 2 cart items, cart count 10, total $630.00.
+- English and French in one group, address total 5 → each line shows 5 boxes, cart count 2, billed 10 boxes, total $630.00.
 
 ### Tests
 
-| ID | Test | Expected result |
-| --- | --- | --- |
-| CA-01 | Add the same card with the same details twice. | One cart item with quantity 2; cart count 2; total $126.00. |
-| CA-02 | Add the same product for two different names. | Two separate cart items; cart count 2; total $126.00. |
-| CA-03 | Add the same person with different titles. | The cards remain separate cart items. |
-| CA-04 | Add English quantity 5 and French quantity 5. | Two cart items; cart count 10; total $630.00. |
-| CA-05 | Change one cart item from quantity 1 to 10. | Quantity 10; cart count and total update to 10 and $630.00. |
-| CA-06 | Remove all cart items. | Cart count 0 and total $0.00. |
+| ID    | Test                                                            | Expected result                                                                   |
+| ----- | --------------------------------------------------------------- | --------------------------------------------------------------------------------- |
+| CA-01 | Add the same card with the same details twice, with no address. | One cart item; quantity stays 1; cart count 1; total $63.00.                      |
+| CA-02 | Add the same product for two different names.                   | Two separate cart items; cart count 2; total $126.00.                             |
+| CA-03 | Add the same person with different titles.                      | The cards remain separate cart items.                                             |
+| CA-04 | English and French in one group, address total 5 boxes.         | Two cart items; each shows 5 boxes; cart count 2; billed 10 boxes; total $630.00. |
+| CA-05 | One card, address total raised to 10 boxes.                     | Selected Items shows 10 boxes; cart count stays 1; total $630.00.                 |
+| CA-06 | Remove all cart items.                                          | Cart count 0 and total $0.00.                                                     |
 
 ---
 
 ## 6. Shipping Groups & Split Order
 
-| Rule | Expected behaviour |
-| --- | --- |
-| Shipping Group 1 | Every order starts with Shipping Group 1. |
-| Adding business cards | Business cards are added to the shipping group where they are being ordered. Before the order is split, this is Shipping Group 1. |
-| Split Order | Selecting Split Order creates a new, empty shipping group within the same order for a separate set of business cards and shipping locations. |
-| New shipping group | Products and locations from the existing shipping group are not duplicated into the new group. |
-| Different addresses | Each shipping group can have its own shipping location(s). |
-| Move a product | A business card can be moved from one shipping group to another without creating an additional copy of the product. |
-| Remove Split | An additional shipping group can be removed. At least one shipping group must remain. |
-| Saved location | Shipping locations are selected from the saved address list. |
-| Add / remove location | Shipping locations can be added to or removed from a shipping group. That does not remove or empty the cart. Each address receives the full Selected Items quantity for the group (multiply). Qty is edited only on Selected Items; Ship To shows the same read-only card count on every address. |
+| Rule                  | Expected behaviour                                                                                                                                                                                                                                                                                                                                            |
+| --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Shipping Group 1      | Every order starts with Shipping Group 1.                                                                                                                                                                                                                                                                                                                     |
+| Adding business cards | Business cards are added to the shipping group where they are being ordered. Before the order is split, this is Shipping Group 1.                                                                                                                                                                                                                             |
+| Split Order           | Selecting Split Order creates a new, empty shipping group within the same order for a separate set of business cards and shipping locations.                                                                                                                                                                                                                  |
+| New shipping group    | Products and locations from the existing shipping group are not duplicated into the new group.                                                                                                                                                                                                                                                                |
+| Different addresses   | Each shipping group can have its own shipping location(s).                                                                                                                                                                                                                                                                                                    |
+| Move a product        | A business card can be moved from one shipping group to another without creating an additional copy of the product.                                                                                                                                                                                                                                           |
+| Remove Split          | An additional shipping group can be removed. At least one shipping group must remain.                                                                                                                                                                                                                                                                         |
+| Saved location        | Shipping locations are selected from the saved address list.                                                                                                                                                                                                                                                                                                  |
+| Add / remove location | Shipping locations can be added to or removed from a shipping group **only when that group has at least one selected card**. That does not remove or empty the cart. Each address stores boxes of each selected design. Selected Items copies the address total. Two designs in one group both show that total. Billed boxes are designs × the address total. |
+| Empty Selected Items  | Split Order, Add location, and deleting a ship-to are disabled until the group has a card. Removing the last card from a group also clears its ship-to rows.                                                                                                                                                                                                  |
 
 ### Example
 
@@ -178,54 +178,58 @@ Shipping Group 1 contains the current business cards and shipping location. Sele
 
 ### Tests
 
-| ID | Test | Expected result |
-| --- | --- | --- |
-| SH-01 | Add the first business card to a new order. | Shipping Group 1 is the default group for the card. |
-| SH-02 | Select Split Order. | A second shipping group is created. |
-| SH-03 | With two shipping groups open, add another business card. | The new card is assigned to Shipping Group 1. |
-| SH-04 | Move a product from Shipping Group 1 to Shipping Group 2. | The product appears in Group 2 and the total ordered quantity does not change. |
-| SH-05 | Select a different saved address for each shipping group. | Each group keeps its selected shipping address. |
-| SH-06 | Remove an extra shipping group. | One group remains; the last group cannot be removed. |
-| SH-07 | Add a second and third ship-to address while Selected Items quantity is 1. | Selected Items stays 1 box / 250 cards. Each address shows 250 cards (read-only). Billed total is 3 boxes / 750 cards / $189.00. |
-| SH-08 | Add or remove a ship-to address while cards are in the cart. | The address list changes; cart lines and Selected Items quantities stay. |
+| ID    | Test                                                                           | Expected result                                                                                                                                       |
+| ----- | ------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
+| SH-01 | Add the first business card to a new order.                                    | Shipping Group 1 is the default group for the card.                                                                                                   |
+| SH-02 | Select Split Order.                                                            | A second shipping group is created.                                                                                                                   |
+| SH-03 | With two shipping groups open, add another business card.                      | The new card is assigned to Shipping Group 1.                                                                                                         |
+| SH-04 | Move a product from Shipping Group 1 to Shipping Group 2.                      | The product appears in Group 2 and the total ordered quantity does not change.                                                                        |
+| SH-05 | Select a different saved address for each shipping group.                      | Each group keeps its selected shipping address.                                                                                                       |
+| SH-06 | Remove an extra shipping group.                                                | One group remains; the last group cannot be removed.                                                                                                  |
+| SH-07 | One design, addresses of 1 + 1 + 1 box.                                        | Selected Items shows 3 boxes / 750 cards. Billed total is 3 boxes / 750 cards / $189.00.                                                              |
+| SH-08 | Change address boxes from 4 and 6, then add a second design to the same group. | Both Selected Items lines show 10 boxes / 2500 cards. Billed total is 20 boxes. Cart count stays 2. Removing a ship-to does not delete the cart line. |
+| SH-09 | Use the Shipping Selected Items trash control.                                 | The card leaves that group, the cart drawer, and the navbar count.                                                                                    |
+| SH-10 | Use the cart drawer trash control.                                             | The card leaves the cart and every shipping group. Navbar count drops.                                                                                |
+| SH-11 | Group with no selected cards.                                                  | Split Order, Add location, and location delete are disabled.                                                                                          |
+| SH-12 | Remove the last card from a group that had ship-tos.                           | Ship-to rows on that group are cleared.                                                                                                               |
 
 ---
 
 ## 7. Review, Submission & Confirmation
 
-| Rule | Expected behaviour |
-| --- | --- |
-| Review | The final review reflects the business cards, quantities, shipping groups, and selected addresses in the order. |
-| Submit | The order can be submitted without entering payment information. |
-| Confirmation | A confirmation screen is shown after successful submission. |
-| Cart reset | After successful submission, the cart is empty and the cart count returns to 0. |
+| Rule         | Expected behaviour                                                                                              |
+| ------------ | --------------------------------------------------------------------------------------------------------------- |
+| Review       | The final review reflects the business cards, quantities, shipping groups, and selected addresses in the order. |
+| Submit       | The order can be submitted without entering payment information.                                                |
+| Confirmation | A confirmation screen is shown after successful submission.                                                     |
+| Cart reset   | After successful submission, the cart is empty and the cart count returns to 0.                                 |
 
 ### Tests
 
-| ID | Test | Expected result |
-| --- | --- | --- |
+| ID    | Test                                             | Expected result                                                                         |
+| ----- | ------------------------------------------------ | --------------------------------------------------------------------------------------- |
 | OR-01 | Complete the ordering flow and review the order. | Products, quantities, shipping groups, and addresses match the selections made earlier. |
-| OR-02 | Submit the order. | The confirmation screen appears without a payment step. |
-| OR-03 | Check the cart after confirmation. | The cart is empty and the cart count is 0. |
+| OR-02 | Submit the order.                                | The confirmation screen appears without a payment step.                                 |
+| OR-03 | Check the cart after confirmation.               | The cart is empty and the cart count is 0.                                              |
 
 ---
 
 ## 8. Language & Interface Rules
 
-| Rule | Expected behaviour |
-| --- | --- |
-| Language | The portal supports English and French. |
-| Language control | EN / FR is selected from the header. |
-| Footer | A second language selector is not used in the footer. |
-| Theme | The current portal uses the light theme. Dark mode is not part of this version. |
+| Rule             | Expected behaviour                                                              |
+| ---------------- | ------------------------------------------------------------------------------- |
+| Language         | The portal supports English and French.                                         |
+| Language control | EN / FR is selected from the header.                                            |
+| Footer           | A second language selector is not used in the footer.                           |
+| Theme            | The current portal uses the light theme. Dark mode is not part of this version. |
 
 ### Tests
 
-| ID | Test | Expected result |
-| --- | --- | --- |
+| ID    | Test                                   | Expected result                              |
+| ----- | -------------------------------------- | -------------------------------------------- |
 | UI-01 | Switch from EN to FR using the header. | The application interface changes to French. |
-| UI-02 | Review the footer. | No separate language selector is shown. |
-| UI-03 | Open the portal. | The application opens in the light theme. |
+| UI-02 | Review the footer.                     | No separate language selector is shown.      |
+| UI-03 | Open the portal.                       | The application opens in the light theme.    |
 
 ---
 
@@ -233,20 +237,20 @@ Shipping Group 1 contains the current business cards and shipping location. Sele
 
 Admin functions maintain the lists used by the business card ordering experience.
 
-| Rule | Expected behaviour |
-| --- | --- |
-| Manage Addresses | Admin can view, add, and remove office addresses used by the Address dropdown. |
-| Manage Titles | Admin can view, add, and remove titles used by the Title selector. |
-| Admin Dashboard | The Admin area provides the available administrative shortcuts and summary information. |
+| Rule             | Expected behaviour                                                                      |
+| ---------------- | --------------------------------------------------------------------------------------- |
+| Manage Addresses | Admin can view, add, and remove office addresses used by the Address dropdown.          |
+| Manage Titles    | Admin can view, add, and remove titles used by the Title selector.                      |
+| Admin Dashboard  | The Admin area provides the available administrative shortcuts and summary information. |
 
 ### Tests
 
-| ID | Test | Expected result |
-| --- | --- | --- |
-| AD-01 | Add an office address in Admin. | The address appears in the managed address list and is available for card selection. |
-| AD-02 | Remove an office address in Admin. | The address is removed from the managed list. |
-| AD-03 | Add a title in Admin. | The title appears in the managed title list and is available for card selection. |
-| AD-04 | Remove a title in Admin. | The title is removed from the managed list. |
+| ID    | Test                               | Expected result                                                                      |
+| ----- | ---------------------------------- | ------------------------------------------------------------------------------------ |
+| AD-01 | Add an office address in Admin.    | The address appears in the managed address list and is available for card selection. |
+| AD-02 | Remove an office address in Admin. | The address is removed from the managed list.                                        |
+| AD-03 | Add a title in Admin.              | The title appears in the managed title list and is available for card selection.     |
+| AD-04 | Remove a title in Admin.           | The title is removed from the managed list.                                          |
 
 ---
 
@@ -274,45 +278,45 @@ Use this section when adding tickets. Do **not** create a second ticket for a ru
 
 ### Already matches (leave as-is)
 
-| Guide | Current ticket / feature | Status |
-| --- | --- | --- |
-| Three products, $63 / 250 | F-01–F-04, USR-010–USR-023 | Done |
-| Locked company / website | USR-037 | Done |
-| Office from saved list | USR-036 | Done |
-| Canadian local phone on card | USR-035 | Done |
-| Live preview | USR-031 | Done |
-| Cart combine / separate / qty / badge | USR-040–USR-045 | Done |
-| Shipping $0, no payment | USR-053 | Done |
-| Cannot remove last split | USR-055 | Done |
-| Header EN/FR | USR-070, USR-071 | Done |
-| Light theme | F-23 | Done |
-| Manage Addresses | ADM-060 | Ready (Vue `#/admin/addresses`) |
-| Manage Titles | ADM-070 | Done (Vue `#/admin/titles`) |
-| Admin Dashboard | ADM-020 | Done (Vue tiles; live counts ADM-022/023 still Ideas) |
-| Printed-card count (qty × 250) | USR-046 | Done |
-| Move a card between shipping groups | USR-056 | Done (SH-04) |
-| Split Order creates an empty group | USR-057 | Done (SH-02, SH-03) |
-| Add/remove ship-to does not delete cart cards | USR-051 | Done (SH-08). Qty × addresses for billed boxes (SH-07). |
+| Guide                                         | Current ticket / feature   | Status                                                                                                                                                                                        |
+| --------------------------------------------- | -------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Three products, $63 / 250                     | F-01–F-04, USR-010–USR-023 | Done                                                                                                                                                                                          |
+| Locked company / website                      | USR-037                    | Done                                                                                                                                                                                          |
+| Office from saved list                        | USR-036                    | Done                                                                                                                                                                                          |
+| Canadian local phone on card                  | USR-035                    | Done                                                                                                                                                                                          |
+| Live preview                                  | USR-031                    | Done                                                                                                                                                                                          |
+| Cart combine / separate / qty / badge         | USR-040–USR-045            | Done                                                                                                                                                                                          |
+| Shipping $0, no payment                       | USR-053                    | Done                                                                                                                                                                                          |
+| Cannot remove last split                      | USR-055                    | Done                                                                                                                                                                                          |
+| Header EN/FR                                  | USR-070, USR-071           | Done                                                                                                                                                                                          |
+| Light theme                                   | F-23                       | Done                                                                                                                                                                                          |
+| Manage Addresses                              | ADM-060                    | Ready (Vue `#/admin/addresses`)                                                                                                                                                               |
+| Manage Titles                                 | ADM-070                    | Done (Vue `#/admin/titles`)                                                                                                                                                                   |
+| Admin Dashboard                               | ADM-020                    | Done (Vue tiles; live counts ADM-022/023 still Ideas)                                                                                                                                         |
+| Printed-card count (qty × 250)                | USR-046                    | Done                                                                                                                                                                                          |
+| Move a card between shipping groups           | USR-056                    | Done (SH-04)                                                                                                                                                                                  |
+| Split Order creates an empty group            | USR-057                    | Done (SH-02, SH-03)                                                                                                                                                                           |
+| Add/remove ship-to does not delete cart cards | USR-051                    | Done (SH-08). Selected Items copies the address total; billed boxes are designs × that total (SH-07). Shipping or drawer trash removes the cart line (SH-09, SH-10). |
 
 ### Already ticketed as Ideas — reuse these, do not duplicate
 
-| Guide | Ticket | Notes |
-| --- | --- | --- |
-| One or more titles | `USR-039` | Vue still allows one title |
-| Colliers offices on shipping | `USR-058` | Not in the PDF; keep |
-| Order review before confirm | `USR-063` | Section 7 / OR-01 |
-| Remove footer language | `F-20` | UI-02 |
-| User Address Book | `USR-080` | Demo user and admin can create personal addresses. Only admin creates offices (ADM-060) |
-| User Order History | `USR-090` | Vue 2 localStorage in colliers-vue2/. Details sheet is USR-098. Not ADM-030 |
+| Guide                        | Ticket    | Notes                                                                                   |
+| ---------------------------- | --------- | --------------------------------------------------------------------------------------- |
+| One or more titles           | `USR-039` | Vue still allows one title                                                              |
+| Colliers offices on shipping | `USR-058` | Not in the PDF; keep                                                                    |
+| Order review before confirm  | `USR-063` | Section 7 / OR-01                                                                       |
+| Remove footer language       | `F-20`    | UI-02                                                                                   |
+| User Address Book            | `USR-080` | Demo user and admin can create personal addresses. Only admin creates offices (ADM-060) |
+| User Order History           | `USR-090` | Vue 2 localStorage in colliers-vue2/. Details sheet is USR-098. Not ADM-030             |
 
 ### Limits and wording (updated)
 
-| Ticket | Change |
-| --- | --- |
-| USR-032 | QA. Full name max **50**. Vue `NAME_MAX=50`. |
-| USR-033 | Still Done (one title today). Multiple is USR-039. |
+| Ticket  | Change                                                                        |
+| ------- | ----------------------------------------------------------------------------- |
+| USR-032 | QA. Full name max **50**. Vue `NAME_MAX=50`.                                  |
+| USR-033 | Still Done (one title today). Multiple is USR-039.                            |
 | USR-034 | QA. Guide max **40**; Vue email max **50** for `@colliersprojectleaders.com`. |
-| IDEA-01 | Closed (Done). Guide is **40**, not 20 or 30. |
+| IDEA-01 | Closed (Done). Guide is **40**, not 20 or 30.                                 |
 
 ### Out of this guide — keep the tickets, do not treat as V2 rules
 

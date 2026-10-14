@@ -1,8 +1,14 @@
 <template>
   <colliers-page-shell>
-    <div v-if="!product || !proof" class="py-20 text-center text-gray-500">{{ t('productNotFound') }}</div>
+    <div v-if="!product || !proof" class="py-20 text-center text-gray-500">
+      {{ t('productNotFound') }}
+    </div>
     <div v-else>
-      <button type="button" class="mb-6 inline-flex items-center gap-1 text-sm text-gray-600 hover:text-gray-900" @click="backToEdit">
+      <button
+        type="button"
+        class="mb-6 inline-flex items-center gap-1 text-sm text-gray-600 hover:text-gray-900"
+        @click="backToEdit"
+      >
         <span aria-hidden="true">‹</span> {{ t('back') }}
       </button>
 
@@ -28,25 +34,33 @@
         <div class="w-full min-w-0 lg:max-w-md lg:flex-1">
           <h1 class="colliers-page-title mb-4">{{ t('proofApproval') }}</h1>
 
-          <div class="mb-6 rounded-md border border-amber-200 bg-amber-50 px-4 py-4 text-sm text-amber-950">
+          <div
+            class="mb-6 rounded-md border border-amber-200 bg-amber-50 px-4 py-4 text-sm text-amber-950"
+          >
             <p class="font-semibold text-red-800">{{ t('proofNoticeLead') }}</p>
             <p class="mt-2 leading-relaxed text-amber-950">{{ t('proofNotice') }}</p>
-            <label class="mt-4 flex cursor-pointer items-start gap-3 rounded border border-amber-200 bg-white px-3 py-3 text-sm text-gray-800">
+            <label
+              class="mt-4 flex cursor-pointer items-start gap-3 rounded border border-amber-200 bg-white px-3 py-3 text-sm text-gray-800"
+            >
               <input v-model="approved" class="mt-0.5 h-4 w-4 shrink-0" type="checkbox" />
               <span>{{ t('proofCheckbox') }}</span>
             </label>
           </div>
 
-          <div class="space-y-3">
-            <app-button variant="outline" block :disabled="!approved" @click="addItem">
-              {{ t('addToCart') }}
+          <div class="flex w-full flex-col gap-3">
+            <app-button variant="outline-soft" block :disabled="!approved" @click="addItem">
+              {{ t(isEditing ? 'updateCart' : 'addToCart') }}
             </app-button>
             <app-button block :disabled="!approved" @click="continueToShipping">
               {{ t('continueToShipping') }}
             </app-button>
-            <app-button variant="outline" block @click="backToEdit">
+            <button
+              type="button"
+              class="inline-flex w-full items-center justify-center py-2 text-[15px] font-medium text-colliers-primary hover:underline"
+              @click="backToEdit"
+            >
               <span aria-hidden="true" class="mr-1">‹</span>{{ t('backToEdit') }}
-            </app-button>
+            </button>
           </div>
         </div>
       </div>
@@ -59,11 +73,12 @@ import ColliersPageShell from '../layout/ColliersPageShell.vue'
 import CardPreview from '../components/CardPreview.vue'
 import AppButton from '../components/AppButton.vue'
 import { getProduct } from '../data/products'
-import { t, store, addProofToCart, ensureProofInCart } from '../store'
+import { t, store, addProofToCart, ensureProofInCart, ensureCartAssignedToShipping } from '../store'
 import { go } from '../adapters/nav'
 import { loadLayoutFonts } from '../helpers/cardFonts'
 import { planProductLayout } from '../helpers/cardLayout'
-import { isBilingualLanguage, WEBSITE_FR } from '../helpers/formatCardIdentity'
+import { isBilingualLanguage } from '../helpers/formatCardIdentity'
+import { bilingualFrenchPreviewDetails } from '../helpers/titleLocale'
 
 export default {
   name: 'ProofPage',
@@ -81,6 +96,9 @@ export default {
   computed: {
     proof: function () {
       return store.proof
+    },
+    isEditing: function () {
+      return !!(store.editLineId || (this.proof && this.proof.editLineId))
     },
     product: function () {
       var code = (this.proof && this.proof.code) || this.code
@@ -102,8 +120,8 @@ export default {
           { language: 'English', details: details, plan: planFor('English') },
           {
             language: 'French',
-            details: Object.assign({}, details, { website: WEBSITE_FR }),
-            plan: planFor('French'),
+            details: bilingualFrenchPreviewDetails(details),
+            plan: null,
           },
         ]
       }
@@ -140,7 +158,11 @@ export default {
         this.productPlan = null
         return
       }
-      this.productPlan = planProductLayout(this.proof.details, this.product.language, this.layoutFonts)
+      this.productPlan = planProductLayout(
+        this.proof.details,
+        this.product.language,
+        this.layoutFonts
+      )
     },
     addItem: function () {
       if (!this.approved) return
@@ -149,6 +171,7 @@ export default {
     continueToShipping: function () {
       if (!this.approved) return
       ensureProofInCart()
+      ensureCartAssignedToShipping()
       go('shipping')
     },
     backToEdit: function () {

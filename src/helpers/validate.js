@@ -1,7 +1,7 @@
 /**
  * Full name: USR-032 clips the field at 50 characters so a paste cannot flood
  * the form. That is not the card capacity. The print/preview planner wraps the
- * name by whole words in the 130 pt identity column (Open Sans Bold 10 pt) and
+ * name by whole words in the 141.52 pt identity column (Open Sans Bold 10 pt) and
  * allows at most two lines. A hyphenated surname can use the whole second line
  * and still fail well under 50 characters.
  * Email max: guide USR-034 was 40; set to 50 so full

@@ -5,10 +5,10 @@ Do not redesign the card or change production geometry without an explicit unloc
 
 These two images are for design approval. They are **not** a layout redesign. Each card face is a raster of the **generated production PDF**.
 
-| Image | What to look at |
-| --- | --- |
-| **[`Colliers-Print-PDF-Approval-Standard.png`](Colliers-Print-PDF-Approval-Standard.png)** | Typical finished card using approved sample content |
-| **[`Colliers-Print-PDF-Approval-Maximum.png`](Colliers-Print-PDF-Approval-Maximum.png)** | Finished card using a demanding but still valid combination of allowed content |
+| Image                                                                                          | What to look at                                                                                                                              |
+| ---------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| **[`Colliers-Print-PDF-Approval-Standard.png`](Colliers-Print-PDF-Approval-Standard.png)**     | Typical finished card using approved sample content                                                                                          |
+| **[`Colliers-Print-PDF-Approval-Maximum.png`](Colliers-Print-PDF-Approval-Maximum.png)**       | Finished card using a demanding but still valid combination of allowed content                                                               |
 | **[`Colliers-Print-PDF-Credentials-Spacing.png`](Colliers-Print-PDF-Credentials-Spacing.png)** | Side-by-side: Standard inline vs Maximum own-row, with **PDF baseline Y** callouts (used lines, address max slots, approved air above email) |
 
 Regenerate (only after an intentional, approved layout change): `npm run export:approval-guide`  
@@ -32,14 +32,14 @@ The approval images should reproduce the actual generated PDF, not redraw the ca
 
 ## Production geometry
 
-| Spec | Value |
-| --- | --- |
-| MediaBox / BleedBox | 270 × 162 pt (3.75 × 2.25 in) |
-| TrimBox | `[9, 9, 261, 153]` |
-| Final trim | 252 × 144 pt (3.5 × 2 in) |
-| Bleed | 9 pt / 1/8 in on every side |
-| Address column | X = 27 pt · 80 pt wide · bottom Y = 27 pt · up to 5 lines |
-| Identity column | X = 113.03 pt · 130 pt available width |
+| Spec                | Value                                                     |
+| ------------------- | --------------------------------------------------------- |
+| MediaBox / BleedBox | 270 × 162 pt (3.75 × 2.25 in)                             |
+| TrimBox             | `[9, 9, 261, 153]`                                        |
+| Final trim          | 252 × 144 pt (3.5 × 2 in)                                 |
+| Bleed               | 9 pt / 1/8 in on every side                               |
+| Address column      | X = 27 pt · 80 pt wide · bottom Y = 27 pt · up to 5 lines |
+| Identity column     | X = 113.03 pt · 141.52 pt available width (x ≈ 254.5)     |
 
 MASTER coordinates sit on the trim canvas. On the production bleed canvas they translate by approximately **+9 pt X and +9 pt Y**.
 
@@ -73,7 +73,7 @@ On Standard (inline / no own-row credentials), name stays at **75.49** and title
 
 On Maximum / own-row credentials **with team**, lift the identity block so the last identity line matches Standard team Y (**58.99**). That leaves the same ~16 pt air above email that Cynthia requested (Oct 2026). Email / mobile / website stay at 43 / 35 / 27.
 
-Optional rows are omitted when empty.
+Optional rows are omitted when empty. Locked example: `Colliers-Print-PDF-Approval-Split-NoTeam.pdf` — split credentials, `Gestionnaire de projets Senior | Nova Scotia`, no team line, contacts stay at 43 / 35 / 27 with the short-card air above email.
 
 ---
 
@@ -100,6 +100,22 @@ The exact vertical positions should come from the generated production PDF. Do *
 
 ---
 
+## Title and region width
+
+Title and region share one line, joined as `Title | Region`.
+
+The lock is **Gestionnaire de projets principal | Nova Scotia** at Open Sans Regular 6.5 pt:
+
+- Width **141.52 pt** (`titleMaxWidth`; the lock line measures 141.51 pt)
+- Start X: 113.03 pt
+- End X: ≈ 254.5 pt
+- About **6.5 pt** remaining to trim (x = 261)
+- Letters stay inside the bleed (page edge x = 270)
+
+Anything wider (for example `Responsable du développement commercial | Quebec`) is rejected. Name, degrees, team, and email keep their own lanes.
+
+---
+
 ## Email width rule
 
 The email is limited by **rendered width**, not character count alone.
@@ -108,22 +124,22 @@ For the current layout:
 
 - Font: Open Sans Regular
 - Size: 6.5 pt
-- Available identity width (name, title, website): 130 pt
-- Available email width: **132 pt** (Open Sans Regular 6.5 pt)
+- Available identity width (name, degrees, title, team, website, email): **141.52 pt**
+- Available email width: **141.52 pt** (same cap as title | region)
 - Start X: 113.03 pt
-- Maximum email end X: 245.03 pt (~16 pt remaining to trim)
+- Maximum email end X: ≈ 254.55 pt (~6.5 pt remaining to trim)
 
 The email must:
 
 1. Stay on one line
-2. Render at **132 pt wide or less**
+2. Render at **141.52 pt wide or less**
 3. Stay inside the email lane
-4. Never enter the bleed
+4. Never enter the bleed (trim is x = 261; bleed is 261–270)
 
 A character-count limit may still exist as a form validation rule, but it is **not sufficient by itself** to guarantee that the email fits.
 
 The Maximum approval fixture uses a name-derived Colliers-domain email that still fits the
-132 pt email lane (`christopher.hw@colliersprojectleaders.com`, ≈ 131.20 pt). The address is an official
+141.52 pt email lane (`christopher.hw@colliersprojectleaders.com`, ≈ 131.20 pt). The address is an official
 office street block (`1066 West Hastings…`). The Standard fixture uses Hannah Sharpe at Ottawa (Iris Street) with
 inline `B.Comm, PMP`.
 

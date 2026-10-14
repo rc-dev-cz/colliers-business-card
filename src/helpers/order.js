@@ -23,10 +23,17 @@ export function createSplit(options) {
         }
       })
     : []
+  var qtys = {}
+  if (opts.qtys && typeof opts.qtys === 'object') {
+    Object.keys(opts.qtys).forEach(function (key) {
+      qtys[String(key)] = Math.max(1, Number(opts.qtys[key]) || 1)
+    })
+  }
   return {
     id: opts.id == null ? Date.now() : opts.id,
     itemIds: Array.isArray(opts.itemIds) ? opts.itemIds.map(String) : [],
     locations: locations,
+    qtys: qtys,
   }
 }
 
@@ -44,10 +51,12 @@ export function defaultOrder() {
 export function normalizeOrder(raw) {
   const source = raw && Array.isArray(raw.splits) ? raw : defaultOrder()
   return {
+    detachedIds: Array.isArray(source.detachedIds) ? source.detachedIds.map(String) : [],
     splits: source.splits.map(function (split, index) {
       return createSplit({
         id: split.id == null ? index + 1 : split.id,
         itemIds: Array.isArray(split.itemIds) ? split.itemIds.map(String) : [],
+        qtys: split.qtys || {},
         locations: (split.locations || []).filter(function (loc) {
           return String((loc && loc.address) || '').trim()
         }),
@@ -58,10 +67,12 @@ export function normalizeOrder(raw) {
 
 export function snapshotOrder(value) {
   return {
+    detachedIds: ((value && value.detachedIds) || []).map(String),
     splits: (value.splits || []).map(function (split) {
       return {
         id: split.id,
         itemIds: (split.itemIds || []).slice(),
+        qtys: Object.assign({}, split.qtys || {}),
         locations: (split.locations || []).map(function (loc) {
           return {
             id: loc.id,
@@ -85,9 +96,11 @@ export function syncCartAssignments(order, cartIds) {
     Vue.set(
       split,
       'itemIds',
-      (split.itemIds || []).filter(function (id) {
-        return idSet[String(id)]
-      }).map(String),
+      (split.itemIds || [])
+        .filter(function (id) {
+          return idSet[String(id)]
+        })
+        .map(String)
     )
   })
 
@@ -102,12 +115,22 @@ export function syncCartAssignments(order, cartIds) {
     })
   })
 
-  ids.forEach(function (id) {
-    if (!assigned[id]) {
-      order.splits[0].itemIds.push(id)
-      assigned[id] = true
-    }
+  const detached = {}
+  ;((order && order.detachedIds) || []).forEach(function (id) {
+    detached[String(id)] = true
   })
+
+  ids.forEach(function (id) {
+    if (assigned[id] || detached[id]) return
+    order.splits[0].itemIds.push(id)
+    assigned[id] = true
+  })
+
+  const kept = ((order && order.detachedIds) || []).map(String).filter(function (id) {
+    return idSet[id] && !assigned[id]
+  })
+  if (typeof Vue !== 'undefined' && Vue.set) Vue.set(order, 'detachedIds', kept)
+  else order.detachedIds = kept
 }
 
 export function linesForSplit(split, cartLines) {
@@ -122,10 +145,50 @@ export function linesForSplit(split, cartLines) {
     .filter(Boolean)
 }
 
-/** Boxes ordered in this shipping group (sum of cart line quantities). */
+/** Quantity of one card inside one shipping group. */
+export function readSplitQty(split, line) {
+  var id = String(line && line.id)
+  var stored = split && split.qtys ? split.qtys[id] : null
+  if (stored != null && stored !== '') return Math.max(1, Number(stored) || 1)
+  return Math.max(1, Number(line && line.quantity) || 1)
+}
+
+/** Remember that quantity on the split, without touching the other splits. */
+export function writeSplitQty(split, line, qty) {
+  var n = Math.max(1, Number(qty) || 1)
+  var id = String(line && line.id)
+  if (!split.qtys || typeof split.qtys !== 'object' || Array.isArray(split.qtys)) {
+    if (typeof Vue !== 'undefined' && Vue.set) Vue.set(split, 'qtys', {})
+    else split.qtys = {}
+  }
+  if (typeof Vue !== 'undefined' && Vue.set) Vue.set(split.qtys, id, n)
+  else split.qtys[id] = n
+  return n
+}
+
+/**
+ * Cart line quantity is the items for that card across splits.
+ * One split keeps the card's own quantity. Several splits add up.
+ */
+export function syncLineQuantityFromSplits(order, line) {
+  var id = String(line && line.id)
+  var parts = []
+  ;((order && order.splits) || []).forEach(function (split) {
+    var ids = (split.itemIds || []).map(String)
+    if (ids.indexOf(id) === -1) return
+    parts.push(readSplitQty(split, line))
+  })
+  if (!parts.length) return line.quantity
+  line.quantity = parts.reduce(function (sum, n) {
+    return sum + n
+  }, 0)
+  return line.quantity
+}
+
+/** Boxes ordered in this shipping group (sum of that group's quantities). */
 export function orderedBoxesForSplit(split, cartLines) {
   return linesForSplit(split, cartLines).reduce(function (sum, line) {
-    return sum + (Number(line.quantity) || 0)
+    return sum + readSplitQty(split, line)
   }, 0)
 }
 
@@ -155,19 +218,115 @@ export function shipMultiplier(split) {
   return n > 0 ? n : 1
 }
 
-export function billedBoxesForLine(line, order) {
-  var split = splitForLineId(order, line && line.id)
-  return (Number(line && line.quantity) || 0) * shipMultiplier(split)
+export function groupLines(split, cartLines) {
+  var ids = ((split && split.itemIds) || []).map(String)
+  return (cartLines || []).filter(function (line) {
+    return ids.indexOf(String(line && line.id)) >= 0
+  })
 }
 
-export function billedBoxesCart(cart, order) {
-  return (cart || []).reduce(function (sum, line) {
-    return sum + billedBoxesForLine(line, order)
+/**
+ * Address boxes are the only editor. Every design in the group
+ * copies that group's address total. Cart line quantity is left
+ * to syncLineQuantityFromSplits so another group's copy is kept.
+ */
+export function fitGroupToLimit(split, cartLines) {
+  var lines = groupLines(split, cartLines)
+  if (!lines.length) return
+  if (split.locations && split.locations.length) {
+    var total = locationBoxSum(split)
+    if (!(total > 0)) total = 1
+    lines.forEach(function (line) {
+      writeSplitQty(split, line, total)
+    })
+    return
+  }
+  lines.forEach(function (line) {
+    writeSplitQty(split, line, readSplitQty(split, line))
+  })
+}
+
+export function maxItemQty(split) {
+  if (!split || !split.locations || !split.locations.length) return 1
+  return Math.max(1, locationBoxSum(split))
+}
+
+export function locationQtyFloor() {
+  return 1
+}
+
+export function locationBoxSum(split) {
+  if (!split || !split.locations || !split.locations.length) return 0
+  return split.locations.reduce(function (sum, loc) {
+    var qty = Number(loc && loc.qty)
+    return sum + (qty > 0 ? qty : 0)
   }, 0)
 }
 
-/** Boxes each address in the group receives (Selected Items sum, not multiplied). */
+function splitsForLineId(order, lineId) {
+  var id = String(lineId == null ? '' : lineId)
+  return ((order && order.splits) || []).filter(function (split) {
+    return (split.itemIds || []).some(function (itemId) {
+      return String(itemId) === id
+    })
+  })
+}
+
+/**
+ * Boxes billed for one cart line. Each group with addresses contributes
+ * that group's full address total (a copy, not a share). Groups without
+ * addresses contribute the cart line quantity once.
+ */
+export function billedBoxesForLine(line, order) {
+  var qty = Number(line && line.quantity) || 0
+  var splits = splitsForLineId(order, line && line.id)
+  var withLocs = splits.filter(function (split) {
+    return split.locations && split.locations.length
+  })
+  if (!withLocs.length) return qty
+  return withLocs.reduce(function (sum, split) {
+    return sum + locationBoxSum(split)
+  }, 0)
+}
+
+export function billedBoxesCart(cart, order) {
+  var cartIds = {}
+  ;(cart || []).forEach(function (line) {
+    cartIds[String(line && line.id)] = true
+  })
+  var covered = {}
+  var total = 0
+  ;((order && order.splits) || []).forEach(function (split) {
+    var designs = (split.itemIds || []).map(String).filter(function (id) {
+      return cartIds[id]
+    })
+    if (!(split.locations && split.locations.length) || !designs.length) return
+    total += locationBoxSum(split) * designs.length
+    designs.forEach(function (id) {
+      covered[id] = true
+    })
+  })
+  ;(cart || []).forEach(function (line) {
+    var id = String(line && line.id)
+    if (covered[id]) return
+    total += Number(line && line.quantity) || 0
+  })
+  return total
+}
+
+/**
+ * Default boxes for a new address: one box of each design, or the
+ * single card's quantity when the group has no addresses yet.
+ * A later address copies the previous address quantity.
+ */
 export function boxesPerAddressForSplit(split, cartLines) {
+  var locs = (split && split.locations) || []
+  if (locs.length) {
+    var last = Number(locs[locs.length - 1] && locs[locs.length - 1].qty)
+    if (last > 0) return last
+  }
+  var lines = linesForSplit(split, cartLines)
+  if (lines.length > 1) return 1
   var ordered = orderedBoxesForSplit(split, cartLines)
   return ordered > 0 ? ordered : 1
 }
@@ -179,17 +338,14 @@ export function nextLocationQty(split, cartLines) {
   return boxesPerAddressForSplit(split, cartLines)
 }
 
-export function syncLocationQtyFromOrdered(split, cartLines) {
-  var qty = boxesPerAddressForSplit(split, cartLines)
-  ;(split.locations || []).forEach(function (loc) {
-    loc.qty = qty
-  })
-}
+/** Addresses are the qty editor. Card quantities follow them; this does not rewrite addresses. */
+export function syncLocationQtyFromOrdered() {}
 
-export function addSplit(order, itemIds) {
+export function addSplit(order, itemIds, qtys) {
   const split = createSplit({
     locations: [],
     itemIds: Array.isArray(itemIds) ? itemIds : [],
+    qtys: qtys || {},
   })
   order.splits.push(split)
   return split
@@ -206,15 +362,41 @@ export function removeSplitAt(order, index) {
   return ids
 }
 
+export function detachLine(order, itemId) {
+  const id = String(itemId)
+  const list = ((order && order.detachedIds) || []).map(String)
+  if (list.indexOf(id) === -1) list.push(id)
+  if (typeof Vue !== 'undefined' && Vue.set) Vue.set(order, 'detachedIds', list)
+  else order.detachedIds = list
+}
+
+export function attachLine(order, itemId) {
+  const id = String(itemId)
+  const list = ((order && order.detachedIds) || []).map(String).filter(function (row) {
+    return row !== id
+  })
+  if (typeof Vue !== 'undefined' && Vue.set) Vue.set(order, 'detachedIds', list)
+  else order.detachedIds = list
+}
+
+/** Add a cart line to one group without removing it from the others. */
+export function includeItem(order, split, itemId) {
+  const id = String(itemId)
+  if (!split.itemIds) split.itemIds = []
+  if (split.itemIds.map(String).indexOf(id) === -1) split.itemIds.push(id)
+  attachLine(order, id)
+}
+
 export function assignItem(order, split, itemId) {
   const id = String(itemId)
+  attachLine(order, id)
   order.splits.forEach(function (row) {
     Vue.set(
       row,
       'itemIds',
       (row.itemIds || []).filter(function (x) {
         return x !== id
-      }),
+      })
     )
   })
   if (split.itemIds.indexOf(id) === -1) split.itemIds.push(id)
@@ -228,17 +410,54 @@ export function unassignItem(order, itemId) {
       'itemIds',
       (row.itemIds || []).filter(function (x) {
         return x !== id
-      }),
+      })
     )
   })
 }
 
-export function moveItem(order, itemId, toSplitId) {
+export function moveItem(order, itemId, toSplitId, newIndex) {
   const target = order.splits.find(function (row) {
     return String(row.id) === String(toSplitId)
   })
   if (!target) return
   assignItem(order, target, itemId)
+  if (newIndex == null || newIndex === '') return
+  var id = String(itemId)
+  var ids = target.itemIds || []
+  var at = ids.map(String).indexOf(id)
+  if (at === -1) return
+  var row = ids.splice(at, 1)[0]
+  var idx = Number(newIndex)
+  if (isNaN(idx) || idx < 0) idx = ids.length
+  if (idx > ids.length) idx = ids.length
+  ids.splice(idx, 0, row)
+}
+
+export function moveLocation(order, locId, toSplitId, newIndex) {
+  var id = String(locId || '')
+  if (!id) return null
+  var target = (order.splits || []).find(function (row) {
+    return String(row.id) === String(toSplitId)
+  })
+  if (!target) return null
+  var moved = null
+  ;(order.splits || []).forEach(function (split) {
+    if (moved) return
+    var list = split.locations || []
+    var i
+    for (i = 0; i < list.length; i += 1) {
+      if (String(list[i] && list[i].id) !== id) continue
+      moved = list.splice(i, 1)[0]
+      break
+    }
+  })
+  if (!moved) return null
+  target.locations = target.locations || []
+  var idx = newIndex == null || newIndex === '' ? target.locations.length : Number(newIndex)
+  if (isNaN(idx) || idx < 0) idx = target.locations.length
+  if (idx > target.locations.length) idx = target.locations.length
+  target.locations.splice(idx, 0, moved)
+  return moved
 }
 
 export function addLocation(split, address, qty) {
@@ -251,10 +470,21 @@ export function removeLocation(split, index) {
   return removed || null
 }
 
+/** Ship-to rows only belong on a group that still has selected cards. */
+export function pruneLocationsWithoutItems(order, cartLines) {
+  ;(order && order.splits ? order.splits : []).forEach(function (split) {
+    if (linesForSplit(split, cartLines).length) return
+    if (!split.locations || !split.locations.length) return
+    split.locations.splice(0, split.locations.length)
+  })
+}
+
 export function resetOrder(order) {
   const next = defaultOrder()
   order.splits.splice(0, order.splits.length)
   next.splits.forEach(function (split) {
     order.splits.push(split)
   })
+  if (typeof Vue !== 'undefined' && Vue.set) Vue.set(order, 'detachedIds', [])
+  else order.detachedIds = []
 }

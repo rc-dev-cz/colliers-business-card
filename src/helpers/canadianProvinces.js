@@ -19,6 +19,4 @@ export const CANADIAN_REGION_OPTIONS = CANADIAN_PROVINCES.map(function (row) {
   return { value: row.label, label: row.label }
 })
 
-export const OFFICE_COUNTRY_OPTIONS = [
-  { value: 'Canada', label: 'Canada' },
-]
+export const OFFICE_COUNTRY_OPTIONS = [{ value: 'Canada', label: 'Canada' }]

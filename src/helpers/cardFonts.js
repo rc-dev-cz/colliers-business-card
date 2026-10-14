@@ -13,7 +13,7 @@ export async function loadBytes(url) {
       var res = await fetch(url)
       if (res.ok) return new Uint8Array(await res.arrayBuffer())
     }
-  } catch (e) {}
+  } catch {}
   var fs = await import('node:fs')
   var path = await import('node:path')
   var { fileURLToPath } = await import('node:url')

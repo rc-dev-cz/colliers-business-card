@@ -107,6 +107,48 @@ body {
   border-bottom-color: var(--colliers-primary-hover);
 }
 
+.colliers-header-lockup {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.colliers-header-mark {
+  height: 2rem;
+  width: auto;
+}
+
+.colliers-header-wordmark {
+  height: 1.42rem;
+  width: auto;
+}
+
+.colliers-header-wordmark--fr {
+  height: 1.64rem;
+}
+
+.colliers-header-lockup--on-blue .colliers-header-wordmark {
+  filter: brightness(0) invert(1);
+}
+
+@media (min-width: 640px) {
+  .colliers-header-lockup {
+    gap: 0.55rem;
+  }
+
+  .colliers-header-mark {
+    height: 2.25rem;
+  }
+
+  .colliers-header-wordmark {
+    height: 1.6rem;
+  }
+
+  .colliers-header-wordmark--fr {
+    height: 1.84rem;
+  }
+}
+
 .colliers-site-footer {
   flex: 0 0 auto;
   width: 100%;
@@ -259,11 +301,32 @@ body {
   margin-bottom: 2rem;
 }
 
+.colliers-page-header__actions {
+  display: flex;
+  flex-shrink: 0;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 1rem;
+}
+
+.colliers-page-header > .btn-primary,
+.colliers-page-header__actions > .btn-primary {
+  flex: 0 0 auto;
+  width: 100%;
+  white-space: nowrap;
+}
+
 @media (min-width: 640px) {
   .colliers-page-header {
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
+  }
+
+  .colliers-page-header > .btn-primary,
+  .colliers-page-header__actions > .btn-primary {
+    width: auto;
   }
 }
 
@@ -429,7 +492,9 @@ body {
   border-left: none;
   border-right: none;
   cursor: pointer;
-  transition: color 0.15s ease, border-color 0.15s ease;
+  transition:
+    color 0.15s ease,
+    border-color 0.15s ease;
 }
 
 .colliers-tab:hover {
@@ -553,7 +618,9 @@ body {
   overflow-y: auto;
   border-radius: 0.5rem 0.5rem 0 0;
   background: #fff;
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+  box-shadow:
+    0 20px 25px -5px rgba(0, 0, 0, 0.1),
+    0 8px 10px -6px rgba(0, 0, 0, 0.1);
 }
 
 @media (min-width: 640px) {
@@ -630,6 +697,21 @@ body {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
 }
 
+.card-preview-frame--thumb {
+  width: 7.5rem;
+  max-width: 7.5rem;
+  margin-left: 0;
+  margin-right: 0;
+  flex-shrink: 0;
+}
+
+@media (min-width: 640px) {
+  .card-preview-frame--thumb {
+    width: 8.5rem;
+    max-width: 8.5rem;
+  }
+}
+
 /* --- Buttons (compiled from Tailwind @layer components) --- */
 .btn-primary {
   display: inline-flex;
@@ -668,7 +750,9 @@ body {
   font-weight: 500;
   color: var(--colliers-primary);
   cursor: pointer;
-  transition: background-color 0.15s ease, color 0.15s ease;
+  transition:
+    background-color 0.15s ease,
+    color 0.15s ease;
 }
 
 .btn-outline:hover {
@@ -676,10 +760,64 @@ body {
   color: #fff;
 }
 
+.btn-outline:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.btn-outline-soft {
+  display: inline-flex;
+  width: 100%;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  border: 2px solid var(--colliers-primary);
+  background: #fff;
+  padding: 0.625rem 1rem;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--colliers-primary);
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.btn-outline-soft:hover {
+  background-color: #f4f7fe;
+}
+
+.btn-outline-soft:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.btn-primary.w-full,
+.btn-outline.w-full,
+.btn-outline-soft.w-full {
+  width: 100%;
+}
+
 @media (min-width: 640px) {
-  .btn-outline {
+  .btn-outline:not(.w-full) {
     width: auto;
   }
+}
+
+.proof-back-link {
+  display: inline-flex;
+  width: 100%;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: transparent;
+  padding: 0.5rem 0.25rem;
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--colliers-primary);
+  cursor: pointer;
+}
+
+.proof-back-link:hover {
+  text-decoration: underline;
 }
 
 .btn-primary-sm {
@@ -700,12 +838,91 @@ body {
   background-color: var(--colliers-primary-hover);
 }
 
+.btn-split {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.25rem;
+  border: none;
+  background-color: #2d3748;
+  padding: 0.625rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #fff;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.btn-split:hover {
+  background-color: #1a202c;
+}
+
+.btn-split:disabled,
+.btn-split:disabled:hover {
+  cursor: not-allowed;
+  opacity: 0.5;
+  background-color: #2d3748;
+}
+
+.btn-remove-split {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.25rem;
+  border: 1px solid #fecaca;
+  background-color: #fef2f2;
+  padding: 0.625rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #dc2626;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.btn-remove-split:hover {
+  background-color: #fee2e2;
+}
+
+.btn-location {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.375rem;
+  border-radius: 0.25rem;
+  border: 1px solid #d1d5db;
+  background-color: #fff;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #1f2937;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.btn-location:hover {
+  background-color: #f9fafb;
+}
+
+.btn-location:disabled,
+.btn-location:disabled:hover {
+  cursor: not-allowed;
+  opacity: 0.5;
+  background-color: #fff;
+}
+
 /* --- Form fields --- */
 .field-label {
   display: block;
   margin-bottom: 0.375rem;
   font-size: 14px;
   color: #374151;
+}
+
+/* Override BF .vue-form-generator .field-label span (display:block; width:100%) so required * stays inline */
+.vue-form-generator .field-label span {
+  display: inline;
+  width: auto;
+  margin-left: 0.125rem;
 }
 
 .field-input {

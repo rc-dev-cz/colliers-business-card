@@ -4,20 +4,21 @@
 
 **JSON cases:** [`short-long-examples.json`](short-long-examples.json). Standard approval / EN / FR / bilingual are Hannah **without** team. Short JSON is Hannah **with** team.
 
-| File | What to look at |
-| --- | --- |
-| `Colliers-Sample-Placeholder-EN.pdf` | Empty card: Firstname Lastname, Title, Specialized team, C.M. |
-| `Colliers-Sample-Placeholder-FR.pdf` | Empty French card: Prénom Nom, Titre, Équipe spécialisée, C.M. |
-| `Colliers-Sample-EN.pdf` | Typical English finished card (Hannah, inline degrees, **no** team) + blue back |
-| `Colliers-Sample-FR.pdf` | Same person, French wordmark + back |
-| `Colliers-Sample-Bilingual.pdf` | EN face + FR face (2 pages, no blue backs) |
-| `Colliers-Sample-Short.pdf` | Standard / short **with** specialized team |
-| `Colliers-Sample-Long.pdf` | Maximum / long: 2-line name, own-row credentials, team, extra air above email |
-| `Colliers-Sample-Long-FR.pdf` | Same Maximum stack, French wordmark |
-| `Colliers-Print-PDF-Approval-Standard.png` | Typical finished card (approval) |
-| `Colliers-Print-PDF-Approval-Maximum.png` | Demanding but still valid finished card (approval) |
-| `Colliers-Print-PDF-Credentials-Spacing.png` | Side-by-side inline vs own-row credentials (current rules) |
-| `LAYOUT-GUIDE.md` | Written guide for the team |
+| File                                           | What to look at                                                                                            |
+| ---------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| `Colliers-Sample-Placeholder-EN.pdf`           | Empty card: Firstname Lastname, Title, Specialized team, C.M.                                              |
+| `Colliers-Sample-Placeholder-FR.pdf`           | Empty French card: Prénom Nom, Titre, Équipe spécialisée, C.M.                                             |
+| `Colliers-Sample-EN.pdf`                       | Typical English finished card (Hannah, inline degrees, **no** team) + blue back                            |
+| `Colliers-Sample-FR.pdf`                       | Same person, French wordmark + back                                                                        |
+| `Colliers-Sample-Bilingual.pdf`                | EN face + FR face (2 pages, no blue backs)                                                                 |
+| `Colliers-Sample-Short.pdf`                    | Standard / short **with** specialized team                                                                 |
+| `Colliers-Sample-Long.pdf`                     | Maximum / long: 2-line name, own-row credentials, team, extra air above email                              |
+| `Colliers-Sample-Long-FR.pdf`                  | Same Maximum stack, French wordmark                                                                        |
+| `Colliers-Print-PDF-Approval-Split-NoTeam.pdf` | Locked bilingual print file: split credentials, title \| Nova Scotia, **no** team row (empty team omitted) |
+| `Colliers-Print-PDF-Approval-Standard.png`     | Typical finished card (approval)                                                                           |
+| `Colliers-Print-PDF-Approval-Maximum.png`      | Demanding but still valid finished card (approval)                                                         |
+| `Colliers-Print-PDF-Credentials-Spacing.png`   | Side-by-side inline vs own-row credentials (current rules)                                                 |
+| `LAYOUT-GUIDE.md`                              | Written guide for the team                                                                                 |
 
 ## Specs for Mark / Cynthia
 

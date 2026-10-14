@@ -12,7 +12,9 @@
           type="button"
           class="shrink-0 focus:outline-none"
           :class="[
-            admin ? 'mr-4 flex items-center self-center focus-visible:ring-2 focus-visible:ring-white sm:mr-6 lg:mr-12' : 'focus-visible:ring-2 focus-visible:ring-colliers-primary',
+            admin
+              ? 'mr-4 flex items-center self-center focus-visible:ring-2 focus-visible:ring-white sm:mr-6 lg:mr-12'
+              : 'focus-visible:ring-2 focus-visible:ring-colliers-primary',
           ]"
           :aria-label="lockupAlt"
           @click="goCatalog"
@@ -40,7 +42,13 @@
           :aria-expanded="mobileMenuOpen ? 'true' : 'false'"
           @click="openMobileMenu"
         >
-          <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <svg
+            class="h-6 w-6"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            stroke-width="2"
+          >
             <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
           </svg>
         </button>
@@ -121,14 +129,26 @@
         <button
           type="button"
           class="relative rounded-sm transition-colors focus:outline-none focus:ring-2"
-          :class="admin
-            ? 'text-white/90 hover:text-white focus:ring-white'
-            : 'text-colliers-primary hover:text-colliers-primary-hover focus:ring-colliers-primary'"
+          :class="
+            admin
+              ? 'text-white/90 hover:text-white focus:ring-white'
+              : 'text-colliers-primary hover:text-colliers-primary-hover focus:ring-colliers-primary'
+          "
           :aria-label="t('shoppingCart')"
           @click="openCart"
         >
-          <svg class="h-6 w-6 sm:h-7 sm:w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.75">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 00-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 00-16.536-1.84M7.5 14.25L5.106 5.272M6 20.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm12.75 0a.75.75 0 11-1.5 0 .75.75 0 011.5 0z" />
+          <svg
+            class="h-6 w-6 sm:h-7 sm:w-7"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            stroke-width="1.75"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 00-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 00-16.536-1.84M7.5 14.25L5.106 5.272M6 20.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm12.75 0a.75.75 0 11-1.5 0 .75.75 0 011.5 0z"
+            />
           </svg>
           <span
             v-if="badge"
@@ -143,22 +163,28 @@
           <button
             type="button"
             class="flex h-9 w-9 items-center justify-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 sm:h-11 sm:w-11"
-            :class="admin
-              ? 'bg-white text-colliers-primary hover:bg-gray-100 focus:ring-white'
-              : 'bg-colliers-primary text-white hover:bg-colliers-primary-hover focus:ring-colliers-primary'"
+            :class="
+              admin
+                ? 'bg-white text-colliers-primary hover:bg-gray-100 focus:ring-white'
+                : 'bg-colliers-primary text-white hover:bg-colliers-primary-hover focus:ring-colliers-primary'
+            "
             :aria-label="t('profileMenu')"
             :aria-expanded="menuOpen ? 'true' : 'false'"
             @click="menuOpen = !menuOpen"
           >
             <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v1.2h19.2v-1.2c0-3.2-6.4-4.8-9.6-4.8z" />
+              <path
+                d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v1.2h19.2v-1.2c0-3.2-6.4-4.8-9.6-4.8z"
+              />
             </svg>
           </button>
           <div
             v-if="menuOpen"
             class="absolute right-0 z-30 mt-2 w-52 overflow-hidden rounded-md border border-gray-200 bg-white py-2 shadow-lg"
           >
-            <div class="border-b border-gray-100 px-3 pb-2 text-sm text-gray-600">{{ displayName }}</div>
+            <div class="border-b border-gray-100 px-3 pb-2 text-sm text-gray-600">
+              {{ displayName }}
+            </div>
             <button
               v-if="admin"
               type="button"
@@ -222,14 +248,22 @@
         :aria-label="t('closeMenu')"
         @click="closeMobileMenu"
       ></button>
-      <div class="relative flex h-full w-64 flex-col bg-colliers-primary px-4 pb-6 pt-6 text-white shadow-xl">
+      <div
+        class="relative flex h-full w-64 flex-col bg-colliers-primary px-4 pb-6 pt-6 text-white shadow-xl"
+      >
         <button
           type="button"
           class="absolute right-4 top-4 text-white hover:text-white/80 focus:outline-none focus-visible:ring-2 focus-visible:ring-white"
           :aria-label="t('closeMenu')"
           @click="closeMobileMenu"
         >
-          <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <svg
+            class="h-6 w-6"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            stroke-width="2"
+          >
             <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
           </svg>
         </button>
@@ -656,14 +690,7 @@ export default {
 
 /* Internal board entry — exclude when copying product UI into Clay/Klai. */
 .web-dev-menu {
-  background-image: linear-gradient(
-    90deg,
-    #25408f,
-    #00a9e0,
-    #ffd100,
-    #e31837,
-    #25408f
-  );
+  background-image: linear-gradient(90deg, #25408f, #00a9e0, #ffd100, #e31837, #25408f);
   background-size: 220% 100%;
   background-clip: text;
   -webkit-background-clip: text;

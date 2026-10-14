@@ -2,7 +2,10 @@
   <div class="colliers-page">
     <div class="colliers-page-inner">
       <app-header></app-header>
-      <div class="colliers-page-body" :class="{ 'colliers-page-body--viewport-list': viewportList }">
+      <div
+        class="colliers-page-body"
+        :class="{ 'colliers-page-body--viewport-list': viewportList }"
+      >
         <main
           id="main"
           class="colliers-main flex flex-col py-6 sm:py-10"

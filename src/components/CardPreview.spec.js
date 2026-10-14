@@ -43,4 +43,93 @@ describe('CardPreview', function () {
     expect(wrapper.text()).toContain('Arch. Tech')
     expect(wrapper.text()).toContain('Additional Credentials')
   })
+
+  it('omits empty specialized team even when title is still empty, matching print', function () {
+    var wrapper = mount(CardPreview, {
+      localVue: localVue,
+      propsData: {
+        details: {
+          name: 'Carlos Zabaleta Copa',
+          title: '',
+          region: 'Ontario',
+          specializedTeam: '',
+        },
+        language: 'English',
+        placeholders: true,
+      },
+    })
+    expect(wrapper.vm.view.team).toBe('')
+    expect(wrapper.text()).not.toContain('Specialized team')
+    expect(wrapper.text()).toContain('Title | Ontario')
+    expect(wrapper.vm.view.titleY).toBeCloseTo(58.99, 2)
+    expect(wrapper.vm.view.emailY).toBe(43)
+    expect(wrapper.vm.view.phoneY).toBe(35)
+    expect(wrapper.vm.view.websiteY).toBe(27)
+  })
+
+  it('keeps print contact spacing when specialized team is filled', async function () {
+    var fonts = await loadLayoutFonts()
+    var product = planProductLayout(longCredDetails, 'French', fonts)
+    var printEmailY = product.pages[0].layout.emailY
+
+    var wrapper = mount(CardPreview, {
+      localVue: localVue,
+      propsData: {
+        details: longCredDetails,
+        language: 'French',
+      },
+    })
+    await wrapper.vm.$nextTick()
+    await new Promise(function (resolve) {
+      setTimeout(resolve, 0)
+    })
+    await wrapper.vm.$nextTick()
+
+    expect(wrapper.vm.view.team).toBe('Specialized Team')
+    expect(wrapper.vm.view.emailY).toBe(printEmailY)
+    expect(wrapper.vm.view.emailY).toBe(43)
+    expect(wrapper.vm.view.phoneY).toBe(35)
+    expect(wrapper.vm.view.websiteY).toBe(27)
+  })
+
+  it('sizes type from print points on the 252 pt trim', async function () {
+    var wrapper = mount(CardPreview, {
+      localVue: localVue,
+      propsData: {
+        details: longCredDetails,
+        language: 'English',
+      },
+    })
+    expect(wrapper.vm.nameLineStyle(0).fontSize).toBe((10 / 252) * 100 + 'cqw')
+    expect(wrapper.vm.rowStyle(50, true).fontSize).toBe((7 / 252) * 100 + 'cqw')
+    expect(wrapper.vm.rowStyle(50, false).fontSize).toBe((6.5 / 252) * 100 + 'cqw')
+    expect(wrapper.vm.addressStyle.fontSize).toBe((6.5 / 252) * 100 + 'cqw')
+  })
+
+  it('puts region on its own line when Title | Region overflows', async function () {
+    var wrapper = mount(CardPreview, {
+      localVue: localVue,
+      propsData: {
+        details: {
+          name: 'Prénom Nom',
+          title: 'Responsable du développement commercial',
+          region: 'Quebec',
+          email: 'prenom.nom@colliersprojectleaders.com',
+          phone: '4165550100',
+        },
+        language: 'French',
+      },
+    })
+    await wrapper.vm.$nextTick()
+    await new Promise(function (resolve) {
+      setTimeout(resolve, 0)
+    })
+    await wrapper.vm.$nextTick()
+
+    expect(wrapper.vm.view.title).toBe('Responsable du développement commercial')
+    expect(wrapper.vm.view.regionLine).toBe('Quebec')
+    expect(wrapper.text()).toContain('Responsable du développement commercial')
+    expect(wrapper.text()).toContain('Quebec')
+    expect(wrapper.text()).not.toContain('Responsable du développement commercial | Quebec')
+  })
 })

@@ -2,7 +2,11 @@
   <colliers-page-shell>
     <div v-if="!product" class="py-20 text-center text-gray-500">{{ t('productNotFound') }}</div>
     <div v-else>
-      <button type="button" class="mb-6 inline-flex items-center gap-1 text-sm text-gray-600 hover:text-gray-900" @click="back">
+      <button
+        type="button"
+        class="mb-6 inline-flex items-center gap-1 text-sm text-gray-600 hover:text-gray-900"
+        @click="back"
+      >
         <span aria-hidden="true">‹</span> {{ t('back') }}
       </button>
 
@@ -19,6 +23,7 @@
               <div class="mb-2 italic text-gray-700">{{ t('materials') }}</div>
               <ul class="list-disc space-y-1 pl-5 text-gray-700">
                 <li>{{ t('premiumStock') }}</li>
+                <li>{{ t('finishOptions') }}</li>
               </ul>
             </div>
             <div>
@@ -35,7 +40,9 @@
 
           <div class="space-y-0 text-[14px]">
             <div class="flex flex-col border-b border-gray-200 py-2 sm:flex-row sm:justify-between">
-              <span class="w-[200px] shrink-0 font-semibold text-gray-700">{{ t('itemNumber') }}</span>
+              <span class="w-[200px] shrink-0 font-semibold text-gray-700">{{
+                t('itemNumber')
+              }}</span>
               <div class="mt-1 flex-1 text-gray-600 sm:mt-0 sm:text-right">
                 {{ product.code }}<br />{{ name }}
               </div>
@@ -54,7 +61,11 @@
                     </tr>
                   </thead>
                   <tbody>
-                    <tr v-for="(tier, i) in product.priceTiers" :key="i" class="border-b border-gray-200">
+                    <tr
+                      v-for="(tier, i) in product.priceTiers"
+                      :key="i"
+                      class="border-b border-gray-200"
+                    >
                       <td class="px-3 py-2">{{ tier.from }} BX</td>
                       <td class="px-3 py-2">{{ tier.to }}</td>
                       <td class="px-3 py-2">${{ tier.pricePer.toFixed(2) }} / BX</td>
@@ -122,7 +133,10 @@ export default {
         { label: t('packaging'), value: this.product.packaging },
         { label: t('productType'), value: t('printOnDemand') },
         { label: t('minOrderQty'), value: this.product.minQty },
-        { label: t('status'), value: this.product.status === 'Active' ? t('active') : this.product.status },
+        {
+          label: t('status'),
+          value: this.product.status === 'Active' ? t('active') : this.product.status,
+        },
         { label: t('dateAdded'), value: this.product.dateAdded },
       ]
     },

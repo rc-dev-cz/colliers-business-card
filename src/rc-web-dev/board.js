@@ -43,9 +43,11 @@ export const board = Vue.observable({
 })
 
 let logSeq = 0
-const seedIds = new Set(seedTickets.map(function (ticket) {
-  return ticket.id
-}))
+const seedIds = new Set(
+  seedTickets.map(function (ticket) {
+    return ticket.id
+  })
+)
 
 function setLogs(list) {
   board.logs = list.slice(0, LOG_LIMIT)
@@ -63,20 +65,30 @@ export function getTickets() {
 
 function hasClearedReview(id) {
   const edits = board.editsById[id]
-  if (edits && Object.prototype.hasOwnProperty.call(edits, 'review') && !normalizeReview(edits.review)) {
+  if (
+    edits &&
+    Object.prototype.hasOwnProperty.call(edits, 'review') &&
+    !normalizeReview(edits.review)
+  ) {
     return true
   }
   const custom = board.customById[id]
-  if (custom && Object.prototype.hasOwnProperty.call(custom, 'review') && !normalizeReview(custom.review)) {
+  if (
+    custom &&
+    Object.prototype.hasOwnProperty.call(custom, 'review') &&
+    !normalizeReview(custom.review)
+  ) {
     return true
   }
   return false
 }
 
 function latestLogFor(id) {
-  return board.logs.find(function (item) {
-    return item.ticketId === id
-  }) || null
+  return (
+    board.logs.find(function (item) {
+      return item.ticketId === id
+    }) || null
+  )
 }
 
 export function merged(ticket) {
@@ -263,7 +275,7 @@ function addLog(entry) {
       changes: [],
       assignee: (ticket && ticket.assignee) || '',
     },
-    entry,
+    entry
   )
   if (!item.assignee) item.assignee = (ticket && ticket.assignee) || ''
   setLogs([item].concat(board.logs))
@@ -315,7 +327,7 @@ export function revertUnsaved(id) {
     setLogs(
       board.logs.filter(function (_, index) {
         return index !== idx
-      }),
+      })
     )
   }
 }
@@ -381,7 +393,7 @@ export function addTicket(fields) {
   const id = nextCustomId(
     getTickets().map(function (ticket) {
       return ticket.id
-    }),
+    })
   )
   const ticket = normalizeCustomTicket(
     Object.assign({}, fields, {
@@ -392,7 +404,7 @@ export function addTicket(fields) {
       review: 'new',
       reviewedAt: new Date().toISOString(),
     }),
-    id,
+    id
   )
   board.customById = Object.assign({}, board.customById, { [id]: ticket })
   board.statusById = Object.assign({}, board.statusById, { [id]: ticket.status })
@@ -417,7 +429,8 @@ export function updateTicket(id, fields) {
   if (fields.priority != null) patch.priority = fields.priority
   if (fields.assignee != null) patch.assignee = fields.assignee
   if (fields.category != null) patch.category = normalizeCategory(fields.category)
-  if (fields.acceptanceCriteria != null) patch.acceptanceCriteria = asCriteria(fields.acceptanceCriteria)
+  if (fields.acceptanceCriteria != null)
+    patch.acceptanceCriteria = asCriteria(fields.acceptanceCriteria)
   if (fields.relatedIds !== undefined) patch.relatedIds = asRelatedIds(fields.relatedIds, id)
   if (fields.blocked != null) patch.blocked = Boolean(fields.blocked)
   if (fields.blockedReason != null) patch.blockedReason = String(fields.blockedReason)
@@ -449,7 +462,11 @@ export function updateTicket(id, fields) {
       changes.push({ field: 'category', from: current.category, to: patch.category })
     }
     if (patch.blocked != null && patch.blocked !== current.blocked) {
-      changes.push({ field: 'blocked', from: current.blocked ? 'Yes' : 'No', to: patch.blocked ? 'Yes' : 'No' })
+      changes.push({
+        field: 'blocked',
+        from: current.blocked ? 'Yes' : 'No',
+        to: patch.blocked ? 'Yes' : 'No',
+      })
     }
     if (patch.notes != null && patch.notes !== current.notes) {
       changes.push({ field: 'notes', from: current.notes, to: patch.notes })
@@ -469,7 +486,10 @@ export function updateTicket(id, fields) {
         changes.push({ field: 'acceptanceCriteria', from: from, to: to })
       }
     }
-    if (patch.relatedIds !== undefined && relatedKey(patch.relatedIds) !== relatedKey(current.relatedIds)) {
+    if (
+      patch.relatedIds !== undefined &&
+      relatedKey(patch.relatedIds) !== relatedKey(current.relatedIds)
+    ) {
       changes.push({
         field: 'relatedIds',
         from: relatedKey(current.relatedIds) || 'None',
@@ -516,7 +536,7 @@ export async function removeTicket(id) {
     for (let i = 0; i < related.length; i += 1) {
       try {
         await persistTicket(related[i])
-      } catch (error) {
+      } catch {
         /* keep going */
       }
     }
@@ -548,6 +568,6 @@ export async function removeTicket(id) {
   setLogs(
     board.logs.filter(function (item) {
       return item.ticketId !== id
-    }),
+    })
   )
 }

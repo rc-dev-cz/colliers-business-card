@@ -7,6 +7,9 @@ import {
   fitsLine,
   planCardLayout,
   planProductLayout,
+  previewContactYs,
+  applyEmptyTeamIdentityLayout,
+  applyPreviewTitleRegionSplit,
   resolveCardFields,
 } from './cardLayout.js'
 
@@ -23,16 +26,14 @@ function fields(overrides, language) {
         email: 'ada@example.com',
         phone: '4165550100',
       },
-      overrides || {},
+      overrides || {}
     ),
-    language || 'English',
+    language || 'English'
   )
 }
 
-function plan(overrides, language, degreeCount) {
-  return planCardLayout(fields(overrides, language), fonts, {
-    degreeCount: degreeCount != null ? degreeCount : 0,
-  })
+function plan(overrides, language) {
+  return planCardLayout(fields(overrides, language), fonts)
 }
 
 function padToWidth(font, size, maxWidth, seed) {
@@ -62,7 +63,7 @@ describe('planCardLayout', function () {
   })
 
   it('approved blank sample card uses the same baselines', function () {
-    var layout = planCardLayout(resolveCardFields({}, 'English'), fonts, { degreeCount: 0 })
+    var layout = planCardLayout(resolveCardFields({}, 'English'), fonts)
     expect(layout.valid).toBe(true)
     expect(layout.nameLines).toEqual(['Firstname Lastname'])
     expect(layout.address.lines).toEqual([
@@ -77,7 +78,7 @@ describe('planCardLayout', function () {
   })
 
   it('French blank sample uses the four-line address labels', function () {
-    var layout = planCardLayout(resolveCardFields({}, 'French'), fonts, { degreeCount: 0 })
+    var layout = planCardLayout(resolveCardFields({}, 'French'), fonts)
     expect(layout.valid).toBe(true)
     expect(layout.address.lines).toEqual([
       "Nom de l'adresse",
@@ -224,8 +225,8 @@ describe('planCardLayout', function () {
     var used = fonts.font.widthOfTextAtSize(email, L.bodySize)
     var remainingToTrim = L.bleed + L.trimW - (L.identityX + used)
     expect(remainingToTrim).toBeGreaterThan(18)
-    expect(L.emailMaxWidth).toBe(132)
-    expect(L.identityWidth).toBe(130)
+    expect(L.emailMaxWidth).toBe(141.52)
+    expect(L.identityWidth).toBe(141.52)
   })
 
   it('fits hannah.sharpe@colliersprojectleaders.com on one email line', function () {
@@ -249,7 +250,7 @@ describe('planCardLayout', function () {
     expect(layout.errors).toContain(LAYOUT_ERROR.email)
   })
 
-  it('accepts an email of 50 characters when it still fits 130 pt, and rejects 51', function () {
+  it('accepts an email of 50 characters when it still fits the email lane, and rejects 51', function () {
     var fifty = 'carlos.zabaleta@colliersprojectleaders.comssssssss'
     expect(fifty.length).toBe(50)
     var ok = plan({ email: fifty })
@@ -267,7 +268,12 @@ describe('planCardLayout', function () {
   })
 
   it('rejects degrees only when their combined rendered width does not fit', function () {
-    var longA = padToWidth(fonts.fontBold, L.credentialSize, L.identityWidth + 20, 'Dipl. Architectural ')
+    var longA = padToWidth(
+      fonts.fontBold,
+      L.credentialSize,
+      L.identityWidth + 20,
+      'Dipl. Architectural '
+    )
     var layout = plan({ degree: [longA, longA] }, 'English')
     expect(layout.valid).toBe(false)
     expect(layout.errors).toContain(LAYOUT_ERROR.credentials)
@@ -282,13 +288,18 @@ describe('planCardLayout', function () {
   })
 
   it('reports when adding credentials exhausts the shared two-line budget', function () {
-    var longA = padToWidth(fonts.fontBold, L.credentialSize, L.identityWidth + 20, 'Dipl. Architectural ')
+    var longA = padToWidth(
+      fonts.fontBold,
+      L.credentialSize,
+      L.identityWidth + 20,
+      'Dipl. Architectural '
+    )
     expect(
       credentialsFitOnCard(
         { name: 'Ada Lovelace', degree: ['PMP'], additionalCredentials: longA },
         fonts,
-        'English',
-      ),
+        'English'
+      )
     ).toBe(false)
   })
 
@@ -297,18 +308,45 @@ describe('planCardLayout', function () {
     expect(layout.phone).toBe('416 555 0100')
   })
 
-  it('does not block on a long region, team, mobile, or office', function () {
-    var over = padToWidth(fonts.font, L.bodySize, L.identityWidth, 'Long ') + ' overflow'
+  it('accepts Gestionnaire de projets principal | Nova Scotia as the title width lock', function () {
     var layout = plan({
-      title: over,
-      region: over,
-      specializedTeam: over,
+      title: 'Gestionnaire de projets principal',
+      region: 'Nova Scotia',
+    })
+    expect(layout.valid).toBe(true)
+    expect(layout.errors).not.toContain(LAYOUT_ERROR.title)
+    expect(layout.title).toBe('Gestionnaire de projets principal | Nova Scotia')
+    var used = fonts.font.widthOfTextAtSize(layout.title, L.bodySize)
+    expect(used).toBeLessThanOrEqual(L.titleMaxWidth)
+    expect(L.titleMaxWidth).toBe(141.52)
+  })
+
+  it('accepts Responsable du développement commercial | Quebec when region can split', function () {
+    var layout = plan({
+      title: 'Responsable du développement commercial',
+      region: 'Quebec',
+    })
+    expect(layout.valid).toBe(true)
+    expect(layout.errors).not.toContain(LAYOUT_ERROR.title)
+    expect(layout.title).toBe('Responsable du développement commercial | Quebec')
+    var preview = applyPreviewTitleRegionSplit(applyEmptyTeamIdentityLayout(layout), fonts)
+    expect(preview.regionLine).toBe('Quebec')
+    expect(preview.title).toBe('Responsable du développement commercial')
+  })
+
+  it('rejects a specialized team that is wider than the right-column cap', function () {
+    var over = padToWidth(fonts.font, L.bodySize, L.identityWidth, 'Long ') + ' overflow'
+    var layout = plan({ specializedTeam: over })
+    expect(layout.errors).toContain(LAYOUT_ERROR.team)
+    expect(layout.valid).toBe(false)
+  })
+
+  it('does not block on a long mobile or office', function () {
+    var layout = plan({
       email: 'ada@example.com',
       phone: '4165550100',
       address: 'One\nTwo\nThree\nFour\nFive\nSix',
     })
-    expect(layout.errors).not.toContain(LAYOUT_ERROR.title)
-    expect(layout.errors).not.toContain(LAYOUT_ERROR.team)
     expect(layout.errors).not.toContain(LAYOUT_ERROR.email)
     expect(layout.errors).not.toContain(LAYOUT_ERROR.phone)
     expect(layout.errors).not.toContain(LAYOUT_ERROR.address)
@@ -364,7 +402,7 @@ describe('planProductLayout', function () {
         phone: '4165550100',
       },
       'Bilingual',
-      fonts,
+      fonts
     )
     expect(product.valid).toBe(true)
     expect(product.pages.length).toBe(2)
@@ -373,5 +411,113 @@ describe('planProductLayout', function () {
     product.pages.forEach(function (page) {
       expect(page.layout.valid).toBe(true)
     })
+  })
+})
+
+describe('previewContactYs', function () {
+  it('leaves one blank line under the title without moving print contacts', function () {
+    var layout = plan({})
+    expect(layout.team).toBe('')
+    expect(layout.emailY).toBe(43)
+    var preview = previewContactYs(layout.titleY)
+    expect(preview.emailY).toBeCloseTo(layout.titleY - L.bodyLineHeight * 2, 2)
+    expect(preview.emailY).toBeCloseTo(50.99, 2)
+    expect(preview.phoneY).toBeCloseTo(42.99, 2)
+    expect(preview.websiteY).toBeCloseTo(34.99, 2)
+  })
+
+  it('does not replace print contacts when the caller still has a team row', function () {
+    var layout = plan({ specializedTeam: 'Business Services' })
+    expect(layout.team).toBe('Business Services')
+    expect(layout.emailY).toBe(43)
+    expect(layout.phoneY).toBe(35)
+    expect(layout.websiteY).toBe(27)
+  })
+
+  it('closes the unused team row so one gap sits under the title', function () {
+    var layout = plan({})
+    expect(layout.titleY).toBe(L.titleYNoCred)
+    var preview = applyEmptyTeamIdentityLayout(layout)
+    expect(preview.titleY).toBeCloseTo(L.teamYNoCred, 2)
+    expect(preview.lastNameY).toBeCloseTo(L.nameY - (L.titleYNoCred - L.teamYNoCred), 2)
+    expect(preview.emailY).toBe(43)
+    expect(preview.phoneY).toBe(35)
+    expect(preview.websiteY).toBe(27)
+    expect(preview.websiteY).toBe(L.addressBottomY)
+  })
+
+  it('keeps own-row credentials above the title and website on the address baseline', function () {
+    var layout = plan({
+      name: 'Carlos Zabaleta Copa',
+      title: 'Managing Director',
+      degree: ['Arch. Tech'],
+      additionalCredentials: 'Additional Credentials',
+      email: 'carlos.zabaleta@raymentcollins.com',
+      phone: '6479179683',
+      address: '202-485 Pinebush Road\nCambridge, ON\nN1T 0A6 Canada',
+      website: 'colliersprojectleaders.com',
+    })
+    expect(layout.team).toBe('')
+    expect(layout.credMode).toBe('own-row')
+    expect(layout.titleY).toBe(L.titleYWithCred)
+
+    var preview = applyEmptyTeamIdentityLayout(layout)
+    expect(preview.titleY).toBeCloseTo(L.teamYNoCred, 2)
+    expect(preview.credentialY).toBe(layout.credentialY)
+    expect(preview.nameLineYs[0]).toBe(layout.nameLineYs[0])
+    expect(preview.emailY).toBe(43)
+    expect(preview.phoneY).toBe(35)
+    expect(preview.websiteY).toBe(27)
+  })
+})
+
+describe('applyPreviewTitleRegionSplit', function () {
+  it('keeps a short Title | Region on one line', function () {
+    var layout = applyEmptyTeamIdentityLayout(
+      plan({ title: 'Broker', region: 'Ontario' })
+    )
+    var preview = applyPreviewTitleRegionSplit(layout, fonts)
+    expect(preview.title).toBe('Broker | Ontario')
+    expect(preview.regionLine).toBeFalsy()
+    expect(preview.titleY).toBe(layout.titleY)
+  })
+
+  it('splits a wide French title and lifts identity by one body line', function () {
+    var layout = applyEmptyTeamIdentityLayout(
+      plan({
+        title: 'Responsable du développement commercial',
+        region: 'Quebec',
+      })
+    )
+    expect(layout.title).toBe('Responsable du développement commercial | Quebec')
+    expect(fitsLine(fonts.font, layout.title, L.bodySize, L.titleMaxWidth)).toBe(false)
+
+    var beforeTitleY = layout.titleY
+    var beforeNameY = layout.lastNameY
+    var preview = applyPreviewTitleRegionSplit(layout, fonts)
+
+    expect(preview.title).toBe('Responsable du développement commercial')
+    expect(preview.regionLine).toBe('Quebec')
+    expect(preview.regionY).toBeCloseTo(beforeTitleY, 2)
+    expect(preview.titleY).toBeCloseTo(beforeTitleY + L.bodyLineHeight, 2)
+    expect(preview.lastNameY).toBeCloseTo(beforeNameY + L.bodyLineHeight, 2)
+    expect(preview.emailY).toBe(43)
+    expect(preview.phoneY).toBe(35)
+    expect(preview.websiteY).toBe(27)
+  })
+
+  it('does not split when region is empty', function () {
+    var layout = applyEmptyTeamIdentityLayout(plan({ title: 'Broker', region: '' }))
+    var preview = applyPreviewTitleRegionSplit(layout, fonts)
+    expect(preview.title).toBe('Broker')
+    expect(preview.regionLine).toBeFalsy()
+  })
+
+  it('does not split when title alone is still too wide', function () {
+    var over = padToWidth(fonts.font, L.bodySize, L.titleMaxWidth, 'Wide ') + ' overflow'
+    var layout = applyEmptyTeamIdentityLayout(plan({ title: over, region: 'Ontario' }))
+    var preview = applyPreviewTitleRegionSplit(layout, fonts)
+    expect(preview.regionLine).toBeFalsy()
+    expect(preview.title).toBe(layout.title)
   })
 })

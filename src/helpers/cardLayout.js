@@ -35,12 +35,11 @@ export var CARD_LAYOUT = {
   wordmarkFr: { x: 79.24, y: 110.3, w: 45.48, h: 21.72 },
 
   identityX: 113.03,
-  // ICT master (270×162 bleed): identity starts at 113.03. A 130 pt lane
-  // ends at 243, leaving 18 pt to the trim right — same inset as the left.
-  identityWidth: 130,
-  // Email may use 132 pt (still ~16 pt to trim). Real Colliers first.lastname
-  // addresses such as hannah.sharpe@… measure ≈ 131.33 pt at 6.5 pt Open Sans.
-  emailMaxWidth: 132,
+  // Right-column fill cap: 141.52 pt from 113.03 ends at x ≈ 254.5,
+  // ~6.5 pt inside trim (261). Bleed 261–270 is not fill space.
+  identityWidth: 141.52,
+  emailMaxWidth: 141.52,
+  titleMaxWidth: 141.52,
 
   nameY: 75.49,
   nameSize: 10,
@@ -144,7 +143,7 @@ export function resolveCardFields(details, language) {
     isFrench: isFrench,
     name: rawName || sample.name,
     credentialSuffix: formatCredentialSuffix(card.degree, card.additionalCredentials),
-    title: formatTitleLine(card.title, card.region, sample.title, sample.region),
+    title: formatTitleLine(card.title, card.region, sample.title),
     team: String(card.specializedTeam || '').trim(),
     email: String(card.email || '').trim() || sample.email,
     phone: phoneRaw ? formatCardPhone(phoneRaw) : sample.phone,
@@ -199,6 +198,24 @@ function wrapAddress(font, text, size, maxWidth) {
 
 function requireOneLine(font, text, size, maxWidth, code, errors) {
   if (!fitsLine(font, text, size, maxWidth)) errors.push(code)
+}
+
+/**
+ * Joined `Title | Region` may overflow when each part still fits alone — preview/print
+ * stack region under title in that case, so do not treat it as a layout error.
+ */
+function titleRegionFitsOrSplits(font, joined, size, maxWidth) {
+  var text = String(joined || '')
+  if (fitsLine(font, text, size, maxWidth)) return true
+  var sep = ' | '
+  var idx = text.indexOf(sep)
+  if (idx === -1) return false
+  var titlePart = text.slice(0, idx).trim()
+  var regionPart = text.slice(idx + sep.length).trim()
+  if (!titlePart || !regionPart) return false
+  return (
+    fitsLine(font, titlePart, size, maxWidth) && fitsLine(font, regionPart, size, maxWidth)
+  )
 }
 
 function fitsAfterName(fontBold, lastNameLine, credentialText, L) {
@@ -282,22 +299,28 @@ export function packCredentials(fontBold, lastNameLine, credText, L) {
 /** Whether all selected degrees + additional credentials fit the two credential lanes. */
 export function credentialsFitOnCard(details, fonts, language) {
   if (!fonts || !fonts.fontBold) return true
-  var fields = resolveCardFields(details || {}, language || (details && details.language) || 'English')
-  var nameWrap = wrapByWords(fonts.fontBold, fields.name, CARD_LAYOUT.nameSize, CARD_LAYOUT.identityWidth)
+  var fields = resolveCardFields(
+    details || {},
+    language || (details && details.language) || 'English'
+  )
+  var nameWrap = wrapByWords(
+    fonts.fontBold,
+    fields.name,
+    CARD_LAYOUT.nameSize,
+    CARD_LAYOUT.identityWidth
+  )
   if (!nameWrap.ok || nameWrap.lines.length > CARD_LAYOUT.nameMaxLines) return false
   var lastNameLine = nameWrap.lines[nameWrap.lines.length - 1] || ''
-  return packCredentials(
-    fonts.fontBold,
-    lastNameLine,
-    fields.credentialSuffix,
-    CARD_LAYOUT,
-  ).mode !== 'error'
+  return (
+    packCredentials(fonts.fontBold, lastNameLine, fields.credentialSuffix, CARD_LAYOUT).mode !==
+    'error'
+  )
 }
 
 /**
  * Plan one language page. fields = resolveCardFields(...).
  */
-export function planCardLayout(fields, fonts, opts) {
+export function planCardLayout(fields, fonts) {
   var L = CARD_LAYOUT
   var font = fonts.font
   var fontBold = fonts.fontBold
@@ -316,6 +339,12 @@ export function planCardLayout(fields, fonts, opts) {
   if (packed.mode === 'error') errors.push(LAYOUT_ERROR.credentials)
 
   requireOneLine(font, fields.website, L.bodySize, L.identityWidth, LAYOUT_ERROR.website, errors)
+  if (!titleRegionFitsOrSplits(font, fields.title, L.bodySize, L.titleMaxWidth)) {
+    errors.push(LAYOUT_ERROR.title)
+  }
+  if (String(fields.team || '').trim()) {
+    requireOneLine(font, fields.team, L.bodySize, L.identityWidth, LAYOUT_ERROR.team, errors)
+  }
   requireOneLine(font, fields.email, L.bodySize, L.emailMaxWidth, LAYOUT_ERROR.email, errors)
   if (String(fields.email || '').length > EMAIL_MAX) errors.push(LAYOUT_ERROR.email)
 
@@ -377,9 +406,7 @@ export function planCardLayout(fields, fonts, opts) {
 
 export function planProductLayout(details, language, fonts) {
   var snapshot = snapshotCardDetails(details)
-  var langs = isBilingualLanguage(language)
-    ? ['English', 'French']
-    : [language || 'English']
+  var langs = isBilingualLanguage(language) ? ['English', 'French'] : [language || 'English']
   var pages = langs.map(function (lang) {
     var pageDetails = snapshot
     if (isFrenchLanguage(lang)) {
@@ -404,6 +431,89 @@ export function planProductLayout(details, language, fonts) {
 
 export function trimBottomPct(y) {
   return ((y - CARD_LAYOUT.bleed) / CARD_LAYOUT.trimH) * 100
+}
+
+function roundPt(n) {
+  return Number(Number(n).toFixed(2))
+}
+
+/**
+ * On-screen preview only, when specialized team is empty.
+ * One blank body line under the title, then email / phone / website.
+ * A single body step would sit email on the next line and collide.
+ * Print PDF keeps email 43 / phone 35 / website 27 (planCardLayout).
+ * Klai wrapCardName.js mirrors this branch.
+ */
+export function previewContactYs(titleY) {
+  var step = CARD_LAYOUT.bodyLineHeight
+  var emailY = roundPt(Number(titleY) - step * 2)
+  return {
+    emailY: emailY,
+    phoneY: roundPt(emailY - step),
+    websiteY: roundPt(emailY - step * 2),
+  }
+}
+
+/**
+ * Preview-only when specialized team is empty:
+ * close the unused team row so there is one gap under the title, then
+ * email / phone / website stay bottom-locked with the address (43 / 35 / 27).
+ * Extra name / credential lines stay above the title (grow toward the logo).
+ */
+export function applyEmptyTeamIdentityLayout(view) {
+  if (!view || String(view.team || '').trim()) return view
+  var L = CARD_LAYOUT
+  var next = Object.assign({}, view)
+  var targetTitleY = L.teamYNoCred
+  var shiftDown = roundPt(Number(view.titleY || L.titleYNoCred) - targetTitleY)
+  if (shiftDown > 0) {
+    next.titleY = roundPt(Number(view.titleY) - shiftDown)
+    if (view.credentialY != null) next.credentialY = roundPt(Number(view.credentialY) - shiftDown)
+    if (view.teamY != null) next.teamY = roundPt(Number(view.teamY) - shiftDown)
+    next.lastNameY = roundPt(Number(view.lastNameY || L.nameY) - shiftDown)
+    next.nameLineYs = (view.nameLineYs || []).map(function (y) {
+      return roundPt(Number(y) - shiftDown)
+    })
+  }
+  next.emailY = L.emailY
+  next.phoneY = L.phoneY
+  next.websiteY = L.websiteY
+  return next
+}
+
+/**
+ * When `Title | Region` does not fit titleMaxWidth, put region on its own line and
+ * lift name / credentials / title by one body line. Used by CardPreview and print PDF.
+ * No-op when already split or when title alone cannot fit.
+ */
+export function applyPreviewTitleRegionSplit(view, fonts) {
+  if (!view || !fonts || !fonts.font) return view
+  if (view.regionLine) return view
+  var L = CARD_LAYOUT
+  var joined = String(view.title || '')
+  var sep = ' | '
+  var idx = joined.indexOf(sep)
+  if (idx === -1) return view
+  var titlePart = joined.slice(0, idx).trim()
+  var regionPart = joined.slice(idx + sep.length).trim()
+  if (!titlePart || !regionPart) return view
+  if (fitsLine(fonts.font, joined, L.bodySize, L.titleMaxWidth)) return view
+  if (!fitsLine(fonts.font, titlePart, L.bodySize, L.titleMaxWidth)) return view
+  if (!fitsLine(fonts.font, regionPart, L.bodySize, L.titleMaxWidth)) return view
+
+  var lift = L.bodyLineHeight
+  var titleY = Number(view.titleY)
+  var next = Object.assign({}, view)
+  next.title = titlePart
+  next.regionLine = regionPart
+  next.regionY = roundPt(titleY)
+  next.titleY = roundPt(titleY + lift)
+  next.lastNameY = roundPt(Number(view.lastNameY != null ? view.lastNameY : L.nameY) + lift)
+  next.nameLineYs = (view.nameLineYs || []).map(function (y) {
+    return roundPt(Number(y) + lift)
+  })
+  if (view.credentialY != null) next.credentialY = roundPt(Number(view.credentialY) + lift)
+  return next
 }
 
 export function trimLeftPct(x) {

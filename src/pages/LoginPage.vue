@@ -1,12 +1,10 @@
 <template>
   <div class="flex min-h-full flex-col items-center justify-center bg-colliers-app p-4">
-    <div class="w-full max-w-[440px] rounded-lg bg-white p-8 shadow-[0_4px_24px_rgba(0,0,0,0.04)] sm:p-10">
+    <div
+      class="w-full max-w-[440px] rounded-lg bg-white p-8 shadow-[0_4px_24px_rgba(0,0,0,0.04)] sm:p-10"
+    >
       <div class="mb-8 flex justify-center">
-        <img
-          :src="lockupSrc"
-          :alt="lockupAlt"
-          class="h-14 w-auto max-w-full object-contain"
-        />
+        <img :src="lockupSrc" :alt="lockupAlt" class="h-14 w-auto max-w-full object-contain" />
       </div>
 
       <loading-state v-if="loading" :message="t('loading')"></loading-state>
@@ -15,7 +13,12 @@
         <p class="colliers-page-subtitle mb-6">{{ t('loginWelcome') }}</p>
         <form class="space-y-5" @submit.prevent="submit">
           <text-field :label="t('email')" :value="email" @input="email = $event"></text-field>
-          <text-field :label="t('password')" type="password" :value="password" @input="password = $event"></text-field>
+          <text-field
+            :label="t('password')"
+            type="password"
+            :value="password"
+            @input="password = $event"
+          ></text-field>
           <p v-if="error" class="text-sm text-red-600">{{ error }}</p>
           <app-button html-type="submit" block>{{ t('login') }}</app-button>
         </form>

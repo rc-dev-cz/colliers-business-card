@@ -68,10 +68,9 @@ export function previewCredentialText(degree, extra, language) {
 /** Title line for the customize preview. Empty region omits "| Region". */
 export function previewTitleText(title, region, language) {
   var french = isFrenchLanguage(language)
-  var labels = optionalPreview(language)
   var sampleTitle = french ? 'Titre' : 'Title'
   var regionPart = region != null ? String(region).trim() : ''
-  return formatTitleLine(title, regionPart, sampleTitle, labels.region)
+  return formatTitleLine(title, regionPart, sampleTitle)
 }
 
 /** Team line. Empty specialized team keeps the generic sample. */
@@ -92,7 +91,7 @@ export function previewAddressText(address, language) {
  * Title | Region line. Region always comes from the region field — never from a
  * "| …" suffix baked into a title option (legacy "Broker | Canada" values).
  */
-export function formatTitleLine(title, region, sampleTitle, sampleRegion) {
+export function formatTitleLine(title, region, sampleTitle) {
   var titlePart = ''
   if (Array.isArray(title) && title.length) {
     titlePart = title
@@ -120,7 +119,9 @@ export var WEBSITE_FR = 'colliersprojectleaders.com/fr'
 
 export function isFrenchLanguage(language) {
   var lang = String(language || '')
-  return lang === 'French' || lang === 'Français' || lang === 'FR' || /french|fran\w*|fr\b/i.test(lang)
+  return (
+    lang === 'French' || lang === 'Français' || lang === 'FR' || /french|fran\w*|fr\b/i.test(lang)
+  )
 }
 
 export function isBilingualLanguage(language) {

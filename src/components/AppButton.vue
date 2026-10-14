@@ -1,10 +1,5 @@
 <template>
-  <button
-    :type="htmlType"
-    :class="classes"
-    :disabled="disabled"
-    @click="$emit('click', $event)"
-  >
+  <button :type="htmlType" :class="classes" :disabled="disabled" @click="$emit('click', $event)">
     <slot></slot>
   </button>
 </template>
