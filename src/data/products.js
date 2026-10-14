@@ -64,8 +64,20 @@ export function catalogCodeFromLine(line) {
   return 'BCAD-PL-ENG'
 }
 
-/** Seed for Manage Titles / Customize titleOptions until FileMaker loads. */
-export const jobTitles = [
+/** English title seed (English + Bilingual Customize / Manage Titles) until FileMaker loads. */
+export const jobTitlesEn = [
+  'Associate',
+  'Senior Associate',
+  'Vice President',
+  'Managing Director',
+  'Director',
+  'Principal',
+  'Broker',
+  'Sales Representative',
+]
+
+/** French title seed (French Customize) until FileMaker loads. */
+export const jobTitlesFr = [
   'Responsable du développement commercial',
   'Directrice',
   'Gestionnaire de projets Senior',
@@ -75,6 +87,9 @@ export const jobTitles = [
   'Gestionnaire de projet adjoint',
   "Partenaire d'affaires sénior en acquisition de talent",
 ]
+
+/** @deprecated Prefer jobTitlesEn / jobTitlesFr. Defaults to English for admin + bilingual. */
+export const jobTitles = jobTitlesEn
 
 /** Empty customize card. degree is always an array. */
 export function emptyCard(language) {
