@@ -1,11 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
-import {
-  addProofToCart,
-  setEditLineId,
-  setProof,
-  startNewCustomize,
-  store,
-} from './store.js'
+import { addProofToCart, setEditLineId, setProof, startNewCustomize, store } from './store.js'
 import { makeLine } from './helpers/cart.js'
 
 describe('edit cart line from proof', function () {
@@ -127,5 +121,17 @@ describe('edit cart line from proof', function () {
     expect(store.cart[0].id).toBe('line-1')
     expect(store.cart[0].details.name).toBe('Carlos Zabaleta Copa')
     expect(store.cart[1].details.name).toBe('Firstname Lastname')
+  })
+
+  it('does not add a line when editLineId is set but missing from cart', function () {
+    setEditLineId('missing-line')
+    setProof({
+      code: 'BCAD-PL-ENG',
+      language: 'English',
+      details: { name: 'Pepe', title: 'Associate' },
+    })
+    addProofToCart()
+    expect(store.cart.length).toBe(1)
+    expect(store.cart[0].id).toBe('line-1')
   })
 })

@@ -18,18 +18,21 @@ export const messages = {
   selectTitle: { EN: 'Select a title', FR: 'Sélectionner un titre' },
   selectRegion: { EN: 'Select a region', FR: 'Sélectionner une région' },
   degree: { EN: 'Degree/Certification (Optional)', FR: 'Diplôme/Certification (facultatif)' },
-  selectDegree: { EN: 'Search or select degree...', FR: 'Rechercher ou sélectionner un diplôme...' },
+  selectDegree: {
+    EN: 'Search or select degree...',
+    FR: 'Rechercher ou sélectionner un diplôme...',
+  },
   additionalCredentials: {
     EN: 'Additional Credentials (Optional)',
-    FR: 'Informations d\'identification supplémentaires (facultatif)',
+    FR: "Informations d'identification supplémentaires (facultatif)",
   },
   region: { EN: 'Region (Optional)', FR: 'Région (facultatif)' },
   specializedTeam: { EN: 'Specialized Team (Optional)', FR: 'Équipe spécialisée (facultatif)' },
   email: { EN: 'Email', FR: 'Courriel' },
-  // Print email lane is 132 pt at Open Sans 6.5 — character count alone is not the fit check.
+  // Print email lane is 141.52 pt at Open Sans 6.5 — character count alone is not the fit check.
   emailHint: {
-    EN: 'One line on the card · width limit 132 pt',
-    FR: 'Une ligne sur la carte · largeur max. 132 pt',
+    EN: 'One line on the card · width limit 141.52 pt',
+    FR: 'Une ligne sur la carte · largeur max. 141,52 pt',
   },
 
   layoutErrorName: {
@@ -70,7 +73,7 @@ export const messages = {
   },
   mobilePhone: { EN: 'Mobile', FR: 'Mobile' },
   mobilePhoneHint: { EN: '10-digit Canadian number', FR: 'Numéro canadien à 10 chiffres' },
-  companyName: { EN: "Company Name", FR: "Nom de l'entreprise" },
+  companyName: { EN: 'Company Name', FR: "Nom de l'entreprise" },
   address: { EN: 'Address', FR: 'Adresse' },
   officeLocation: { EN: 'Office Location', FR: 'Lieu de bureau' },
   selectAddress: { EN: 'Select an office address', FR: 'Sélectionner une adresse de bureau' },
@@ -79,6 +82,7 @@ export const messages = {
   continueToShipping: { EN: 'Continue to Shipping', FR: "Continuer l'expédition" },
   continueToShippingCart: { EN: 'Continue to Shipping', FR: "Continuer vers l'expédition" },
   addToCart: { EN: 'Add to Cart', FR: 'Ajouter au panier' },
+  updateCart: { EN: 'Update cart', FR: 'Mettre à jour le panier' },
   previewProof: { EN: 'Preview Proof', FR: 'Aperçu de l’épreuve' },
   proofApproval: { EN: 'Proof Approval', FR: 'Approbation de l’épreuve' },
   proofNoticeLead: {
@@ -98,6 +102,8 @@ export const messages = {
   previewCard: { EN: 'Preview card', FR: 'Aperçu de la carte' },
   editItem: { EN: 'Edit item', FR: 'Modifier l’article' },
   removeItem: { EN: 'Remove item', FR: 'Retirer l’article' },
+  removeFromShipment: { EN: 'Remove from this shipment', FR: 'Retirer de cet envoi' },
+  removeFromCart: { EN: 'Remove from cart', FR: 'Retirer du panier' },
   shipping: { EN: 'Shipping', FR: 'Expédition' },
   shippingGroup: { EN: 'Shipping Group', FR: "Groupe d'expédition" },
   total: { EN: 'Total', FR: 'Total' },
@@ -126,6 +132,9 @@ export const messages = {
   splitOrder: { EN: 'Split Order', FR: 'Diviser la commande' },
   removeSplit: { EN: 'Remove Split', FR: 'Supprimer la division' },
   shipToAddress: { EN: 'Ship to Address', FR: "Expédier à l'adresse" },
+  box: { EN: 'box', FR: 'boîte' },
+  boxes: { EN: 'boxes', FR: 'boîtes' },
+  cards: { EN: 'cards', FR: 'cartes' },
   noShipToAddresses: {
     EN: 'No ship-to addresses yet. Use + Add location to pick from your Address Book.',
     FR: "Aucune adresse d'expédition. Utilisez + Ajouter un lieu pour choisir dans votre carnet d'adresses.",
@@ -140,9 +149,9 @@ export const messages = {
     FR: "Ajoutez ou modifiez des adresses dans votre carnet d'adresses.",
   },
   goToAddressBook: { EN: 'Go to Address Book', FR: "Aller au carnet d'adresses" },
-  myAddressBook: { EN: 'My Address Book', FR: 'Mon carnet d\'adresses' },
+  myAddressBook: { EN: 'My Address Book', FR: "Mon carnet d'adresses" },
   officeAddresses: { EN: 'Office Addresses', FR: 'Adresses de bureau' },
-  addressBook: { EN: 'Address Book', FR: 'Carnet d\'adresses' },
+  addressBook: { EN: 'Address Book', FR: "Carnet d'adresses" },
   orderHistory: { EN: 'Order History', FR: 'Historique des commandes' },
   orderDetails: { EN: 'Order Details', FR: 'Détails de la commande' },
   orderId: { EN: 'Order ID', FR: 'N° de commande' },
@@ -164,10 +173,13 @@ export const messages = {
   statusDelivered: { EN: 'Delivered', FR: 'Livrée' },
   statusShipped: { EN: 'Shipped', FR: 'Expédiée' },
   statusProcessing: { EN: 'Processing', FR: 'En traitement' },
-  noOrders: { EN: 'No orders match your search.', FR: 'Aucune commande ne correspond à votre recherche.' },
+  noOrders: {
+    EN: 'No orders match your search.',
+    FR: 'Aucune commande ne correspond à votre recherche.',
+  },
   totalCost: { EN: 'Total Cost', FR: 'Coût total' },
   shipTo: { EN: 'Ship To', FR: 'Expédier à' },
-  viewBusinessCardProof: { EN: 'View Business Card Proof', FR: 'Voir l\'épreuve de la carte' },
+  viewBusinessCardProof: { EN: 'View Business Card Proof', FR: "Voir l'épreuve de la carte" },
   addresses: { EN: 'Addresses', FR: 'Adresses' },
   noPersonalAddresses: {
     EN: 'No personal addresses yet. Add one in your Address Book.',
@@ -241,8 +253,12 @@ export const messages = {
   itemsIncluded: { EN: 'Items Included', FR: 'Articles Inclus' },
   materials: { EN: 'Materials', FR: 'Matériaux' },
   premiumStock: { EN: 'Premium 14pt cardstock', FR: 'Carton de qualité supérieure 14 pt' },
+  finishOptions: { EN: 'Glossy finish', FR: 'Finition brillante' },
   trainings: { EN: 'Trainings', FR: 'Formations' },
-  brandCompliance: { EN: 'Brand guidelines compliance', FR: 'Conformité aux directives de la marque' },
+  brandCompliance: {
+    EN: 'Brand guidelines compliance',
+    FR: 'Conformité aux directives de la marque',
+  },
   itemNumber: { EN: 'Item Number / Description', FR: "Numéro d'article / Description" },
   price: { EN: 'Price', FR: 'Prix' },
   qtyFrom: { EN: 'QTY FROM', FR: 'QTÉ DE' },
@@ -255,7 +271,7 @@ export const messages = {
   minOrderQty: { EN: 'Min. Order Qty', FR: 'Qté min. de commande' },
   status: { EN: 'Status', FR: 'Statut' },
   active: { EN: 'Active', FR: 'Actif' },
-  dateAdded: { EN: 'Date Added', FR: 'Date d\'ajout' },
+  dateAdded: { EN: 'Date Added', FR: "Date d'ajout" },
   bilingual: { EN: 'Bilingual', FR: 'Bilingue' },
   english: { EN: 'English', FR: 'Anglais' },
   french: { EN: 'French', FR: 'Français' },
@@ -268,7 +284,7 @@ export const messages = {
   },
   salesDigital: {
     EN: '*Online Products & Courses: Digital products and courses are considered final once redeemed; at that point, such products are not eligible for return, exchange, or transfer.',
-    FR: '*Produits et cours en ligne : Les produits et cours numériques sont considérés comme définitifs une fois échangés ; à ce stade, ces produits ne sont pas admissibles au retour, à l\'échange ou au transfert.',
+    FR: "*Produits et cours en ligne : Les produits et cours numériques sont considérés comme définitifs une fois échangés ; à ce stade, ces produits ne sont pas admissibles au retour, à l'échange ou au transfert.",
   },
   logOut: { EN: 'Log out', FR: 'Déconnexion' },
   login: { EN: 'Login', FR: 'Connexion' },
@@ -295,22 +311,22 @@ export const messages = {
   manageAddresses: { EN: 'Manage Addresses', FR: 'Gérer les adresses' },
   manageColliersOfficesHint: {
     EN: 'Colliers office locations used on business cards and shipping.',
-    FR: 'Adresses de bureau Colliers utilisées sur les cartes et pour l\'expédition.',
+    FR: "Adresses de bureau Colliers utilisées sur les cartes et pour l'expédition.",
   },
   enterNewOfficeAddress: {
     EN: 'Enter new address...',
     FR: 'Entrez la nouvelle adresse...',
   },
-  editOfficeAddress: { EN: 'Edit address', FR: 'Modifier l\'adresse' },
-  removeOfficeAddress: { EN: 'Remove address', FR: 'Supprimer l\'adresse' },
+  editOfficeAddress: { EN: 'Edit address', FR: "Modifier l'adresse" },
+  removeOfficeAddress: { EN: 'Remove address', FR: "Supprimer l'adresse" },
   addOfficeAddress: { EN: 'Add office address', FR: 'Ajouter une adresse de bureau' },
   newAddressTitle: { EN: 'New Address', FR: 'Nouvelle adresse' },
-  updateExistingAddress: { EN: 'Update Existing Address', FR: 'Mettre à jour l\'adresse existante' },
+  updateExistingAddress: { EN: 'Update Existing Address', FR: "Mettre à jour l'adresse existante" },
   officeAddressFormIntro: {
     EN: 'Please provide the details for the address below.',
-    FR: 'Veuillez fournir les détails de l\'adresse ci-dessous.',
+    FR: "Veuillez fournir les détails de l'adresse ci-dessous.",
   },
-  addressName: { EN: 'Address Name', FR: 'Nom de l\'adresse' },
+  addressName: { EN: 'Address Name', FR: "Nom de l'adresse" },
   addressNamePlaceholder: {
     EN: 'e.g. Headquarters, Branch Office',
     FR: 'p. ex. Siège social, Bureau régional',
@@ -322,7 +338,10 @@ export const messages = {
   selectProvince: { EN: 'Select State/Province', FR: 'Sélectionner la province' },
   saving: { EN: 'Saving...', FR: 'Enregistrement...' },
   saveDraft: { EN: 'Save Draft', FR: 'Enregistrer le brouillon' },
-  draftSaved: { EN: 'Draft saved. You can finish this address later.', FR: 'Brouillon enregistré. Vous pourrez terminer cette adresse plus tard.' },
+  draftSaved: {
+    EN: 'Draft saved. You can finish this address later.',
+    FR: 'Brouillon enregistré. Vous pourrez terminer cette adresse plus tard.',
+  },
   manageTitles: { EN: 'Manage Titles', FR: 'Gérer les titres' },
   manageTitlesHint: {
     EN: 'Titles shown on business cards during customization.',
@@ -357,7 +376,7 @@ export const messages = {
   viewPastOrders: { EN: 'View past orders', FR: 'Voir les commandes passées' },
   manageBilling: { EN: 'Manage billing', FR: 'Gérer la facturation' },
   viewAnalytics: { EN: 'View analytics', FR: 'Voir les analyses' },
-  lastUpdatedJustNow: { EN: 'Last updated: Just now', FR: 'Dernière mise à jour : à l\'instant' },
+  lastUpdatedJustNow: { EN: 'Last updated: Just now', FR: "Dernière mise à jour : à l'instant" },
   addressesConfigured: {
     EN: '{n} addresses configured',
     FR: '{n} adresses configurées',
@@ -384,7 +403,7 @@ export const messages = {
   },
   manageAddressesTileDesc: {
     EN: 'Configure global shipping destinations, office locations, and default addresses for business cards.',
-    FR: 'Configurez les destinations d\'expédition, les bureaux et les adresses par défaut pour les cartes.',
+    FR: "Configurez les destinations d'expédition, les bureaux et les adresses par défaut pour les cartes.",
   },
   manageTitlesTileDesc: {
     EN: 'Manage permitted job titles allowed on business cards.',
@@ -398,10 +417,10 @@ export const messages = {
     EN: 'This screen will be filled in by',
     FR: 'Cet écran sera complété par',
   },
-  backToAddressBook: { EN: 'Back to Address Book', FR: 'Retour au carnet d\'adresses' },
+  backToAddressBook: { EN: 'Back to Address Book', FR: "Retour au carnet d'adresses" },
   backToManageAddresses: { EN: 'Back to Manage Addresses', FR: 'Retour à Gérer les adresses' },
   addAddress: { EN: 'Add Address', FR: 'Ajouter une adresse' },
-  updateAddress: { EN: 'Update Address', FR: 'Mettre à jour l\'adresse' },
+  updateAddress: { EN: 'Update Address', FR: "Mettre à jour l'adresse" },
   confirmDeleteOffice: {
     EN: 'Remove this Colliers office address?',
     FR: 'Supprimer cette adresse de bureau Colliers ?',
@@ -433,7 +452,7 @@ export const messages = {
   exportData: { EN: 'Export Data', FR: 'Exporter les données' },
   exportDataMock: {
     EN: 'Export will be available when FileMaker reporting is connected.',
-    FR: 'L\'export sera disponible lorsque les rapports FileMaker seront connectés.',
+    FR: "L'export sera disponible lorsque les rapports FileMaker seront connectés.",
   },
   loading: { EN: 'Loading...', FR: 'Chargement...' },
   profileMenu: { EN: 'Profile menu', FR: 'Menu profil' },

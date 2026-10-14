@@ -3,7 +3,6 @@ import { t } from '../store'
 import {
   boxCount,
   cardCount,
-  cardholderName,
   cardsPerBox,
   formatOrderDate,
   itemLabel,

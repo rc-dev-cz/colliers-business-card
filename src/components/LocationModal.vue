@@ -7,10 +7,12 @@
     :aria-labelledby="titleId"
     @click.self="onClose"
   >
-    <div class="flex max-h-[90vh] w-full max-w-xl flex-col overflow-hidden rounded-lg bg-white shadow-xl">
+    <div
+      class="flex max-h-[90vh] w-full max-w-xl flex-col overflow-hidden rounded-lg bg-white shadow-xl"
+    >
       <header class="flex shrink-0 items-center justify-between px-5 pb-2 pt-5 sm:px-6 sm:pt-6">
         <h2 :id="titleId" class="text-lg font-bold text-gray-900 sm:text-xl">
-          {{ t('selectOrAddLocation') }}
+          {{ t('addLocation') }}
         </h2>
         <button
           type="button"
@@ -19,7 +21,9 @@
           @click="onClose"
         >
           <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-            <path d="M6.28 5.22a.75.75 0 00-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 101.06 1.06L10 11.06l3.72 3.72a.75.75 0 101.06-1.06L11.06 10l3.72-3.72a.75.75 0 00-1.06-1.06L10 8.94 6.28 5.22z" />
+            <path
+              d="M6.28 5.22a.75.75 0 00-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 101.06 1.06L10 11.06l3.72 3.72a.75.75 0 101.06-1.06L11.06 10l3.72-3.72a.75.75 0 00-1.06-1.06L10 8.94 6.28 5.22z"
+            />
           </svg>
         </button>
       </header>
@@ -71,9 +75,24 @@ export default {
   props: {
     open: { type: Boolean, default: false },
     /** Address strings already on the current split — checkboxes start checked. */
-    selectedAddresses: { type: Array, default: function () { return [] } },
-    personalAddresses: { type: Array, default: function () { return [] } },
-    offices: { type: Array, default: function () { return [] } },
+    selectedAddresses: {
+      type: Array,
+      default: function () {
+        return []
+      },
+    },
+    personalAddresses: {
+      type: Array,
+      default: function () {
+        return []
+      },
+    },
+    offices: {
+      type: Array,
+      default: function () {
+        return []
+      },
+    },
   },
   data: function () {
     modalCount += 1
@@ -121,7 +140,7 @@ export default {
     open: function (open) {
       if (!open) return
       this.selected = (this.selectedAddresses || []).slice()
-      loadOffices()
+      loadOffices(true)
     },
   },
   methods: {

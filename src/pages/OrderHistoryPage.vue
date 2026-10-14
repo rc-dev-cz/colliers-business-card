@@ -11,7 +11,9 @@
           class="flex flex-col gap-3 border-b border-gray-100 p-4 sm:flex-row sm:items-center sm:p-5"
           :class="fromAdmin ? 'sm:justify-between' : 'sm:justify-end'"
         >
-          <h2 v-if="fromAdmin" class="text-base font-semibold text-gray-900">{{ t('recentOrders') }}</h2>
+          <h2 v-if="fromAdmin" class="text-base font-semibold text-gray-900">
+            {{ t('recentOrders') }}
+          </h2>
           <div class="flex w-full flex-col gap-3 sm:w-auto sm:flex-row sm:items-center">
             <label class="sr-only" for="order-search">{{ t('searchOrders') }}</label>
             <search-field
@@ -32,7 +34,9 @@
 
         <div class="overflow-x-auto">
           <table class="min-w-full text-left text-sm">
-            <thead class="border-b border-gray-200 bg-gray-50 text-xs font-medium uppercase tracking-wide text-gray-500">
+            <thead
+              class="border-b border-gray-200 bg-gray-50 text-xs font-medium uppercase tracking-wide text-gray-500"
+            >
               <tr>
                 <th class="px-4 py-3">{{ t('orderId') }}</th>
                 <th class="px-4 py-3">{{ personColumnLabel }}</th>
@@ -45,7 +49,9 @@
             </thead>
             <tbody>
               <tr v-if="!filteredOrders.length">
-                <td colspan="7" class="px-4 py-10 text-center text-gray-500">{{ t('noOrders') }}</td>
+                <td colspan="7" class="px-4 py-10 text-center text-gray-500">
+                  {{ t('noOrders') }}
+                </td>
               </tr>
               <tr
                 v-for="row in filteredOrders"
@@ -66,11 +72,19 @@
                   </span>
                 </td>
                 <td class="whitespace-nowrap px-4 py-3 text-right">
-                  <button type="button" class="text-colliers-primary hover:underline" @click="onRepeat(row.id)">
+                  <button
+                    type="button"
+                    class="text-colliers-primary hover:underline"
+                    @click="onRepeat(row.id)"
+                  >
                     {{ t('repeatOrder') }}
                   </button>
                   <span class="mx-2 text-gray-300">|</span>
-                  <button type="button" class="text-colliers-primary hover:underline" @click="openDetails(row)">
+                  <button
+                    type="button"
+                    class="text-colliers-primary hover:underline"
+                    @click="openDetails(row)"
+                  >
                     {{ t('view') }}
                   </button>
                 </td>
@@ -89,10 +103,17 @@
       :aria-label="t('orderDetails')"
       @click.self="closeDetails"
     >
-      <div class="max-h-[92vh] w-full max-w-lg overflow-y-auto rounded-t-lg bg-white shadow-xl sm:rounded-lg">
+      <div
+        class="max-h-[92vh] w-full max-w-lg overflow-y-auto rounded-t-lg bg-white shadow-xl sm:rounded-lg"
+      >
         <div class="flex items-center justify-between border-b border-gray-200 px-5 py-4">
           <h2 class="text-lg font-semibold text-gray-900">{{ t('orderDetails') }}</h2>
-          <button type="button" class="rounded p-1 text-gray-500 hover:bg-gray-100" :aria-label="t('close')" @click="closeDetails">
+          <button
+            type="button"
+            class="rounded p-1 text-gray-500 hover:bg-gray-100"
+            :aria-label="t('close')"
+            @click="closeDetails"
+          >
             ×
           </button>
         </div>
@@ -136,13 +157,19 @@
           </div>
           <div class="flex justify-between gap-4 border-t border-gray-100 pt-3">
             <span class="text-gray-500">{{ t('proof') }}</span>
-            <button type="button" class="text-colliers-primary hover:underline" @click="proofOpen = true">
+            <button
+              type="button"
+              class="text-colliers-primary hover:underline"
+              @click="proofOpen = true"
+            >
               {{ t('viewBusinessCardProof') }}
             </button>
           </div>
         </div>
         <div class="flex justify-end border-t border-gray-100 px-5 py-4">
-          <app-button variant="outline" class="sm:w-auto" @click="closeDetails">{{ t('close') }}</app-button>
+          <app-button variant="outline" class="sm:w-auto" @click="closeDetails">{{
+            t('close')
+          }}</app-button>
         </div>
       </div>
     </div>
@@ -158,13 +185,20 @@
       <div class="w-full max-w-xl rounded-t-lg bg-white p-5 shadow-xl sm:rounded-lg">
         <div class="mb-4 flex items-center justify-between">
           <h2 class="text-lg font-semibold text-gray-900">{{ t('cardPreview') }}</h2>
-          <button type="button" class="rounded p-1 text-gray-500 hover:bg-gray-100" :aria-label="t('close')" @click="proofOpen = false">
+          <button
+            type="button"
+            class="rounded p-1 text-gray-500 hover:bg-gray-100"
+            :aria-label="t('close')"
+            @click="proofOpen = false"
+          >
             ×
           </button>
         </div>
         <card-preview :details="proofDetails(details)"></card-preview>
         <div class="mt-4 flex justify-end">
-          <app-button variant="outline" class="sm:w-auto" @click="proofOpen = false">{{ t('close') }}</app-button>
+          <app-button variant="outline" class="sm:w-auto" @click="proofOpen = false">{{
+            t('close')
+          }}</app-button>
         </div>
       </div>
     </div>
@@ -193,7 +227,14 @@ import { go } from '../adapters/nav'
 
 export default {
   name: 'OrderHistoryPage',
-  components: { ColliersPageShell, AppButton, AdminPageHeader, SearchField, SelectField, CardPreview },
+  components: {
+    ColliersPageShell,
+    AppButton,
+    AdminPageHeader,
+    SearchField,
+    SelectField,
+    CardPreview,
+  },
   data: function () {
     return {
       store: store,
