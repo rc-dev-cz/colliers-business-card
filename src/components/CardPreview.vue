@@ -31,7 +31,7 @@
 
     <div
       class="absolute whitespace-nowrap leading-none text-[#5F636A]"
-      :style="rowStyle(view.titleY, false)"
+      :style="rowStyle(view.titleY, false, null, view.titleSize)"
     >
       {{ view.title }}
     </div>
@@ -133,6 +133,7 @@ function fallbackView(fields) {
     credentialLine: '',
     credentialY: null,
     title: fields.title,
+    titleSize: L.bodySize,
     titleY: L.titleYNoCred,
     regionLine: '',
     regionY: null,
@@ -258,12 +259,14 @@ export default {
     emailStyle: function () {
       return this.rowStyle(this.view.emailY, false, this.emailRight)
     },
-    rowStyle: function (y, cred, right) {
+    rowStyle: function (y, cred, right, size) {
       return {
         left: this.identityLeft,
         right: right || this.identityRight,
         bottom: trimBottomPct(y) + '%',
-        fontSize: ptCqw(cred ? CARD_LAYOUT.credentialSize : CARD_LAYOUT.bodySize),
+        fontSize: ptCqw(
+          cred ? CARD_LAYOUT.credentialSize : size || CARD_LAYOUT.bodySize
+        ),
       }
     },
     withOptionalPlaceholders: function (view) {

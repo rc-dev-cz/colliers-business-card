@@ -144,7 +144,7 @@ function drawCardPage(pdfDoc, pagePlan, assets) {
   drawText(page, layout.title, {
     x: identityX,
     y: layout.titleY,
-    size: L.bodySize,
+    size: layout.titleSize || L.bodySize,
     font: font,
     color: GRAY,
   })

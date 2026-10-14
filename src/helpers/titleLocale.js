@@ -21,6 +21,10 @@ export var TITLE_EN_TO_FR = {
   'Talent Acquisition Business Partner': "Partenaire d'affaires sénior en acquisition de talent",
 }
 
+/** Only this French title shrinks to fit the identity lane (Cynthia, Oct 2026). */
+export var TITLE_FR_TALENT_ACQUISITION =
+  TITLE_EN_TO_FR['Talent Acquisition Business Partner']
+
 function frenchMapValues() {
   return Object.keys(TITLE_EN_TO_FR).map(function (key) {
     return TITLE_EN_TO_FR[key]

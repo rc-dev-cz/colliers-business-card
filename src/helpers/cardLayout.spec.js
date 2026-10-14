@@ -11,7 +11,9 @@ import {
   applyEmptyTeamIdentityLayout,
   applyPreviewTitleRegionSplit,
   resolveCardFields,
+  titleSizeFor,
 } from './cardLayout.js'
+import { TITLE_FR_TALENT_ACQUISITION } from './titleLocale.js'
 
 var fonts
 var L = CARD_LAYOUT
@@ -321,6 +323,41 @@ describe('planCardLayout', function () {
     expect(L.titleMaxWidth).toBe(141.52)
   })
 
+  it('shrinks the Talent Acquisition French title so it fits the identity lane', function () {
+    var layout = plan(
+      {
+        title: TITLE_FR_TALENT_ACQUISITION,
+        region: 'Alberta',
+      },
+      'French'
+    )
+    expect(layout.valid).toBe(true)
+    expect(layout.errors).not.toContain(LAYOUT_ERROR.title)
+    expect(layout.titleSize).toBeLessThan(L.bodySize)
+    expect(
+      fitsLine(fonts.font, TITLE_FR_TALENT_ACQUISITION, layout.titleSize, L.titleMaxWidth)
+    ).toBe(true)
+    expect(titleSizeFor(fonts.font, 'Directrice')).toBe(L.bodySize)
+  })
+
+  it('accepts bilingual Talent Acquisition with Alberta after shrinking the French title', function () {
+    var product = planProductLayout(
+      {
+        name: 'Ada Lovelace',
+        title: 'Talent Acquisition Business Partner',
+        titleFr: TITLE_FR_TALENT_ACQUISITION,
+        region: 'Alberta',
+        email: 'ada@example.com',
+        phone: '4165550100',
+      },
+      'Bilingual',
+      fonts
+    )
+    expect(product.valid).toBe(true)
+    expect(product.pages[1].layout.titleSize).toBeLessThan(L.bodySize)
+    expect(product.pages[0].layout.titleSize).toBe(L.bodySize)
+  })
+
   it('accepts Responsable du développement commercial | Quebec when region can split', function () {
     var layout = plan({
       title: 'Responsable du développement commercial',
@@ -546,6 +583,32 @@ describe('applyPreviewTitleRegionSplit', function () {
     expect(preview.emailY).toBe(43)
     expect(preview.phoneY).toBe(35)
     expect(preview.websiteY).toBe(27)
+  })
+
+  it('merges overflow region onto the team line when a team is filled', function () {
+    var layout = plan({
+      title: 'Responsable du développement commercial',
+      region: 'Quebec',
+      specializedTeam: 'human resources',
+    })
+    var preview = applyPreviewTitleRegionSplit(layout, fonts)
+    expect(preview.title).toBe('Responsable du développement commercial')
+    expect(preview.team).toBe('human resources | Quebec')
+    expect(preview.regionLine).toBeFalsy()
+    expect(preview.titleY).toBe(layout.titleY)
+    expect(preview.lastNameY).toBe(layout.lastNameY)
+  })
+
+  it('keeps region on its own line when overflow has no team', function () {
+    var layout = applyEmptyTeamIdentityLayout(
+      plan({
+        title: 'Responsable du développement commercial',
+        region: 'Quebec',
+      })
+    )
+    var preview = applyPreviewTitleRegionSplit(layout, fonts)
+    expect(preview.regionLine).toBe('Quebec')
+    expect(preview.team).toBe('')
   })
 
   it('does not split when region is empty', function () {

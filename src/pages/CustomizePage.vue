@@ -70,6 +70,7 @@
               v-if="isBilingual"
               :label="t('titleFr')"
               :value="details.titleFr"
+              :error="titleFieldError"
               name="titleFr"
               autocomplete="off"
               required
@@ -83,7 +84,7 @@
               :placeholder="t('selectDegree')"
               :search-placeholder="t('selectDegree')"
               :empty-label="t('noDegrees')"
-              :error="credentialSpaceError"
+              :error="degreeSpaceNotice"
               @input="onDegrees"
               @locked="onCredentialLocked"
             ></multi-select-field>
@@ -91,7 +92,7 @@
               :label="t('additionalCredentials')"
               :value="details.additionalCredentials"
               :disabled="additionalCredentialsDisabled"
-              :error="credentialSpaceError"
+              :error="additionalSpaceNotice"
               @input="onAdditionalCredentials"
             ></text-field>
             <select-field
@@ -99,7 +100,6 @@
               :value="details.region"
               :options="regionOptions"
               :placeholder="t('selectRegion')"
-              :error="titleFieldError"
               name="colliersCardRegion"
               autocomplete="address-level1"
               @input="details.region = $event"
@@ -176,6 +176,8 @@ import { bilingualFrenchPreviewDetails, suggestFrenchTitle } from '../helpers/ti
 import { titlesForProductLanguage } from '../helpers/titleAdmin'
 import { CANADIAN_REGION_OPTIONS } from '../helpers/canadianProvinces'
 
+var CREDENTIAL_SPACE_NOTICE_MS = 3000
+
 function emptyDetails(language) {
   var card = emptyCard(language)
   return {
@@ -229,6 +231,8 @@ export default {
       details: emptyDetails('English'),
       emailEdited: false,
       credentialSpaceRejected: false,
+      credentialNoticeField: '',
+      credentialNoticeTimer: null,
     }
   },
   computed: {
@@ -272,12 +276,12 @@ export default {
       if (this.layoutErrorCode !== LAYOUT_ERROR.title) return ''
       return this.layoutError
     },
-    credentialSpaceError: function () {
-      if (
-        !this.credentialSpaceRejected &&
-        this.layoutErrorCode !== LAYOUT_ERROR.credentials &&
-        !this.additionalCredentialsDisabled
-      ) {
+    degreeSpaceNotice: function () {
+      if (!this.credentialSpaceRejected || this.credentialNoticeField !== 'degree') return ''
+      return t('credentialsNoSpace')
+    },
+    additionalSpaceNotice: function () {
+      if (!this.credentialSpaceRejected || this.credentialNoticeField !== 'additional') {
         return ''
       }
       return t('credentialsNoSpace')
@@ -368,6 +372,9 @@ export default {
         self.layoutErrorCode = 'layoutErrorName'
       })
   },
+  beforeDestroy: function () {
+    this.clearCredentialNotice()
+  },
   methods: {
     t: t,
     onTitle: function (value) {
@@ -384,9 +391,25 @@ export default {
     },
     onName: function (value) {
       this.details.name = clipName(value)
-      this.credentialSpaceRejected = !this.credentialsFit(this.details)
       if (this.emailEdited) return
       this.details.email = emailFromFullName(this.details.name)
+    },
+    flashCredentialNotice: function (field) {
+      this.credentialNoticeField = field
+      this.credentialSpaceRejected = true
+      if (this.credentialNoticeTimer) clearTimeout(this.credentialNoticeTimer)
+      var self = this
+      this.credentialNoticeTimer = setTimeout(function () {
+        self.credentialSpaceRejected = false
+        self.credentialNoticeField = ''
+        self.credentialNoticeTimer = null
+      }, CREDENTIAL_SPACE_NOTICE_MS)
+    },
+    clearCredentialNotice: function () {
+      if (this.credentialNoticeTimer) clearTimeout(this.credentialNoticeTimer)
+      this.credentialNoticeTimer = null
+      this.credentialSpaceRejected = false
+      this.credentialNoticeField = ''
     },
     onEmail: function (value) {
       this.details.email = clipEmail(value)
@@ -399,14 +422,14 @@ export default {
       var candidate = Object.assign({}, this.details, { degree: next })
       var fits = this.credentialsFit(candidate)
       if (!fits && !isRemoval) {
-        this.credentialSpaceRejected = true
+        this.flashCredentialNotice('degree')
         return
       }
       this.details.degree = next
-      this.credentialSpaceRejected = !fits
+      this.clearCredentialNotice()
     },
     onCredentialLocked: function () {
-      this.credentialSpaceRejected = true
+      this.flashCredentialNotice('degree')
     },
     onAdditionalCredentials: function (value, event) {
       var current = String(this.details.additionalCredentials || '')
@@ -415,12 +438,12 @@ export default {
       var fits = this.credentialsFit(candidate)
       var isShorter = next.length < current.length
       if (!fits && !isShorter) {
-        this.credentialSpaceRejected = true
+        this.flashCredentialNotice('additional')
         if (event && event.target) event.target.value = current
         return
       }
       this.details.additionalCredentials = next
-      this.credentialSpaceRejected = !fits
+      this.clearCredentialNotice()
     },
     credentialsFit: function (details) {
       if (!this.layoutFonts || !this.product) return true
@@ -491,7 +514,7 @@ export default {
       var language = (this.product && this.product.language) || 'English'
       this.details = emptyDetails(language)
       this.emailEdited = false
-      this.credentialSpaceRejected = false
+      this.clearCredentialNotice()
       this.printPdfError = ''
     },
     back: function () {

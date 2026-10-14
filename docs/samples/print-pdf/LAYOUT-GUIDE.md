@@ -112,7 +112,7 @@ The lock is **Gestionnaire de projets principal | Nova Scotia** at Open Sans Reg
 - About **6.5 pt** remaining to trim (x = 261)
 - Letters stay inside the bleed (page edge x = 270)
 
-Anything wider (for example `Responsable du développement commercial | Quebec`) is rejected. Name, degrees, team, and email keep their own lanes.
+If `Title | Region` is wider than 141.52 pt but each part fits alone, preview and print split: region moves under the title (empty team) or onto `team | region` when a specialized team is filled. The Talent Acquisition French title is the only line allowed to shrink below 6.5 pt so the title itself still fits the lane. Name, degrees, team, and email keep their own lanes.
 
 ---
 

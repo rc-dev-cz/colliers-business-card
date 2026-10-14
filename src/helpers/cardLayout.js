@@ -8,7 +8,7 @@ import {
   WEBSITE_FR,
 } from './formatCardIdentity.js'
 import { EMAIL_MAX, formatCardPhone } from './validate.js'
-import { suggestFrenchTitle } from './titleLocale.js'
+import { suggestFrenchTitle, TITLE_FR_TALENT_ACQUISITION } from './titleLocale.js'
 
 var IN = 72
 
@@ -159,6 +159,32 @@ export function fitsLine(font, text, size, maxWidth) {
   return font.widthOfTextAtSize(String(text || ''), size) <= maxWidth
 }
 
+function titlePartOf(joined) {
+  var text = String(joined || '')
+  var sep = ' | '
+  var idx = text.indexOf(sep)
+  return (idx === -1 ? text : text.slice(0, idx)).trim()
+}
+
+/**
+ * Body size for the title line. Only the Talent Acquisition French title
+ * scales down so the title itself fits titleMaxWidth.
+ */
+export function titleSizeFor(font, joined, layout) {
+  var L = layout || CARD_LAYOUT
+  var titlePart = titlePartOf(joined)
+  if (titlePart !== TITLE_FR_TALENT_ACQUISITION) return L.bodySize
+  if (!font || typeof font.widthOfTextAtSize !== 'function') return L.bodySize
+  if (fitsLine(font, titlePart, L.bodySize, L.titleMaxWidth)) return L.bodySize
+  var width = font.widthOfTextAtSize(titlePart, L.bodySize)
+  if (!width) return L.bodySize
+  var size = Number(((L.bodySize * L.titleMaxWidth) / width).toFixed(2))
+  while (size > 1 && !fitsLine(font, titlePart, size, L.titleMaxWidth)) {
+    size = Number((size - 0.01).toFixed(2))
+  }
+  return size
+}
+
 function wrapByWords(font, text, size, maxWidth) {
   var words = String(text || '')
     .split(/\s+/)
@@ -205,17 +231,19 @@ function requireOneLine(font, text, size, maxWidth, code, errors) {
  * Joined `Title | Region` may overflow when each part still fits alone — preview/print
  * stack region under title in that case, so do not treat it as a layout error.
  */
-function titleRegionFitsOrSplits(font, joined, size, maxWidth) {
+function titleRegionFitsOrSplits(font, joined, titleSize, maxWidth, regionSize) {
   var text = String(joined || '')
-  if (fitsLine(font, text, size, maxWidth)) return true
+  if (fitsLine(font, text, titleSize, maxWidth)) return true
   var sep = ' | '
   var idx = text.indexOf(sep)
   if (idx === -1) return false
   var titlePart = text.slice(0, idx).trim()
   var regionPart = text.slice(idx + sep.length).trim()
   if (!titlePart || !regionPart) return false
+  var regionPt = regionSize == null ? titleSize : regionSize
   return (
-    fitsLine(font, titlePart, size, maxWidth) && fitsLine(font, regionPart, size, maxWidth)
+    fitsLine(font, titlePart, titleSize, maxWidth) &&
+    fitsLine(font, regionPart, regionPt, maxWidth)
   )
 }
 
@@ -340,7 +368,8 @@ export function planCardLayout(fields, fonts) {
   if (packed.mode === 'error') errors.push(LAYOUT_ERROR.credentials)
 
   requireOneLine(font, fields.website, L.bodySize, L.identityWidth, LAYOUT_ERROR.website, errors)
-  if (!titleRegionFitsOrSplits(font, fields.title, L.bodySize, L.titleMaxWidth)) {
+  var titleSize = titleSizeFor(font, fields.title, L)
+  if (!titleRegionFitsOrSplits(font, fields.title, titleSize, L.titleMaxWidth, L.bodySize)) {
     errors.push(LAYOUT_ERROR.title)
   }
   if (String(fields.team || '').trim()) {
@@ -386,6 +415,7 @@ export function planCardLayout(fields, fonts) {
     credentialLine: ownCred ? packed.row : '',
     credentialY: credentialY,
     title: fields.title,
+    titleSize: titleSize,
     titleY: titleY,
     team: fields.team,
     teamY: teamY,
@@ -489,8 +519,9 @@ export function applyEmptyTeamIdentityLayout(view) {
 
 /**
  * When `Title | Region` does not fit titleMaxWidth, put region on its own line and
- * lift name / credentials / title by one body line. Used by CardPreview and print PDF.
- * No-op when already split or when title alone cannot fit.
+ * lift name / credentials / title by one body line. If a specialized team is filled,
+ * merge onto `team | region` instead of adding a third line. Used by CardPreview
+ * and print PDF. No-op when already split or when title alone cannot fit.
  */
 export function applyPreviewTitleRegionSplit(view, fonts) {
   if (!view || !fonts || !fonts.font) return view
@@ -503,9 +534,22 @@ export function applyPreviewTitleRegionSplit(view, fonts) {
   var titlePart = joined.slice(0, idx).trim()
   var regionPart = joined.slice(idx + sep.length).trim()
   if (!titlePart || !regionPart) return view
-  if (fitsLine(fonts.font, joined, L.bodySize, L.titleMaxWidth)) return view
-  if (!fitsLine(fonts.font, titlePart, L.bodySize, L.titleMaxWidth)) return view
+  var titleSize = view.titleSize || L.bodySize
+  if (fitsLine(fonts.font, joined, titleSize, L.titleMaxWidth)) return view
+  if (!fitsLine(fonts.font, titlePart, titleSize, L.titleMaxWidth)) return view
   if (!fitsLine(fonts.font, regionPart, L.bodySize, L.titleMaxWidth)) return view
+
+  var team = String(view.team || '').trim()
+  if (team) {
+    var merged = team + sep + regionPart
+    if (fitsLine(fonts.font, merged, L.bodySize, L.identityWidth)) {
+      var withTeam = Object.assign({}, view)
+      withTeam.title = titlePart
+      withTeam.team = merged
+      withTeam.regionLine = ''
+      return withTeam
+    }
+  }
 
   var lift = L.bodyLineHeight
   var titleY = Number(view.titleY)

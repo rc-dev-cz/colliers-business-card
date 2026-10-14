@@ -39,6 +39,9 @@ describe('suggestFrenchTitle', function () {
     expect(suggestFrenchTitle('Director')).toBe('Directrice')
     expect(suggestFrenchTitle('Project Manager')).toBe('Gestionnaire de Projet')
     expect(suggestFrenchTitle('Team Lead')).toBe("Chef d'équipe")
+    expect(suggestFrenchTitle('Talent Acquisition Business Partner')).toBe(
+      "Partenaire d'affaires sénior en acquisition de talent"
+    )
   })
 
   it('falls back to the English title when no pair exists', function () {
