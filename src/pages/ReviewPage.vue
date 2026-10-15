@@ -63,11 +63,26 @@
                 class="border-b border-gray-50"
               >
                 <td class="py-3 pr-4 align-top">
-                  <div class="font-medium text-gray-900">
-                    {{ personName(line) || lineName(line) }}
-                  </div>
-                  <div v-if="personName(line)" class="mt-0.5 text-sm text-gray-500">
-                    {{ lineName(line) }}
+                  <div class="flex items-start gap-4">
+                    <button
+                      type="button"
+                      class="card-preview-frame mx-0 w-[7.5rem] max-w-[7.5rem] shrink-0 cursor-pointer overflow-hidden rounded-md border-0 bg-transparent p-0 text-left transition hover:shadow-[0_0_0_2px_rgba(37,64,143,0.4)] focus:outline-none focus-visible:shadow-[0_0_0_2px_rgba(37,64,143,0.4)] sm:w-[8.5rem] sm:max-w-[8.5rem] [&_*]:pointer-events-none"
+                      :aria-label="t('previewCard')"
+                      @click="previewLine = line"
+                    >
+                      <card-preview
+                        :details="line.details || {}"
+                        :language="line.language"
+                      ></card-preview>
+                    </button>
+                    <div class="min-w-0">
+                      <div class="font-medium text-gray-900">
+                        {{ personName(line) || lineName(line) }}
+                      </div>
+                      <div v-if="personName(line)" class="mt-0.5 text-sm text-gray-500">
+                        {{ lineName(line) }}
+                      </div>
+                    </div>
                   </div>
                 </td>
                 <td class="px-2 py-3 text-right align-top text-gray-700">
@@ -132,25 +147,50 @@
         </app-button>
       </aside>
     </div>
+
+    <app-modal
+      :open="Boolean(previewLine)"
+      :title="t('businessCardPreview')"
+      size="xl"
+      @close="previewLine = null"
+    >
+      <div v-if="previewLine" class="space-y-4 px-5 py-5 sm:px-6">
+        <div
+          v-for="slot in previewSlots(previewLine)"
+          :key="slot.language"
+          class="card-preview-frame mx-auto max-w-[480px]"
+        >
+          <card-preview
+            :details="slot.details"
+            :language="slot.language"
+            placeholders
+          ></card-preview>
+        </div>
+      </div>
+    </app-modal>
   </colliers-page-shell>
 </template>
 
 <script>
 import ColliersPageShell from '../layout/ColliersPageShell.vue'
 import AppButton from '../components/AppButton.vue'
+import AppModal from '../components/AppModal.vue'
+import CardPreview from '../components/CardPreview.vue'
 import EmptyState from '../components/EmptyState.vue'
 import ErrorState from '../components/ErrorState.vue'
 import { store, t, linesInSplit, subtotal, confirmSubmit } from '../store'
 import { productNameKey } from '../i18n/messages'
 import { boxesPerAddressForSplit, readSplitQty } from '../helpers/order'
 import { getProduct } from '../data/products'
+import { isBilingualLanguage } from '../helpers/formatCardIdentity'
+import { bilingualFrenchPreviewDetails } from '../helpers/titleLocale'
 import { go } from '../adapters/nav'
 
 export default {
   name: 'ReviewPage',
-  components: { ColliersPageShell, AppButton, EmptyState, ErrorState },
+  components: { ColliersPageShell, AppButton, AppModal, CardPreview, EmptyState, ErrorState },
   data: function () {
-    return { store: store }
+    return { store: store, previewLine: null }
   },
   computed: {
     cartTotal: function () {
@@ -162,6 +202,16 @@ export default {
     linesInSplit: linesInSplit,
     boxesPerAddress: function (split) {
       return boxesPerAddressForSplit(split, store.cart)
+    },
+    previewSlots: function (line) {
+      var details = line.details || {}
+      if (isBilingualLanguage(line.language)) {
+        return [
+          { language: 'English', details: details },
+          { language: 'French', details: bilingualFrenchPreviewDetails(details) },
+        ]
+      }
+      return [{ language: line.language, details: details }]
     },
     lineName: function (line) {
       return t(productNameKey(line.code))
