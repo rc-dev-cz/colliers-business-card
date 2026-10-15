@@ -56,7 +56,7 @@ Write specs next to code:
 | ------------------ | ---- | ---------------------------------- | ---------------------------------------------------------------------------------------------------------------- |
 | AB-H01–H06         | Unit | Vitest only                        | Function return values                                                                                           |
 | AB-S01–S03         | Unit | Vitest + store                     | Array length / fields after add, edit, delete                                                                    |
-| AB-01–03, AB-13–17 | Page | test-utils                         | Tabs, **+ New Address** visible/hidden, office table has no Edit/Delete                                          |
+| AB-01–03, AB-13–17 | Page | test-utils                         | Tabs, **+ Add New Address** visible/hidden, office table has no Edit/Delete                                      |
 | AB-04–09           | Page | test-utils                         | Open modal, fill fields, Save, list updates                                                                      |
 | AB-10–12           | Page | test-utils + stub `window.confirm` | Today delete is the **browser confirm** (`Delete this personal address?`), not a custom modal. Stub true/false.  |
 | AB-18–22           | Page | test-utils                         | Type in search; rows hide/show. Search is **one box for both tabs** — the query filters whichever tab is active. |
@@ -73,7 +73,7 @@ Write specs next to code:
 
 ### Product change required for AB-14
 
-Today **+ New Address** always shows in the header. Hide it when the Office tab is selected (`v-if="activeTab === 'personal'"`). Ship that with or just before the page specs.
+Today **+ Add New Address** always shows in the header. Hide it when the Office tab is selected (`v-if="activeTab === 'personal'"`). Ship that with or just before the page specs.
 
 ### Commands (once wired)
 
@@ -96,32 +96,32 @@ Today **+ New Address** always shows in the header. Hide it when the Office tab 
 
 ## My Address Book
 
-| ID    | Test                                    | Expected                                                       |
-| ----- | --------------------------------------- | -------------------------------------------------------------- |
-| AB-01 | Page opens with two tabs                | **My Address Book** and **Office Addresses** visible           |
-| AB-02 | My tab lists only personal rows         | No Colliers office rows mixed into My list                     |
-| AB-03 | On My tab, **+ New Address** is visible | Button present                                                 |
-| AB-04 | **+ New Address** opens the form modal  | Modal / form shown                                             |
-| AB-05 | Save creates a personal address         | New row on My list with nickname + address; form closes        |
-| AB-06 | Saved row is personal, not an office    | Appears under My Address Book only                             |
-| AB-07 | Form uses Canada labels / default       | Province, Postal; country defaults to Canada                   |
-| AB-08 | Edit opens modal with that row filled   | Nickname, street, city (and other saved fields) prefilled      |
-| AB-09 | Save on edit updates only that row      | Target changed; other personal rows unchanged                  |
-| AB-10 | Delete shows confirm                    | Browser confirm: “Delete this personal address?” (Cancel / OK) |
-| AB-11 | Cancel on confirm keeps the row         | `window.confirm` → false; list unchanged                       |
-| AB-12 | Confirm delete removes the row          | `window.confirm` → true; row gone from My list                 |
+| ID    | Test                                        | Expected                                                       |
+| ----- | ------------------------------------------- | -------------------------------------------------------------- |
+| AB-01 | Page opens with two tabs                    | **My Address Book** and **Office Addresses** visible           |
+| AB-02 | My tab lists only personal rows             | No Colliers office rows mixed into My list                     |
+| AB-03 | On My tab, **+ Add New Address** is visible | Button present                                                 |
+| AB-04 | **+ Add New Address** opens the form modal  | Modal / form shown                                             |
+| AB-05 | Save creates a personal address             | New row on My list with nickname + address; form closes        |
+| AB-06 | Saved row is personal, not an office        | Appears under My Address Book only                             |
+| AB-07 | Form uses Canada labels / default           | Province, Postal; country defaults to Canada                   |
+| AB-08 | Edit opens modal with that row filled       | Nickname, street, city (and other saved fields) prefilled      |
+| AB-09 | Save on edit updates only that row          | Target changed; other personal rows unchanged                  |
+| AB-10 | Delete shows confirm                        | Browser confirm: “Delete this personal address?” (Cancel / OK) |
+| AB-11 | Cancel on confirm keeps the row             | `window.confirm` → false; list unchanged                       |
+| AB-12 | Confirm delete removes the row              | `window.confirm` → true; row gone from My list                 |
 
 ---
 
 ## Office Addresses
 
-| ID    | Test                                       | Expected                                      |
-| ----- | ------------------------------------------ | --------------------------------------------- |
-| AB-13 | Office tab shows Colliers offices          | Location name + address for company offices   |
-| AB-14 | On Office tab, **+ New Address** is hidden | Button not shown (only on My tab)             |
-| AB-15 | Cannot edit an office here                 | No working Edit (locked or not offered)       |
-| AB-16 | Cannot delete an office here               | No Delete action on office rows               |
-| AB-17 | Office tab does not create company offices | No path on this page to add a Colliers office |
+| ID    | Test                                           | Expected                                      |
+| ----- | ---------------------------------------------- | --------------------------------------------- |
+| AB-13 | Office tab shows Colliers offices              | Location name + address for company offices   |
+| AB-14 | On Office tab, **+ Add New Address** is hidden | Button not shown (only on My tab)             |
+| AB-15 | Cannot edit an office here                     | No working Edit (locked or not offered)       |
+| AB-16 | Cannot delete an office here                   | No Delete action on office rows               |
+| AB-17 | Office tab does not create company offices     | No path on this page to add a Colliers office |
 
 ---
 

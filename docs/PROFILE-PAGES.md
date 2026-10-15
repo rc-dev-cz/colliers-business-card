@@ -17,13 +17,13 @@ Same profile page for anyone signed in. Two tabs; actions differ.
 Confirmed with Kevin (KC): **only admins manage office addresses.**  
 They do that on **Admin → Manage Addresses** (admin layout: Catalogue / Manage Addresses / Manage Titles), not on the profile Address Book.
 
-| Decision                        | Detail                                                                 |
-| ------------------------------- | ---------------------------------------------------------------------- |
-| **+ New Address** on Office tab | **Removed / hidden** — button only on **My Address Book**              |
-| Who manages Colliers offices    | **Admins only**                                                        |
-| Where offices are managed       | **Admin → Manage Addresses** (add / edit / remove)                     |
-| Profile → Office Addresses      | View + search only — not the place to create or change company offices |
-| Shipping / ship-to              | Out of scope here — check under Shipping                               |
+| Decision                            | Detail                                                                 |
+| ----------------------------------- | ---------------------------------------------------------------------- |
+| **+ Add New Address** on Office tab | **Removed / hidden** — button only on **My Address Book**              |
+| Who manages Colliers offices        | **Admins only**                                                        |
+| Where offices are managed           | **Admin → Manage Addresses** (add / edit / remove)                     |
+| Profile → Office Addresses          | View + search only — not the place to create or change company offices |
+| Shipping / ship-to                  | Out of scope here — check under Shipping                               |
 
 ### My Address Book & Office Addresses (profile)
 
@@ -33,8 +33,8 @@ Automated cases for this page only: [ADDRESS-BOOK-TESTS.md](ADDRESS-BOOK-TESTS.m
 | -------------------- | -------------------------------------------------------------------------------------------------------------- | ---------- |
 | Open Address Book    | Profile → Addresses; tabs **My Address Book** and **Office Addresses**                                         | Yes        |
 | My list              | My Address Book shows only **my** personal locations                                                           | Yes        |
-| Add personal address | On **My Address Book** only: **+ New Address** opens the modal and saves a **personal** address                | Yes        |
-| No add on Office tab | **+ New Address** is **hidden** when Office Addresses is selected                                              | Yes        |
+| Add personal address | On **My Address Book** only: **+ Add New Address** opens the modal and saves a **personal** address            | Yes        |
+| No add on Office tab | **+ Add New Address** is **hidden** when Office Addresses is selected                                          | Yes        |
 | Edit my address      | Edit opens the modal; save updates only that row                                                               | Yes        |
 | Delete my address    | Confirm modal (Cancel / Delete); Delete removes it                                                             | Yes        |
 | Office list          | Office Addresses shows Colliers offices (read-only for management)                                             | Yes        |

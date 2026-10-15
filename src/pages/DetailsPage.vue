@@ -11,7 +11,7 @@
       </button>
 
       <div class="flex flex-col gap-10 lg:flex-row lg:gap-12">
-        <div class="w-full lg:max-w-[480px]">
+        <div class="mx-auto w-full max-w-sm lg:mx-0 lg:max-w-[24rem]">
           <div class="space-y-4">
             <div v-for="language in previewLanguages" :key="language" class="card-preview-frame">
               <card-preview :details="{}" :language="language" placeholders></card-preview>

@@ -14,7 +14,6 @@ import {
   ensureCartAssignedToShipping,
   store,
   subtotal,
-  syncAssignments,
   updateQty,
 } from './store.js'
 import { billedBoxesCart, billedBoxesForLine as lineBilled, readSplitQty } from './helpers/order.js'
