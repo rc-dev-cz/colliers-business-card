@@ -521,7 +521,9 @@ export default {
     lineName: function (line) {
       var name = t(productNameKey(catalogCodeFromLine(line)))
       var language = String(line.language || '').trim()
-      return language ? name + ' - ' + language : name
+      var key = language.toLowerCase()
+      var label = ['english', 'french', 'bilingual'].indexOf(key) >= 0 ? t(key) : language
+      return label ? name + ' - ' + label : name
     },
     personName: function (line) {
       var details = (line && line.details) || {}
@@ -641,7 +643,7 @@ export default {
           next.push(existing[addr])
           return
         }
-        var draft = { itemIds: split.itemIds, locations: next }
+        var draft = { itemIds: split.itemIds, qtys: split.qtys, locations: next }
         next.push(createLocation(addr, boxesPerAddressForSplit(draft, store.cart)))
       })
       split.locations.splice(0, split.locations.length)

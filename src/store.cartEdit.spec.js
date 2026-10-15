@@ -1,5 +1,12 @@
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
-import { addProofToCart, setEditLineId, setProof, startNewCustomize, store } from './store.js'
+import {
+  addProofToCart,
+  logout,
+  setEditLineId,
+  setProof,
+  startNewCustomize,
+  store,
+} from './store.js'
 import { makeLine } from './helpers/cart.js'
 
 describe('edit cart line from proof', function () {
@@ -133,5 +140,18 @@ describe('edit cart line from proof', function () {
     addProofToCart()
     expect(store.cart.length).toBe(1)
     expect(store.cart[0].id).toBe('line-1')
+  })
+})
+
+describe('logout', function () {
+  it('clears the cart and shipping draft so the next login starts empty', function () {
+    store.cart = [makeLine({ id: 'line-x', code: 'BCAD-PL-ENG', quantity: 2, details: {} })]
+    store.order.splits[0].itemIds = ['line-x']
+    store.order.splits[0].locations = [{ id: 'loc-1', address: '1 Test Road', qty: 2 }]
+    logout()
+    expect(store.cart).toEqual([])
+    expect(store.order.splits.length).toBe(1)
+    expect(store.order.splits[0].itemIds).toEqual([])
+    expect(store.order.splits[0].locations).toEqual([])
   })
 })

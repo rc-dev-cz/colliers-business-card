@@ -165,6 +165,9 @@ export function logout() {
   persistSession()
   replaceList(store.personalAddresses, [])
   replaceList(store.orderHistory, [])
+  // Cart and shipping draft are not per-user, so the next login must not inherit them.
+  clearCart()
+  clearOrder()
 }
 
 export function addPersonal(fields) {

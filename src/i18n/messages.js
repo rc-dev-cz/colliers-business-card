@@ -83,7 +83,7 @@ export const messages = {
   continueToShipping: { EN: 'Continue to Shipping', FR: "Continuer l'expédition" },
   continueToShippingCart: { EN: 'Continue to Shipping', FR: "Continuer vers l'expédition" },
   addToCart: { EN: 'Add to Cart', FR: 'Ajouter au panier' },
-  updateCart: { EN: 'Update cart', FR: 'Mettre à jour le panier' },
+  updateCart: { EN: 'Update Cart', FR: 'Mettre à jour le panier' },
   previewProof: { EN: 'Preview Proof', FR: 'Aperçu de l’épreuve' },
   proofApproval: { EN: 'Proof Approval', FR: 'Approbation de l’épreuve' },
   proofNoticeLead: {
@@ -136,9 +136,6 @@ export const messages = {
   splitOrder: { EN: 'Split Order', FR: 'Diviser la commande' },
   removeSplit: { EN: 'Remove Split', FR: 'Supprimer la division' },
   shipToAddress: { EN: 'Ship to Address', FR: "Expédier à l'adresse" },
-  box: { EN: 'box', FR: 'boîte' },
-  boxes: { EN: 'boxes', FR: 'boîtes' },
-  cards: { EN: 'cards', FR: 'cartes' },
   noShipToAddresses: {
     EN: 'No ship-to addresses yet. Use + Add location to pick from your Address Book.',
     FR: "Aucune adresse d'expédition. Utilisez + Ajouter un lieu pour choisir dans votre carnet d'adresses.",

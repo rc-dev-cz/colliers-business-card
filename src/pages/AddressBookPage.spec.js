@@ -60,25 +60,25 @@ describe('AddressBookPage', function () {
     expect(wrapper.text()).not.toContain('Burlington Office')
   })
 
-  it('AB-03 on My tab, + New Address is visible', function () {
+  it('AB-03 on My tab, + Add New Address is visible', function () {
     const wrapper = mountPage()
-    const btn = buttonByText(wrapper, '+ New Address')
+    const btn = buttonByText(wrapper, '+ Add New Address')
     expect(btn).not.toBe(null)
     expect(btn.isVisible()).toBe(true)
   })
 
-  it('AB-04 + New Address opens the form modal', async function () {
+  it('AB-04 + Add New Address opens the form modal', async function () {
     const wrapper = mountPage()
-    buttonByText(wrapper, '+ New Address').trigger('click')
+    buttonByText(wrapper, '+ Add New Address').trigger('click')
     await wrapper.vm.$nextTick()
     expect(wrapper.find('[role="dialog"]').exists()).toBe(true)
     expect(wrapper.find('#addr-nickname').exists()).toBe(true)
-    expect(wrapper.text()).toContain('Add Address')
+    expect(wrapper.text()).toContain('New Address')
   })
 
   it('AB-04b Save with empty required fields shows validation errors', async function () {
     const wrapper = mountPage()
-    buttonByText(wrapper, '+ New Address').trigger('click')
+    buttonByText(wrapper, '+ Add New Address').trigger('click')
     await wrapper.vm.$nextTick()
     wrapper.find('form').trigger('submit')
     await wrapper.vm.$nextTick()
@@ -90,7 +90,7 @@ describe('AddressBookPage', function () {
 
   it('AB-05 Save creates a personal address', async function () {
     const wrapper = mountPage()
-    buttonByText(wrapper, '+ New Address').trigger('click')
+    buttonByText(wrapper, '+ Add New Address').trigger('click')
     await wrapper.vm.$nextTick()
     setField(wrapper, 'addr-nickname', 'Cabin')
     setField(wrapper, 'addr-street', '1 Pine Road')
@@ -105,7 +105,7 @@ describe('AddressBookPage', function () {
 
   it('AB-06 saved row is personal, not an office', async function () {
     const wrapper = mountPage()
-    buttonByText(wrapper, '+ New Address').trigger('click')
+    buttonByText(wrapper, '+ Add New Address').trigger('click')
     await wrapper.vm.$nextTick()
     setField(wrapper, 'addr-nickname', 'Cabin')
     setField(wrapper, 'addr-street', '1 Pine Road')
@@ -129,7 +129,7 @@ describe('AddressBookPage', function () {
 
   it('AB-07 form uses Canada labels / default', async function () {
     const wrapper = mountPage()
-    buttonByText(wrapper, '+ New Address').trigger('click')
+    buttonByText(wrapper, '+ Add New Address').trigger('click')
     await wrapper.vm.$nextTick()
     expect(wrapper.text()).toContain('Province')
     expect(wrapper.text()).toContain('Postal code')
@@ -198,11 +198,11 @@ describe('AddressBookPage', function () {
     expect(wrapper.text()).toContain('5515 North Service Road')
   })
 
-  it('AB-14 on Office tab, + New Address is hidden', async function () {
+  it('AB-14 on Office tab, + Add New Address is hidden', async function () {
     const wrapper = mountPage()
     buttonByText(wrapper, 'Office Addresses').trigger('click')
     await wrapper.vm.$nextTick()
-    expect(buttonByText(wrapper, '+ New Address')).toBe(null)
+    expect(buttonByText(wrapper, '+ Add New Address')).toBe(null)
   })
 
   it('AB-15 cannot edit an office here', async function () {
@@ -224,7 +224,7 @@ describe('AddressBookPage', function () {
     buttonByText(wrapper, 'Office Addresses').trigger('click')
     await wrapper.vm.$nextTick()
     const before = store.offices.length
-    expect(buttonByText(wrapper, '+ New Address')).toBe(null)
+    expect(buttonByText(wrapper, '+ Add New Address')).toBe(null)
     expect(store.offices.length).toBe(before)
   })
 

@@ -266,25 +266,29 @@ export function matchesOrderSearch(record, query) {
   return haystack.indexOf(q) !== -1
 }
 
-export function formatOrderDate(value) {
+export function formatOrderDate(value, locale) {
   const raw = String(value || '')
   const match = raw.match(/^(\d{4})-(\d{2})-(\d{2})/)
   if (!match) return raw
-  const months = [
-    'Jan',
-    'Feb',
-    'Mar',
-    'Apr',
-    'May',
-    'Jun',
-    'Jul',
-    'Aug',
-    'Sep',
-    'Oct',
-    'Nov',
-    'Dec',
-  ]
+  const months =
+    locale === 'FR'
+      ? [
+          'janv.',
+          'févr.',
+          'mars',
+          'avr.',
+          'mai',
+          'juin',
+          'juil.',
+          'août',
+          'sept.',
+          'oct.',
+          'nov.',
+          'déc.',
+        ]
+      : ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
   const month = months[Number(match[2]) - 1]
   if (!month) return raw
+  if (locale === 'FR') return Number(match[3]) + ' ' + month + ' ' + match[1]
   return month + ' ' + Number(match[3]) + ', ' + match[1]
 }

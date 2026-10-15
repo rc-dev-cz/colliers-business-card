@@ -91,7 +91,7 @@ Notes:
 | Rule                                                            | Confirmed |
 | --------------------------------------------------------------- | --------- |
 | Lists only this user’s personal locations (name + address)      | [ ]       |
-| User can **add** a personal address (+ New Address)             | [ ]       |
+| User can **add** a personal address (+ Add New Address)         | [ ]       |
 | User can **edit** a personal address                            | [ ]       |
 | User can **delete** a personal address (with confirm)           | [ ]       |
 | Adding a personal address does **not** create a Colliers office | [ ]       |

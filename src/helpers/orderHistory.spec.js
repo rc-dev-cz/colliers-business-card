@@ -55,6 +55,7 @@ describe('orderHistory helpers', function () {
 
   it('OH-05 formatOrderDate renders designer-style dates', function () {
     expect(formatOrderDate('2026-08-28')).toBe('Aug 28, 2026')
+    expect(formatOrderDate('2026-08-28', 'FR')).toBe('28 août 2026')
   })
 
   it('OH-06 nextOrderId advances past admin seed ids', function () {

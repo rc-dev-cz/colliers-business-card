@@ -11,9 +11,21 @@
       class="max-h-[92vh] w-full overflow-y-auto rounded-t-lg bg-white shadow-xl sm:rounded-lg"
       :class="panelClass"
     >
-      <div class="border-b border-gray-200 bg-[#f8f9fa] px-5 py-5 sm:px-6 sm:py-6">
-        <h2 :id="titleId" class="text-xl font-bold text-[#0a1a3a] sm:text-2xl">{{ title }}</h2>
-        <p v-if="subtitle" class="mt-2 text-sm text-gray-500">{{ subtitle }}</p>
+      <div
+        class="flex items-start justify-between gap-4 border-b border-gray-200 bg-[#f8f9fa] px-5 py-5 sm:px-6 sm:py-6"
+      >
+        <div class="min-w-0">
+          <h2 :id="titleId" class="text-xl font-bold text-[#0a1a3a] sm:text-2xl">{{ title }}</h2>
+          <p v-if="subtitle" class="mt-2 text-sm text-gray-500">{{ subtitle }}</p>
+        </div>
+        <button
+          type="button"
+          class="shrink-0 rounded p-1 text-xl leading-none text-gray-500 hover:bg-gray-100"
+          :aria-label="t('close')"
+          @click="onClose"
+        >
+          ×
+        </button>
       </div>
       <slot></slot>
     </div>

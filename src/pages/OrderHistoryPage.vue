@@ -182,7 +182,9 @@
       :aria-label="t('cardPreview')"
       @click.self="proofOpen = false"
     >
-      <div class="w-full max-w-xl rounded-t-lg bg-white p-5 shadow-xl sm:rounded-lg">
+      <div
+        class="max-h-[92vh] w-full max-w-xl overflow-y-auto rounded-t-lg bg-white p-5 shadow-xl sm:rounded-lg"
+      >
         <div class="mb-4 flex items-center justify-between">
           <h2 class="text-lg font-semibold text-gray-900">{{ t('cardPreview') }}</h2>
           <button
@@ -194,7 +196,15 @@
             ×
           </button>
         </div>
-        <card-preview :details="proofDetails(details)"></card-preview>
+        <div class="space-y-4">
+          <card-preview
+            v-for="slot in proofSlots(details)"
+            :key="slot.language"
+            :details="slot.details"
+            :language="slot.language"
+            placeholders
+          ></card-preview>
+        </div>
         <div class="mt-4 flex justify-end">
           <app-button variant="outline" class="sm:w-auto" @click="proofOpen = false">{{
             t('close')
@@ -223,6 +233,8 @@ import {
   proofDetails,
   shipToLines,
 } from '../helpers/orderHistory'
+import { isBilingualLanguage } from '../helpers/formatCardIdentity'
+import { bilingualFrenchPreviewDetails } from '../helpers/titleLocale'
 import { go } from '../adapters/nav'
 
 export default {
@@ -280,11 +292,24 @@ export default {
     t: t,
     cardCount: cardCount,
     cardholderName: cardholderName,
-    formatOrderDate: formatOrderDate,
+    formatOrderDate: function (value) {
+      return formatOrderDate(value, store.locale)
+    },
     itemLabel: itemLabel,
     orderTotal: orderTotal,
-    proofDetails: proofDetails,
     shipToLines: shipToLines,
+    proofSlots: function (record) {
+      var line = (record.cart && record.cart[0]) || {}
+      var details = proofDetails(record)
+      var language = line.language || details.language || 'English'
+      if (isBilingualLanguage(language)) {
+        return [
+          { language: 'English', details: details },
+          { language: 'French', details: bilingualFrenchPreviewDetails(details) },
+        ]
+      }
+      return [{ language: language, details: details }]
+    },
     rowKey: function (row) {
       return row.id + (row.ownerEmail ? '-' + row.ownerEmail : '')
     },
