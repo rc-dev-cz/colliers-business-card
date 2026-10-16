@@ -63,11 +63,26 @@
                 class="border-b border-gray-50"
               >
                 <td class="py-3 pr-4 align-top">
-                  <div class="font-medium text-gray-900">
-                    {{ personName(line) || lineName(line) }}
-                  </div>
-                  <div v-if="personName(line)" class="mt-0.5 text-sm text-gray-500">
-                    {{ lineName(line) }}
+                  <div class="flex items-start gap-3">
+                    <button
+                      type="button"
+                      class="card-preview-frame w-[7.5rem] max-w-[7.5rem] shrink-0 cursor-pointer overflow-hidden rounded-md border-0 bg-transparent p-0 text-left transition hover:shadow-[0_0_0_2px_rgba(37,64,143,0.4)] focus:outline-none focus-visible:shadow-[0_0_0_2px_rgba(37,64,143,0.4)] sm:w-[8.5rem] sm:max-w-[8.5rem] [&_*]:pointer-events-none"
+                      :aria-label="t('previewCard')"
+                      @click="openPreview(line)"
+                    >
+                      <card-preview
+                        :details="line.details || {}"
+                        :language="line.language"
+                      ></card-preview>
+                    </button>
+                    <div class="min-w-0 pt-1">
+                      <div class="font-medium text-gray-900">
+                        {{ personName(line) || lineName(line) }}
+                      </div>
+                      <div v-if="personName(line)" class="mt-0.5 text-sm text-gray-500">
+                        {{ lineName(line) }}
+                      </div>
+                    </div>
                   </div>
                 </td>
                 <td class="px-2 py-3 text-right align-top text-gray-700">
@@ -132,12 +147,36 @@
         </app-button>
       </aside>
     </div>
+    <div ref="previewHost" class="pointer-events-none fixed inset-0 z-[80]">
+      <app-modal
+        :open="Boolean(previewLine)"
+        :title="t('businessCardPreview')"
+        size="xl"
+        @close="previewLine = null"
+      >
+        <div v-if="previewLine" class="space-y-4 px-5 py-5 sm:px-6">
+          <div
+            v-for="slot in previewSlots(previewLine)"
+            :key="slot.language"
+            class="card-preview-frame mx-auto max-w-[480px]"
+          >
+            <card-preview
+              :details="slot.details"
+              :language="slot.language"
+              placeholders
+            ></card-preview>
+          </div>
+        </div>
+      </app-modal>
+    </div>
   </colliers-page-shell>
 </template>
 
 <script>
 import ColliersPageShell from '../layout/ColliersPageShell.vue'
 import AppButton from '../components/AppButton.vue'
+import AppModal from '../components/AppModal.vue'
+import CardPreview from '../components/CardPreview.vue'
 import EmptyState from '../components/EmptyState.vue'
 import ErrorState from '../components/ErrorState.vue'
 import { store, t, linesInSplit, subtotal, confirmSubmit } from '../store'
@@ -145,12 +184,21 @@ import { productNameKey } from '../i18n/messages'
 import { boxesPerAddressForSplit, readSplitQty } from '../helpers/order'
 import { getProduct } from '../data/products'
 import { go } from '../adapters/nav'
+import { isBilingualLanguage } from '../helpers/formatCardIdentity'
+import { bilingualFrenchPreviewDetails } from '../helpers/titleLocale'
 
 export default {
   name: 'ReviewPage',
-  components: { ColliersPageShell, AppButton, EmptyState, ErrorState },
+  components: { ColliersPageShell, AppButton, AppModal, CardPreview, EmptyState, ErrorState },
   data: function () {
-    return { store: store }
+    return { store: store, previewLine: null }
+  },
+  mounted: function () {
+    if (this.$refs.previewHost) document.body.appendChild(this.$refs.previewHost)
+  },
+  beforeDestroy: function () {
+    var host = this.$refs.previewHost
+    if (host && host.parentNode) host.parentNode.removeChild(host)
   },
   computed: {
     cartTotal: function () {
@@ -168,6 +216,19 @@ export default {
     },
     personName: function (line) {
       return String((line.details && line.details.name) || '').trim()
+    },
+    previewSlots: function (line) {
+      var details = (line && line.details) || {}
+      if (isBilingualLanguage(line && line.language)) {
+        return [
+          { language: 'English', details: details },
+          { language: 'French', details: bilingualFrenchPreviewDetails(details) },
+        ]
+      }
+      return [{ language: (line && line.language) || 'English', details: details }]
+    },
+    openPreview: function (line) {
+      this.previewLine = line
     },
     unitPrice: function (line) {
       var product = getProduct(line.code)

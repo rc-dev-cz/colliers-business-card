@@ -114,6 +114,8 @@ The lock is **Gestionnaire de projets principal | Nova Scotia** at Open Sans Reg
 
 If `Title | Region` is wider than 141.52 pt but each part fits alone, preview and print split: region moves under the title (empty team) or onto `team | region` when a specialized team is filled. The Talent Acquisition French title is the only line allowed to shrink below 6.5 pt so the title itself still fits the lane. Name, degrees, team, and email keep their own lanes.
 
+On a bilingual card the two faces match. French decides: if the French face drops the region (own line or onto the team), the English face uses that same break even when `Title | Region` still fits in English. If the French face stays on one line, English keeps the fit rule above. English-only and French-only cards are unchanged.
+
 ---
 
 ## Email width rule

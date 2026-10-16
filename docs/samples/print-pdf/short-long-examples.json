@@ -1,5 +1,5 @@
 {
-  "description": "Print PDF test cases. Language defaults to English; each sample may override. Empty details use generic placeholders (Firstname Lastname, Title, C.M.).",
+  "description": "Print PDF layout verification cases (not order samples). Language defaults to English; bilingual sets title + titleFr from the Customize title pickers. Empty details use generic placeholders (Firstname Lastname, Title, C.M.).",
   "outDir": "docs/samples/print-pdf",
   "samples": [
     {
@@ -38,12 +38,12 @@
     },
     {
       "id": "short",
-      "label": "Standard / short with team",
+      "label": "Standard / short with team (selected title)",
       "file": "Colliers-Sample-Short.pdf",
       "language": "English",
       "details": {
         "name": "Hannah Sharpe",
-        "title": "Business Services Administrator",
+        "title": "Project Manager",
         "region": "Ontario",
         "specializedTeam": "Business Services",
         "degree": ["B.Comm", "PMP"],
@@ -54,13 +54,31 @@
       }
     },
     {
+      "id": "short-bilingual",
+      "label": "Standard / short bilingual — selected EN+FR titles, long email",
+      "file": "Colliers-Sample-Short-Bilingual.pdf",
+      "language": "Bilingual",
+      "details": {
+        "name": "Hannah Sharpe",
+        "title": "Project Manager",
+        "titleFr": "Gestionnaire de Projet",
+        "region": "Ontario",
+        "specializedTeam": "Business Services",
+        "degree": ["B.Comm", "PMP"],
+        "additionalCredentials": "",
+        "email": "hannah.sharpe.pl@colliersprojectleaders.com",
+        "phone": "6139789906",
+        "address": "2720 Iris Street\nOttawa, ON\nK2C 1E6 Canada"
+      }
+    },
+    {
       "id": "long",
-      "label": "Maximum / long (own-row credentials + team)",
+      "label": "Maximum / long (own-row credentials + team, long email)",
       "file": "Colliers-Sample-Long.pdf",
       "language": "English",
       "details": {
         "name": "Christopher Harrington-Wellington",
-        "title": "Associate Director",
+        "title": "Business Development Manager",
         "region": "British Columbia",
         "specializedTeam": "Project Management Advisory",
         "degree": ["P. Eng.", "LEED AP BD+C"],
@@ -72,12 +90,12 @@
     },
     {
       "id": "long-fr",
-      "label": "Maximum / long French (own-row credentials + team, extra air above email)",
+      "label": "Maximum / long French (selected FR title, long email)",
       "file": "Colliers-Sample-Long-FR.pdf",
       "language": "French",
       "details": {
         "name": "Christopher Harrington-Wellington",
-        "title": "Associate Director",
+        "title": "Responsable du développement commercial",
         "region": "British Columbia",
         "specializedTeam": "Project Management Advisory",
         "degree": ["P. Eng.", "LEED AP BD+C"],
@@ -88,21 +106,21 @@
       }
     },
     {
-      "id": "alyssa-morice",
-      "label": "Alyssa Morice — Project Manager (Calgary)",
-      "file": "Colliers-Sample-Alyssa-Morice.pdf",
-      "language": "English",
-      "placeholders": false,
+      "id": "long-bilingual",
+      "label": "Maximum / long bilingual — selected EN+FR titles, long email, region split",
+      "file": "Colliers-Sample-Long-Bilingual.pdf",
+      "language": "Bilingual",
       "details": {
-        "name": "Alyssa Morice",
-        "title": "Project Manager",
-        "region": "",
-        "specializedTeam": "",
-        "degree": [],
-        "additionalCredentials": "",
-        "email": "alyssa.morice@colliersprojectleaders.com",
-        "phone": "5875720947",
-        "address": "Suite 300\nTransAlta Building\n1100 1st SE\nCalgary, AB\nT2P 1B1 Canada"
+        "name": "Christopher Harrington-Wellington",
+        "title": "Business Development Manager",
+        "titleFr": "Responsable du développement commercial",
+        "region": "British Columbia",
+        "specializedTeam": "Project Management Advisory",
+        "degree": ["P. Eng.", "LEED AP BD+C"],
+        "additionalCredentials": "CPA",
+        "email": "christopher.hw@colliersprojectleaders.com",
+        "phone": "6045550199",
+        "address": "1066 West Hastings Street, 23rd Floor\nVancouver, BC\nV6E 3X1 Canada"
       }
     }
   ]

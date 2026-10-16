@@ -8,7 +8,11 @@ import {
   WEBSITE_FR,
 } from './formatCardIdentity.js'
 import { EMAIL_MAX, formatCardPhone } from './validate.js'
-import { suggestFrenchTitle, TITLE_FR_TALENT_ACQUISITION } from './titleLocale.js'
+import {
+  bilingualFrenchPreviewDetails,
+  suggestFrenchTitle,
+  TITLE_FR_TALENT_ACQUISITION,
+} from './titleLocale.js'
 
 var IN = 72
 
@@ -242,8 +246,7 @@ function titleRegionFitsOrSplits(font, joined, titleSize, maxWidth, regionSize) 
   if (!titlePart || !regionPart) return false
   var regionPt = regionSize == null ? titleSize : regionSize
   return (
-    fitsLine(font, titlePart, titleSize, maxWidth) &&
-    fitsLine(font, regionPart, regionPt, maxWidth)
+    fitsLine(font, titlePart, titleSize, maxWidth) && fitsLine(font, regionPart, regionPt, maxWidth)
   )
 }
 
@@ -517,40 +520,52 @@ export function applyEmptyTeamIdentityLayout(view) {
   return next
 }
 
+var TITLE_REGION_SEP = ' | '
+
 /**
  * When `Title | Region` does not fit titleMaxWidth, put region on its own line and
  * lift name / credentials / title by one body line. If a specialized team is filled,
  * merge onto `team | region` instead of adding a third line. Used by CardPreview
  * and print PDF. No-op when already split or when title alone cannot fit.
+ *
+ * `opts.mode`:
+ * - `auto` (default) — split only when the joined line does not fit
+ * - `own-line` — drop region even when the joined English line still fits
+ * - `team` — fold region onto the team line even when the joined line still fits
  */
-export function applyPreviewTitleRegionSplit(view, fonts) {
+export function applyPreviewTitleRegionSplit(view, fonts, opts) {
   if (!view || !fonts || !fonts.font) return view
   if (view.regionLine) return view
+  var mode = (opts && opts.mode) || 'auto'
   var L = CARD_LAYOUT
   var joined = String(view.title || '')
-  var sep = ' | '
-  var idx = joined.indexOf(sep)
+  var idx = joined.indexOf(TITLE_REGION_SEP)
   if (idx === -1) return view
   var titlePart = joined.slice(0, idx).trim()
-  var regionPart = joined.slice(idx + sep.length).trim()
+  var regionPart = joined.slice(idx + TITLE_REGION_SEP.length).trim()
   if (!titlePart || !regionPart) return view
   var titleSize = view.titleSize || L.bodySize
-  if (fitsLine(fonts.font, joined, titleSize, L.titleMaxWidth)) return view
+  if (mode === 'auto' && fitsLine(fonts.font, joined, titleSize, L.titleMaxWidth)) return view
   if (!fitsLine(fonts.font, titlePart, titleSize, L.titleMaxWidth)) return view
   if (!fitsLine(fonts.font, regionPart, L.bodySize, L.titleMaxWidth)) return view
 
   var team = String(view.team || '').trim()
-  if (team) {
-    var merged = team + sep + regionPart
-    if (fitsLine(fonts.font, merged, L.bodySize, L.identityWidth)) {
-      var withTeam = Object.assign({}, view)
-      withTeam.title = titlePart
-      withTeam.team = merged
-      withTeam.regionLine = ''
-      return withTeam
-    }
+  var merged = team ? team + TITLE_REGION_SEP + regionPart : ''
+  var teamFits = Boolean(team) && fitsLine(fonts.font, merged, L.bodySize, L.identityWidth)
+  if (mode !== 'own-line' && teamFits) {
+    var withTeam = Object.assign({}, view)
+    withTeam.title = titlePart
+    withTeam.team = merged
+    withTeam.regionLine = ''
+    return withTeam
   }
+  if (mode === 'team') return view
 
+  return liftRegionToOwnLine(view, titlePart, regionPart)
+}
+
+function liftRegionToOwnLine(view, titlePart, regionPart) {
+  var L = CARD_LAYOUT
   var lift = L.bodyLineHeight
   var titleY = Number(view.titleY)
   var next = Object.assign({}, view)
@@ -564,6 +579,96 @@ export function applyPreviewTitleRegionSplit(view, fonts) {
   })
   if (view.credentialY != null) next.credentialY = roundPt(Number(view.credentialY) + lift)
   return next
+}
+
+function undoRegionOwnLine(view) {
+  if (!view || !view.regionLine) return view
+  var lift = CARD_LAYOUT.bodyLineHeight
+  var next = Object.assign({}, view)
+  next.titleY = roundPt(Number(view.titleY) - lift)
+  next.lastNameY = roundPt(
+    Number(view.lastNameY != null ? view.lastNameY : CARD_LAYOUT.nameY) - lift
+  )
+  next.nameLineYs = (view.nameLineYs || []).map(function (y) {
+    return roundPt(Number(y) - lift)
+  })
+  if (view.credentialY != null) next.credentialY = roundPt(Number(view.credentialY) - lift)
+  next.regionLine = ''
+  next.regionY = null
+  return next
+}
+
+/** Region text French placed on the team line (`team | region`), or ''. */
+function regionMergedOntoTeam(view) {
+  if (!view || String(view.regionLine || '').trim()) return ''
+  if (String(view.title || '').indexOf(TITLE_REGION_SEP) !== -1) return ''
+  var team = String(view.team || '')
+  var idx = team.lastIndexOf(TITLE_REGION_SEP)
+  if (idx === -1) return ''
+  return team.slice(idx + TITLE_REGION_SEP.length).trim()
+}
+
+/**
+ * Bilingual cards: French decides the region break. If French drops region to its
+ * own line, English does too. If French folds region onto the team line, English
+ * does too. English-only and French-only faces keep the fit rule.
+ */
+export function mirrorBilingualEnglishRegion(englishView, frenchView, fonts) {
+  if (!englishView || !frenchView || !fonts || !fonts.font) return englishView
+  if (String(frenchView.regionLine || '').trim()) {
+    return applyPreviewTitleRegionSplit(englishView, fonts, { mode: 'own-line' })
+  }
+  if (regionMergedOntoTeam(frenchView)) {
+    var base = englishView
+    if (englishView.regionLine) {
+      var region = String(englishView.regionLine).trim()
+      base = undoRegionOwnLine(englishView)
+      base.title = String(base.title || '').trim() + TITLE_REGION_SEP + region
+    }
+    return applyPreviewTitleRegionSplit(base, fonts, { mode: 'team' })
+  }
+  return englishView
+}
+
+/** Split every face, then mirror English to the French break on bilingual products. */
+export function finalizePrintPageLayouts(pages, fonts) {
+  var list = pages || []
+  list.forEach(function (page) {
+    if (!page) return
+    page.layout = applyPreviewTitleRegionSplit(applyEmptyTeamIdentityLayout(page.layout), fonts)
+  })
+  var english = null
+  var french = null
+  list.forEach(function (page) {
+    if (!page || !page.layout) return
+    if (isFrenchLanguage(page.language)) french = page
+    else if (!english) english = page
+  })
+  if (english && french) {
+    english.layout = mirrorBilingualEnglishRegion(english.layout, french.layout, fonts)
+  }
+  return list
+}
+
+/**
+ * English (or bilingual-thumbnail) preview. Rebuilds the French face from `titleFr`
+ * and applies the same break. French-only previews return the view unchanged.
+ */
+export function mirrorEnglishRegionForDetails(englishView, details, language, fonts) {
+  if (!englishView || !fonts || !fonts.font) return englishView
+  if (isFrenchLanguage(language) && !isBilingualLanguage(language)) return englishView
+  var src = details || {}
+  var bilingual =
+    isBilingualLanguage(language) ||
+    isBilingualLanguage(src.language) ||
+    Boolean(String(src.titleFr || '').trim())
+  if (!bilingual) return englishView
+  var frenchDetails = bilingualFrenchPreviewDetails(src)
+  var product = planProductLayout(frenchDetails, 'French', fonts)
+  var layout = product.pages[0] && product.pages[0].layout
+  if (!layout) return englishView
+  var frenchView = applyPreviewTitleRegionSplit(applyEmptyTeamIdentityLayout(layout), fonts)
+  return mirrorBilingualEnglishRegion(englishView, frenchView, fonts)
 }
 
 export function trimLeftPct(x) {

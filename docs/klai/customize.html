@@ -215,14 +215,14 @@
                   v-for="opt in (model.degreeOptions || []).filter(function (opt) { var q = String(model.degreeQuery || '').trim().toLowerCase(); return !q || String(opt).toLowerCase().indexOf(q) !== -1; })"
                   :key="opt"
                   class="flex cursor-pointer items-center gap-2 px-3 py-2 text-sm hover:bg-gray-50"
-                  @click.stop="if (!Array.isArray(model.card.degree)) model.card.degree = []; if (model.card.degree.indexOf(opt) === -1) { model.card.degree.push(opt); } else { model.card.degree = model.card.degree.filter(function (d) { return d !== opt; }); } BF.namedAction('wrapCardName');"
+                  @click.stop="var cur = Array.isArray(model.card.degree) ? model.card.degree : []; var next = cur.indexOf(opt) === -1 ? cur.concat([opt]) : cur.filter(function (d) { return d !== opt; }); model.card = Object.assign({}, model.card, { degree: next }); BF.namedAction('wrapCardName');"
                 >
                   <input
                     type="checkbox"
-                    class="h-4 w-4 rounded border-gray-300"
+                    class="pointer-events-none h-4 w-4 rounded border-gray-300"
                     :checked="Array.isArray(model.card.degree) && model.card.degree.indexOf(opt) !== -1"
                     tabindex="-1"
-                    @click.stop.prevent="if (!Array.isArray(model.card.degree)) model.card.degree = []; if (model.card.degree.indexOf(opt) === -1) { model.card.degree.push(opt); } else { model.card.degree = model.card.degree.filter(function (d) { return d !== opt; }); } BF.namedAction('wrapCardName');"
+                    aria-hidden="true"
                   />
                   <span>{{ opt }}</span>
                 </li>
@@ -240,7 +240,7 @@
                 <button
                   type="button"
                   class="ml-0.5 inline-flex h-4 w-4 items-center justify-center rounded text-[#24418A] hover:bg-[#d4deef]"
-                  @click="model.card.degree = model.card.degree.filter(function (x) { return x !== d; }); BF.namedAction('wrapCardName')"
+                  @click="model.card = Object.assign({}, model.card, { degree: model.card.degree.filter(function (x) { return x !== d; }) }); BF.namedAction('wrapCardName')"
                 >
                   ×
                 </button></span

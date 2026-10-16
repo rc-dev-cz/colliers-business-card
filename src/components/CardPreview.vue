@@ -66,9 +66,9 @@
       {{ view.website }}
     </div>
 
-    <div class="absolute overflow-hidden whitespace-pre-wrap text-[#5F636A]" :style="addressStyle">{{
-      view.addressText
-    }}</div>
+    <div class="absolute overflow-hidden whitespace-pre-wrap text-[#5F636A]" :style="addressStyle">
+      {{ view.addressText }}
+    </div>
   </div>
 </template>
 
@@ -82,6 +82,7 @@ import {
   planProductLayout,
   applyEmptyTeamIdentityLayout,
   applyPreviewTitleRegionSplit,
+  mirrorEnglishRegionForDetails,
   resolveCardFields,
   trimBottomPct,
   trimLeftPct,
@@ -233,7 +234,8 @@ export default {
       if (!base) base = viewFromPlan(plannedLayout(this.details, this.language, this.layoutFonts))
       if (!base) base = fallbackView(resolveCardFields(this.details, this.language))
       if (this.placeholders) base = this.withOptionalPlaceholders(base)
-      return withPreviewContacts(base, this.layoutFonts)
+      var face = withPreviewContacts(base, this.layoutFonts)
+      return mirrorEnglishRegionForDetails(face, this.details, this.language, this.layoutFonts)
     },
     addressStyle: function () {
       return {
@@ -264,9 +266,7 @@ export default {
         left: this.identityLeft,
         right: right || this.identityRight,
         bottom: trimBottomPct(y) + '%',
-        fontSize: ptCqw(
-          cred ? CARD_LAYOUT.credentialSize : size || CARD_LAYOUT.bodySize
-        ),
+        fontSize: ptCqw(cred ? CARD_LAYOUT.credentialSize : size || CARD_LAYOUT.bodySize),
       }
     },
     withOptionalPlaceholders: function (view) {

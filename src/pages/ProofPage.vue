@@ -73,7 +73,7 @@ import ColliersPageShell from '../layout/ColliersPageShell.vue'
 import CardPreview from '../components/CardPreview.vue'
 import AppButton from '../components/AppButton.vue'
 import { getProduct } from '../data/products'
-import { t, store, addProofToCart, ensureProofInCart, ensureCartAssignedToShipping } from '../store'
+import { t, store, addProofToCart, ensureProofInCart, startShippingFromCart } from '../store'
 import { go } from '../adapters/nav'
 import { loadLayoutFonts } from '../helpers/cardFonts'
 import { planProductLayout } from '../helpers/cardLayout'
@@ -171,7 +171,7 @@ export default {
     continueToShipping: function () {
       if (!this.approved) return
       ensureProofInCart()
-      ensureCartAssignedToShipping()
+      startShippingFromCart()
       go('shipping')
     },
     backToEdit: function () {

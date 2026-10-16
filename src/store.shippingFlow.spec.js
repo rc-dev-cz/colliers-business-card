@@ -13,6 +13,7 @@ import {
   selectedShippingItemCount,
   setGroupLocationQty,
   splitOrder,
+  startShippingFromCart,
   store,
   subtotal,
   syncAssignments,
@@ -295,6 +296,49 @@ describe('shipping flow: cart, split groups, and boxes', function () {
     var newId = store.cart[store.cart.length - 1].id
     expect(newId).not.toBe(offId)
     expect(store.order.splits[0].itemIds).toEqual([String(newId)])
+    expect(
+      cartLinesNotShipping().map(function (line) {
+        return line.id
+      })
+    ).toEqual([offId])
+  })
+
+  it('Continue to Shipping rebuilds one group with every card when shipping is empty', function () {
+    seedCart(2)
+    ensureCartAssignedToShipping()
+    splitOrder(0)
+    store.cart.forEach(function (line) {
+      store.order.splits.slice().forEach(function (split) {
+        removeLineFromSplit(split, line.id)
+      })
+    })
+    expect(store.order.splits.length).toBe(2)
+    expect(cartLinesNotShipping().length).toBe(2)
+
+    startShippingFromCart()
+
+    expect(itemCount()).toBe(2)
+    expect(store.order.splits.length).toBe(1)
+    expect(store.order.detachedIds).toEqual([])
+    expect(store.order.splits[0].itemIds).toEqual(
+      store.cart.map(function (line) {
+        return String(line.id)
+      })
+    )
+  })
+
+  it('Continue to Shipping keeps groups and off-shipping cards when something still ships', function () {
+    seedCart(2)
+    ensureCartAssignedToShipping()
+    splitOrder(0)
+    var offId = store.cart[0].id
+    store.order.splits.slice().forEach(function (split) {
+      removeLineFromSplit(split, offId)
+    })
+
+    startShippingFromCart()
+
+    expect(store.order.splits.length).toBe(2)
     expect(
       cartLinesNotShipping().map(function (line) {
         return line.id

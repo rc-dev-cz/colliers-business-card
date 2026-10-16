@@ -10,6 +10,8 @@ import {
   previewContactYs,
   applyEmptyTeamIdentityLayout,
   applyPreviewTitleRegionSplit,
+  finalizePrintPageLayouts,
+  mirrorBilingualEnglishRegion,
   resolveCardFields,
   titleSizeFor,
 } from './cardLayout.js'
@@ -461,7 +463,7 @@ describe('planProductLayout', function () {
         phone: '4165550100',
       },
       'Bilingual',
-      fonts,
+      fonts
     )
     expect(product.pages[0].fields.title).toContain('Director')
     expect(product.pages[1].fields.title).toContain('Directrice')
@@ -552,9 +554,7 @@ describe('previewContactYs', function () {
 
 describe('applyPreviewTitleRegionSplit', function () {
   it('keeps a short Title | Region on one line', function () {
-    var layout = applyEmptyTeamIdentityLayout(
-      plan({ title: 'Broker', region: 'Ontario' })
-    )
+    var layout = applyEmptyTeamIdentityLayout(plan({ title: 'Broker', region: 'Ontario' }))
     var preview = applyPreviewTitleRegionSplit(layout, fonts)
     expect(preview.title).toBe('Broker | Ontario')
     expect(preview.regionLine).toBeFalsy()
@@ -624,5 +624,82 @@ describe('applyPreviewTitleRegionSplit', function () {
     var preview = applyPreviewTitleRegionSplit(layout, fonts)
     expect(preview.regionLine).toBeFalsy()
     expect(preview.title).toBe(layout.title)
+  })
+})
+
+describe('bilingual region mirror', function () {
+  var longFr = 'Responsable du développement commercial'
+
+  function face(details, language) {
+    return applyPreviewTitleRegionSplit(
+      applyEmptyTeamIdentityLayout(plan(details, language)),
+      fonts
+    )
+  }
+
+  it('drops Ontario on the English face when the French face needs its own line', function () {
+    var details = {
+      name: 'Cynthia Luu',
+      title: 'Director',
+      titleFr: longFr,
+      region: 'Ontario',
+      email: 'cynthia.luu@colliersprojectleaders.com',
+      phone: '4165550100',
+    }
+    var englishAlone = face({ title: 'Director', region: 'Ontario' }, 'English')
+    expect(englishAlone.title).toBe('Director | Ontario')
+    expect(englishAlone.regionLine).toBeFalsy()
+
+    var product = planProductLayout(details, 'Bilingual', fonts)
+    finalizePrintPageLayouts(product.pages, fonts)
+    var english = product.pages[0].layout
+    var french = product.pages[1].layout
+
+    expect(french.regionLine).toBe('Ontario')
+    expect(french.title).toBe(longFr)
+    expect(english.regionLine).toBe('Ontario')
+    expect(english.title).toBe('Director')
+    expect(english.titleY).toBeCloseTo(french.titleY, 2)
+  })
+
+  it('keeps Title | Region on one English line when the French face also fits', function () {
+    var details = {
+      name: 'Cynthia Luu',
+      title: 'Director',
+      titleFr: 'Directrice',
+      region: 'Ontario',
+      email: 'cynthia.luu@colliersprojectleaders.com',
+      phone: '4165550100',
+    }
+    var product = planProductLayout(details, 'Bilingual', fonts)
+    finalizePrintPageLayouts(product.pages, fonts)
+    expect(product.pages[0].layout.title).toBe('Director | Ontario')
+    expect(product.pages[0].layout.regionLine).toBeFalsy()
+    expect(product.pages[1].layout.title).toBe('Directrice | Ontario')
+    expect(product.pages[1].layout.regionLine).toBeFalsy()
+  })
+
+  it('folds the English region onto the team line when French does', function () {
+    var english = face(
+      { title: 'Director', region: 'Quebec', specializedTeam: 'human resources' },
+      'English'
+    )
+    var french = face(
+      {
+        title: longFr,
+        region: 'Quebec',
+        specializedTeam: 'human resources',
+      },
+      'French'
+    )
+    expect(english.title).toBe('Director | Quebec')
+    expect(french.team).toBe('human resources | Quebec')
+    expect(french.regionLine).toBeFalsy()
+
+    var mirrored = mirrorBilingualEnglishRegion(english, french, fonts)
+    expect(mirrored.title).toBe('Director')
+    expect(mirrored.team).toBe('human resources | Quebec')
+    expect(mirrored.regionLine).toBeFalsy()
+    expect(mirrored.titleY).toBe(english.titleY)
   })
 })

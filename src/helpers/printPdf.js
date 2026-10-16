@@ -4,8 +4,7 @@ import { loadBytes, loadLayoutFonts, loadOpenSansBytes } from './cardFonts.js'
 import {
   CARD_BACK_LEGAL,
   CARD_LAYOUT,
-  applyEmptyTeamIdentityLayout,
-  applyPreviewTitleRegionSplit,
+  finalizePrintPageLayouts,
   layoutErrorMessage,
   planProductLayout,
   snapshotCardDetails,
@@ -291,14 +290,11 @@ export async function buildPrintPdfBytes(details, language, opts) {
   var snapshot = snapshotCardDetails(details)
   var measureFonts = await loadLayoutFonts()
   var productPlan = planProductLayout(snapshot, language, measureFonts)
-  applyPrintCredentialPlaceholder(productPlan, snapshot)
-  applyPrintAddressPlaceholder(productPlan, snapshot)
-  productPlan.pages.forEach(function (page) {
-    page.layout = applyPreviewTitleRegionSplit(
-      applyEmptyTeamIdentityLayout(page.layout),
-      measureFonts
-    )
-  })
+  if (!opts || opts.placeholders !== false) {
+    applyPrintCredentialPlaceholder(productPlan, snapshot)
+    applyPrintAddressPlaceholder(productPlan, snapshot)
+  }
+  finalizePrintPageLayouts(productPlan.pages, measureFonts)
   if (opts && typeof opts.adjustPlan === 'function') opts.adjustPlan(productPlan)
   if (!productPlan.valid) throwLayoutError(productPlan)
 
@@ -330,7 +326,8 @@ var lastPrintPdfUrl = ''
 
 export async function viewPrintPdf(details, language) {
   var snapshot = snapshotCardDetails(details)
-  var bytes = await buildPrintPdfBytes(snapshot, language)
+  // Customize / Proof print must not inject preview samples (C.M., fake address).
+  var bytes = await buildPrintPdfBytes(snapshot, language, { placeholders: false })
   var blob = new Blob([bytes], { type: 'application/pdf' })
   if (lastPrintPdfUrl) {
     try {

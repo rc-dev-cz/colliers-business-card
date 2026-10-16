@@ -163,7 +163,7 @@ import {
   subtotal,
   setProof,
   setEditLineId,
-  ensureCartAssignedToShipping,
+  startShippingFromCart,
 } from '../store'
 import { productNameKey } from '../i18n/messages'
 import { lineTotal } from '../helpers/cart'
@@ -241,7 +241,7 @@ export default {
     goShipping: function () {
       this.previewLine = null
       closeCart()
-      ensureCartAssignedToShipping()
+      startShippingFromCart()
       go('shipping')
     },
   },

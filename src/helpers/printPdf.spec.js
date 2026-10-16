@@ -63,6 +63,43 @@ describe('printPdf', function () {
     expect(bytes.byteLength).toBeGreaterThan(500)
   })
 
+  it('omits the C.M. sample when placeholders are off', async function () {
+    var captured
+    await buildPrintPdfBytes(base, 'English', {
+      placeholders: false,
+      adjustPlan: function (plan) {
+        captured = plan.pages[0].layout
+      },
+    })
+    expect(captured.inlineCredential).toBe('')
+    expect(captured.credentialLine).toBe('')
+  })
+
+  it('viewPrintPdf does not inject C.M. for a real order with no degrees', async function () {
+    var captured
+    await buildPrintPdfBytes(
+      {
+        name: 'Alyssa Morice',
+        title: 'Project Manager',
+        degree: [],
+        additionalCredentials: '',
+        email: 'alyssa.morice@colliersprojectleaders.com',
+        phone: '5875720947',
+        address: 'Suite 300\n1100 1st SE\nCalgary, AB\nT2G 1B1 Canada',
+      },
+      'English',
+      {
+        placeholders: false,
+        adjustPlan: function (plan) {
+          captured = plan.pages[0].layout
+        },
+      }
+    )
+    expect(captured.inlineCredential).toBe('')
+    expect(captured.credentialLine).toBe('')
+    expect(String(captured.nameLines && captured.nameLines.join(' '))).not.toMatch(/C\.M\./)
+  })
+
   it('keeps the C.M. sample and comma when no credential is entered', function () {
     expect(printInlineCredential({ degree: [], additionalCredentials: '' }, 'English')).toBe(
       ', C.M.'
