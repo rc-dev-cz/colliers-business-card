@@ -26,7 +26,7 @@ import {
   unassignItem,
   writeSplitQty,
 } from './helpers/order'
-import { fetchOffices, fetchTitles, submitOrder } from './adapters/api'
+import { fetchTitles, submitOrder } from './adapters/api'
 import {
   loadPersonalAddresses as readPersonalAddresses,
   savePersonalAddresses,
@@ -38,6 +38,7 @@ import { createOfficeRecord, loadManagedOffices, saveManagedOffices } from './he
 import { loadManagedTitles, saveManagedTitles } from './helpers/titleAdmin'
 import { loadManagedDegrees, saveManagedDegrees } from './helpers/degreeAdmin'
 import { loadAllPortalOrders } from './helpers/adminData'
+import { buildOrderPayload, logOrderPayload } from './helpers/orderPayload'
 import { buildHistoryRecord, nextOrderId } from './helpers/orderHistory'
 import { getProduct } from './data/products.js'
 import { go } from './adapters/nav'
@@ -385,6 +386,11 @@ function findCartLineById(id) {
   )
 }
 
+/** Remember the line this proof put in the cart, so Back to Edit updates it. */
+function rememberProofLine(proof, line) {
+  if (proof && line) Vue.set(proof, 'cartLineId', line.id)
+}
+
 function clearEditLine() {
   store.editLineId = null
   if (store.proof) Vue.set(store.proof, 'editLineId', null)
@@ -407,6 +413,7 @@ function applyProofToCart(options) {
       if (product) line.price = product.price
       persistCart()
       syncAssignments()
+      rememberProofLine(proof, line)
       if (clearEdit) clearEditLine()
       if (opts.openCart) store.cartOpen = true
       return
@@ -422,6 +429,7 @@ function applyProofToCart(options) {
       existing.quantity = Math.max(1, Math.min(cap, nextQty))
     }
     persistCart()
+    rememberProofLine(proof, existing)
     applyPendingSplit(existing.id)
     if (opts.openCart) store.cartOpen = true
     return
@@ -436,6 +444,7 @@ function applyProofToCart(options) {
     { openCart: Boolean(opts.openCart) }
   )
   const added = findCartLineForProof(proof)
+  rememberProofLine(proof, added)
   if (added) applyPendingSplit(added.id)
 }
 
@@ -830,19 +839,10 @@ export async function loadOffices(force) {
   if (store.offices.length && !force) return store.offices
   store.officesLoading = true
   store.officesError = ''
-  const managed = loadManagedOffices()
-  if (managed.length && !force) {
-    store.offices = managed
-    store.officesSource = 'local'
-    store.officesLoading = false
-  } else {
-    const result = await fetchOffices()
-    store.offices = result.data.length ? result.data.map(createOfficeRecord) : managed
-    store.officesSource = result.source
-    store.officesError = result.source === 'mock' ? '' : result.error
-    saveManagedOffices(store.offices)
-    store.officesLoading = false
-  }
+  // Local managed list (seed + Manage Addresses edits). FileMaker hook replaces this later.
+  store.offices = loadManagedOffices()
+  store.officesSource = 'local'
+  store.officesLoading = false
   if (!store.titles.length) {
     store.titles = loadManagedTitles()
   }
@@ -868,15 +868,22 @@ export async function confirmSubmit() {
   store.submitting = true
   store.submitError = ''
   try {
-    const result = await submitOrder({
-      cart: store.cart.slice(),
+    // Review can load straight from a refresh, before any page filled store.offices
+    const offices = await loadOffices()
+    const payload = buildOrderPayload({
+      cart: store.cart,
       order: snapshotOrder(store.order),
+      session: store.session,
+      offices: offices,
+      personalAddresses: store.personalAddresses,
     })
+    const result = await submitOrder(payload)
     if (!result.ok) {
       store.submitError = 'Submit failed'
       return false
     }
-    appendConfirmedOrder()
+    const record = appendConfirmedOrder()
+    logOrderPayload(result.orderId || record.id, payload)
     return true
   } catch (error) {
     store.submitError = error && error.message ? error.message : 'Submit failed'

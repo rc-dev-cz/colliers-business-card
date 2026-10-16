@@ -58,8 +58,7 @@ The Standard image shows the normal finished card:
 
 - One-line name with short credentials **inline** after the name (e.g. `Hannah Sharpe, B.Comm, PMP`)
 - When the full credential list does not fit after the name, **shorter tokens** (by measured width) stay on the name line and the remainder uses the credential row
-- Title | Region
-- Team when present
+- Title, then Region on its own line (no team), or `Team | Region` when a team is filled
 - Email
 - Mobile
 - Website
@@ -87,7 +86,7 @@ Expected behavior:
 
 - Name can use up to two lines
 - Credentials have no fixed count cap. They pack by measured width: shorter tokens after the name, remainder on the credential row. Degree options and Additional Credentials share that same two-line space budget.
-- Title | Region remains below the name / credential area
+- Title, then region (own line or `Team | Region`) remain below the name / credential area
 - Team remains optional
 - Email stays on one line
 - Mobile stays on one line
@@ -102,7 +101,13 @@ The exact vertical positions should come from the generated production PDF. Do *
 
 ## Title and region width
 
-Title and region share one line, joined as `Title | Region`.
+Region does **not** share the title line, so EN and FR faces mirror (Cynthia, Oct 2026):
+
+- Specialized team filled → `Team | Region` on the team line (e.g. `human resources | Alberta`)
+- Team empty → region on its own line under the title; name / credentials / title lift one body line
+- `Team | Region` wider than 141.52 pt → keep the approved `Title | Region` line when it fits (Maximum stays on its approved Ys), else stack region under the title
+
+The width lock below still applies to any `Title | Region` fallback line.
 
 The lock is **Gestionnaire de projets principal | Nova Scotia** at Open Sans Regular 6.5 pt:
 
@@ -112,7 +117,7 @@ The lock is **Gestionnaire de projets principal | Nova Scotia** at Open Sans Reg
 - About **6.5 pt** remaining to trim (x = 261)
 - Letters stay inside the bleed (page edge x = 270)
 
-If `Title | Region` is wider than 141.52 pt but each part fits alone, preview and print split: region moves under the title (empty team) or onto `team | region` when a specialized team is filled. The Talent Acquisition French title is the only line allowed to shrink below 6.5 pt so the title itself still fits the lane. Name, degrees, team, and email keep their own lanes.
+The Talent Acquisition French title is the only line allowed to shrink below 6.5 pt so the title itself still fits the lane. Name, degrees, team, and email keep their own lanes.
 
 ---
 

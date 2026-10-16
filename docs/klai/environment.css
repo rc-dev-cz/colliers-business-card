@@ -1,10 +1,9 @@
 /*
-  Colliers Environment CSS — paste at TOP of Klai Styling tab.
-  Keep existing BF sidebar / .table / heading-reset rules BELOW this block.
-  Source: src/styles/colliers-environment.css + compiled components from src/styles/main.css
+  COLLIERs ENVIRONMENT CSS
+  Layout geometry for Vue local + later Klai Studio Environment CSS.
+  Tokens + shell markers only — component look stays in Tailwind.
 */
 
-/* --- Layer 1: Tokens --- */
 :root {
   --colliers-primary: #25408f;
   --colliers-primary-hover: #1a2e6e;
@@ -15,15 +14,19 @@
   --colliers-border: #e5e7eb;
   --colliers-scroll-body-pad-x: 1.5rem;
   --colliers-scroll-body-max-width: 72rem;
+  /* Admin inline nav needs ~1024px viewport (Tailwind lg). See AppHeader.vue */
+  --colliers-admin-nav-min-width: 1024px;
   --colliers-list-panel-max-height: 600px;
   --colliers-page-title-color: #0a1a3a;
   --colliers-catalog-card-max-width: 24rem;
+}
 
-  /* Bridge for existing BF / theme rules */
-  --primary-color: var(--colliers-primary);
-  --background-color: var(--colliers-bg-app);
-  --white-color: var(--colliers-bg-surface);
-  --text-primary: var(--colliers-text);
+html,
+body,
+#app,
+#app-root {
+  height: 100%;
+  margin: 0;
 }
 
 body {
@@ -32,7 +35,7 @@ body {
   color: var(--colliers-text);
 }
 
-/* --- Layer 2: Page shell --- */
+/* Page shell — standalone (no left rail) */
 .colliers-page {
   display: flex;
   flex-direction: column;
@@ -63,7 +66,8 @@ body {
   flex-direction: column;
 }
 
-.colliers-page-inner {
+.colliers-page-inner,
+.colliers-right-column {
   flex: 1 1 auto;
   min-width: 0;
   min-height: 0;
@@ -99,7 +103,6 @@ body {
   width: 100%;
   background: var(--colliers-bg-surface);
   border-bottom: 1px solid var(--colliers-border);
-  /* No z-index here — it stacks over Klai editor chrome. Dropdown uses z-30 inline. */
 }
 
 .colliers-site-header--admin {
@@ -149,6 +152,40 @@ body {
   }
 }
 
+body.colliers-mobile-menu-open {
+  overflow: hidden;
+}
+
+.colliers-page-body,
+.colliers-right-body {
+  flex: 1 1 auto;
+  min-height: 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+/* Vue shell: footer is direct child of page body */
+.colliers-page-body > .colliers-site-footer,
+.colliers-right-body > .colliers-site-footer {
+  margin-top: auto;
+}
+
+/* Grow when page is short (footer at bottom); size to content when tall (footer below cards) */
+.colliers-main {
+  width: 100%;
+  max-width: var(--colliers-scroll-body-max-width);
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: var(--colliers-scroll-body-pad-x);
+  padding-right: var(--colliers-scroll-body-pad-x);
+  padding-bottom: 4rem;
+  flex: 1 0 auto;
+  min-height: auto;
+}
+
 .colliers-site-footer {
   flex: 0 0 auto;
   width: 100%;
@@ -166,29 +203,141 @@ body {
   margin-bottom: 0;
 }
 
-.colliers-page-body {
-  flex: 1 1 auto;
-  min-height: 0;
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
+/* Shared list panels (Manage Addresses, Address Book, Designations, Degrees) */
+.colliers-list-panel {
+  border-radius: 0.5rem;
+  border: 1px solid var(--colliers-border);
+  background: var(--colliers-bg-surface);
+  padding: 1.5rem;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.colliers-list-panel-scroll {
+  max-height: var(--colliers-list-panel-max-height);
   overflow-y: auto;
-  overflow-x: hidden;
 }
 
-/* Vue shell: footer is direct child of page body */
-.colliers-page-body > .colliers-site-footer {
-  margin-top: auto;
-}
-
+/* Viewport-fitted list pages: no page scroll — only the list panel scrolls */
 /* Klai stack pages (header + scrollable content + footer): body height locked, middle scrolls */
 .colliers-page-body--stack,
-.colliers-page-body--viewport-list {
+.colliers-page-body--viewport-list,
+.colliers-right-body--viewport-list {
   overflow: hidden;
   background: var(--colliers-bg-app);
 }
 
-/* --- Page chrome --- */
+.colliers-main--viewport-list {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: hidden;
+  padding-bottom: 1.5rem;
+}
+
+.colliers-viewport-list {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-height: 0;
+  width: 100%;
+}
+
+.colliers-viewport-list > :not(.colliers-list-panel--viewport) {
+  flex: 0 0 auto;
+}
+
+.colliers-list-panel--viewport {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.colliers-list-panel--viewport .colliers-list-panel-scroll {
+  flex: 1 1 auto;
+  min-height: 0;
+  max-height: none;
+  overflow-y: auto;
+}
+
+/* Customize / Proof: show the card like the print PDF page (270 x 162 pt). 9 pt bleed / 270 pt = 3.3333%;
+   percentage padding is measured against the width on every side, so the box keeps the PDF 270:162 shape.
+   The card face (252 x 144 pt trim) sits inside; no outline is drawn, same as the PDF. */
+.card-preview-frame.card-preview-frame--bleed {
+  padding: 0;
+}
+.card-preview-bleed {
+  padding: 3.3333%;
+  background: #fff;
+}
+.card-preview-bleed #colliersCardPreview {
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+/* Brand color utilities used in page HTML (Vue gets these from tailwind.config.js colors.colliers). */
+.bg-colliers-primary {
+  background-color: var(--colliers-primary);
+}
+.text-colliers-primary {
+  color: var(--colliers-primary);
+}
+.hover\:text-colliers-primary:hover {
+  color: var(--colliers-primary);
+}
+
+/* Phones and short windows: release the fit-to-screen lock so the page scrolls (Vue parity). */
+@media (max-width: 767px), (max-height: 640px) {
+  .colliers-page-body--viewport-list {
+    overflow-y: auto;
+  }
+  .colliers-list-panel--viewport {
+    flex: 0 0 auto;
+  }
+  .colliers-list-panel--viewport,
+  .colliers-list-panel--viewport .colliers-list-panel-scroll {
+    overflow-y: visible;
+  }
+}
+
+.colliers-list-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  border-radius: 0.375rem;
+  border: 1px solid #f3f4f6;
+  background: #f9fafb;
+  padding: 0.75rem;
+}
+
+.colliers-list-row-body {
+  min-width: 0;
+  flex: 1 1 auto;
+  padding-right: 0.75rem;
+}
+
+.colliers-list-row-title {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #111827;
+}
+
+.colliers-list-row-subtitle {
+  margin-top: 0.125rem;
+  font-size: 0.875rem;
+  color: #374151;
+}
+
+.colliers-list-row-actions {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+/* Page titles — one style across shell pages */
 .colliers-page-title {
   margin: 0;
   font-size: 28px;
@@ -203,8 +352,13 @@ body {
   }
 }
 
-.colliers-page-intro {
-  margin-bottom: 2rem;
+.colliers-page-title--center {
+  width: 100%;
+  text-align: center;
+}
+
+.colliers-page-title--compact {
+  font-size: 1.25rem;
 }
 
 .colliers-page-subtitle {
@@ -214,83 +368,8 @@ body {
   color: var(--colliers-text-muted);
 }
 
-/* Admin dashboard tiles — Inter metrics to match designer */
-.colliers-admin-section-title {
-  margin: 0 0 1.25rem;
-  font-family: Inter, 'Open Sans', Helvetica, Arial, sans-serif;
-  font-size: 18px;
-  font-weight: 600;
-  line-height: 1.35;
-  color: var(--colliers-page-title-color);
-}
-
-.colliers-admin-tile {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-  padding: 1.25rem;
-  text-align: left;
-  border-radius: 0.5rem;
-  border: 1px solid #e5e7eb;
-  background: #fff;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
-  cursor: pointer;
-  transition: border-color 0.15s ease;
-  font-family: Inter, 'Open Sans', Helvetica, Arial, sans-serif;
-}
-
-.colliers-admin-tile:hover {
-  border-color: var(--colliers-primary, #25408f);
-}
-
-.colliers-admin-tile__header {
-  display: flex;
-  align-items: flex-start;
-  gap: 0.75rem;
-}
-
-.colliers-admin-tile__icon {
-  display: inline-flex;
-  flex-shrink: 0;
-  align-items: center;
-  justify-content: center;
-  width: 2.5rem;
-  height: 2.5rem;
-  border-radius: 0.375rem;
-  border: 1px solid #e5e7eb;
-  background: #f9fafb;
-  color: #6b7280;
-  font-size: 1rem;
-}
-
-.colliers-admin-tile__heading {
-  min-width: 0;
-  padding-top: 0.125rem;
-}
-
-.colliers-admin-tile__title {
-  display: block;
-  font-size: 15px;
-  font-weight: 600;
-  line-height: 1.35;
-  color: var(--colliers-page-title-color);
-}
-
-.colliers-admin-tile__subtitle {
-  display: block;
-  margin-top: 0.125rem;
-  font-size: 13px;
-  font-weight: 400;
-  line-height: 1.35;
-  color: #9ca3af;
-}
-
-.colliers-admin-tile__desc {
-  display: block;
-  font-size: 13px;
-  font-weight: 400;
-  line-height: 1.5;
-  color: #6b7280;
+.colliers-page-intro {
+  margin-bottom: 2rem;
 }
 
 .colliers-page-header {
@@ -299,6 +378,10 @@ body {
   align-items: stretch;
   gap: 1rem;
   margin-bottom: 2rem;
+}
+
+.colliers-page-header__main {
+  min-width: 0;
 }
 
 .colliers-page-header__actions {
@@ -313,7 +396,7 @@ body {
 .colliers-page-header > .btn-primary,
 .colliers-page-header__actions > .btn-primary {
   flex: 0 0 auto;
-  width: 100%;
+  width: auto;
   white-space: nowrap;
 }
 
@@ -323,34 +406,9 @@ body {
     align-items: center;
     justify-content: space-between;
   }
-
-  .colliers-page-header > .btn-primary,
-  .colliers-page-header__actions > .btn-primary {
-    width: auto;
-  }
 }
 
-.colliers-page-root {
-  display: flex;
-  flex-direction: column;
-  flex: 1 1 auto;
-  min-height: 0;
-  width: 100%;
-  max-width: 64rem;
-  margin-left: auto;
-  margin-right: auto;
-  padding-top: 1.5rem;
-  padding-bottom: 1.5rem;
-}
-
-@media (min-width: 640px) {
-  .colliers-page-root {
-    padding-top: 2.5rem;
-    padding-bottom: 2.5rem;
-  }
-}
-
-/* --- Search field --- */
+/* Search input with leading magnifier icon */
 .colliers-search-field {
   position: relative;
   width: 100%;
@@ -383,57 +441,26 @@ body {
   box-shadow: 0 0 0 1px var(--colliers-primary);
 }
 
-/* --- List panels (Manage Designations, Degrees, Addresses) --- */
-.colliers-list-panel {
-  border-radius: 0.5rem;
-  border: 1px solid var(--colliers-border);
-  background: var(--colliers-bg-surface);
-  padding: 1.5rem;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
-}
-
-.colliers-list-panel-scroll {
-  max-height: var(--colliers-list-panel-max-height);
-  overflow-y: auto;
-}
-
-.colliers-list-panel--viewport {
-  display: flex;
-  flex-direction: column;
-  flex: 1 1 auto;
-  min-height: 0;
-  overflow: hidden;
-}
-
-.colliers-list-panel--viewport .colliers-list-panel-scroll {
-  flex: 1 1 auto;
-  min-height: 0;
-  max-height: none;
-  overflow-y: auto;
-}
-
-.colliers-list-row {
-  display: flex;
+/* Admin sub-page back link (designer: top-right, chevron + label) */
+.colliers-back-link {
+  display: inline-flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 0.75rem;
-  border-radius: 0.375rem;
-  border: 1px solid #f3f4f6;
-  background: #f9fafb;
-  padding: 0.75rem;
+  gap: 0.375rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--colliers-primary);
+  transition: color 0.15s ease;
 }
 
-.colliers-list-row-body {
-  min-width: 0;
-  flex: 1 1 auto;
-  padding-right: 0.75rem;
+.colliers-back-link:hover {
+  color: var(--colliers-primary-hover);
+  text-decoration: underline;
 }
 
-.colliers-list-row-actions {
-  display: flex;
+.colliers-back-link__icon {
+  width: 1rem;
+  height: 1rem;
   flex-shrink: 0;
-  align-items: center;
-  gap: 0.25rem;
 }
 
 @media (min-width: 768px) {
@@ -448,7 +475,36 @@ body {
   }
 }
 
-/* --- Content card / tabs / table --- */
+@media (max-width: 767px) {
+  :root {
+    --colliers-scroll-body-pad-x: 1rem;
+  }
+}
+
+/* Profile list pages — shared card / table / modal patterns (Vue + Klai) */
+.colliers-page-root {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-height: 0;
+  width: 100%;
+  max-width: 64rem;
+  margin-left: auto;
+  margin-right: auto;
+  padding-top: 1.5rem;
+  padding-bottom: 1.5rem;
+  padding-left: var(--colliers-scroll-body-pad-x);
+  padding-right: var(--colliers-scroll-body-pad-x);
+  box-sizing: border-box;
+}
+
+@media (min-width: 640px) {
+  .colliers-page-root {
+    padding-top: 2.5rem;
+    padding-bottom: 2.5rem;
+  }
+}
+
 .colliers-content-card {
   overflow: hidden;
   border-radius: 0.75rem;
@@ -492,9 +548,7 @@ body {
   border-left: none;
   border-right: none;
   cursor: pointer;
-  transition:
-    color 0.15s ease,
-    border-color 0.15s ease;
+  transition: color 0.15s ease, border-color 0.15s ease;
 }
 
 .colliers-tab:hover {
@@ -560,6 +614,7 @@ body {
   padding: 0;
   font: inherit;
   cursor: pointer;
+  text-decoration: none;
 }
 
 .colliers-link-action:hover {
@@ -568,6 +623,10 @@ body {
 
 .colliers-link-action--danger {
   color: #dc2626;
+}
+
+.colliers-link-action--danger:hover {
+  color: #b91c1c;
 }
 
 .colliers-status-badge {
@@ -593,7 +652,6 @@ body {
   color: #92400e;
 }
 
-/* --- Modals --- */
 .colliers-modal-overlay {
   position: fixed;
   inset: 0;
@@ -618,9 +676,7 @@ body {
   overflow-y: auto;
   border-radius: 0.5rem 0.5rem 0 0;
   background: #fff;
-  box-shadow:
-    0 20px 25px -5px rgba(0, 0, 0, 0.1),
-    0 8px 10px -6px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
 }
 
 @media (min-width: 640px) {
@@ -629,12 +685,16 @@ body {
   }
 }
 
-.colliers-modal-panel--xl {
-  max-width: 42rem;
+.colliers-modal-panel--md {
+  max-width: 32rem;
 }
 
 .colliers-modal-panel--lg {
   max-width: 36rem;
+}
+
+.colliers-modal-panel--xl {
+  max-width: 42rem;
 }
 
 .colliers-modal-header {
@@ -663,6 +723,16 @@ body {
 
 .colliers-modal-close:hover {
   background: #f3f4f6;
+}
+
+.colliers-status-message {
+  margin-bottom: 1.25rem;
+  border-radius: 0.375rem;
+  border: 1px solid #bbf7d0;
+  background: #f0fdf4;
+  padding: 0.75rem 1rem;
+  font-size: 0.875rem;
+  color: #166534;
 }
 
 .colliers-form-error {
@@ -712,7 +782,7 @@ body {
   }
 }
 
-/* --- Buttons (compiled from Tailwind @layer components) --- */
+/* --- Buttons --- */
 .btn-primary {
   display: inline-flex;
   align-items: center;
@@ -750,9 +820,7 @@ body {
   font-weight: 500;
   color: var(--colliers-primary);
   cursor: pointer;
-  transition:
-    background-color 0.15s ease,
-    color 0.15s ease;
+  transition: background-color 0.15s ease, color 0.15s ease;
 }
 
 .btn-outline:hover {
@@ -929,8 +997,11 @@ body {
   width: 100%;
   border-radius: 0.25rem;
   border: 1px solid #d1d5db;
+  background: #fff;
   padding: 0.625rem 0.75rem;
   font-size: 14px;
+  line-height: 1.25;
+  box-sizing: border-box;
 }
 
 .field-input:focus {
@@ -943,6 +1014,20 @@ body {
   background: #f3f4f6;
   color: #6b7280;
   cursor: not-allowed;
+}
+
+/* Native selects: the browser arrow hugs the right border and differs per browser.
+   Draw one inset chevron instead — same size and spot as the degree picker (Vue parity). */
+select.field-input {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background-color: #fff;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='%236b7280'%3E%3Cpath fill-rule='evenodd' d='M5.23 7.21a.75.75 0 011.06.02L10 11.17l3.71-3.94a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z' clip-rule='evenodd'/%3E%3C/svg%3E");
+  background-position: right 0.75rem center;
+  background-repeat: no-repeat;
+  background-size: 1rem 1rem;
+  padding-right: 2.5rem;
 }
 
 .modal-footer {
@@ -963,21 +1048,333 @@ body {
 
 .modal-footer-actions {
   display: flex;
-  width: 100%;
-  flex-direction: column-reverse;
+  flex-direction: column;
   gap: 0.75rem;
 }
 
 @media (min-width: 640px) {
   .modal-footer-actions {
-    width: auto;
     flex-direction: row;
-    justify-content: flex-end;
+    align-items: center;
   }
 }
 
-@media (max-width: 767px) {
-  :root {
-    --colliers-scroll-body-pad-x: 1rem;
+/* Admin dashboard tiles — Inter metrics to match designer */
+.colliers-admin-section-title {
+  margin: 0 0 1.25rem;
+  font-family: Inter, 'Open Sans', Helvetica, Arial, sans-serif;
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 1.35;
+  color: var(--colliers-page-title-color);
+}
+
+.colliers-admin-tile {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 1.25rem;
+  text-align: left;
+  border-radius: 0.5rem;
+  border: 1px solid #e5e7eb;
+  background: #fff;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  cursor: pointer;
+  transition: border-color 0.15s ease;
+  font-family: Inter, 'Open Sans', Helvetica, Arial, sans-serif;
+}
+
+.colliers-admin-tile:hover {
+  border-color: var(--colliers-primary, #25408f);
+}
+
+.colliers-admin-tile__header {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+}
+
+.colliers-admin-tile__icon {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 0.375rem;
+  border: 1px solid #e5e7eb;
+  background: #f9fafb;
+  color: #6b7280;
+  font-size: 1rem;
+}
+
+.colliers-admin-tile__heading {
+  min-width: 0;
+  padding-top: 0.125rem;
+}
+
+.colliers-admin-tile__title {
+  display: block;
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.35;
+  color: var(--colliers-page-title-color);
+}
+
+.colliers-admin-tile__subtitle {
+  display: block;
+  margin-top: 0.125rem;
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 1.35;
+  color: #9ca3af;
+}
+
+.colliers-admin-tile__desc {
+  display: block;
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 1.5;
+  color: #6b7280;
+}
+
+.colliers-cart-preview::part(panel) {
+    border-radius: 8px;
+    background: #fff;
+    box-shadow: 0 20px 60px rgb(15 23 42 / 24%);
+}
+
+.colliers-cart-preview::part(header) {
+    padding: 20px 24px;
+    border-bottom: 1px solid #e5e7eb;
+    background: #f8fafc;
+}
+
+.colliers-cart-preview::part(title) {
+    color: #14213d;
+    font-size: 24px;
+    font-weight: 700;
+    line-height: 1.25;
+}
+
+.colliers-cart-preview::part(body) {
+    padding: 20px 24px;
+}
+
+@media (max-width: 600px) {
+    .colliers-cart-preview::part(header),
+    .colliers-cart-preview::part(body) {
+        padding: 16px;
+    }
+
+    .colliers-cart-preview::part(title) {
+        font-size: 20px;
+    }
+}
+
+/* ===== Colliers 2026-10-15: focus reset, BF .field-input wrapper fix, auth pages ===== */
+/* Shell wrappers are not controls: Chrome can focus scroll containers, and any key (Shift) then paints a blue focus-visible outline */
+.colliers-page:focus,
+.colliers-page:focus-visible,
+.colliers-page-body:focus,
+.colliers-page-body:focus-visible,
+.colliers-page-stack:focus,
+.colliers-page-stack:focus-visible,
+.colliers-page-stack__content:focus,
+.colliers-page-stack__content:focus-visible,
+.colliers-page-root:focus,
+.colliers-page-root:focus-visible,
+.colliers-main:focus,
+.colliers-main:focus-visible,
+.vue-form-generator:focus,
+.vue-form-generator:focus-visible,
+.vue-form-generator .field-group:focus,
+.vue-form-generator .field-group:focus-visible,
+.colliers-page [tabindex='-1']:focus,
+.colliers-page [tabindex='-1']:focus-visible {
+  outline: none;
+}
+
+/* BF also puts .field-input on native input wrappers (div.form-element, div.wrapper) — undo the input look there */
+.vue-form-generator .form-element.field-input,
+.vue-form-generator .wrapper.field-input {
+  border: 0;
+  border-radius: 0;
+  padding: 0;
+  background: transparent;
+  font-size: inherit;
+  box-shadow: none;
+}
+
+/* --- Auth pages (Login, Forgot, Reset, Verify, Signup, …) --- */
+/* Page Body: colliers-page-body colliers-page-body--auth flex flex-col flex-1 min-h-0 */
+.colliers-page-body--auth {
+  background: var(--colliers-bg-app);
+  padding: 1rem;
+}
+
+@media (min-width: 640px) {
+  .colliers-page-body--auth {
+    padding: 1.5rem;
   }
+}
+
+/* BF repeats the body classes on the inner .vue-form-generator; only the outer body keeps the gutter */
+.colliers-page-body--auth .vue-form-generator.colliers-page-body--auth,
+.vue-form-generator.colliers-page-body--auth > .field-group.field-group {
+  padding: 0;
+}
+
+/* BF <form class="field-group"> — beat the BF inherit rule (.vue-form-generator > .field-group.field-group) */
+.vue-form-generator.colliers-page-body--auth > .field-group.field-group {
+  display: flex;
+  flex-direction: column;
+  flex: 1 0 auto;
+  width: 100%;
+}
+
+/* Group: colliers-auth-card flex flex-col. margin:auto centers it and still scrolls when taller than the viewport */
+.colliers-page-body--auth .field-group.colliers-auth-card {
+  flex: 0 0 auto;
+  min-height: 0;
+  margin: auto;
+}
+
+/* gap (not margins) so hidden fields leave no space */
+.colliers-auth-card {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  width: 100%;
+  max-width: 440px;
+  margin: auto;
+  padding: 1.5rem;
+  background: var(--colliers-bg-surface);
+  border: 1px solid var(--colliers-border);
+  border-radius: 0.5rem;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.04);
+}
+
+@media (min-width: 640px) {
+  .colliers-auth-card {
+    padding: 2.5rem;
+  }
+}
+
+.colliers-auth-card > .form-element {
+  margin: 0;
+  padding: 0;
+}
+
+/* Header html field (lockup + title + subtitle): styleClasses colliers-auth-header */
+.colliers-auth-card > .form-element.colliers-auth-header {
+  margin-bottom: 0.25rem;
+}
+
+/* Error html field renders only a v-if comment when there is no message — drop its gap */
+.colliers-auth-card > .form-element.field-html:has(.html-wrapper:empty) {
+  display: none;
+}
+
+.colliers-auth-lockup {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.875rem;
+  margin-bottom: 2rem;
+}
+
+.colliers-auth-lockup__mark {
+  height: 3.5rem;
+  width: auto;
+}
+
+.colliers-auth-lockup__wordmark {
+  height: 2.5rem;
+  width: auto;
+}
+
+.colliers-auth-lockup__wordmark--fr {
+  height: 2.9rem;
+}
+
+.colliers-auth-card .colliers-page-subtitle {
+  margin: 0;
+}
+
+/* a.… beats BF a:link / a:visited */
+a.colliers-auth-link,
+a.colliers-auth-link:link,
+a.colliers-auth-link:visited {
+  font-size: 0.875rem;
+  font-weight: 400;
+  color: var(--colliers-primary);
+  text-decoration: none;
+}
+
+a.colliers-auth-link:hover {
+  color: var(--colliers-primary-hover);
+  text-decoration: underline;
+}
+
+.colliers-auth-message {
+  margin: 0;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: #dc2626;
+}
+
+.colliers-auth-message--info,
+.colliers-auth-message--success {
+  color: #15803d;
+}
+
+.colliers-auth-message:empty {
+  display: none;
+}
+
+/* BF native inputs inside the auth card — match Vue TextField (.field-label / .field-input) */
+.colliers-auth-card .form-element > label {
+  display: block;
+  margin: 0 0 0.375rem;
+  font-size: 14px;
+  font-weight: 400;
+  color: #374151;
+}
+
+.colliers-auth-card .form-element > label span {
+  display: inline;
+  font-weight: 400;
+  color: inherit;
+}
+
+.colliers-auth-card input.form-control {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 0.25rem;
+  border: 1px solid #d1d5db;
+  background: var(--colliers-bg-surface);
+  padding: 0.625rem 0.75rem;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.25;
+  color: var(--colliers-text);
+  box-shadow: none;
+}
+
+.colliers-auth-card input.form-control:focus {
+  border-color: var(--colliers-primary);
+  outline: none;
+  box-shadow: 0 0 0 1px var(--colliers-primary);
+}
+
+.colliers-auth-card .form-element .hint,
+.colliers-auth-card .form-element .errors {
+  margin-top: 0.375rem;
+  font-size: 0.75rem;
+}
+
+.colliers-auth-card .btn-primary {
+  width: 100%;
 }

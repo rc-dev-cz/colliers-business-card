@@ -225,6 +225,30 @@ body.colliers-mobile-menu-open {
   overflow-y: auto;
 }
 
+/* Phones and short windows: an inner scroll box under the header + tabs would be a
+   few rows tall, so release the lock and let the whole page scroll. */
+@media (max-width: 767px), (max-height: 640px) {
+  .colliers-page-body--viewport-list,
+  .colliers-right-body--viewport-list {
+    overflow-y: auto;
+  }
+
+  .colliers-main--viewport-list {
+    flex: 1 0 auto;
+    overflow: visible;
+  }
+
+  .colliers-viewport-list,
+  .colliers-list-panel--viewport {
+    flex: 0 0 auto;
+  }
+
+  .colliers-list-panel--viewport,
+  .colliers-list-panel--viewport .colliers-list-panel-scroll {
+    overflow-y: visible;
+  }
+}
+
 .colliers-list-row {
   display: flex;
   align-items: center;
@@ -443,6 +467,20 @@ body.colliers-mobile-menu-open {
   box-shadow: 0 0 0 1px var(--colliers-primary);
 }
 
+/* Native selects: the browser arrow hugs the right border and differs per browser.
+   Draw one inset chevron instead — same size and spot as the degree picker. */
+select.field-input {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background-color: #fff;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='%236b7280'%3E%3Cpath fill-rule='evenodd' d='M5.23 7.21a.75.75 0 011.06.02L10 11.17l3.71-3.94a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z' clip-rule='evenodd'/%3E%3C/svg%3E");
+  background-position: right 0.75rem center;
+  background-repeat: no-repeat;
+  background-size: 1rem 1rem;
+  padding-right: 2.5rem;
+}
+
 /* Admin sub-page back link (designer: top-right, chevron + label) */
 .colliers-back-link {
   display: inline-flex;
@@ -553,6 +591,25 @@ body.colliers-mobile-menu-open {
   padding: 0.25rem;
 }
 
+/* Customize / Proof: show the card like the print PDF page (270 x 162 pt).
+   9 pt bleed / 270 pt page width = 3.3333%. Percentage padding is measured against
+   the width on every side, so the box keeps the PDF's 270:162 shape. The card face
+   (252 x 144 pt trim) sits inside; no outline is drawn, same as the PDF. */
+.card-preview-frame.card-preview-frame--bleed {
+  padding: 0;
+}
+
+.card-preview-bleed {
+  padding: 3.3333%;
+  background: #fff;
+}
+
+.card-preview-bleed .card-preview-face {
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+}
+
 /* Proof Approval: larger review stage (still fluid, not catalog tile size) */
 .card-preview-frame--proof {
   max-width: none;
@@ -560,6 +617,13 @@ body.colliers-mobile-menu-open {
   margin-right: 0;
   padding: 0.5rem;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+/* Fills its grid cell (View order EN/FR faces side by side) */
+.card-preview-frame--fill {
+  max-width: none;
+  margin-left: 0;
+  margin-right: 0;
 }
 
 .card-preview-frame--thumb {

@@ -19,14 +19,17 @@
             <div
               v-for="preview in previewSlots"
               :key="preview.language"
-              class="card-preview-frame card-preview-frame--proof"
+              class="card-preview-frame card-preview-frame--proof card-preview-frame--bleed"
             >
-              <card-preview
-                :details="preview.details"
-                :language="preview.language"
-                :plan="preview.plan"
-                placeholders
-              ></card-preview>
+              <!-- Same page as the print PDF: card + 1/8 in bleed, dashed line = trim -->
+              <div class="card-preview-bleed">
+                <card-preview
+                  :details="preview.details"
+                  :language="preview.language"
+                  :plan="preview.plan"
+                  placeholders
+                ></card-preview>
+              </div>
             </div>
           </div>
         </div>

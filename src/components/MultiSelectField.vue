@@ -11,7 +11,18 @@
       <span :class="selectedValues.length ? 'text-gray-900' : 'text-gray-400'">{{
         placeholder
       }}</span>
-      <span class="ml-2 shrink-0 text-gray-400" aria-hidden="true">▾</span>
+      <svg
+        class="ml-2 h-4 w-4 shrink-0 text-gray-500"
+        viewBox="0 0 20 20"
+        fill="currentColor"
+        aria-hidden="true"
+      >
+        <path
+          fill-rule="evenodd"
+          d="M5.23 7.21a.75.75 0 011.06.02L10 11.17l3.71-3.94a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
+          clip-rule="evenodd"
+        />
+      </svg>
     </button>
     <div
       v-if="open"

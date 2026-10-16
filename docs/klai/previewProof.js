@@ -1,9 +1,11 @@
-if (!model.canPreviewProof || !model.product || !model.product.code) return
-var card = model.card || {}
-var degree = Array.isArray(card.degree) ? card.degree.slice() : card.degree ? [card.degree] : []
+if (!model.canPreviewProof || !model.product || !model.product.code) return;
+var card = model.card || {};
+var degree = Array.isArray(card.degree) ? card.degree.slice() : (card.degree ? [card.degree] : []);
 var details = {
   name: card.name || '',
   title: card.title || '',
+  titleFr: card.titleFr || '',
+  titleFrEdited: card.titleFrEdited ? 1 : 0,
   degree: degree,
   additionalCredentials: card.additionalCredentials || '',
   region: card.region || '',
@@ -25,28 +27,25 @@ var details = {
   previewCredY: card.previewCredY,
   previewTitleY: card.previewTitleY,
   previewTeamY: card.previewTeamY,
+  previewRegionMode: card.previewRegionMode || 'none',
+  previewRegionY: card.previewRegionY,
+  previewTitleSize: card.previewTitleSize,
+  previewTitleFrSize: card.previewTitleFrSize,
   previewEmailY: card.previewEmailY,
   previewPhoneY: card.previewPhoneY,
-  previewWebY: card.previewWebY,
-}
-var editId = String(
-  (model && model.editLineId) ||
-    (typeof app !== 'undefined' && (app.editLineId || (app.proof && app.proof.editLineId))) ||
-    ''
-).trim()
+  previewWebY: card.previewWebY
+};
 var proof = {
   code: model.product.code,
   language: model.product.language,
   details: details,
-  price: model.product.price || 63,
-}
-if (editId) proof.editLineId = editId
-if (typeof app !== 'undefined') {
-  app.proof = proof
-  if (editId) app.editLineId = editId
-}
-model.proof = proof
-if (editId) model.editLineId = editId
-var path = '/proof?code=' + encodeURIComponent(model.product.code)
-if (editId) path += '&lineId=' + encodeURIComponent(editId)
-if (window.location) window.location.hash = '#' + path
+  price: model.product.price || 63
+};
+var editId = String((model && model.editLineId) || (typeof app !== 'undefined' && (app.editLineId || (app.proof && app.proof.editLineId))) || '').trim();
+if (editId) proof.editLineId = editId;
+if (typeof app !== 'undefined') { app.proof = proof; if (editId) app.editLineId = editId; }
+model.proof = proof;
+if (editId) model.editLineId = editId;
+var path = '/proof?code=' + encodeURIComponent(model.product.code);
+if (editId) path += '&lineId=' + encodeURIComponent(editId);
+if (window.location) window.location.hash = '#' + path;

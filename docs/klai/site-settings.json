@@ -1,4 +1,5 @@
 {
+    "cart": [],
     "currentLang": "en",
     "env": {
         "logoURL": "https://ucarecdn.com/b9e7ff3a-9338-449a-87e6-c029b26b9854/",
@@ -6,20 +7,13 @@
     },
     "header": {
         "activeNav": "catalog",
-        "cartCount": 2,
-        "displayName": "Admin User",
-        "role": "admin",
-        "labels": {
-            "addressBook": "Address Book",
-            "catalog": "Catalog",
-            "logOut": "Log out",
-            "orderHistory": "Order History",
-            "profileMenu": "Profile menu",
-            "shoppingCart": "Shopping cart"
-        },
-        "locale": "en",
+        "cartCount": 0,
+        "cartOpen": false,
+        "cartTotal": "0.00",
+        "displayName": "User Demo",
         "menuOpen": false,
-        "mobileMenuOpen": false
+        "mobileMenuOpen": false,
+        "role": "user"
     },
     "i18n": {
         "dict": {
@@ -43,6 +37,14 @@
                 "en": "Add degree",
                 "fr": "Ajouter un diplôme"
             },
+            "label_colliers_addDesignation": {
+                "en": "Add designation",
+                "fr": "Ajouter une désignation"
+            },
+            "label_colliers_addItem": {
+                "en": "Add item",
+                "fr": "Ajouter un article"
+            },
             "label_colliers_addLocation": {
                 "en": "Add location",
                 "fr": "Ajouter un lieu"
@@ -51,37 +53,13 @@
                 "en": "Add office address",
                 "fr": "Ajouter une adresse de bureau"
             },
-            "label_colliers_box": {
-                "en": "box",
-                "fr": "boîte"
-            },
-            "label_colliers_boxes": {
-                "en": "boxes",
-                "fr": "boîtes"
-            },
-            "label_colliers_cards": {
-                "en": "cards",
-                "fr": "cartes"
-            },
             "label_colliers_addToCart": {
                 "en": "Add to Cart",
                 "fr": "Ajouter au panier"
             },
-            "label_colliers_updateCart": {
-                "en": "Update cart",
-                "fr": "Mettre à jour le panier"
-            },
-            "label_colliers_done": {
-                "en": "Done",
-                "fr": "Terminé"
-            },
-            "label_colliers_moveToGroup": {
-                "en": "Move to",
-                "fr": "Déplacer vers"
-            },
             "label_colliers_additionalCredentialsOptional": {
-                "en": "Additional Credentials",
-                "fr": "Informations d'identification supplémentaires"
+                "en": "Additional Credentials (Optional)",
+                "fr": "Informations d'identification supplémentaires (facultatif)"
             },
             "label_colliers_address": {
                 "en": "Address",
@@ -127,17 +105,25 @@
                 "en": "Bilingual",
                 "fr": "Bilingue"
             },
+            "label_colliers_box": {
+                "en": "box",
+                "fr": "boîte"
+            },
+            "label_colliers_boxes": {
+                "en": "boxes",
+                "fr": "boîtes"
+            },
             "label_colliers_brandCompliance": {
                 "en": "Brand guidelines compliance",
                 "fr": "Conformité aux directives de la marque"
             },
-            "label_colliers_businessCards": {
-                "en": "Business Cards",
-                "fr": "Cartes de visite"
-            },
             "label_colliers_businessCardPreview": {
                 "en": "Business Card Preview",
                 "fr": "Aperçu de la carte de visite"
+            },
+            "label_colliers_businessCards": {
+                "en": "Business Cards",
+                "fr": "Cartes de visite"
             },
             "label_colliers_cancel": {
                 "en": "Cancel",
@@ -150,6 +136,14 @@
             "label_colliers_cardholder": {
                 "en": "Cardholder",
                 "fr": "Titulaire"
+            },
+            "label_colliers_cards": {
+                "en": "cards",
+                "fr": "cartes"
+            },
+            "label_colliers_cartEmpty": {
+                "en": "Your cart is currently empty.",
+                "fr": "Votre panier est actuellement vide."
             },
             "label_colliers_clearCart": {
                 "en": "Clear cart",
@@ -171,21 +165,29 @@
                 "en": "Remove this degree or certification?",
                 "fr": "Supprimer ce diplôme ou cette certification ?"
             },
+            "label_colliers_confirmDeleteDesignation": {
+                "en": "Remove this designation?",
+                "fr": "Supprimer cette désignation ?"
+            },
             "label_colliers_confirmDeleteOffice": {
                 "en": "Remove this Colliers office address?",
                 "fr": "Supprimer cette adresse de bureau Colliers ?"
             },
-            "label_colliers_continueToShipping": {
-                "en": "Continue to Shipping",
-                "fr": "Continuer vers l'expédition"
-            },
-            "label_colliers_continueToShippingCart": {
-                "en": "Continue to Shipping",
-                "fr": "Continuer vers l'expédition"
+            "label_colliers_confirmOrder": {
+                "en": "Confirm order",
+                "fr": "Confirmer la commande"
             },
             "label_colliers_contactUs": {
                 "en": "Contact Us",
                 "fr": "Nous contacter"
+            },
+            "label_colliers_continueToShipping": {
+                "en": "Continue to Shipping",
+                "fr": "Continuer l'expédition"
+            },
+            "label_colliers_continueToShippingCart": {
+                "en": "Continue to Shipping",
+                "fr": "Continuer vers l'expédition"
             },
             "label_colliers_customize": {
                 "en": "Customize",
@@ -203,13 +205,13 @@
                 "en": "Date Added",
                 "fr": "Date d'ajout"
             },
-            "label_colliers_degreeOptional": {
-                "en": "Degree/Certification",
-                "fr": "Diplôme/Certification"
-            },
             "label_colliers_degreeMax": {
                 "en": "2 maximum, shown after the name",
                 "fr": "2 maximum, après le nom"
+            },
+            "label_colliers_degreeOptional": {
+                "en": "Degree/Certification (Optional)",
+                "fr": "Diplôme/Certification (facultatif)"
             },
             "label_colliers_degreesConfiguredSuffix": {
                 "en": "degrees configured",
@@ -219,23 +221,31 @@
                 "en": "Delete degree",
                 "fr": "Supprimer le diplôme"
             },
+            "label_colliers_deleteDesignation": {
+                "en": "Delete designation",
+                "fr": "Supprimer la désignation"
+            },
             "label_colliers_department": {
                 "en": "Department",
                 "fr": "Département"
             },
+            "label_colliers_designationsConfiguredSuffix": {
+                "en": "designations configured",
+                "fr": "désignations configurées"
+            },
             "label_colliers_details": {
                 "en": "Details",
                 "fr": "Détails"
+            },
+            "label_colliers_done": {
+                "en": "Done",
+                "fr": "Terminé"
             },
             "label_colliers_download": {
                 "en": "Download",
                 "fr": "Télécharger"
             },
             "label_colliers_edit": {
-                "en": "Edit",
-                "fr": "Modifier"
-            },
-            "label_colliers_editItem": {
                 "en": "Edit",
                 "fr": "Modifier"
             },
@@ -247,6 +257,14 @@
                 "en": "Edit degree",
                 "fr": "Modifier le diplôme"
             },
+            "label_colliers_editDesignation": {
+                "en": "Edit designation",
+                "fr": "Modifier la désignation"
+            },
+            "label_colliers_editItem": {
+                "en": "Edit item",
+                "fr": "Modifier l’article"
+            },
             "label_colliers_editOfficeAddress": {
                 "en": "Edit address",
                 "fr": "Modifier l'adresse"
@@ -256,8 +274,8 @@
                 "fr": "Courriel"
             },
             "label_colliers_emailHint": {
-                "en": "One line, 141.52 pt max",
-                "fr": "Une ligne, 141,52 pt max."
+                "en": "Fits on one line",
+                "fr": "Sur une seule ligne"
             },
             "label_colliers_employee": {
                 "en": "Employee",
@@ -266,6 +284,10 @@
             "label_colliers_english": {
                 "en": "English",
                 "fr": "Anglais"
+            },
+            "label_colliers_enterAddress": {
+                "en": "Enter address",
+                "fr": "Entrer une adresse"
             },
             "label_colliers_exploreCatalog": {
                 "en": "Explore Catalogue",
@@ -327,13 +349,17 @@
                 "en": "Item Number / Description",
                 "fr": "Numéro d'article / Description"
             },
-            "label_colliers_itemsIncluded": {
-                "en": "Items Included",
-                "fr": "Articles Inclus"
+            "label_colliers_items": {
+                "en": "items",
+                "fr": "articles"
             },
             "label_colliers_itemsHeading": {
                 "en": "Items",
                 "fr": "Articles"
+            },
+            "label_colliers_itemsIncluded": {
+                "en": "Items Included",
+                "fr": "Articles Inclus"
             },
             "label_colliers_language": {
                 "en": "Language",
@@ -419,6 +445,18 @@
                 "en": "Manage permitted degrees and certifications allowed on business cards.",
                 "fr": "Gérez les diplômes et certifications autorisés sur les cartes de visite."
             },
+            "label_colliers_manageDesignations": {
+                "en": "Manage Designations",
+                "fr": "Gérer les désignations"
+            },
+            "label_colliers_manageDesignationsHint": {
+                "en": "Designations shown on business cards during customization.",
+                "fr": "Désignations affichées sur les cartes lors de la personnalisation."
+            },
+            "label_colliers_manageDesignationsTileDesc": {
+                "en": "Manage permitted credentials and designations allowed on business cards.",
+                "fr": "Gérez les titres et désignations autorisés sur les cartes de visite."
+            },
             "label_colliers_materials": {
                 "en": "Materials",
                 "fr": "Matériaux"
@@ -439,6 +477,10 @@
                 "en": "Monthly Spend Overview",
                 "fr": "Aperçu des dépenses mensuelles"
             },
+            "label_colliers_moveToGroup": {
+                "en": "Move to",
+                "fr": "Déplacer vers"
+            },
             "label_colliers_myAddressBook": {
                 "en": "My Address Book",
                 "fr": "Mon carnet d'adresses"
@@ -450,6 +492,14 @@
             "label_colliers_noDegrees": {
                 "en": "No degrees yet.",
                 "fr": "Aucun diplôme pour le moment."
+            },
+            "label_colliers_noDesignations": {
+                "en": "No designations yet.",
+                "fr": "Aucune désignation pour le moment."
+            },
+            "label_colliers_noItemsSelected": {
+                "en": "No items selected",
+                "fr": "Aucun article sélectionné"
             },
             "label_colliers_noOfficeAddresses": {
                 "en": "No office addresses to show.",
@@ -463,6 +513,10 @@
                 "en": "No personal addresses yet. Add one with + New Address.",
                 "fr": "Aucune adresse personnelle. Ajoutez-en une avec + Nouvelle adresse."
             },
+            "label_colliers_noShipToAddresses": {
+                "en": "No ship-to addresses yet. Use + Add location to pick from your Address Book.",
+                "fr": "Aucune adresse d'expédition. Utilisez + Ajouter un lieu pour choisir dans votre carnet d'adresses."
+            },
             "label_colliers_officeAddressFormIntro": {
                 "en": "Please provide the details for the address below.",
                 "fr": "Veuillez fournir les détails de l'adresse ci-dessous."
@@ -474,6 +528,10 @@
             "label_colliers_officeLocation": {
                 "en": "Office Location",
                 "fr": "Lieu de bureau"
+            },
+            "label_colliers_orderConfirmed": {
+                "en": "Order Confirmed",
+                "fr": "Commande confirmée"
             },
             "label_colliers_orderDetails": {
                 "en": "Order Details",
@@ -491,17 +549,21 @@
                 "en": "Packaging",
                 "fr": "Emballage"
             },
+            "label_colliers_placeOrder": {
+                "en": "Place Order",
+                "fr": "Passer la commande"
+            },
             "label_colliers_premiumStock": {
                 "en": "Premium 14pt cardstock",
                 "fr": "Carton de qualité supérieure 14 pt"
             },
             "label_colliers_previewCard": {
-                "en": "Preview",
-                "fr": "Aperçu"
+                "en": "Preview card",
+                "fr": "Aperçu de la carte"
             },
             "label_colliers_previewProof": {
                 "en": "Preview Proof",
-                "fr": "Aperçu de l'épreuve"
+                "fr": "Aperçu de l’épreuve"
             },
             "label_colliers_price": {
                 "en": "Price",
@@ -523,10 +585,6 @@
                 "en": "Print Order",
                 "fr": "Imprimer la commande"
             },
-            "label_colliers_placeOrder": {
-                "en": "Place Order",
-                "fr": "Passer la commande"
-            },
             "label_colliers_productBilingual": {
                 "en": "Business Card Bilingual",
                 "fr": "Carte de visite bilingue"
@@ -543,25 +601,25 @@
                 "en": "Product not found",
                 "fr": "Produit introuvable"
             },
-            "label_colliers_proofApproval": {
-                "en": "Proof Approval",
-                "fr": "Approbation de l'épreuve"
-            },
-            "label_colliers_proofCheckbox": {
-                "en": "I have reviewed this proof and confirm that all information is accurate and ready for print.",
-                "fr": "J'ai examiné cette épreuve et je confirme que toutes les informations sont exactes et prêtes à imprimer."
-            },
-            "label_colliers_proofNotice": {
-                "en": "Once printed, cards cannot be returned or reprinted at no charge due to errors in the submitted information.",
-                "fr": "Une fois imprimées, les cartes ne peuvent pas être retournées ni réimprimées sans frais en cas d'erreurs dans les informations soumises."
-            },
-            "label_colliers_proofNoticeLead": {
-                "en": "Please review your business card proof carefully.",
-                "fr": "Veuillez examiner attentivement l'épreuve de votre carte de visite."
-            },
             "label_colliers_productType": {
                 "en": "Product Type",
                 "fr": "Type de produit"
+            },
+            "label_colliers_proofApproval": {
+                "en": "Proof Approval",
+                "fr": "Approbation de l’épreuve"
+            },
+            "label_colliers_proofCheckbox": {
+                "en": "I verify that all information on this proof is correct and approve it for printing.",
+                "fr": "Je confirme que toutes les informations de cette épreuve sont exactes et l’approuve pour l’impression."
+            },
+            "label_colliers_proofNotice": {
+                "en": "Check all details on your card preview. What you see is exactly what will be printed. Pay special attention to spelling, phone numbers, and your selected office location.",
+                "fr": "Vérifiez tous les détails de l’aperçu. Ce que vous voyez est exactement ce qui sera imprimé. Portez une attention particulière à l’orthographe, aux numéros de téléphone et au lieu de bureau choisi."
+            },
+            "label_colliers_proofNoticeLead": {
+                "en": "Please Review Carefully.",
+                "fr": "Veuillez vérifier attentivement."
             },
             "label_colliers_qty": {
                 "en": "Qty",
@@ -579,17 +637,17 @@
                 "en": "Recent Orders",
                 "fr": "Commandes récentes"
             },
-            "label_colliers_cardBack": {
-                "en": "Card back",
-                "fr": "Verso de la carte"
-            },
             "label_colliers_regionOptional": {
-                "en": "Region",
-                "fr": "Région"
+                "en": "Region (Optional)",
+                "fr": "Région (facultatif)"
             },
             "label_colliers_removeOfficeAddress": {
                 "en": "Remove address",
                 "fr": "Supprimer l'adresse"
+            },
+            "label_colliers_removeSplit": {
+                "en": "Remove Split",
+                "fr": "Supprimer la division"
             },
             "label_colliers_repeatOrder": {
                 "en": "Repeat Order",
@@ -603,6 +661,18 @@
                 "en": "Generate volume reports, department spend analysis, and export data to CSV/Excel.",
                 "fr": "Générez des rapports de volume, analysez les dépenses par département et exportez en CSV/Excel."
             },
+            "label_colliers_returnToCatalog": {
+                "en": "Return to Catalog",
+                "fr": "Retour au catalogue"
+            },
+            "label_colliers_reviewCheckout": {
+                "en": "Review / Checkout",
+                "fr": "Révision / Caisse"
+            },
+            "label_colliers_reviewOrder": {
+                "en": "Review order",
+                "fr": "Réviser la commande"
+            },
             "label_colliers_salesDigital": {
                 "en": "*Online Products & Courses: Digital products and courses are considered final once redeemed; at that point, such products are not eligible for return, exchange, or transfer.",
                 "fr": "*Produits et cours en ligne : Les produits et cours numériques sont considérés comme définitifs une fois échangés ; à ce stade, ces produits ne sont pas admissibles au retour, à l\\"
@@ -610,6 +680,10 @@
             "label_colliers_salesFinal": {
                 "en": "All sales of products—including but not limited to online products, printed materials, and courses—are final and non-refundable, non-exchangeable, and non-transferable. Returns must be received within seven days of delivery to the purchaser and will be processed pursuant to the following terms:",
                 "fr": "Toutes les ventes de produits – y compris, mais sans s'y limiter, les produits en ligne, les documents imprimés et les cours – sont finales et non remboursables, non échangeables et non transférables. Les retours doivent être reçus dans les sept jours suivant la livraison à l'acheteur et seront traités conformément aux conditions suivantes :"
+            },
+            "label_colliers_savedAddress": {
+                "en": "Saved selection",
+                "fr": "Sélection enregistrée"
             },
             "label_colliers_searchAddresses": {
                 "en": "Search addresses",
@@ -627,29 +701,29 @@
                 "en": "Select an office address",
                 "fr": "Sélectionner une adresse de bureau"
             },
+            "label_colliers_selectDegree": {
+                "en": "Select a degree or certification",
+                "fr": "Sélectionner un diplôme ou une certification"
+            },
             "label_colliers_selectLocation": {
                 "en": "Select location",
                 "fr": "Sélectionner un lieu"
-            },
-            "label_colliers_selectDegree": {
-                "en": "Search or select degree...",
-                "fr": "Rechercher ou sélectionner un diplôme..."
-            },
-            "label_colliers_selectTitle": {
-                "en": "Select a title",
-                "fr": "Sélectionner un titre"
             },
             "label_colliers_selectRegion": {
                 "en": "Select a region",
                 "fr": "Sélectionner une région"
             },
-            "label_colliers_shoppingCart": {
-                "en": "Shopping Cart",
-                "fr": "Panier d'achat"
+            "label_colliers_selectShipToAddress": {
+                "en": "Select address",
+                "fr": "Sélectionner une adresse"
             },
-            "label_colliers_specializedTeamOptional": {
-                "en": "Specialized Team",
-                "fr": "Équipe spécialisée"
+            "label_colliers_selectTitle": {
+                "en": "Select a title",
+                "fr": "Sélectionner un titre"
+            },
+            "label_colliers_selectedItems": {
+                "en": "Selected Items",
+                "fr": "Articles sélectionnés"
             },
             "label_colliers_shipToAddress": {
                 "en": "Ship to Address",
@@ -663,6 +737,14 @@
                 "en": "Shipping",
                 "fr": "Expédition"
             },
+            "label_colliers_shippingGroup": {
+                "en": "Shipping Group",
+                "fr": "Groupe d'expédition"
+            },
+            "label_colliers_shippingHandling": {
+                "en": "Shipping & Handling",
+                "fr": "Expédition et manutention"
+            },
             "label_colliers_shippingTbd": {
                 "en": "TBD",
                 "fr": "À déterminer"
@@ -671,13 +753,21 @@
                 "en": "Shipping To:",
                 "fr": "Expédier à :"
             },
-            "label_colliers_noShipToAddresses": {
-                "en": "No ship-to addresses yet. Use + Add location to pick from your Address Book.",
-                "fr": "Aucune adresse d'expédition. Utilisez + Ajouter un lieu pour choisir dans votre carnet d'adresses."
+            "label_colliers_shoppingCart": {
+                "en": "Shopping Cart",
+                "fr": "Panier d'achat"
+            },
+            "label_colliers_specializedTeamOptional": {
+                "en": "Specialized Team (Optional)",
+                "fr": "Équipe spécialisée (facultatif)"
             },
             "label_colliers_spendByDepartment": {
                 "en": "Spend by Department",
                 "fr": "Dépenses par département"
+            },
+            "label_colliers_splitOrder": {
+                "en": "Split Order",
+                "fr": "Diviser la commande"
             },
             "label_colliers_status": {
                 "en": "Status",
@@ -719,13 +809,29 @@
                 "en": "Terms of Use / Copyright",
                 "fr": "Conditions d'utilisation / Droits d'auteur"
             },
+            "label_colliers_thankYou": {
+                "en": "Thank you for your order. Your business cards are being prepared.",
+                "fr": "Merci pour votre commande. Vos cartes de visite sont en cours de préparation."
+            },
             "label_colliers_title": {
                 "en": "Title",
                 "fr": "Titre"
             },
+            "label_colliers_titleFr": {
+                "en": "French title",
+                "fr": "Titre français"
+            },
             "label_colliers_to": {
                 "en": "TO",
                 "fr": "À"
+            },
+            "label_colliers_total": {
+                "en": "Total",
+                "fr": "Total"
+            },
+            "label_colliers_totalCost": {
+                "en": "Total Cost",
+                "fr": "Coût total"
             },
             "label_colliers_trainings": {
                 "en": "Trainings",
@@ -734,6 +840,10 @@
             "label_colliers_unitTotal": {
                 "en": "UNIT TOTAL",
                 "fr": "TOTAL UNITAIRE"
+            },
+            "label_colliers_updateCart": {
+                "en": "Update cart",
+                "fr": "Mettre à jour le panier"
             },
             "label_colliers_viewAnalytics": {
                 "en": "View analytics",
@@ -1215,6 +1325,10 @@
                 "en": "Enter new degree...",
                 "fr": "Entrez le nouveau diplôme..."
             },
+            "placeholder_colliers_newDesignation": {
+                "en": "Enter new designation...",
+                "fr": "Entrez une nouvelle désignation..."
+            },
             "placeholder_colliers_searchOrderByName": {
                 "en": "Search by Name...",
                 "fr": "Rechercher par nom..."
@@ -1223,45 +1337,17 @@
                 "en": "Search by name or address",
                 "fr": "Rechercher par nom ou adresse"
             },
-            "label_colliers_addTitle": {
-                "en": "Add title",
-                "fr": "Ajouter un titre"
+            "label_colliers_teamNoSpace": {
+                "en": "No more space for the specialized team on the card.",
+                "fr": "Il n’y a plus d’espace pour l’équipe spécialisée sur la carte."
             },
-            "label_colliers_confirmDeleteTitle": {
-                "en": "Remove this title?",
-                "fr": "Supprimer ce titre ?"
+            "label_colliers_emailInvalid": {
+                "en": "Enter a valid email, like name@colliersprojectleaders.com.",
+                "fr": "Entrez un courriel valide, par exemple nom@colliersprojectleaders.com."
             },
-            "label_colliers_deleteTitle": {
-                "en": "Delete title",
-                "fr": "Supprimer le titre"
-            },
-            "label_colliers_titlesConfiguredSuffix": {
-                "en": "titles configured",
-                "fr": "titres configurés"
-            },
-            "label_colliers_editTitle": {
-                "en": "Edit title",
-                "fr": "Modifier le titre"
-            },
-            "label_colliers_manageTitles": {
-                "en": "Manage Titles",
-                "fr": "Gérer les titres"
-            },
-            "label_colliers_manageTitlesHint": {
-                "en": "Titles shown on business cards during customization.",
-                "fr": "Titres affichés sur les cartes lors de la personnalisation."
-            },
-            "label_colliers_manageTitlesTileDesc": {
-                "en": "Manage permitted job titles allowed on business cards.",
-                "fr": "Gérez les titres de poste autorisés sur les cartes de visite."
-            },
-            "label_colliers_noTitles": {
-                "en": "No titles yet.",
-                "fr": "Aucun titre pour le moment."
-            },
-            "placeholder_colliers_newTitle": {
-                "en": "Enter new title...",
-                "fr": "Entrez un nouveau titre..."
+            "label_colliers_selectTitleFr": {
+                "en": "Select a French title",
+                "fr": "Sélectionner un titre français"
             }
         },
         "langDefault": "en",

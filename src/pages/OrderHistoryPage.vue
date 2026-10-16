@@ -104,111 +104,136 @@
       @click.self="closeDetails"
     >
       <div
-        class="max-h-[92vh] w-full max-w-lg overflow-y-auto rounded-t-lg bg-white shadow-xl sm:rounded-lg"
+        class="flex max-h-[92vh] w-full max-w-3xl flex-col overflow-hidden rounded-t-lg bg-white shadow-xl sm:rounded-lg"
       >
-        <div class="flex items-center justify-between border-b border-gray-200 px-5 py-4">
-          <h2 class="text-lg font-semibold text-gray-900">{{ t('orderDetails') }}</h2>
+        <div
+          class="flex items-start justify-between gap-4 border-b border-gray-200 px-5 py-4 sm:px-6"
+        >
+          <div class="min-w-0">
+            <div class="flex flex-wrap items-center gap-3">
+              <h2 class="text-lg font-semibold text-gray-900">
+                {{ t('orderDetails') }} · {{ details.id }}
+              </h2>
+              <span
+                class="inline-flex rounded-md px-2.5 py-1 text-xs font-medium"
+                :class="statusClass(details.status)"
+              >
+                {{ statusLabel(details.status) }}
+              </span>
+            </div>
+            <p class="mt-1 text-sm text-gray-500">
+              {{ detailsDateLabel(details.status) }}: {{ formatOrderDate(details.date) }} ·
+              {{ personColumnLabel }}: {{ cardholderName(details) }}
+            </p>
+          </div>
           <button
             type="button"
-            class="rounded p-1 text-gray-500 hover:bg-gray-100"
+            class="rounded p-1 text-xl leading-none text-gray-500 hover:bg-gray-100"
             :aria-label="t('close')"
             @click="closeDetails"
           >
             ×
           </button>
         </div>
-        <div class="space-y-3 px-5 py-5 text-sm">
-          <div class="flex justify-between gap-4">
-            <span class="text-gray-500">{{ t('orderId') }}</span>
-            <span class="font-medium text-gray-900">{{ details.id }}</span>
-          </div>
-          <div class="flex justify-between gap-4">
-            <span class="text-gray-500">{{ detailsDateLabel(details.status) }}</span>
-            <span class="text-gray-900">{{ formatOrderDate(details.date) }}</span>
-          </div>
-          <div class="flex justify-between gap-4">
-            <span class="text-gray-500">{{ t('status') }}</span>
-            <span
-              class="inline-flex rounded-md px-2.5 py-1 text-xs font-medium"
-              :class="statusClass(details.status)"
-            >
-              {{ statusLabel(details.status) }}
-            </span>
-          </div>
-          <div class="flex justify-between gap-4">
-            <span class="text-gray-500">{{ personColumnLabel }}</span>
-            <span class="text-gray-900">{{ cardholderName(details) }}</span>
-          </div>
-          <div class="flex justify-between gap-4">
-            <span class="text-gray-500">{{ t('item') }}</span>
-            <span class="text-gray-900">{{ itemLabel(details, t) }}</span>
-          </div>
-          <div class="flex justify-between gap-4">
-            <span class="text-gray-500">{{ t('quantity') }}</span>
-            <span class="text-gray-900">{{ cardCount(details) }}</span>
-          </div>
-          <div class="flex justify-between gap-4">
-            <span class="text-gray-500">{{ t('totalCost') }}</span>
-            <span class="font-medium text-gray-900">${{ orderTotal(details).toFixed(2) }}</span>
-          </div>
-          <div>
-            <div class="mb-1 text-gray-500">{{ t('shipTo') }}</div>
-            <p v-for="line in shipToLines(details)" :key="line" class="text-gray-900">{{ line }}</p>
-          </div>
-          <div class="flex justify-between gap-4 border-t border-gray-100 pt-3">
-            <span class="text-gray-500">{{ t('proof') }}</span>
-            <button
-              type="button"
-              class="text-colliers-primary hover:underline"
-              @click="proofOpen = true"
-            >
-              {{ t('viewBusinessCardProof') }}
-            </button>
-          </div>
-        </div>
-        <div class="flex justify-end border-t border-gray-100 px-5 py-4">
-          <app-button variant="outline" class="sm:w-auto" @click="closeDetails">{{
-            t('close')
-          }}</app-button>
-        </div>
-      </div>
-    </div>
 
-    <div
-      v-if="details && proofOpen"
-      class="fixed inset-0 z-50 flex items-end justify-center bg-black/40 p-0 sm:items-center sm:p-4"
-      role="dialog"
-      aria-modal="true"
-      :aria-label="t('cardPreview')"
-      @click.self="proofOpen = false"
-    >
-      <div
-        class="max-h-[92vh] w-full max-w-xl overflow-y-auto rounded-t-lg bg-white p-5 shadow-xl sm:rounded-lg"
-      >
-        <div class="mb-4 flex items-center justify-between">
-          <h2 class="text-lg font-semibold text-gray-900">{{ t('cardPreview') }}</h2>
-          <button
-            type="button"
-            class="rounded p-1 text-gray-500 hover:bg-gray-100"
-            :aria-label="t('close')"
-            @click="proofOpen = false"
-          >
-            ×
-          </button>
+        <div class="flex-1 space-y-6 overflow-y-auto px-5 py-5 sm:px-6">
+          <section>
+            <h3 class="mb-3 text-sm font-semibold text-gray-900">{{ t('itemsHeading') }}</h3>
+            <ul class="space-y-4">
+              <li
+                v-for="line in details.cart || []"
+                :key="line.id"
+                class="rounded-lg border border-gray-100 p-4"
+              >
+                <div class="flex flex-wrap items-start justify-between gap-3">
+                  <div class="min-w-0">
+                    <div class="font-medium text-gray-900">{{ lineName(line) }}</div>
+                    <div class="mt-0.5 text-[13px] text-gray-500">
+                      {{ t('language') }}: {{ line.language }}
+                    </div>
+                  </div>
+                  <div class="text-right text-sm tabular-nums">
+                    <div class="font-medium text-gray-900">${{ lineCost(details, line) }}</div>
+                    <div class="text-xs text-gray-500">
+                      {{ boxLabel(lineBoxes(details, line)) }} ·
+                      {{ cardsFromBoxes(lineBoxes(details, line)) }} {{ t('cards') }}
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class="mt-3 grid gap-3"
+                  :class="lineSlots(line).length > 1 ? 'sm:grid-cols-2' : 'sm:max-w-sm'"
+                >
+                  <figure v-for="slot in lineSlots(line)" :key="slot.language" class="m-0">
+                    <div class="card-preview-frame card-preview-frame--fill">
+                      <card-preview
+                        :details="slot.details"
+                        :language="slot.language"
+                        placeholders
+                      ></card-preview>
+                    </div>
+                    <figcaption
+                      v-if="lineSlots(line).length > 1"
+                      class="mt-1.5 text-xs font-medium uppercase tracking-wide text-gray-500"
+                    >
+                      {{ slot.language === 'French' ? 'Français' : 'English' }}
+                    </figcaption>
+                  </figure>
+                </div>
+              </li>
+            </ul>
+          </section>
+
+          <section v-if="shipments(details).length">
+            <h3 class="mb-3 text-sm font-semibold text-gray-900">{{ t('shippingTo') }}</h3>
+            <div class="space-y-3">
+              <div v-for="(split, index) in shipments(details)" :key="split.id">
+                <div
+                  v-if="shipments(details).length > 1"
+                  class="mb-1.5 text-xs font-medium uppercase tracking-wide text-gray-500"
+                >
+                  {{ t('shipment') }} {{ index + 1 }}
+                </div>
+                <ul class="divide-y divide-gray-100 rounded-lg border border-gray-100">
+                  <li
+                    v-for="loc in split.locations"
+                    :key="loc.id"
+                    class="flex items-center justify-between gap-4 px-4 py-3 text-sm"
+                  >
+                    <span class="min-w-0 text-gray-700">{{ loc.address }}</span>
+                    <span class="shrink-0 text-right tabular-nums">
+                      <span class="block font-medium text-gray-900">{{
+                        boxLabel(locationBoxes(loc))
+                      }}</span>
+                      <span class="block text-xs text-gray-500"
+                        >{{ cardsFromBoxes(locationBoxes(loc)) }} {{ t('cards') }}</span
+                      >
+                    </span>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </section>
         </div>
-        <div class="space-y-4">
-          <card-preview
-            v-for="slot in proofSlots(details)"
-            :key="slot.language"
-            :details="slot.details"
-            :language="slot.language"
-            placeholders
-          ></card-preview>
-        </div>
-        <div class="mt-4 flex justify-end">
-          <app-button variant="outline" class="sm:w-auto" @click="proofOpen = false">{{
-            t('close')
-          }}</app-button>
+
+        <div
+          class="flex flex-col gap-3 border-t border-gray-200 bg-gray-50 px-5 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6"
+        >
+          <div class="text-sm text-gray-700">
+            {{ t('totalCost') }}:
+            <span class="font-semibold text-gray-900">${{ orderTotal(details).toFixed(2) }}</span>
+            <span class="text-gray-500">
+              · {{ t('quantity') }}: {{ cardCount(details) }} {{ t('cards') }}</span
+            >
+          </div>
+          <div class="flex flex-col-reverse gap-3 sm:flex-row">
+            <app-button variant="outline" class="sm:w-auto" @click="closeDetails">{{
+              t('close')
+            }}</app-button>
+            <app-button class="sm:w-auto" @click="onRepeat(details.id)">{{
+              t('repeatOrder')
+            }}</app-button>
+          </div>
         </div>
       </div>
     </div>
@@ -223,6 +248,9 @@ import SearchField from '../components/SearchField.vue'
 import SelectField from '../components/SelectField.vue'
 import CardPreview from '../components/CardPreview.vue'
 import { store, t, isAdmin, loadAdminOrders, repeatOrder } from '../store'
+import { productNameKey } from '../i18n/messages'
+import { lineTotal, cardsFromBoxes } from '../helpers/cart'
+import { billedBoxesForLine } from '../helpers/order'
 import {
   cardCount,
   cardholderName,
@@ -230,8 +258,6 @@ import {
   itemLabel,
   matchesOrderSearch,
   orderTotal,
-  proofDetails,
-  shipToLines,
 } from '../helpers/orderHistory'
 import { isBilingualLanguage } from '../helpers/formatCardIdentity'
 import { bilingualFrenchPreviewDetails } from '../helpers/titleLocale'
@@ -253,7 +279,6 @@ export default {
       search: '',
       statusFilter: 'all',
       details: null,
-      proofOpen: false,
     }
   },
   computed: {
@@ -297,10 +322,13 @@ export default {
     },
     itemLabel: itemLabel,
     orderTotal: orderTotal,
-    shipToLines: shipToLines,
-    proofSlots: function (record) {
-      var line = (record.cart && record.cart[0]) || {}
-      var details = proofDetails(record)
+    cardsFromBoxes: cardsFromBoxes,
+    lineName: function (line) {
+      return t(productNameKey(line.code))
+    },
+    /** Bilingual orders show both printed faces, EN then FR. */
+    lineSlots: function (line) {
+      var details = line.details || {}
       var language = line.language || details.language || 'English'
       if (isBilingualLanguage(language)) {
         return [
@@ -309,6 +337,24 @@ export default {
         ]
       }
       return [{ language: language, details: details }]
+    },
+    lineBoxes: function (record, line) {
+      return billedBoxesForLine(line, record.order, record.cart)
+    },
+    lineCost: function (record, line) {
+      return lineTotal(line, this.lineBoxes(record, line)).toFixed(2)
+    },
+    shipments: function (record) {
+      return ((record.order && record.order.splits) || []).filter(function (split) {
+        return (split.locations || []).length
+      })
+    },
+    locationBoxes: function (loc) {
+      return Math.max(1, Number(loc && loc.qty) || 1)
+    },
+    boxLabel: function (boxes) {
+      var n = Number(boxes) || 0
+      return n + ' ' + (n === 1 ? t('box') : t('boxes'))
     },
     rowKey: function (row) {
       return row.id + (row.ownerEmail ? '-' + row.ownerEmail : '')
@@ -329,11 +375,9 @@ export default {
     },
     openDetails: function (row) {
       this.details = row
-      this.proofOpen = false
     },
     closeDetails: function () {
       this.details = null
-      this.proofOpen = false
     },
     onRepeat: function (id) {
       if (repeatOrder(id)) go('shipping')

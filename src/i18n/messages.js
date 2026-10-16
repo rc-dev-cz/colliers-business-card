@@ -56,6 +56,15 @@ export const messages = {
     EN: 'This specialized team is too long for the card.',
     FR: 'Cette équipe spécialisée est trop longue pour la carte.',
   },
+  teamNoSpace: {
+    EN: 'No more space for the specialized team on the card.',
+    FR: 'Il n’y a plus d’espace pour l’équipe spécialisée sur la carte.',
+  },
+  emailInvalid: {
+    EN: 'Enter a valid email, like name@colliersprojectleaders.com.',
+    FR: 'Entrez un courriel valide, par exemple nom@colliersprojectleaders.com.',
+  },
+  selectTitleFr: { EN: 'Select a French title', FR: 'Sélectionner un titre français' },
   layoutErrorEmail: {
     EN: 'This email is too long to fit on one line of the card.',
     FR: 'Ce courriel est trop long pour tenir sur une ligne de la carte.',
@@ -74,6 +83,10 @@ export const messages = {
   },
   mobilePhone: { EN: 'Mobile', FR: 'Mobile' },
   mobilePhoneHint: { EN: '10-digit Canadian number', FR: 'Numéro canadien à 10 chiffres' },
+  mobilePhoneIncomplete: {
+    EN: 'Enter all 10 digits of the mobile number.',
+    FR: 'Entrez les 10 chiffres du numéro de mobile.',
+  },
   companyName: { EN: 'Company Name', FR: "Nom de l'entreprise" },
   address: { EN: 'Address', FR: 'Adresse' },
   officeLocation: { EN: 'Office Location', FR: 'Lieu de bureau' },

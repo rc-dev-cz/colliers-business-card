@@ -11,6 +11,7 @@ import {
   applyEmptyTeamIdentityLayout,
   applyPreviewTitleRegionSplit,
   resolveCardFields,
+  teamFitsOnCard,
   titleSizeFor,
 } from './cardLayout.js'
 import { TITLE_FR_TALENT_ACQUISITION } from './titleLocale.js'
@@ -461,7 +462,7 @@ describe('planProductLayout', function () {
         phone: '4165550100',
       },
       'Bilingual',
-      fonts,
+      fonts
     )
     expect(product.pages[0].fields.title).toContain('Director')
     expect(product.pages[1].fields.title).toContain('Directrice')
@@ -551,14 +552,52 @@ describe('previewContactYs', function () {
 })
 
 describe('applyPreviewTitleRegionSplit', function () {
-  it('keeps a short Title | Region on one line', function () {
-    var layout = applyEmptyTeamIdentityLayout(
-      plan({ title: 'Broker', region: 'Ontario' })
-    )
+  it('puts region on its own line even when Title | Region would fit (EN mirrors FR)', function () {
+    var layout = applyEmptyTeamIdentityLayout(plan({ title: 'Broker', region: 'Ontario' }))
+    expect(fitsLine(fonts.font, layout.title, L.bodySize, L.titleMaxWidth)).toBe(true)
     var preview = applyPreviewTitleRegionSplit(layout, fonts)
-    expect(preview.title).toBe('Broker | Ontario')
+    expect(preview.title).toBe('Broker')
+    expect(preview.regionLine).toBe('Ontario')
+    expect(preview.regionY).toBeCloseTo(layout.titleY, 2)
+    expect(preview.titleY).toBeCloseTo(layout.titleY + L.bodyLineHeight, 2)
+  })
+
+  it('joins region onto a short team line instead of the title', function () {
+    var layout = plan({ title: 'Broker', region: 'Ontario', specializedTeam: 'human resources' })
+    var preview = applyPreviewTitleRegionSplit(layout, fonts)
+    expect(preview.title).toBe('Broker')
+    expect(preview.team).toBe('human resources | Ontario')
     expect(preview.regionLine).toBeFalsy()
     expect(preview.titleY).toBe(layout.titleY)
+    expect(preview.lastNameY).toBe(layout.lastNameY)
+  })
+
+  it('keeps Title | Region when team | region is too wide (Maximum stack)', function () {
+    var layout = plan({
+      title: 'Associate Director',
+      region: 'British Columbia',
+      specializedTeam: 'Project Management Advisory',
+    })
+    expect(
+      fitsLine(
+        fonts.font,
+        'Project Management Advisory | British Columbia',
+        L.bodySize,
+        L.identityWidth
+      )
+    ).toBe(false)
+    var preview = applyPreviewTitleRegionSplit(layout, fonts)
+    expect(preview.title).toBe('Associate Director | British Columbia')
+    expect(preview.team).toBe('Project Management Advisory')
+    expect(preview.regionLine).toBeFalsy()
+    expect(preview.lastNameY).toBe(layout.lastNameY)
+  })
+
+  it('splits before the measuring fonts load', function () {
+    var layout = applyEmptyTeamIdentityLayout(plan({ title: 'Broker', region: 'Ontario' }))
+    var preview = applyPreviewTitleRegionSplit(layout, null)
+    expect(preview.title).toBe('Broker')
+    expect(preview.regionLine).toBe('Ontario')
   })
 
   it('splits a wide French title and lifts identity by one body line', function () {
@@ -624,5 +663,18 @@ describe('applyPreviewTitleRegionSplit', function () {
     var preview = applyPreviewTitleRegionSplit(layout, fonts)
     expect(preview.regionLine).toBeFalsy()
     expect(preview.title).toBe(layout.title)
+  })
+})
+
+describe('teamFitsOnCard', function () {
+  it('accepts a blank or short team', function () {
+    expect(teamFitsOnCard({ specializedTeam: '' }, fonts)).toBe(true)
+    expect(teamFitsOnCard({ specializedTeam: 'Healthcare Infrastructure' }, fonts)).toBe(true)
+  })
+
+  it('rejects a team wider than the identity column, same as the planner', function () {
+    var team = 'Healthcare Infrastructure and Public Private Partnerships Advisory'
+    expect(teamFitsOnCard({ specializedTeam: team }, fonts)).toBe(false)
+    expect(plan({ specializedTeam: team }).errors).toContain(LAYOUT_ERROR.team)
   })
 })

@@ -135,11 +135,17 @@ def identity_baselines(dump: dict) -> list[tuple[float, str, tuple[int, int, int
         y = float(dump["titleY"])
         rows.append((y, f"title  Y = {fmt_y(y)}", ID_C, True))
 
+    region = dump.get("regionLine") or ""
+    region_y = float(dump["regionY"]) if region else None
+    if region:
+        rows.append((region_y, f"region  Y = {fmt_y(region_y)}  ·  {region}", ID_C, True))
+
     team = dump.get("team") or ""
     team_y = float(dump.get("teamY") or 58.99)
     if team:
         rows.append((team_y, f"team  Y = {fmt_y(team_y)}  ·  {team}", ID_C, True))
-    else:
+    elif not region:
+        # Empty team slot (skipped when region already holds the last identity row)
         rows.append((team_y, f"team slot  Y = {fmt_y(team_y)}  (empty / optional)", MUTED, False))
 
     for key, label, color in (
@@ -183,6 +189,9 @@ def draw_gap_band(draw, sx, sy, dump, small_f):
     team = dump.get("team") or ""
     if team:
         last_y = float(dump["teamY"])
+    elif dump.get("regionLine"):
+        # No team: region sits on its own line under the title
+        last_y = float(dump["regionY"])
     elif dump.get("title"):
         # Standard without team: gap is title → email (client-approved short-card air)
         last_y = float(dump["titleY"])

@@ -72,17 +72,17 @@
               {{ BF.i18n('label_colliers_noItemsSelected') }}
             </div>
             <ul
-              class="js-cart-sortable relative z-10 min-h-[8rem] space-y-3"
+              class="js-cart-sortable relative z-10 min-h-[8rem] space-y-4"
               :data-split-id="split.id"
             >
               <li
                 v-for="(line, lineIndex) in (split.lines && split.lines.length ? split.lines : (model.cart || []).filter(function (row) { return (split.itemIds || []).map(String).indexOf(String(row.id)) >= 0; }))"
                 :key="line.id"
-                class="flex items-start gap-3 rounded-md"
+                class="flex items-center gap-4 rounded-md"
                 :data-line-id="line.id"
               >
                 <div
-                  class="drag-handle mt-2 flex shrink-0 cursor-grab touch-none items-center justify-center rounded p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600"
+                  class="drag-handle flex shrink-0 cursor-grab touch-none items-center justify-center rounded p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600"
                   role="button"
                   tabindex="0"
                   aria-label="Move item"
@@ -102,7 +102,7 @@
                     <circle cx="8" cy="14" r="1.5" />
                   </svg>
                 </div>
-                <div class="card-preview-frame card-preview-frame--thumb overflow-hidden">
+                <button type="button" class="card-preview-frame card-preview-frame--thumb cursor-pointer overflow-hidden border-0 bg-transparent p-0 text-left" :aria-label="BF.i18n('label_colliers_previewCard')" @click="BF.namedAction('previewLine', { lineId: line.id })">
                   <div
                     class="card-preview-face relative w-full overflow-hidden rounded-md border border-gray-200 bg-white font-sans text-[#4A4A4A] shadow-sm"
                     style="container-type: inline-size; aspect-ratio: 1.75 / 1"
@@ -120,7 +120,7 @@
                       :style="['French','Français','FR'].indexOf(String(line.language || '')) >= 0 ? 'left: 27.873%; bottom: 70.347%; width: 18.044%; height: 15.083%' : 'left: 27.917%; bottom: 72.125%; width: 13.96%; height: 13.083%'"
                     />
                     <div
-                      class="absolute overflow-hidden whitespace-nowrap font-bold leading-none text-[#03438C]"
+                      class="absolute whitespace-nowrap font-bold leading-none text-[#03438C]"
                       :style="'left: 41.28%; right: 4%; bottom: ' + (line.details && String(line.details.specializedTeam || '').trim() ? 46.17 : 40.62) + '%; font-size: 3.7cqw'"
                     >
                       {{ (line.details && (line.details.nameWrapped || line.details.name)) ||
@@ -128,7 +128,7 @@
                       'Firstname Lastname') }}
                     </div>
                     <div
-                      class="absolute overflow-hidden whitespace-nowrap leading-none text-[#5F636A]"
+                      class="absolute whitespace-nowrap leading-none text-[#5F636A]"
                       :style="'left: 41.28%; right: 4%; bottom: ' + (line.details && String(line.details.specializedTeam || '').trim() ? 40.27 : 34.72) + '%; font-size: 2.4cqw'"
                     >
                       {{ (line.details && (line.details.displayTitle || line.details.title)) ||
@@ -136,13 +136,13 @@
                     </div>
                     <div
                       v-if="line.details && line.details.specializedTeam"
-                      class="absolute overflow-hidden whitespace-nowrap leading-none text-[#5F636A]"
+                      class="absolute whitespace-nowrap leading-none text-[#5F636A]"
                       style="left: 41.28%; right: 4%; bottom: 34.72%; font-size: 2.4cqw"
                     >
                       {{ line.details.specializedTeam }}
                     </div>
                     <div
-                      class="absolute overflow-hidden whitespace-nowrap leading-none text-[#5F636A]"
+                      class="absolute whitespace-nowrap leading-none text-[#5F636A]"
                       style="left: 41.28%; right: 4%; bottom: 23.61%; font-size: 2.4cqw"
                     >
                       {{ (line.details && line.details.email) ||
@@ -151,13 +151,13 @@
                       'first.lastname@colliersprojectleaders.com') }}
                     </div>
                     <div
-                      class="absolute overflow-hidden whitespace-nowrap leading-none text-[#5F636A]"
+                      class="absolute whitespace-nowrap leading-none text-[#5F636A]"
                       style="left: 41.28%; right: 4%; bottom: 18.06%; font-size: 2.4cqw"
                     >
                       {{ (line.details && line.details.phone) || '+1 555 555 5555' }}
                     </div>
                     <div
-                      class="absolute overflow-hidden whitespace-nowrap leading-none text-[#5F636A]"
+                      class="absolute whitespace-nowrap leading-none text-[#5F636A]"
                       style="left: 41.28%; right: 4%; bottom: 12.5%; font-size: 2.4cqw"
                     >
                       {{ (['French','Français','FR'].indexOf(String(line.language || '')) >= 0 ? ((line.details &&
@@ -173,7 +173,7 @@
                       'Address name') }}
                     </div>
                   </div>
-                </div>
+                </button>
                 <div class="min-w-0 flex-1">
                   <div class="flex items-start gap-3">
                     <div class="min-w-0 flex-1">
@@ -201,25 +201,6 @@
                     </div>
                   </div>
                   <div class="mt-2 flex items-center gap-1">
-                    <button
-                      type="button"
-                      class="inline-flex h-8 w-8 items-center justify-center rounded border border-gray-200 text-gray-400 hover:bg-gray-50 hover:text-[#25408F]"
-                      :aria-label="BF.i18n('label_colliers_previewCard')"
-                      @click="BF.namedAction('previewLine', { lineId: line.id })"
-                    >
-                      <svg
-                        width="15"
-                        height="15"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        stroke-width="2"
-                        aria-hidden="true"
-                      >
-                        <circle cx="11" cy="11" r="7"></circle>
-                        <path d="M20 20l-3.5-3.5"></path>
-                      </svg>
-                    </button>
                     <button
                       type="button"
                       class="inline-flex h-8 w-8 items-center justify-center rounded border border-gray-200 text-gray-400 hover:bg-gray-50 hover:text-[#25408F]"

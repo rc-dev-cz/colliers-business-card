@@ -1,5 +1,14 @@
 import { describe, expect, it } from 'vitest'
-import { clipName, emailFromFullName, formatCardPhone, NAME_MAX } from './validate.js'
+import {
+  clipName,
+  emailFromFullName,
+  formatCardPhone,
+  isCompletePhone,
+  isValidEmail,
+  NAME_MAX,
+  cleanName,
+  cleanCardText,
+} from './validate.js'
 
 describe('NAME_MAX', function () {
   it('allows 50 characters and clips beyond that', function () {
@@ -29,5 +38,66 @@ describe('formatCardPhone', function () {
     expect(formatCardPhone('6139789906')).toBe('613 978 9906')
     expect(formatCardPhone('+1 613 978 9906')).toBe('613 978 9906')
     expect(formatCardPhone('16139789906')).toBe('613 978 9906')
+  })
+
+  it('never shows the form hyphen on a partial number', function () {
+    expect(formatCardPhone('416 555-01')).toBe('416 555 01')
+    expect(formatCardPhone('416 5')).toBe('416 5')
+  })
+})
+
+describe('isCompletePhone', function () {
+  it('needs all 10 local digits', function () {
+    expect(isCompletePhone('416 555-0123')).toBe(true)
+    expect(isCompletePhone('+1 416 555 0123')).toBe(true)
+    expect(isCompletePhone('416 555-01')).toBe(false)
+    expect(isCompletePhone('')).toBe(false)
+  })
+})
+
+describe('cleanName', function () {
+  it('keeps accented letters, hyphen, apostrophe and period', function () {
+    expect(cleanName("Zoë O'Brien-Lévesque Jr.")).toBe("Zoë O'Brien-Lévesque Jr.")
+    expect(cleanName('François D’Amour')).toBe('François D’Amour')
+  })
+
+  it('drops emoji, digits and symbols', function () {
+    expect(cleanName('Firstname 😀 Lastname')).toBe('Firstname Lastname')
+    expect(cleanName('Firstname👨‍👩‍👧 Lastname2 #1 @x')).toBe('Firstname Lastname x')
+    expect(cleanName('<b>Name</b>')).toBe('bNameb')
+  })
+
+  it('collapses spaces, drops a leading space and clips to NAME_MAX', function () {
+    expect(cleanName('  Firstname    Lastname')).toBe('Firstname Lastname')
+    expect(cleanName('a'.repeat(80)).length).toBe(50)
+  })
+})
+
+describe('cleanCardText', function () {
+  it('strips emoji but keeps normal punctuation and accents', function () {
+    expect(cleanCardText('Équipe santé 🚀 & R&D (Est) ✅')).toBe('Équipe santé  & R&D (Est) ')
+    expect(cleanCardText('P.Eng., LEED AP BD+C')).toBe('P.Eng., LEED AP BD+C')
+    expect(cleanCardText('1️⃣ ❤️')).toBe('1 ')
+  })
+})
+
+describe('isValidEmail', function () {
+  it('accepts name@domain.tld', function () {
+    expect(isValidEmail('first.lastname@colliersprojectleaders.com')).toBe(true)
+    expect(isValidEmail(' a@b.ca ')).toBe(true)
+  })
+
+  it('rejects blanks, missing parts and spaces', function () {
+    ;[
+      '',
+      'first.lastname',
+      'first@',
+      'first@colliers',
+      'first@colliers.c',
+      'a b@c.com',
+      '@c.com',
+    ].forEach(function (value) {
+      expect(isValidEmail(value)).toBe(false)
+    })
   })
 })

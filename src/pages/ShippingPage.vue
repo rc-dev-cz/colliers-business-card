@@ -64,17 +64,17 @@
                 {{ t('noItemsSelected') }}
               </div>
               <ul
-                class="js-cart-sortable relative z-10 min-h-[8rem] space-y-3"
+                class="js-cart-sortable relative z-10 min-h-[8rem] space-y-4"
                 :data-split-id="split.id"
               >
                 <li
                   v-for="line in linesInSplit(split)"
                   :key="line.id"
                   :data-line-id="line.id"
-                  class="flex items-start gap-3 rounded-md outline-none"
+                  class="flex items-center gap-4 rounded-md outline-none"
                 >
                   <div
-                    class="drag-handle mt-2 flex shrink-0 cursor-grab touch-none items-center justify-center rounded p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600 active:cursor-grabbing"
+                    class="drag-handle flex shrink-0 cursor-grab touch-none items-center justify-center rounded p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600 active:cursor-grabbing"
                     role="button"
                     tabindex="0"
                     :aria-label="t('reorderItem')"

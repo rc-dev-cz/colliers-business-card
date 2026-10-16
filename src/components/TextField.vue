@@ -16,6 +16,7 @@
       :placeholder="placeholder"
       :aria-invalid="error ? 'true' : 'false'"
       @input="onInput"
+      @blur="$emit('blur', $event)"
     />
     <p v-if="hint" class="field-hint">{{ hint }}</p>
     <p v-if="error" class="field-hint text-red-600">{{ error }}</p>
@@ -42,7 +43,15 @@ export default {
   },
   methods: {
     onInput: function (event) {
-      this.$emit('input', event.target.value, event)
+      var input = event.target
+      this.$emit('input', input.value, event)
+      // Parent may clean the value (e.g. strip emoji). If the cleaned value equals the
+      // old one, Vue skips the re-render, so put the cleaned text back in the box.
+      var self = this
+      this.$nextTick(function () {
+        var next = self.value == null ? '' : String(self.value)
+        if (input.value !== next) input.value = next
+      })
     },
   },
 }

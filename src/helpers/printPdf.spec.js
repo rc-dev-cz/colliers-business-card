@@ -38,7 +38,11 @@ describe('printPdf', function () {
       },
     })
     expect(captured.team).toBe('')
-    expect(captured.titleY).toBe(CARD_LAYOUT.teamYNoCred)
+    // Region takes the closed team row; title sits one body line above it.
+    expect(captured.title).toBe('Associate')
+    expect(captured.regionLine).toBe('Ontario')
+    expect(captured.regionY).toBe(CARD_LAYOUT.teamYNoCred)
+    expect(captured.titleY).toBe(CARD_LAYOUT.titleYNoCred)
     expect(captured.emailY).toBe(43)
     expect(captured.phoneY).toBe(35)
     expect(captured.websiteY).toBe(27)

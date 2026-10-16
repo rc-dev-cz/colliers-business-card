@@ -14,13 +14,20 @@
         <div class="w-full lg:max-w-[480px]">
           <h2 class="mb-4 text-lg font-bold text-colliers-primary">{{ t('cardPreview') }}</h2>
           <div class="space-y-4">
-            <div v-for="preview in previewSlots" :key="preview.language" class="card-preview-frame">
-              <card-preview
-                :details="preview.details"
-                :language="preview.language"
-                :plan="preview.plan"
-                placeholders
-              ></card-preview>
+            <div
+              v-for="preview in previewSlots"
+              :key="preview.language"
+              class="card-preview-frame card-preview-frame--bleed"
+            >
+              <!-- Same page as the print PDF: card + 1/8 in bleed, dashed line = trim -->
+              <div class="card-preview-bleed">
+                <card-preview
+                  :details="preview.details"
+                  :language="preview.language"
+                  :plan="preview.plan"
+                  placeholders
+                ></card-preview>
+              </div>
             </div>
           </div>
 
@@ -66,16 +73,17 @@
               required
               @input="onTitle"
             ></select-field>
-            <text-field
+            <select-field
               v-if="isBilingual"
               :label="t('titleFr')"
               :value="details.titleFr"
+              :options="titleFrOptions"
+              :placeholder="t('selectTitleFr')"
               :error="titleFieldError"
               name="titleFr"
-              autocomplete="off"
               required
               @input="onTitleFr"
-            ></text-field>
+            ></select-field>
             <multi-select-field
               :label="t('degree')"
               :value="details.degree"
@@ -107,9 +115,10 @@
             <text-field
               :label="t('specializedTeam')"
               :value="details.specializedTeam"
+              :error="teamFieldError"
               name="colliersSpecializedTeam"
               autocomplete="organization"
-              @input="details.specializedTeam = $event"
+              @input="onSpecializedTeam"
             ></text-field>
             <text-field
               :label="t('email')"
@@ -121,10 +130,13 @@
               autocomplete="email"
               required
               @input="onEmail"
+              @blur="emailTouched = true"
             ></text-field>
             <phone-field
               :label="t('mobilePhone')"
               :value="details.phone"
+              :hint="phoneHint"
+              :error="phoneError"
               required
               @input="details.phone = $event"
             ></phone-field>
@@ -160,7 +172,16 @@ import AppButton from '../components/AppButton.vue'
 import { CARD_COMPANY, emptyCard, getProduct } from '../data/products'
 import { t, store, setProof, loadOffices, loadDegrees, loadTitles } from '../store'
 import { cloneCardDetails } from '../helpers/cart'
-import { clipEmail, clipName, emailFromFullName, EMAIL_MAX, NAME_MAX } from '../helpers/validate'
+import {
+  cleanCardText,
+  clipEmail,
+  clipName,
+  emailFromFullName,
+  EMAIL_MAX,
+  isCompletePhone,
+  isValidEmail,
+  NAME_MAX,
+} from '../helpers/validate'
 import { formatAddressCard, officeLabel } from '../adapters/api'
 import { go, goBack } from '../adapters/nav'
 import { viewPrintPdf } from '../helpers/printPdf'
@@ -170,6 +191,7 @@ import {
   credentialsFitOnCard,
   layoutErrorMessage,
   planProductLayout,
+  teamFitsOnCard,
 } from '../helpers/cardLayout'
 import { isBilingualLanguage, websiteForProduct } from '../helpers/formatCardIdentity'
 import { bilingualFrenchPreviewDetails, suggestFrenchTitle } from '../helpers/titleLocale'
@@ -230,6 +252,7 @@ export default {
       layoutFonts: null,
       details: emptyDetails('English'),
       emailEdited: false,
+      emailTouched: false,
       credentialSpaceRejected: false,
       credentialNoticeField: '',
       credentialNoticeTimer: null,
@@ -269,7 +292,17 @@ export default {
       return layoutErrorMessage(this.layoutErrorCode, t)
     },
     emailFieldError: function () {
-      if (this.layoutErrorCode !== LAYOUT_ERROR.email) return ''
+      if (this.layoutErrorCode === LAYOUT_ERROR.email) return this.layoutError
+      // Format is checked once the field is left, then live while it is fixed.
+      var email = String(this.details.email || '').trim()
+      if (this.emailTouched && email && !isValidEmail(email)) return t('emailInvalid')
+      return ''
+    },
+    teamFieldError: function () {
+      if (this.credentialSpaceRejected && this.credentialNoticeField === 'team') {
+        return t('teamNoSpace')
+      }
+      if (this.layoutErrorCode !== LAYOUT_ERROR.team) return ''
       return this.layoutError
     },
     titleFieldError: function () {
@@ -286,6 +319,15 @@ export default {
       }
       return t('credentialsNoSpace')
     },
+    phoneHint: function () {
+      return this.phoneError ? '' : t('mobilePhoneHint')
+    },
+    /** Partial number: say so instead of silently keeping Preview Proof disabled. */
+    phoneError: function () {
+      var digits = String((this.details && this.details.phone) || '').replace(/\D/g, '')
+      if (!digits || isCompletePhone(digits)) return ''
+      return t('mobilePhoneIncomplete')
+    },
     layoutReady: function () {
       return this.layoutStatus === 'valid'
     },
@@ -296,14 +338,23 @@ export default {
         Boolean(String(details.name || '').trim()) &&
         Boolean(String(details.title || '').trim()) &&
         (!this.isBilingual || Boolean(String(details.titleFr || '').trim())) &&
-        Boolean(String(details.email || '').trim()) &&
-        Boolean(String(details.phone || '').trim()) &&
+        isValidEmail(details.email) &&
+        isCompletePhone(details.phone) &&
         Boolean(String(details.address || '').trim())
       )
     },
     titleOptions: function () {
       var lang = (this.product && this.product.language) || 'English'
       return titlesForProductLanguage(lang, store.titles).map(function (title) {
+        return { value: title, label: title }
+      })
+    },
+    /** Bilingual French title: French list, plus a saved value that is not on it. */
+    titleFrOptions: function () {
+      var titles = titlesForProductLanguage('French')
+      var current = String(this.details.titleFr || '').trim()
+      if (current && titles.indexOf(current) === -1) titles = [current].concat(titles)
+      return titles.map(function (title) {
         return { value: title, label: title }
       })
     },
@@ -382,7 +433,7 @@ export default {
       this.details.titleFr = suggestFrenchTitle(value)
     },
     onTitleFr: function (value) {
-      this.details.titleFr = value
+      this.details.titleFr = cleanCardText(value)
     },
     fillMissingTitleFr: function () {
       if (!this.isBilingual) return
@@ -433,7 +484,7 @@ export default {
     },
     onAdditionalCredentials: function (value, event) {
       var current = String(this.details.additionalCredentials || '')
-      var next = String(value || '')
+      var next = cleanCardText(value)
       var candidate = Object.assign({}, this.details, { additionalCredentials: next })
       var fits = this.credentialsFit(candidate)
       var isShorter = next.length < current.length
@@ -444,6 +495,18 @@ export default {
       }
       this.details.additionalCredentials = next
       this.clearCredentialNotice()
+    },
+    onSpecializedTeam: function (value, event) {
+      var current = String(this.details.specializedTeam || '')
+      var next = cleanCardText(value)
+      var fits = teamFitsOnCard({ specializedTeam: next }, this.layoutFonts)
+      if (!fits && next.length >= current.length) {
+        this.flashCredentialNotice('team')
+        if (event && event.target) event.target.value = current
+        return
+      }
+      this.details.specializedTeam = next
+      if (this.credentialNoticeField === 'team') this.clearCredentialNotice()
     },
     credentialsFit: function (details) {
       if (!this.layoutFonts || !this.product) return true
@@ -471,7 +534,13 @@ export default {
       if (!this.product) return
       var language = this.product.language || 'English'
       var queryLineId = this.$route && this.$route.query && this.$route.query.lineId
-      var editId = store.editLineId || (store.proof && store.proof.editLineId) || queryLineId
+      var proof = store.proof && store.proof.code === this.product.code ? store.proof : null
+      // Back from a proof already in the cart edits that line instead of adding another
+      var editId =
+        store.editLineId ||
+        (store.proof && store.proof.editLineId) ||
+        queryLineId ||
+        (proof && proof.cartLineId)
       var line = null
       if (editId != null && editId !== '') {
         line =
@@ -486,6 +555,7 @@ export default {
           language
         )
         this.emailEdited = true
+        this.emailTouched = true
         this.fillMissingTitleFr()
         return
       }
@@ -504,16 +574,19 @@ export default {
           language
         )
         this.emailEdited = true
+        this.emailTouched = true
         this.fillMissingTitleFr()
         return
       }
       this.details = emptyDetails(language)
       this.emailEdited = false
+      this.emailTouched = false
     },
     clearDesign: function () {
       var language = (this.product && this.product.language) || 'English'
       this.details = emptyDetails(language)
       this.emailEdited = false
+      this.emailTouched = false
       this.clearCredentialNotice()
       this.printPdfError = ''
     },
