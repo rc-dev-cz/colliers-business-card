@@ -119,6 +119,8 @@ The lock is **Gestionnaire de projets principal | Nova Scotia** at Open Sans Reg
 
 The Talent Acquisition French title is the only line allowed to shrink below 6.5 pt so the title itself still fits the lane. Name, degrees, team, and email keep their own lanes.
 
+On a bilingual card the two faces match. Both faces follow the same region rule, and the `Title | Region` fallback is used only when it fits on **both** the English and the French face; otherwise both faces stack the region under the title.
+
 ---
 
 ## Email width rule

@@ -79,6 +79,31 @@ describe('printPdf', function () {
     expect(captured.credentialLine).toBe('')
   })
 
+  it('viewPrintPdf does not inject C.M. for a real order with no degrees', async function () {
+    var captured
+    await buildPrintPdfBytes(
+      {
+        name: 'Ada Lovelace',
+        title: 'Project Manager',
+        degree: [],
+        additionalCredentials: '',
+        email: 'ada.lovelace@colliersprojectleaders.com',
+        phone: '4165550100',
+        address: 'Suite 100\n100 Main Street\nToronto, ON\nA1A 1A1 Canada',
+      },
+      'English',
+      {
+        placeholders: false,
+        adjustPlan: function (plan) {
+          captured = plan.pages[0].layout
+        },
+      }
+    )
+    expect(captured.inlineCredential).toBe('')
+    expect(captured.credentialLine).toBe('')
+    expect(String(captured.nameLines && captured.nameLines.join(' '))).not.toMatch(/C\.M\./)
+  })
+
   it('keeps the C.M. sample and comma when no credential is entered', function () {
     expect(printInlineCredential({ degree: [], additionalCredentials: '' }, 'English')).toBe(
       ', C.M.'

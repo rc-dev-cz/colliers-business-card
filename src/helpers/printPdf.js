@@ -323,7 +323,8 @@ var lastPrintPdfUrl = ''
 
 export async function viewPrintPdf(details, language) {
   var snapshot = snapshotCardDetails(details)
-  var bytes = await buildPrintPdfBytes(snapshot, language)
+  // Customize / Proof print must not inject preview samples (C.M., fake address).
+  var bytes = await buildPrintPdfBytes(snapshot, language, { placeholders: false })
   var blob = new Blob([bytes], { type: 'application/pdf' })
   if (lastPrintPdfUrl) {
     try {
