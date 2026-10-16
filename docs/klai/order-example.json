@@ -1,0 +1,217 @@
+{
+    "order": {
+        "order_type": "business_cards",
+        "cart_status": "submitted",
+        "date": "2026-10-16T00:16:59.665Z",
+        "contact_id": null,
+        "full_name": null,
+        "email": null,
+        "currency": "CAD",
+        "group_count": 2,
+        "item_count": 2,
+        "total_items": 378,
+        "total_shipping": null
+    },
+    "groups": [
+        {
+            "group_ref": "group-1",
+            "shipment_number": 1,
+            "count_locations": 2,
+            "items": [
+                {
+                    "line_ref": "line-1792109791753-2owt5k",
+                    "product_code": "BCAD-PL-BIL",
+                    "catalogue_id": null,
+                    "language": "Bilingual",
+                    "qty": 2,
+                    "cards": 500,
+                    "unit_price": 63,
+                    "price": 126,
+                    "card": {
+                        "name": "Christopher Harrington-Wellington",
+                        "title": "Associate Director",
+                        "title_fr": "Associate Director",
+                        "degrees": [
+                            "P. Eng.",
+                            "LEED AP BD+C"
+                        ],
+                        "additional_credentials": "CPA",
+                        "region": "British Columbia",
+                        "specialized_team": "Project Management Advisory",
+                        "email": "christopher.hw@colliersprojectleaders.com",
+                        "phone": "604 555-0199",
+                        "office_address": "1066 West Hastings Street, 23rd Floor\nVancouver, BC\nV6E 3X1 Canada",
+                        "website": "colliersprojectleaders.com"
+                    }
+                }
+            ],
+            "locations": [
+                {
+                    "location_ref": "loc-1792109799874-faz3zd",
+                    "location_id": "1",
+                    "location_type": "office",
+                    "boxes_per_item": 1,
+                    "cards_per_item": 250,
+                    "address": {
+                        "address_name": "Burlington Office",
+                        "address_contact": null,
+                        "company": null,
+                        "street_1": "300-5515 North Service Road",
+                        "street_2": null,
+                        "city": "Burlington",
+                        "province": "ON",
+                        "postal_code": "L7L 6G4",
+                        "country": "Canada",
+                        "phone": null,
+                        "email": null,
+                        "one_line": "300-5515 North Service Road, Burlington, ON, L7L 6G4"
+                    }
+                },
+                {
+                    "location_ref": "loc-1792109799874-5qnv8x",
+                    "location_id": "2",
+                    "location_type": "office",
+                    "boxes_per_item": 1,
+                    "cards_per_item": 250,
+                    "address": {
+                        "address_name": "Calgary Office",
+                        "address_contact": null,
+                        "company": null,
+                        "street_1": "1100 1st St SE Level 3",
+                        "street_2": null,
+                        "city": "Calgary",
+                        "province": "AB",
+                        "postal_code": "T2G 1B1",
+                        "country": "Canada",
+                        "phone": null,
+                        "email": null,
+                        "one_line": "1100 1st St SE Level 3, Calgary, AB, T2G 1B1"
+                    }
+                }
+            ],
+            "total_items": 126,
+            "total_shipping": null
+        },
+        {
+            "group_ref": "group-2",
+            "shipment_number": 2,
+            "count_locations": 4,
+            "items": [
+                {
+                    "line_ref": "line-1792109791753-2owt5k",
+                    "product_code": "BCAD-PL-BIL",
+                    "catalogue_id": null,
+                    "language": "Bilingual",
+                    "qty": 4,
+                    "cards": 1000,
+                    "unit_price": 63,
+                    "price": 252,
+                    "card": {
+                        "name": "Christopher Harrington-Wellington",
+                        "title": "Associate Director",
+                        "title_fr": "Associate Director",
+                        "degrees": [
+                            "P. Eng.",
+                            "LEED AP BD+C"
+                        ],
+                        "additional_credentials": "CPA",
+                        "region": "British Columbia",
+                        "specialized_team": "Project Management Advisory",
+                        "email": "christopher.hw@colliersprojectleaders.com",
+                        "phone": "604 555-0199",
+                        "office_address": "1066 West Hastings Street, 23rd Floor\nVancouver, BC\nV6E 3X1 Canada",
+                        "website": "colliersprojectleaders.com"
+                    }
+                }
+            ],
+            "locations": [
+                {
+                    "location_ref": "loc-1792109804486-g0g4zr",
+                    "location_id": "3",
+                    "location_type": "office",
+                    "boxes_per_item": 1,
+                    "cards_per_item": 250,
+                    "address": {
+                        "address_name": "Cambridge Office",
+                        "address_contact": null,
+                        "company": null,
+                        "street_1": "202-485 Pinebush Road",
+                        "street_2": null,
+                        "city": "Cambridge",
+                        "province": "ON",
+                        "postal_code": "N1T 0A6",
+                        "country": "Canada",
+                        "phone": null,
+                        "email": null,
+                        "one_line": "202-485 Pinebush Road, Cambridge, ON, N1T 0A6"
+                    }
+                },
+                {
+                    "location_ref": "loc-1792109804486-fhop3c",
+                    "location_id": "4",
+                    "location_type": "office",
+                    "boxes_per_item": 1,
+                    "cards_per_item": 250,
+                    "address": {
+                        "address_name": "Edmonton Office",
+                        "address_contact": null,
+                        "company": null,
+                        "street_1": "Bell Tower 1700-10104 103 Avenue NW",
+                        "street_2": null,
+                        "city": "Edmonton",
+                        "province": "AB",
+                        "postal_code": "T5J 0H8",
+                        "country": "Canada",
+                        "phone": null,
+                        "email": null,
+                        "one_line": "Bell Tower 1700-10104 103 Avenue NW, Edmonton, AB, T5J 0H8"
+                    }
+                },
+                {
+                    "location_ref": "loc-1792109804486-awu2pa",
+                    "location_id": "2",
+                    "location_type": "office",
+                    "boxes_per_item": 1,
+                    "cards_per_item": 250,
+                    "address": {
+                        "address_name": "Calgary Office",
+                        "address_contact": null,
+                        "company": null,
+                        "street_1": "1100 1st St SE Level 3",
+                        "street_2": null,
+                        "city": "Calgary",
+                        "province": "AB",
+                        "postal_code": "T2G 1B1",
+                        "country": "Canada",
+                        "phone": null,
+                        "email": null,
+                        "one_line": "1100 1st St SE Level 3, Calgary, AB, T2G 1B1"
+                    }
+                },
+                {
+                    "location_ref": "loc-1792109804486-bg6g59",
+                    "location_id": "1",
+                    "location_type": "office",
+                    "boxes_per_item": 1,
+                    "cards_per_item": 250,
+                    "address": {
+                        "address_name": "Burlington Office",
+                        "address_contact": null,
+                        "company": null,
+                        "street_1": "300-5515 North Service Road",
+                        "street_2": null,
+                        "city": "Burlington",
+                        "province": "ON",
+                        "postal_code": "L7L 6G4",
+                        "country": "Canada",
+                        "phone": null,
+                        "email": null,
+                        "one_line": "300-5515 North Service Road, Burlington, ON, L7L 6G4"
+                    }
+                }
+            ],
+            "total_items": 252,
+            "total_shipping": null
+        }
+    ]
+}

@@ -16,12 +16,5 @@ export default defineConfig({
   },
   server: {
     port: 5173,
-    proxy: {
-      '/api': {
-        target: 'https://colliers-dev-rc.clientportal.cloud',
-        changeOrigin: true,
-        secure: true,
-      },
-    },
   },
 })

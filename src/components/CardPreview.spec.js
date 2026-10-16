@@ -60,8 +60,11 @@ describe('CardPreview', function () {
     })
     expect(wrapper.vm.view.team).toBe('')
     expect(wrapper.text()).not.toContain('Specialized team')
-    expect(wrapper.text()).toContain('Title | Ontario')
-    expect(wrapper.vm.view.titleY).toBeCloseTo(58.99, 2)
+    expect(wrapper.text()).not.toContain('Title | Ontario')
+    expect(wrapper.vm.view.title).toBe('Title')
+    expect(wrapper.vm.view.regionLine).toBe('Ontario')
+    expect(wrapper.vm.view.regionY).toBeCloseTo(58.99, 2)
+    expect(wrapper.vm.view.titleY).toBeCloseTo(66.99, 2)
     expect(wrapper.vm.view.emailY).toBe(43)
     expect(wrapper.vm.view.phoneY).toBe(35)
     expect(wrapper.vm.view.websiteY).toBe(27)
@@ -85,7 +88,8 @@ describe('CardPreview', function () {
     })
     await wrapper.vm.$nextTick()
 
-    expect(wrapper.vm.view.team).toBe('Specialized Team')
+    expect(wrapper.vm.view.team).toBe('Specialized Team | Ontario')
+    expect(wrapper.vm.view.regionLine).toBeFalsy()
     expect(wrapper.vm.view.emailY).toBe(printEmailY)
     expect(wrapper.vm.view.emailY).toBe(43)
     expect(wrapper.vm.view.phoneY).toBe(35)
@@ -104,6 +108,27 @@ describe('CardPreview', function () {
     expect(wrapper.vm.rowStyle(50, true).fontSize).toBe((7 / 252) * 100 + 'cqw')
     expect(wrapper.vm.rowStyle(50, false).fontSize).toBe((6.5 / 252) * 100 + 'cqw')
     expect(wrapper.vm.addressStyle.fontSize).toBe((6.5 / 252) * 100 + 'cqw')
+  })
+
+  it('mirrors EN and FR bilingual faces: region joins the team line', async function () {
+    var details = {
+      name: 'Firstname Lastname',
+      title: 'Talent Acquisition Business Partner',
+      region: 'Ontario',
+      specializedTeam: 'human resources',
+    }
+    var faces = ['English', 'French'].map(function (language) {
+      return mount(CardPreview, { localVue: localVue, propsData: { details: details, language } })
+    })
+    await faces[0].vm.$nextTick()
+    await new Promise(function (resolve) {
+      setTimeout(resolve, 0)
+    })
+    faces.forEach(function (wrapper) {
+      expect(wrapper.vm.view.title).not.toContain('|')
+      expect(wrapper.vm.view.team).toBe('human resources | Ontario')
+      expect(wrapper.vm.view.regionLine).toBeFalsy()
+    })
   })
 
   it('puts region on its own line when Title | Region overflows', async function () {

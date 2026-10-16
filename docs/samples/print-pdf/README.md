@@ -2,7 +2,7 @@
 
 **Generated:** `npm run export:print-pdfs` (EN / FR / bilingual) · `npm run export:print-pdf-json` (placeholder, short, long) · `npm run export:approval-guide` (PNGs)
 
-**JSON cases:** [`short-long-examples.json`](short-long-examples.json). Standard approval / EN / FR / bilingual are Hannah **without** team. Short JSON is Hannah **with** team.
+**JSON cases:** [`short-long-examples.json`](short-long-examples.json) — layout **verification** PDFs (not order samples). Short/long bilingual use Customize title pickers (`title` + `titleFr`) and long emails (≤ 50 chars).
 
 | File                                           | What to look at                                                                                            |
 | ---------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
@@ -10,10 +10,12 @@
 | `Colliers-Sample-Placeholder-FR.pdf`           | Empty French card: Prénom Nom, Titre, Équipe spécialisée, C.M.                                             |
 | `Colliers-Sample-EN.pdf`                       | Typical English finished card (Hannah, inline degrees, **no** team) + blue back                            |
 | `Colliers-Sample-FR.pdf`                       | Same person, French wordmark + back                                                                        |
-| `Colliers-Sample-Bilingual.pdf`                | EN face + FR face (2 pages, no blue backs)                                                                 |
-| `Colliers-Sample-Short.pdf`                    | Standard / short **with** specialized team                                                                 |
-| `Colliers-Sample-Long.pdf`                     | Maximum / long: 2-line name, own-row credentials, team, extra air above email                              |
-| `Colliers-Sample-Long-FR.pdf`                  | Same Maximum stack, French wordmark                                                                        |
+| `Colliers-Sample-Bilingual.pdf`                | EN face + FR face (2 pages, no blue backs) — approval Standard fixture                                     |
+| `Colliers-Sample-Short.pdf`                    | Short EN: Project Manager \| Ontario, team, inline credentials                                             |
+| `Colliers-Sample-Short-Bilingual.pdf`          | Short bilingual: Project Manager / Gestionnaire de Projet, long email                                      |
+| `Colliers-Sample-Long.pdf`                     | Long EN: Business Development Manager, own-row credentials, long email                                     |
+| `Colliers-Sample-Long-FR.pdf`                  | Long FR: Responsable du développement commercial, long email                                               |
+| `Colliers-Sample-Long-Bilingual.pdf`           | Long bilingual: EN+FR selected titles, long email, FR may split region                                     |
 | `Colliers-Print-PDF-Approval-Split-NoTeam.pdf` | Locked bilingual print file: split credentials, title \| Nova Scotia, **no** team row (empty team omitted) |
 | `Colliers-Print-PDF-Approval-Standard.png`     | Typical finished card (approval)                                                                           |
 | `Colliers-Print-PDF-Approval-Maximum.png`      | Demanding but still valid finished card (approval)                                                         |

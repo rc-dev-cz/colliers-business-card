@@ -52,6 +52,7 @@
               :label="t('fullName')"
               :value="details.name"
               :maxlength="NAME_MAX"
+              :error="nameFieldError"
               name="name"
               autocomplete="name"
               required
@@ -66,16 +67,17 @@
               required
               @input="onTitle"
             ></select-field>
-            <text-field
+            <select-field
               v-if="isBilingual"
               :label="t('titleFr')"
               :value="details.titleFr"
+              :options="titleFrOptions"
+              :placeholder="t('selectTitleFr')"
               :error="titleFieldError"
               name="titleFr"
-              autocomplete="off"
               required
               @input="onTitleFr"
-            ></text-field>
+            ></select-field>
             <multi-select-field
               :label="t('degree')"
               :value="details.degree"
@@ -107,9 +109,10 @@
             <text-field
               :label="t('specializedTeam')"
               :value="details.specializedTeam"
+              :error="teamFieldError"
               name="colliersSpecializedTeam"
               autocomplete="organization"
-              @input="details.specializedTeam = $event"
+              @input="onSpecializedTeam"
             ></text-field>
             <text-field
               :label="t('email')"
@@ -121,10 +124,13 @@
               autocomplete="email"
               required
               @input="onEmail"
+              @blur="emailTouched = true"
             ></text-field>
             <phone-field
               :label="t('mobilePhone')"
               :value="details.phone"
+              :hint="phoneHint"
+              :error="phoneError"
               required
               @input="details.phone = $event"
             ></phone-field>
@@ -160,7 +166,16 @@ import AppButton from '../components/AppButton.vue'
 import { CARD_COMPANY, emptyCard, getProduct } from '../data/products'
 import { t, store, setProof, loadOffices, loadDegrees, loadTitles } from '../store'
 import { cloneCardDetails } from '../helpers/cart'
-import { clipEmail, clipName, emailFromFullName, EMAIL_MAX, NAME_MAX } from '../helpers/validate'
+import {
+  cleanCardText,
+  clipEmail,
+  clipName,
+  emailFromFullName,
+  EMAIL_MAX,
+  isCompletePhone,
+  isValidEmail,
+  NAME_MAX,
+} from '../helpers/validate'
 import { formatAddressCard, officeLabel } from '../adapters/api'
 import { go, goBack } from '../adapters/nav'
 import { viewPrintPdf } from '../helpers/printPdf'
@@ -169,10 +184,17 @@ import {
   LAYOUT_ERROR,
   credentialsFitOnCard,
   layoutErrorMessage,
+  emailFitsOnCard,
+  nameFitsOnCard,
   planProductLayout,
+  teamFitsOnCard,
 } from '../helpers/cardLayout'
 import { isBilingualLanguage, websiteForProduct } from '../helpers/formatCardIdentity'
-import { bilingualFrenchPreviewDetails, suggestFrenchTitle } from '../helpers/titleLocale'
+import {
+  bilingualEnglishPreviewDetails,
+  bilingualFrenchPreviewDetails,
+  suggestFrenchTitle,
+} from '../helpers/titleLocale'
 import { titlesForProductLanguage } from '../helpers/titleAdmin'
 import { CANADIAN_REGION_OPTIONS } from '../helpers/canadianProvinces'
 
@@ -230,6 +252,7 @@ export default {
       layoutFonts: null,
       details: emptyDetails('English'),
       emailEdited: false,
+      emailTouched: false,
       credentialSpaceRejected: false,
       credentialNoticeField: '',
       credentialNoticeTimer: null,
@@ -254,7 +277,11 @@ export default {
       }
       if (isBilingualLanguage(lang)) {
         return [
-          { language: 'English', details: this.details, plan: planFor('English') },
+          {
+            language: 'English',
+            details: bilingualEnglishPreviewDetails(this.details),
+            plan: planFor('English'),
+          },
           {
             language: 'French',
             details: bilingualFrenchPreviewDetails(this.details),
@@ -269,7 +296,24 @@ export default {
       return layoutErrorMessage(this.layoutErrorCode, t)
     },
     emailFieldError: function () {
-      if (this.layoutErrorCode !== LAYOUT_ERROR.email) return ''
+      if (this.layoutErrorCode === LAYOUT_ERROR.email) return this.layoutError
+      // Format is checked once the field is left, then live while it is fixed.
+      var email = String(this.details.email || '').trim()
+      if (this.emailTouched && email && !isValidEmail(email)) return t('emailInvalid')
+      return ''
+    },
+    nameFieldError: function () {
+      if (this.credentialSpaceRejected && this.credentialNoticeField === 'name') {
+        return t('nameNoSpace')
+      }
+      if (this.layoutErrorCode !== LAYOUT_ERROR.name) return ''
+      return this.layoutError
+    },
+    teamFieldError: function () {
+      if (this.credentialSpaceRejected && this.credentialNoticeField === 'team') {
+        return t('teamNoSpace')
+      }
+      if (this.layoutErrorCode !== LAYOUT_ERROR.team) return ''
       return this.layoutError
     },
     titleFieldError: function () {
@@ -286,6 +330,15 @@ export default {
       }
       return t('credentialsNoSpace')
     },
+    phoneHint: function () {
+      return this.phoneError ? '' : t('mobilePhoneHint')
+    },
+    /** Partial number: say so instead of silently keeping Preview Proof disabled. */
+    phoneError: function () {
+      var digits = String((this.details && this.details.phone) || '').replace(/\D/g, '')
+      if (!digits || isCompletePhone(digits)) return ''
+      return t('mobilePhoneIncomplete')
+    },
     layoutReady: function () {
       return this.layoutStatus === 'valid'
     },
@@ -296,14 +349,23 @@ export default {
         Boolean(String(details.name || '').trim()) &&
         Boolean(String(details.title || '').trim()) &&
         (!this.isBilingual || Boolean(String(details.titleFr || '').trim())) &&
-        Boolean(String(details.email || '').trim()) &&
-        Boolean(String(details.phone || '').trim()) &&
+        isValidEmail(details.email) &&
+        isCompletePhone(details.phone) &&
         Boolean(String(details.address || '').trim())
       )
     },
     titleOptions: function () {
       var lang = (this.product && this.product.language) || 'English'
       return titlesForProductLanguage(lang, store.titles).map(function (title) {
+        return { value: title, label: title }
+      })
+    },
+    /** Bilingual French title: French list, plus a saved value that is not on it. */
+    titleFrOptions: function () {
+      var titles = titlesForProductLanguage('French')
+      var current = String(this.details.titleFr || '').trim()
+      if (current && titles.indexOf(current) === -1) titles = [current].concat(titles)
+      return titles.map(function (title) {
         return { value: title, label: title }
       })
     },
@@ -382,17 +444,36 @@ export default {
       this.details.titleFr = suggestFrenchTitle(value)
     },
     onTitleFr: function (value) {
-      this.details.titleFr = value
+      this.details.titleFr = cleanCardText(value)
     },
     fillMissingTitleFr: function () {
       if (!this.isBilingual) return
       if (String(this.details.titleFr || '').trim()) return
       this.details.titleFr = suggestFrenchTitle(this.details.title)
     },
-    onName: function (value) {
-      this.details.name = clipName(value)
+    onName: function (value, event) {
+      var current = String(this.details.name || '')
+      var next = clipName(value)
+      var fonts = this.layoutFonts
+      var details = this.details
+      var fits = function (name) {
+        return nameFitsOnCard(Object.assign({}, details, { name: name }), fonts)
+      }
+      if (!fits(next) && next.length >= current.length) {
+        // Typing or pasting past the room left for name + credentials: keep what fits, say why.
+        while (next.length > current.length && !fits(next)) next = next.slice(0, -1)
+        this.flashCredentialNotice('name')
+        if (event && event.target) event.target.value = next
+      } else if (this.credentialNoticeField === 'name') {
+        this.clearCredentialNotice()
+      }
+      this.details.name = next
       if (this.emailEdited) return
-      this.details.email = emailFromFullName(this.details.name)
+      // The suggested email is shortened to fit its card line, so a long name never
+      // leaves an email the card cannot print.
+      this.details.email = emailFromFullName(next, function (email) {
+        return emailFitsOnCard(email, fonts)
+      })
     },
     flashCredentialNotice: function (field) {
       this.credentialNoticeField = field
@@ -433,7 +514,7 @@ export default {
     },
     onAdditionalCredentials: function (value, event) {
       var current = String(this.details.additionalCredentials || '')
-      var next = String(value || '')
+      var next = cleanCardText(value)
       var candidate = Object.assign({}, this.details, { additionalCredentials: next })
       var fits = this.credentialsFit(candidate)
       var isShorter = next.length < current.length
@@ -444,6 +525,24 @@ export default {
       }
       this.details.additionalCredentials = next
       this.clearCredentialNotice()
+    },
+    onSpecializedTeam: function (value, event) {
+      var current = String(this.details.specializedTeam || '')
+      var next = cleanCardText(value)
+      var fonts = this.layoutFonts
+      var fits = function (text) {
+        return teamFitsOnCard({ specializedTeam: text }, fonts)
+      }
+      if (!fits(next) && next.length >= current.length) {
+        // Typing or pasting past the line: keep what still fits, like the other capped fields.
+        while (next.length > current.length && !fits(next)) next = next.slice(0, -1)
+        this.flashCredentialNotice('team')
+        if (event && event.target) event.target.value = next
+        this.details.specializedTeam = next
+        return
+      }
+      this.details.specializedTeam = next
+      if (this.credentialNoticeField === 'team') this.clearCredentialNotice()
     },
     credentialsFit: function (details) {
       if (!this.layoutFonts || !this.product) return true
@@ -471,7 +570,13 @@ export default {
       if (!this.product) return
       var language = this.product.language || 'English'
       var queryLineId = this.$route && this.$route.query && this.$route.query.lineId
-      var editId = store.editLineId || (store.proof && store.proof.editLineId) || queryLineId
+      var proof = store.proof && store.proof.code === this.product.code ? store.proof : null
+      // Back from a proof already in the cart edits that line instead of adding another
+      var editId =
+        store.editLineId ||
+        (store.proof && store.proof.editLineId) ||
+        queryLineId ||
+        (proof && proof.cartLineId)
       var line = null
       if (editId != null && editId !== '') {
         line =
@@ -486,6 +591,7 @@ export default {
           language
         )
         this.emailEdited = true
+        this.emailTouched = true
         this.fillMissingTitleFr()
         return
       }
@@ -504,16 +610,19 @@ export default {
           language
         )
         this.emailEdited = true
+        this.emailTouched = true
         this.fillMissingTitleFr()
         return
       }
       this.details = emptyDetails(language)
       this.emailEdited = false
+      this.emailTouched = false
     },
     clearDesign: function () {
       var language = (this.product && this.product.language) || 'English'
       this.details = emptyDetails(language)
       this.emailEdited = false
+      this.emailTouched = false
       this.clearCredentialNotice()
       this.printPdfError = ''
     },

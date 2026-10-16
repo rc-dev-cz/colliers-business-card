@@ -1,99 +1,18 @@
 <div
-  id="colliersCardPreview"
-  class="relative aspect-[1.75/1] w-full overflow-hidden rounded-md border border-gray-200 bg-white font-sans text-[#4A4A4A] shadow-sm"
-  style="container-type: inline-size"
+  class="colliers-card-preview relative w-full overflow-hidden rounded-md border border-gray-200 bg-white text-[#4A4A4A] shadow-sm"
+  style="container-type: inline-size; aspect-ratio: 1.75 / 1; font-family: 'Open Sans', sans-serif"
 >
-  <img
-    src="https://5t61ut5p19.ucarecd.net/66049ddf-e639-4104-9b94-5f1d96fc29a5/"
-    alt="Colliers"
-    class="absolute object-contain"
-    style="left: 6.968%; bottom: 69.306%; width: 18.488%; height: 18.417%"
-  />
-  <img
-    :src="['French','Français','FR'].indexOf(_.get(model, (schema.model || 'card') + '.language', _.get(model, 'language')) || '') >= 0 ? 'https://5t61ut5p19.ucarecd.net/701d97ba-48e3-4b7b-a448-1ecee3b72a6e/' : 'https://5t61ut5p19.ucarecd.net/5c2ce46d-e9a5-441c-ad9a-8010efc9c9bf/'"
-    :alt="['French','Français','FR'].indexOf(_.get(model, (schema.model || 'card') + '.language', _.get(model, 'language')) || '') >= 0 ? 'Maîtres de projets' : 'Project Leaders'"
-    class="absolute object-contain"
-    :style="['French','Français','FR'].indexOf(_.get(model, (schema.model || 'card') + '.language', _.get(model, 'language')) || '') >= 0 ? 'left: 27.873%; bottom: 70.347%; width: 18.044%; height: 15.083%' : 'left: 27.917%; bottom: 72.125%; width: 13.96%; height: 13.083%'"
-  />
-  <div
-    v-for="(line, idx) in (_.get(model, (schema.model || 'card') + '.nameLines', _.get(model, 'nameLines')) && _.get(model, (schema.model || 'card') + '.nameLines', _.get(model, 'nameLines')).length ? _.get(model, (schema.model || 'card') + '.nameLines', _.get(model, 'nameLines')) : [((_.get(model, (schema.model || 'card') + '.nameWrapped', _.get(model, 'nameWrapped')) || _.get(model, (schema.model || 'card') + '.name', _.get(model, 'name')) || '').trim() || (['French','Français','FR'].indexOf(_.get(model, (schema.model || 'card') + '.language', _.get(model, 'language')) || '') >= 0 ? 'Prénom Nom' : 'Firstname Lastname'))])"
-    :key="'name-' + idx"
-    class="absolute whitespace-nowrap font-bold leading-none text-[#03438C]"
-    :style="'left: 41.28%; right: 6%; bottom: ' + ((!String(_.get(model, (schema.model || 'card') + '.specializedTeam', _.get(model, 'specializedTeam')) || '').trim() && !_.get(model, (schema.model || 'card') + '.credentialLine', _.get(model, 'credentialLine')) ? 40.62 : 46.17) + (((( _.get(model, (schema.model || 'card') + '.nameLines', _.get(model, 'nameLines')) && _.get(model, (schema.model || 'card') + '.nameLines', _.get(model, 'nameLines')).length) ? _.get(model, (schema.model || 'card') + '.nameLines', _.get(model, 'nameLines')).length : 1) - 1 - idx) * 7.64)) + '%; font-size: 3.968cqw'"
-  >
-    <span>{{ line }}</span
-    ><span
-      v-if="idx === ((_.get(model, (schema.model || 'card') + '.nameLines', _.get(model, 'nameLines')) && _.get(model, (schema.model || 'card') + '.nameLines', _.get(model, 'nameLines')).length) ? _.get(model, (schema.model || 'card') + '.nameLines', _.get(model, 'nameLines')).length : 1) - 1"
-      class="align-baseline font-bold"
-      style="font-size: 0.7em"
-      >{{ _.get(model, (schema.model || 'card') + '.inlineCredential', _.get(model,
-      'inlineCredential')) || ((!String(_.get(model, (schema.model || 'card') + '.name',
-      _.get(model, 'name')) || '').trim()) ? ', C.M.' : '') }}</span
-    >
-  </div>
-  <div
-    v-if="_.get(model, (schema.model || 'card') + '.credentialLine', _.get(model, 'credentialLine'))"
-    class="absolute whitespace-nowrap font-bold leading-none text-[#03438C]"
-    :style="'left: 41.28%; right: 6%; bottom: ' + (_.get(model, (schema.model || 'card') + '.previewCredY', _.get(model, 'previewCredY')) != null && _.get(model, (schema.model || 'card') + '.previewCredY', _.get(model, 'previewCredY')) !== '' ? _.get(model, (schema.model || 'card') + '.previewCredY', _.get(model, 'previewCredY')) : 40.27) + '%; font-size: 2.778cqw'"
-  >
-    {{ _.get(model, (schema.model || 'card') + '.credentialLine', _.get(model, 'credentialLine')) }}
-  </div>
-  <div
-    v-if="_.get(model, (schema.model || 'card') + '.displayTitle', _.get(model, 'displayTitle')) || _.get(model, (schema.model || 'card') + '.placeholders', _.get(model, 'placeholders')) || !String(_.get(model, (schema.model || 'card') + '.name', _.get(model, 'name')) || '').trim() || String(_.get(model, (schema.model || 'card') + '.title', _.get(model, 'title')) || '').trim() || String(_.get(model, (schema.model || 'card') + '.region', _.get(model, 'region')) || '').trim()"
-    class="absolute whitespace-nowrap leading-none text-[#5F636A]"
-    :style="'left: 41.28%; right: 6%; bottom: ' + (String(_.get(model, (schema.model || 'card') + '.specializedTeam', _.get(model, 'specializedTeam')) || '').trim() ? (_.get(model, (schema.model || 'card') + '.credentialLine', _.get(model, 'credentialLine')) ? '34.72%' : '40.27%') : '34.72%') + '; font-size: 2.579cqw'"
-  >
-    {{ _.get(model, (schema.model || 'card') + '.displayTitle', _.get(model, 'displayTitle')) ||
-    ((String(_.get(model, (schema.model || 'card') + '.title', _.get(model, 'title')) ||
-    '').split('|')[0].trim() || (['French','Français','FR'].indexOf(_.get(model, (schema.model ||
-    'card') + '.language', _.get(model, 'language')) || '') >= 0 ? 'Titre' : 'Title')) +
-    (String(_.get(model, (schema.model || 'card') + '.region', _.get(model, 'region')) || '').trim()
-    ? ' | ' + String(_.get(model, (schema.model || 'card') + '.region', _.get(model, 'region')) ||
-    '').trim() : '')) }}
-  </div>
-  <div
-    v-if="String(_.get(model, (schema.model || 'card') + '.specializedTeam', _.get(model, 'specializedTeam')) || '').trim()"
-    class="absolute whitespace-nowrap leading-none text-[#5F636A]"
-    :style="'left: 41.28%; right: 6%; bottom: ' + (_.get(model, (schema.model || 'card') + '.previewTeamY', _.get(model, 'previewTeamY')) != null && _.get(model, (schema.model || 'card') + '.previewTeamY', _.get(model, 'previewTeamY')) !== '' ? _.get(model, (schema.model || 'card') + '.previewTeamY', _.get(model, 'previewTeamY')) : (_.get(model, (schema.model || 'card') + '.credentialLine', _.get(model, 'credentialLine')) ? 29.16 : 34.72)) + '%; font-size: 2.579cqw'"
-  >
-    {{ String(_.get(model, (schema.model || 'card') + '.specializedTeam', _.get(model,
-    'specializedTeam')) || '').trim() }}
-  </div>
-  <div
-    class="absolute whitespace-nowrap leading-none text-[#5F636A]"
-    style="left: 41.28%; right: 6%; bottom: 23.61%; font-size: 2.579cqw"
-  >
-    {{ _.get(model, (schema.model || 'card') + '.displayEmail', _.get(model, 'displayEmail')) ||
-    _.get(model, (schema.model || 'card') + '.email', _.get(model, 'email')) ||
-    (['French','Français','FR'].indexOf(_.get(model, (schema.model || 'card') + '.language',
-    _.get(model, 'language')) || '') >= 0 ? 'prenom.nom@colliersprojectleaders.com' :
-    'first.lastname@colliersprojectleaders.com') }}
-  </div>
-  <div
-    class="absolute whitespace-nowrap leading-none text-[#5F636A]"
-    style="left: 41.28%; right: 6%; bottom: 18.06%; font-size: 2.579cqw"
-  >
-    {{ _.get(model, (schema.model || 'card') + '.displayPhone', _.get(model, 'displayPhone')) ||
-    _.get(model, (schema.model || 'card') + '.phone', _.get(model, 'phone')) || '555 555 5555' }}
-  </div>
-  <div
-    class="absolute whitespace-nowrap leading-none text-[#5F636A]"
-    style="left: 41.28%; right: 6%; bottom: 12.5%; font-size: 2.579cqw"
-  >
-    {{ _.get(model, (schema.model || 'card') + '.displayWebsite', _.get(model, 'displayWebsite')) ||
-    (['French','Français','FR'].indexOf(_.get(model, (schema.model || 'card') + '.language',
-    _.get(model, 'language')) || '') >= 0 ? (_.get(model, (schema.model || 'card') + '.websiteFr',
-    _.get(model, 'websiteFr')) || 'colliersprojectleaders.com/fr') : (_.get(model, (schema.model ||
-    'card') + '.website', _.get(model, 'website')) || 'colliersprojectleaders.com')) }}
-  </div>
-  <div
-    class="absolute whitespace-pre-wrap leading-[1.25] text-[#5F636A]"
-    style="left: 7.14%; right: 58.72%; bottom: 12.5%; font-size: 2.579cqw"
-  >
-    {{ _.get(model, (schema.model || 'card') + '.displayAddress', _.get(model, 'displayAddress')) ||
-    _.get(model, (schema.model || 'card') + '.address', _.get(model, 'address')) ||
-    (['French','Français','FR'].indexOf(_.get(model, (schema.model || 'card') + '.language',
-    _.get(model, 'language')) || '') >= 0 ? "Nom de l'adresse\nUnité, Rue\nVille, Province\nCode
-    postal, Pays" : "Address name\nUnit, Street\nCity, Province\nPostal Code, Country") }}
-  </div>
+  <template v-for="k in [typeof model === 'string' && model.trim() ? model.trim() : (schema.model || 'card')]"><template v-for="c in [(model && typeof model === 'object' && _.get(model, k)) || (typeof app !== 'undefined' && _.get(app, k)) || (model && typeof model === 'object' ? model : {})]"><template v-for="fr in [/french|fran|previews.fr/i.test(k + ' ' + String(c.language || '')) && !/bilin/i.test(String(c.language || ''))]"><template v-for="bil in [/bilin/i.test(String(c.productLanguage || c.language || ''))]">
+    <img src="https://5t61ut5p19.ucarecd.net/66049ddf-e639-4104-9b94-5f1d96fc29a5/" alt="Colliers" class="absolute object-contain" style="left: 6.968%; bottom: 69.306%; width: 18.488%; height: 18.417%" />
+    <img :src="fr ? 'https://5t61ut5p19.ucarecd.net/701d97ba-48e3-4b7b-a448-1ecee3b72a6e/' : 'https://5t61ut5p19.ucarecd.net/5c2ce46d-e9a5-441c-ad9a-8010efc9c9bf/'" :alt="fr ? 'Maîtres de projets' : 'Project Leaders'" class="absolute object-contain" :style="fr ? 'left: 27.873%; bottom: 70.347%; width: 18.044%; height: 15.083%' : 'left: 27.917%; bottom: 72.125%; width: 13.96%; height: 13.083%'" />
+    <div v-for="(nameLine, nameIdx) in (c.nameLines && c.nameLines.length ? c.nameLines : [String(c.name || '').trim() || (fr ? 'Prénom Nom' : 'Firstname Lastname')])" :key="'name-' + nameIdx" class="absolute whitespace-nowrap font-bold leading-none text-[#03438C]" :style="'left: 41.28%; right: 2.56%; bottom: ' + ((c.previewNameYs && c.previewNameYs[nameIdx] != null) ? c.previewNameYs[nameIdx] : ((!String(c.specializedTeam || '').trim() && !c.credentialLine ? 40.62 : 46.17) + ((c.nameLines && c.nameLines.length ? c.nameLines.length : 1) - 1 - nameIdx) * 7.64)) + '%; font-size: 3.968cqw'"><span>{{ nameLine }}</span><span v-if="nameIdx === (c.nameLines && c.nameLines.length ? c.nameLines.length : 1) - 1 && (c.inlineCredential || (!String(c.name || '').trim() && !c.credentialLine))" class="align-baseline font-bold" style="font-size: 0.7em">{{ c.inlineCredential || ', C.M.' }}</span></div>
+    <div v-if="c.credentialLine" class="absolute whitespace-nowrap font-bold leading-none text-[#03438C]" :style="'left: 41.28%; right: 2.56%; bottom: ' + (c.previewCredY !== '' && c.previewCredY != null ? c.previewCredY : 40.27) + '%; font-size: 2.778cqw'">{{ c.credentialLine }}</div>
+    <div class="absolute whitespace-nowrap leading-none text-[#5F636A]" :style="'left: 41.28%; right: 2.56%; bottom: ' + (c.previewTitleY != null ? c.previewTitleY : (!String(c.specializedTeam || '').trim() || c.credentialLine ? 34.72 : 40.27)) + '%; font-size: ' + ((fr && bil && String(c.titleFr || '').trim() ? c.previewTitleFrSize : c.previewTitleSize) || '2.579cqw')">{{ ((fr && bil && String(c.titleFr || '').trim()) || String(c.title || '').split('|')[0].trim() || (fr ? 'Titre' : 'Title')) + (c.previewRegionMode === 'title' && String(c.region || '').trim() ? ' | ' + String(c.region).trim() : '') }}</div>
+    <div v-if="String(c.specializedTeam || '').trim()" class="absolute whitespace-nowrap leading-none text-[#5F636A]" :style="'left: 41.28%; right: 2.56%; bottom: ' + (c.previewTeamY != null ? c.previewTeamY : (c.credentialLine ? 29.16 : 34.72)) + '%; font-size: 2.579cqw'">{{ String(c.specializedTeam).trim() + (c.previewRegionMode === 'team' && String(c.region || '').trim() ? ' | ' + String(c.region).trim() : '') }}</div>
+    <div v-if="c.previewRegionMode === 'own' && String(c.region || '').trim()" class="absolute whitespace-nowrap leading-none text-[#5F636A]" :style="'left: 41.28%; right: 2.56%; bottom: ' + c.previewRegionY + '%; font-size: 2.579cqw'">{{ String(c.region).trim() }}</div>
+    <div class="absolute whitespace-nowrap leading-none text-[#5F636A]" :style="'left: 41.28%; right: 2.56%; bottom: ' + (c.previewEmailY != null && c.previewEmailY !== '' ? c.previewEmailY : 23.61) + '%; font-size: 2.579cqw'">{{ String(c.email || '').trim() || (fr ? 'prenom.nom@colliersprojectleaders.com' : 'first.lastname@colliersprojectleaders.com') }}</div>
+    <div class="absolute whitespace-nowrap leading-none text-[#5F636A]" :style="'left: 41.28%; right: 2.56%; bottom: ' + (c.previewPhoneY != null && c.previewPhoneY !== '' ? c.previewPhoneY : 18.06) + '%; font-size: 2.579cqw'">{{ c.displayPhone || c.phone || '555 555 5555' }}</div>
+    <div class="absolute whitespace-nowrap leading-none text-[#5F636A]" :style="'left: 41.28%; right: 2.56%; bottom: ' + (c.previewWebY != null && c.previewWebY !== '' ? c.previewWebY : 12.5) + '%; font-size: 2.579cqw'">{{ fr ? (c.websiteFr || 'colliersprojectleaders.com/fr') : (c.website && c.website !== 'colliers.com/canada' ? c.website : 'colliersprojectleaders.com') }}</div>
+    <div class="absolute overflow-hidden text-[#5F636A]" style="left: 7.14%; right: 58.72%; bottom: 12.5%; font-size: 2.579cqw; line-height: 1.230769"><div v-for="(addrLine, addrIdx) in (String(c.addressWrapped || c.printAddress || c.address || '').trim() ? String(c.addressWrapped || c.printAddress || c.address).replace(/\r\n/g, '\n').replace(/\r/g, '\n').trim().split('\n') : (fr ? [&quot;Nom de l'adresse&quot;, 'Unité, Rue', 'Ville, Province', 'Code postal, Pays'] : ['Address name', 'Unit, Street', 'City, Province', 'Postal Code, Country']))" :key="'addr-' + addrIdx" class="overflow-hidden whitespace-nowrap">{{ addrLine }}</div></div>
+  </template></template></template></template>
 </div>

@@ -56,6 +56,19 @@ export const messages = {
     EN: 'This specialized team is too long for the card.',
     FR: 'Cette équipe spécialisée est trop longue pour la carte.',
   },
+  nameNoSpace: {
+    EN: 'No more space for the name on the card.',
+    FR: 'Il n’y a plus d’espace pour le nom sur la carte.',
+  },
+  teamNoSpace: {
+    EN: 'No more space for the specialized team on the card.',
+    FR: 'Il n’y a plus d’espace pour l’équipe spécialisée sur la carte.',
+  },
+  emailInvalid: {
+    EN: 'Enter a valid email, like name@colliersprojectleaders.com.',
+    FR: 'Entrez un courriel valide, par exemple nom@colliersprojectleaders.com.',
+  },
+  selectTitleFr: { EN: 'Select a French title', FR: 'Sélectionner un titre français' },
   layoutErrorEmail: {
     EN: 'This email is too long to fit on one line of the card.',
     FR: 'Ce courriel est trop long pour tenir sur une ligne de la carte.',
@@ -74,6 +87,10 @@ export const messages = {
   },
   mobilePhone: { EN: 'Mobile', FR: 'Mobile' },
   mobilePhoneHint: { EN: '10-digit Canadian number', FR: 'Numéro canadien à 10 chiffres' },
+  mobilePhoneIncomplete: {
+    EN: 'Enter all 10 digits of the mobile number.',
+    FR: 'Entrez les 10 chiffres du numéro de mobile.',
+  },
   companyName: { EN: 'Company Name', FR: "Nom de l'entreprise" },
   address: { EN: 'Address', FR: 'Adresse' },
   officeLocation: { EN: 'Office Location', FR: 'Lieu de bureau' },
@@ -125,6 +142,7 @@ export const messages = {
   selectedItems: { EN: 'Selected Items', FR: 'Articles sélectionnés' },
   noItemsSelected: { EN: 'No items selected', FR: 'Aucun article sélectionné' },
   addItem: { EN: 'Add item', FR: 'Ajouter un article' },
+  addNewCard: { EN: 'Add new card', FR: 'Ajouter une nouvelle carte' },
   addItemFromCart: { EN: 'Add from cart', FR: 'Ajouter depuis le panier' },
   allCartItemsInGroup: {
     EN: 'All cart items are already in this group.',
@@ -136,6 +154,10 @@ export const messages = {
   splitOrder: { EN: 'Split Order', FR: 'Diviser la commande' },
   removeSplit: { EN: 'Remove Split', FR: 'Supprimer la division' },
   shipToAddress: { EN: 'Ship to Address', FR: "Expédier à l'adresse" },
+  addressMerged: {
+    EN: 'This address was already in this group, so the boxes were added together.',
+    FR: 'Cette adresse était déjà dans ce groupe; les boîtes ont été additionnées.',
+  },
   noShipToAddresses: {
     EN: 'No ship-to addresses yet. Use + Add location to pick from your Address Book.',
     FR: "Aucune adresse d'expédition. Utilisez + Ajouter un lieu pour choisir dans votre carnet d'adresses.",

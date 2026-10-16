@@ -9,14 +9,20 @@ import { join } from 'node:path'
 import { PDFDocument } from 'pdf-lib'
 import { APPROVAL_MAXIMUM, APPROVAL_STANDARD } from './approvalSamples.js'
 import { loadLayoutFonts } from './cardFonts.js'
-import { CARD_LAYOUT, planProductLayout } from './cardLayout.js'
+import {
+  CARD_LAYOUT,
+  applyEmptyTeamIdentityLayout,
+  applyPreviewTitleRegionSplit,
+  planProductLayout,
+} from './cardLayout.js'
 import { buildPrintPdfBytes } from './printPdf.js'
 
 var outDir = join(tmpdir(), 'colliers-approval-guide')
 
 function dumpLayout(label, details, language, fonts) {
   var plan = planProductLayout(details, language, fonts)
-  var page = plan.pages[0].layout
+  // Same final pass as buildPrintPdfBytes, so overlays match the raster
+  var page = applyPreviewTitleRegionSplit(applyEmptyTeamIdentityLayout(plan.pages[0].layout), fonts)
   return {
     label: label,
     valid: plan.valid,
@@ -29,6 +35,8 @@ function dumpLayout(label, details, language, fonts) {
     credentialY: page.credentialY,
     title: page.title,
     titleY: page.titleY,
+    regionLine: page.regionLine || '',
+    regionY: page.regionY,
     team: page.team,
     teamY: page.teamY,
     email: page.email,
@@ -81,6 +89,9 @@ describe('approval guide PDFs', function () {
         expect(dump.titleY).toBe(66.99)
         expect(dump.nameLineYs[0]).toBe(75.49)
         expect(dump.team).toBe('')
+        // No team: region takes its own line under the title (EN mirrors FR)
+        expect(dump.regionLine).toBe('Ontario')
+        expect(dump.regionY).toBe(58.99)
       } else {
         expect(dump.credMode).toBe('split')
         expect(dump.inlineCredential).toMatch(/CPA/)
@@ -91,6 +102,9 @@ describe('approval guide PDFs', function () {
         expect(dump.websiteY).toBe(dump.addressBottomY)
         expect(dump.teamY).toBeCloseTo(58.99)
         expect(dump.titleY).toBeCloseTo(66.99)
+        // team | region is too wide here, so the approved Title | Region line stays
+        expect(dump.regionLine).toBe('')
+        expect(dump.title).toMatch(/ \| /)
         expect(dump.teamY - dump.emailY).toBeCloseTo(15.99)
         expect(dump.nameLines.length).toBe(2)
         expect(dump.addressLines.length).toBe(4)

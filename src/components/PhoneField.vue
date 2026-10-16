@@ -9,12 +9,14 @@
       inputmode="numeric"
       autocomplete="tel-national"
       class="field-input"
+      :aria-invalid="error ? 'true' : 'false'"
       :placeholder="placeholder"
       :required="required"
       maxlength="12"
       @input="onInput"
     />
     <p v-if="hint" class="field-hint">{{ hint }}</p>
+    <p v-if="error" class="field-hint text-red-600">{{ error }}</p>
   </div>
 </template>
 
@@ -27,8 +29,9 @@ export default {
     value: { type: String, default: '' },
     label: { type: String, default: '' },
     hint: { type: String, default: '' },
+    error: { type: String, default: '' },
     required: { type: Boolean, default: false },
-    placeholder: { type: String, default: '416 555-1234' },
+    placeholder: { type: String, default: '416 555 1234' },
   },
   computed: {
     display: function () {

@@ -3,7 +3,9 @@ import {
   formatTitleLine,
   isBilingualLanguage,
   isFrenchLanguage,
+  previewCredentialText,
   SAMPLE_ADDRESS,
+  SAMPLE_CREDENTIAL,
   WEBSITE_EN,
   WEBSITE_FR,
 } from './formatCardIdentity.js'
@@ -155,8 +157,32 @@ export function resolveCardFields(details, language) {
   }
 }
 
+/**
+ * `Title | Region` for every printed face. Bilingual cards have an English and a
+ * French face, and the region fallback must pick the same break on both.
+ */
+export function cardFaceTitles(details, language) {
+  var src = details || {}
+  if (!isBilingualLanguage(language) && !src.bilingualFaces) {
+    return [resolveCardFields(src, language).title]
+  }
+  var englishTitle = src.titleEn || src.title
+  var frenchTitle = String(src.titleFr || '').trim() || suggestFrenchTitle(englishTitle)
+  return [
+    resolveCardFields(Object.assign({}, src, { title: englishTitle }), 'English').title,
+    resolveCardFields(Object.assign({}, src, { title: frenchTitle }), 'French').title,
+  ]
+}
+
 export function fitsLine(font, text, size, maxWidth) {
   return font.widthOfTextAtSize(String(text || ''), size) <= maxWidth
+}
+
+/** Specialized team prints on one line (same text on the EN and FR faces). */
+export function teamFitsOnCard(details, fonts) {
+  var team = String((details && details.specializedTeam) || '').trim()
+  if (!team || !fonts) return true
+  return fitsLine(fonts.font, team, CARD_LAYOUT.bodySize, CARD_LAYOUT.identityWidth)
 }
 
 function titlePartOf(joined) {
@@ -242,8 +268,7 @@ function titleRegionFitsOrSplits(font, joined, titleSize, maxWidth, regionSize) 
   if (!titlePart || !regionPart) return false
   var regionPt = regionSize == null ? titleSize : regionSize
   return (
-    fitsLine(font, titlePart, titleSize, maxWidth) &&
-    fitsLine(font, regionPart, regionPt, maxWidth)
+    fitsLine(font, titlePart, titleSize, maxWidth) && fitsLine(font, regionPart, regionPt, maxWidth)
   )
 }
 
@@ -323,6 +348,43 @@ export function packCredentials(fontBold, lastNameLine, credText, L) {
     return { mode: 'error', inline: '', row: '' }
   }
   return { mode: 'split', inline: inline, row: row }
+}
+
+/**
+ * Name wraps by whole words onto at most two lines and still leaves room for the
+ * credentials: the chosen ones (inline or on their own row), or the sample ", C.M."
+ * that the preview and print PDF draw on the name line when none are chosen.
+ */
+export function nameFitsOnCard(details, fonts) {
+  var src = details || {}
+  var text = String(src.name || '').trim()
+  if (!text || !fonts || !fonts.fontBold) return true
+  var L = CARD_LAYOUT
+  var wrap = wrapByWords(fonts.fontBold, text, L.nameSize, L.identityWidth)
+  if (!wrap.ok || wrap.lines.length > L.nameMaxLines) return false
+  var lastLine = wrap.lines[wrap.lines.length - 1] || ''
+  // The sample packs like a real token: after the name when it fits, else its own row.
+  var cred = formatCredentialSuffix(src.degree, src.additionalCredentials) || SAMPLE_CREDENTIAL
+  return packCredentials(fonts.fontBold, lastLine, cred, L).mode !== 'error'
+}
+
+/**
+ * Details with the sample "C.M." as the credential when none is chosen, so the
+ * planner places it like a real token (inline, or its own row when the name is full).
+ */
+export function withSampleCredential(details, language) {
+  var src = details || {}
+  if (formatCredentialSuffix(src.degree, src.additionalCredentials)) return src
+  return Object.assign({}, src, {
+    additionalCredentials: previewCredentialText('', '', language),
+  })
+}
+
+/** Email prints on one line of the email lane. */
+export function emailFitsOnCard(email, fonts) {
+  var text = String(email || '').trim()
+  if (!text || !fonts || !fonts.font) return true
+  return fitsLine(fonts.font, text, CARD_LAYOUT.bodySize, CARD_LAYOUT.emailMaxWidth)
 }
 
 /** Whether all selected degrees + additional credentials fit the two credential lanes. */
@@ -518,15 +580,19 @@ export function applyEmptyTeamIdentityLayout(view) {
 }
 
 /**
- * When `Title | Region` does not fit titleMaxWidth, put region on its own line and
- * lift name / credentials / title by one body line. If a specialized team is filled,
- * merge onto `team | region` instead of adding a third line. Used by CardPreview
- * and print PDF. No-op when already split or when title alone cannot fit.
+ * Region leaves the title line so EN and FR faces mirror (Cynthia, Oct 2026).
+ * Specialized team filled: region joins it as `team | region`. Team empty: region
+ * gets its own line under the title, and name / credentials / title lift by one
+ * body line. If `team | region` is too wide, keep `Title | Region` when it fits,
+ * else stack region under the title. Used by CardPreview and print PDF.
+ * No-op when already split or when title alone cannot fit. Before the measuring
+ * fonts load (preview first paint) the split still applies, unmeasured.
  */
-export function applyPreviewTitleRegionSplit(view, fonts) {
-  if (!view || !fonts || !fonts.font) return view
+export function applyPreviewTitleRegionSplit(view, fonts, opts) {
+  if (!view) return view
   if (view.regionLine) return view
   var L = CARD_LAYOUT
+  var font = fonts && fonts.font
   var joined = String(view.title || '')
   var sep = ' | '
   var idx = joined.indexOf(sep)
@@ -535,20 +601,27 @@ export function applyPreviewTitleRegionSplit(view, fonts) {
   var regionPart = joined.slice(idx + sep.length).trim()
   if (!titlePart || !regionPart) return view
   var titleSize = view.titleSize || L.bodySize
-  if (fitsLine(fonts.font, joined, titleSize, L.titleMaxWidth)) return view
-  if (!fitsLine(fonts.font, titlePart, titleSize, L.titleMaxWidth)) return view
-  if (!fitsLine(fonts.font, regionPart, L.bodySize, L.titleMaxWidth)) return view
+  if (font && !fitsLine(font, titlePart, titleSize, L.titleMaxWidth)) return view
+  if (font && !fitsLine(font, regionPart, L.bodySize, L.titleMaxWidth)) return view
 
   var team = String(view.team || '').trim()
   if (team) {
     var merged = team + sep + regionPart
-    if (fitsLine(fonts.font, merged, L.bodySize, L.identityWidth)) {
+    if (!font || fitsLine(font, merged, L.bodySize, L.identityWidth)) {
       var withTeam = Object.assign({}, view)
       withTeam.title = titlePart
       withTeam.team = merged
       withTeam.regionLine = ''
       return withTeam
     }
+    // `team | region` too wide: keep the approved `Title | Region` line when it fits
+    // on every face (bilingual EN and FR must break the same way).
+    // A third identity line would push a 2-line name into the wordmark (Maximum).
+    var faces = (opts && opts.faceTitles) || [joined]
+    var everyFaceFits = faces.every(function (face) {
+      return fitsLine(font, face, titleSizeFor(font, face, L), L.titleMaxWidth)
+    })
+    if (everyFaceFits) return view
   }
 
   var lift = L.bodyLineHeight

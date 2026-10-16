@@ -11,8 +11,36 @@ export const NAME_MAX = 50
 export const EMAIL_MAX = 50
 export const PHONE_DIGITS = 10
 
+// Name: letters in any language (é, ñ, ç…), spaces, hyphen, apostrophe, period.
+// Emoji, digits and symbols cannot print on the card (Open Sans has no glyphs).
+var NAME_DISALLOWED = /[^\p{L}\p{M}\s.'\u2019-]/gu
+// Free-text card fields: drop emoji, pictographs, symbol-other and invisible joiners.
+var CARD_TEXT_DISALLOWED =
+  /[\p{Extended_Pictographic}\p{So}\p{Cs}\p{Co}\p{Cc}\u200d]|\ufe0e|\ufe0f|\u20e3/gu
+
+/** Allowed name characters only, single spaces, no leading space, max NAME_MAX. */
+export function cleanName(value) {
+  return String(value || '')
+    .replace(NAME_DISALLOWED, '')
+    .replace(/\s+/g, ' ')
+    .replace(/^ /, '')
+    .slice(0, NAME_MAX)
+}
+
+/** Strip emoji / pictographs from other card text (title FR, credentials, team). */
+export function cleanCardText(value) {
+  return String(value || '').replace(CARD_TEXT_DISALLOWED, '')
+}
+
 export function clipName(value) {
-  return String(value || '').slice(0, NAME_MAX)
+  return cleanName(value)
+}
+
+/** name@domain.tld, no spaces. Blank is "not valid" too; callers check blank separately. */
+var EMAIL_FORMAT = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/
+
+export function isValidEmail(value) {
+  return EMAIL_FORMAT.test(String(value || '').trim())
 }
 
 export function clipEmail(value) {
@@ -31,9 +59,10 @@ function emailLocalPart(value) {
 
 /**
  * firstname.lastname@colliersprojectleaders.com once the name has a first and last part.
- * Returns '' until then. The domain is kept intact if the local part must be shortened.
+ * Returns '' until then. The domain is kept intact if the local part must be shortened,
+ * both for EMAIL_MAX and, when `fits` is given, for the printed email line.
  */
-export function emailFromFullName(name) {
+export function emailFromFullName(name, fits) {
   var parts = String(name || '')
     .trim()
     .split(/\s+/)
@@ -46,6 +75,9 @@ export function emailFromFullName(name) {
   var local = first + '.' + last
   var maxLocal = EMAIL_MAX - domain.length
   if (local.length > maxLocal) local = local.slice(0, maxLocal).replace(/\.+$/, '')
+  if (typeof fits === 'function') {
+    while (local && !fits(local + domain)) local = local.slice(0, -1).replace(/\.+$/, '')
+  }
   if (!local || local.charAt(0) === '.') return ''
   return local + domain
 }
@@ -60,7 +92,7 @@ export function formatCanadianLocal(digits) {
   const source = String(digits || '')
   if (source.length <= 3) return source
   if (source.length <= 6) return source.slice(0, 3) + ' ' + source.slice(3)
-  return source.slice(0, 3) + ' ' + source.slice(3, 6) + '-' + source.slice(6)
+  return source.slice(0, 3) + ' ' + source.slice(3, 6) + ' ' + source.slice(6)
 }
 
 /** Card preview / PDF: Canadian 10-digit local, spaced, no country code. */
@@ -69,8 +101,13 @@ export function formatCardPhone(value) {
   var cleaned = String(value).replace(/\D/g, '')
   var local = cleaned
   if (cleaned.length === 11 && cleaned.charAt(0) === '1') local = cleaned.slice(1)
-  if (local.length === 10) {
-    return local.slice(0, 3) + ' ' + local.slice(3, 6) + ' ' + local.slice(6)
-  }
-  return String(value)
+  // Spaces only, same as the Mobile field ("416 555 1234"); a partial number keeps the grouping.
+  return [local.slice(0, 3), local.slice(3, 6), local.slice(6)].filter(Boolean).join(' ')
+}
+
+/** Mobile is complete when it has 10 local digits (an 11-digit 1-prefixed number counts). */
+export function isCompletePhone(value) {
+  var cleaned = String(value || '').replace(/\D/g, '')
+  if (cleaned.length === 11 && cleaned.charAt(0) === '1') cleaned = cleaned.slice(1)
+  return cleaned.length === PHONE_DIGITS
 }

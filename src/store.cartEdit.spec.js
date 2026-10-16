@@ -130,6 +130,31 @@ describe('edit cart line from proof', function () {
     expect(store.cart[1].details.name).toBe('Firstname Lastname')
   })
 
+  it('remembers the added line so Back to Edit updates it instead of adding another', function () {
+    setProof({
+      code: 'BCAD-PL-BIL',
+      language: 'Bilingual',
+      details: { name: 'Firstname', title: 'Associate' },
+    })
+    addProofToCart()
+    expect(store.cart.length).toBe(2)
+    var addedId = store.proof.cartLineId
+    expect(addedId).toBe(store.cart[1].id)
+
+    // Back to Edit: Customize picks up proof.cartLineId as the edit target
+    setEditLineId(store.proof.cartLineId)
+    setProof({
+      code: 'BCAD-PL-BIL',
+      language: 'Bilingual',
+      details: { name: 'Firstname Lastname', title: 'Associate' },
+    })
+    addProofToCart()
+    expect(store.cart.length).toBe(2)
+    expect(store.cart[1].id).toBe(addedId)
+    expect(store.cart[1].details.name).toBe('Firstname Lastname')
+    expect(store.proof.cartLineId).toBe(addedId)
+  })
+
   it('does not add a line when editLineId is set but missing from cart', function () {
     setEditLineId('missing-line')
     setProof({

@@ -71,6 +71,33 @@ describe('shipping groups', function () {
     expect(order.splits[1].locations[0].qty).toBe(1)
   })
 
+  it('moveLocation combines boxes when the target group already has that address', function () {
+    var moving = createLocation('300-5515 North Service Road, Burlington, ON L7L 6G4', 1)
+    var order = {
+      splits: [
+        createSplit({
+          id: 1,
+          itemIds: ['a'],
+          locations: [createLocation('123 Street', 1), moving],
+        }),
+        createSplit({
+          id: 2,
+          itemIds: ['a'],
+          locations: [
+            createLocation('1100 1st St SE', 1),
+            createLocation('  300-5515 north service road,  Burlington, ON L7L 6G4 ', 3),
+          ],
+        }),
+      ],
+    }
+    var kept = moveLocation(order, moving.id, 2, 0)
+    var target = order.splits[1].locations
+    expect(target.length).toBe(2)
+    expect(target[1].qty).toBe(4)
+    expect(kept).toBe(target[1])
+    expect(order.splits[0].locations.length).toBe(1)
+  })
+
   it('moveLocation reorders addresses inside a group', function () {
     var first = createLocation('123 Street', 1)
     var second = createLocation('456 Street', 1)

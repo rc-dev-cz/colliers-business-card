@@ -1,0 +1,30 @@
+{
+  "_readme": "Review page named actions as saved in Klai Studio (Oct 15, 2026). submitOrder step 1 = review-submitOrder.js. FileMaker reads $$BF_Model.orderPayload in 'BF - onUtility - review' (type submit); it may set orderId or submitError. Draft FM script: fm-onUtility-review-submit.md.",
+  "submitOrder": [
+    {
+      "action": "function",
+      "function": "<see review-submitOrder.js — embedded in review-namedActions.paste.json>"
+    },
+    {
+      "action": "runUtilityHook",
+      "options": {
+        "modelFilterKeys": [
+          "cart",
+          "order",
+          "orderPayload"
+        ],
+        "type": "submit"
+      }
+    },
+    {
+      "action": "function",
+      "function": "model.submitting = 0\nif (model.submitError) return\nconsole.info('[Colliers order] Order confirmed: ' + (model.orderId || '(id from FileMaker)'), model.orderPayload)\nif (typeof BF !== 'undefined' && BF.goto) { BF.goto('/confirmed'); return; }\nif (window.location) window.location.hash = '#/confirmed';"
+    }
+  ],
+  "printOrder": [
+    {
+      "action": "function",
+      "function": "window.print()"
+    }
+  ]
+}

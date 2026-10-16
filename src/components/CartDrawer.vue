@@ -134,7 +134,8 @@
           <div
             v-for="slot in previewSlots(previewLine)"
             :key="slot.language"
-            class="card-preview-frame mx-auto max-w-[480px]"
+            class="card-preview-frame mx-auto"
+            :style="previewFrameStyle(previewSlots(previewLine).length)"
           >
             <card-preview
               :details="slot.details"
@@ -149,6 +150,7 @@
 </template>
 
 <script>
+import { cardPreviewSlots, previewFrameStyle } from '../helpers/previewModal'
 import Drawer from './Drawer.vue'
 import EmptyState from './EmptyState.vue'
 import AppButton from './AppButton.vue'
@@ -163,12 +165,10 @@ import {
   subtotal,
   setProof,
   setEditLineId,
-  ensureCartAssignedToShipping,
+  startShippingFromCart,
 } from '../store'
 import { productNameKey } from '../i18n/messages'
 import { lineTotal } from '../helpers/cart'
-import { isBilingualLanguage } from '../helpers/formatCardIdentity'
-import { bilingualFrenchPreviewDetails } from '../helpers/titleLocale'
 import { go } from '../adapters/nav'
 
 export default {
@@ -214,16 +214,8 @@ export default {
     lineAmount: function (line) {
       return lineTotal(line).toFixed(2)
     },
-    previewSlots: function (line) {
-      var details = line.details || {}
-      if (isBilingualLanguage(line.language)) {
-        return [
-          { language: 'English', details: details },
-          { language: 'French', details: bilingualFrenchPreviewDetails(details) },
-        ]
-      }
-      return [{ language: line.language, details: details }]
-    },
+    previewFrameStyle: previewFrameStyle,
+    previewSlots: cardPreviewSlots,
     openPreview: function (line) {
       this.previewLine = line
     },
@@ -241,7 +233,7 @@ export default {
     goShipping: function () {
       this.previewLine = null
       closeCart()
-      ensureCartAssignedToShipping()
+      startShippingFromCart()
       go('shipping')
     },
   },

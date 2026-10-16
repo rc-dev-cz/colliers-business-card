@@ -644,7 +644,8 @@ async function viewPrintPdfBody() {
     }
 
     var productPlan = planProductLayout(snapshot, language, assets)
-    applyPrintPlaceholders(productPlan, snapshot)
+    // Do not applyPrintPlaceholders — preview samples (C.M., fake address) must
+    // never land on a real Customize / order print PDF.
     if (!productPlan.valid) {
       throw new Error(LAYOUT_MSG[productPlan.errors[0]] || productPlan.errors[0])
     }

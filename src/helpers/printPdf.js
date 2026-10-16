@@ -6,6 +6,8 @@ import {
   CARD_LAYOUT,
   applyEmptyTeamIdentityLayout,
   applyPreviewTitleRegionSplit,
+  cardFaceTitles,
+  withSampleCredential,
   layoutErrorMessage,
   planProductLayout,
   snapshotCardDetails,
@@ -262,21 +264,6 @@ export function printInlineCredential(details, language) {
   return ', ' + cred
 }
 
-function applyPrintCredentialPlaceholder(productPlan, details) {
-  productPlan.pages.forEach(function (page) {
-    var inline = printInlineCredential(details, page.language)
-    if (!inline || !page.layout) return
-    if (page.layout.credentialLine) {
-      page.layout.credentialLine = inline.replace(/^, /, '')
-      return
-    }
-    page.layout.inlineCredential = inline
-    page.layout.credentialLine = ''
-    page.layout.credMode = 'inline'
-    if (page.fields) page.fields.credentialSuffix = inline.replace(/^, /, '')
-  })
-}
-
 function applyPrintAddressPlaceholder(productPlan, details) {
   var address = details && details.address
   productPlan.pages.forEach(function (page) {
@@ -290,13 +277,19 @@ function applyPrintAddressPlaceholder(productPlan, details) {
 export async function buildPrintPdfBytes(details, language, opts) {
   var snapshot = snapshotCardDetails(details)
   var measureFonts = await loadLayoutFonts()
-  var productPlan = planProductLayout(snapshot, language, measureFonts)
-  applyPrintCredentialPlaceholder(productPlan, snapshot)
-  applyPrintAddressPlaceholder(productPlan, snapshot)
+  // Real sample cards (short-long-examples.json) pass placeholders: false to skip C.M. / sample address.
+  var placeholders = !opts || opts.placeholders !== false
+  // With no credential chosen, the sample C.M. is planned like a real token: after the
+  // name when it fits, otherwise on its own row (never clipped at the column edge).
+  var planDetails = placeholders ? withSampleCredential(snapshot, language) : snapshot
+  var productPlan = planProductLayout(planDetails, language, measureFonts)
+  if (placeholders) applyPrintAddressPlaceholder(productPlan, snapshot)
+  var faceTitles = cardFaceTitles(snapshot, language)
   productPlan.pages.forEach(function (page) {
     page.layout = applyPreviewTitleRegionSplit(
       applyEmptyTeamIdentityLayout(page.layout),
-      measureFonts
+      measureFonts,
+      { faceTitles: faceTitles }
     )
   })
   if (opts && typeof opts.adjustPlan === 'function') opts.adjustPlan(productPlan)
@@ -330,7 +323,8 @@ var lastPrintPdfUrl = ''
 
 export async function viewPrintPdf(details, language) {
   var snapshot = snapshotCardDetails(details)
-  var bytes = await buildPrintPdfBytes(snapshot, language)
+  // Customize / Proof print must not inject preview samples (C.M., fake address).
+  var bytes = await buildPrintPdfBytes(snapshot, language, { placeholders: false })
   var blob = new Blob([bytes], { type: 'application/pdf' })
   if (lastPrintPdfUrl) {
     try {

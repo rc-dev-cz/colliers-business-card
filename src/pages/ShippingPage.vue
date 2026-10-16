@@ -64,17 +64,17 @@
                 {{ t('noItemsSelected') }}
               </div>
               <ul
-                class="js-cart-sortable relative z-10 min-h-[8rem] space-y-3"
+                class="js-cart-sortable relative z-10 min-h-[8rem] space-y-4"
                 :data-split-id="split.id"
               >
                 <li
                   v-for="line in linesInSplit(split)"
                   :key="line.id"
                   :data-line-id="line.id"
-                  class="flex items-start gap-3 rounded-md outline-none"
+                  class="flex items-center gap-4 rounded-md outline-none"
                 >
                   <div
-                    class="drag-handle mt-2 flex shrink-0 cursor-grab touch-none items-center justify-center rounded p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600 active:cursor-grabbing"
+                    class="drag-handle flex shrink-0 cursor-grab touch-none items-center justify-center rounded p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600 active:cursor-grabbing"
                     role="button"
                     tabindex="0"
                     :aria-label="t('reorderItem')"
@@ -118,9 +118,14 @@
                           {{ lineName(line) }}
                         </div>
                       </div>
-                      <div v-if="(split.locations || []).length" class="shrink-0 pt-0.5 text-right">
-                        <div class="text-sm font-medium tabular-nums text-gray-900">
-                          {{ boxLabel(splitLineQty(split, line)) }}
+                      <div class="shrink-0 pt-0.5 text-right">
+                        <div
+                          class="text-sm font-medium tabular-nums"
+                          :class="
+                            (split.locations || []).length ? 'text-gray-900' : 'text-gray-400'
+                          "
+                        >
+                          {{ boxLabel(assignedLineQty(split, line)) }}
                         </div>
                         <div class="mt-0.5 text-xs tabular-nums text-gray-500">
                           {{ lineCards(split, line) }} {{ t('cards') }}
@@ -193,21 +198,30 @@
               </div>
               <div class="js-add-item-menu relative">
                 <div
-                  v-if="addItemMenuIndex === splitIndex && cartLinesOutsideSplit(split).length"
+                  v-if="addItemMenuIndex === splitIndex"
                   class="absolute bottom-full right-0 z-20 mb-2 w-[22rem] max-w-[calc(100vw-3rem)] overflow-hidden rounded-md border border-gray-200 bg-white shadow-lg"
                 >
                   <ul class="max-h-64 overflow-y-auto py-1">
+                    <li>
+                      <button
+                        type="button"
+                        class="block w-full border-b border-gray-100 px-3 py-2 text-left text-sm font-medium text-colliers-primary hover:bg-gray-100"
+                        @click="onAddNewCard(split)"
+                      >
+                        {{ t('addNewCard') }}
+                      </button>
+                    </li>
                     <li v-for="line in cartLinesOutsideSplit(split)" :key="line.id">
                       <button
                         type="button"
                         class="block w-full px-3 py-2 text-left text-sm text-gray-800 hover:bg-gray-100"
                         @click="onAddCartLine(split, line.id)"
                       >
-                        <span class="block font-medium">{{
+                        <span class="block truncate font-medium">{{
                           personName(line) || lineName(line)
                         }}</span>
-                        <span class="block truncate text-gray-500">{{
-                          personName(line) ? lineName(line) : t('qty') + ' ' + line.quantity
+                        <span v-if="personName(line)" class="block truncate text-gray-500">{{
+                          lineName(line)
                         }}</span>
                       </button>
                     </li>
@@ -332,6 +346,13 @@
                 </li>
               </ul>
             </div>
+            <p
+              v-if="String(mergedSplitId) === String(split.id)"
+              class="mt-3 text-sm text-gray-600"
+              role="status"
+            >
+              {{ t('addressMerged') }}
+            </p>
 
             <div class="relative mt-auto border-t border-gray-200 pt-4">
               <div class="flex flex-wrap items-center justify-end gap-3">
@@ -369,7 +390,8 @@
           <div
             v-for="slot in previewSlots(previewLine)"
             :key="slot.language"
-            class="card-preview-frame mx-auto max-w-[480px]"
+            class="card-preview-frame mx-auto"
+            :style="previewFrameStyle(previewSlots(previewLine).length)"
           >
             <card-preview
               :details="slot.details"
@@ -384,6 +406,7 @@
 </template>
 
 <script>
+import { cardPreviewSlots, previewFrameStyle } from '../helpers/previewModal'
 import Sortable from 'sortablejs'
 import ColliersPageShell from '../layout/ColliersPageShell.vue'
 import AppButton from '../components/AppButton.vue'
@@ -392,8 +415,6 @@ import AppModal from '../components/AppModal.vue'
 import LocationModal from '../components/LocationModal.vue'
 import { productNameKey } from '../i18n/messages'
 import { catalogCodeFromLine } from '../data/products'
-import { isBilingualLanguage } from '../helpers/formatCardIdentity'
-import { bilingualFrenchPreviewDetails } from '../helpers/titleLocale'
 import {
   createLocation,
   boxesPerAddressForSplit,
@@ -453,6 +474,8 @@ export default {
       modalSplitIndex: null,
       addItemMenuIndex: null,
       previewLine: null,
+      mergedSplitId: null,
+      mergedTimer: null,
     }
   },
   computed: {
@@ -499,6 +522,7 @@ export default {
     this.bindSortables()
   },
   beforeDestroy: function () {
+    if (this.mergedTimer) clearTimeout(this.mergedTimer)
     this.destroySortables()
     document.removeEventListener('click', this.onDocClick, true)
     var host = this.$refs.previewHost
@@ -542,6 +566,10 @@ export default {
     splitLineQty: function (split, line) {
       return readSplitQty(split, line)
     },
+    // Nothing ships until the split has an address, so show 0 instead of the stored qty.
+    assignedLineQty: function (split, line) {
+      return (split.locations || []).length ? this.splitLineQty(split, line) : 0
+    },
     maxQty: function (split, line) {
       return maxItemQty(split, store.cart, line && line.id)
     },
@@ -564,7 +592,7 @@ export default {
       return n + ' ' + (n === 1 ? t('box') : t('boxes'))
     },
     lineCards: function (split, line) {
-      return cardsFromBoxes(this.splitLineQty(split, line))
+      return cardsFromBoxes(this.assignedLineQty(split, line))
     },
     locationCards: function (split, loc) {
       return cardsFromBoxes(this.locationBoxes(split, loc))
@@ -575,16 +603,8 @@ export default {
     orderCards: function () {
       return cardsFromBoxes(this.orderBoxes())
     },
-    previewSlots: function (line) {
-      var details = line.details || {}
-      if (isBilingualLanguage(line.language)) {
-        return [
-          { language: 'English', details: details },
-          { language: 'French', details: bilingualFrenchPreviewDetails(details) },
-        ]
-      }
-      return [{ language: line.language, details: details }]
-    },
+    previewFrameStyle: previewFrameStyle,
+    previewSlots: cardPreviewSlots,
     openPreview: function (line) {
       this.previewLine = line
     },
@@ -616,10 +636,9 @@ export default {
       this.addItemMenuIndex = null
     },
     onAddItem: function (split, splitIndex) {
-      if (cartLinesOutsideSplit(split).length) {
-        this.addItemMenuIndex = this.addItemMenuIndex === splitIndex ? null : splitIndex
-        return
-      }
+      this.addItemMenuIndex = this.addItemMenuIndex === splitIndex ? null : splitIndex
+    },
+    onAddNewCard: function (split) {
       this.addItemMenuIndex = null
       addCartItemToSplit(split)
     },
@@ -691,6 +710,15 @@ export default {
         this.addItemMenuIndex = null
       }
     },
+    flashAddressMerged: function (splitId) {
+      var self = this
+      if (this.mergedTimer) clearTimeout(this.mergedTimer)
+      this.mergedSplitId = splitId
+      this.mergedTimer = setTimeout(function () {
+        self.mergedSplitId = null
+        self.mergedTimer = null
+      }, 5000)
+    },
     destroySortables: function () {
       this.sortables.forEach(function (instance) {
         instance.destroy()
@@ -716,7 +744,7 @@ export default {
               var fromId = evt.from && evt.from.getAttribute('data-split-id')
               if (!lineId || !toId) return
               if (String(fromId) === String(toId) && evt.oldIndex === evt.newIndex) return
-              moveLineToSplit(lineId, toId, evt.newIndex)
+              moveLineToSplit(lineId, toId, evt.newIndex, fromId)
             },
           })
         )
@@ -740,7 +768,7 @@ export default {
               var fromId = evt.from && evt.from.getAttribute('data-split-id')
               if (!locId || !toId) return
               if (String(fromId) === String(toId) && evt.oldIndex === evt.newIndex) return
-              moveLocationToSplit(locId, toId, evt.newIndex)
+              if (moveLocationToSplit(locId, toId, evt.newIndex)) self.flashAddressMerged(toId)
             },
           })
         )

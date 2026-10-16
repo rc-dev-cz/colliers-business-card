@@ -38,7 +38,11 @@ describe('printPdf', function () {
       },
     })
     expect(captured.team).toBe('')
-    expect(captured.titleY).toBe(CARD_LAYOUT.teamYNoCred)
+    // Region takes the closed team row; title sits one body line above it.
+    expect(captured.title).toBe('Associate')
+    expect(captured.regionLine).toBe('Ontario')
+    expect(captured.regionY).toBe(CARD_LAYOUT.teamYNoCred)
+    expect(captured.titleY).toBe(CARD_LAYOUT.titleYNoCred)
     expect(captured.emailY).toBe(43)
     expect(captured.phoneY).toBe(35)
     expect(captured.websiteY).toBe(27)
@@ -61,6 +65,43 @@ describe('printPdf', function () {
       'English'
     )
     expect(bytes.byteLength).toBeGreaterThan(500)
+  })
+
+  it('omits the C.M. sample when placeholders are off', async function () {
+    var captured
+    await buildPrintPdfBytes(base, 'English', {
+      placeholders: false,
+      adjustPlan: function (plan) {
+        captured = plan.pages[0].layout
+      },
+    })
+    expect(captured.inlineCredential).toBe('')
+    expect(captured.credentialLine).toBe('')
+  })
+
+  it('viewPrintPdf does not inject C.M. for a real order with no degrees', async function () {
+    var captured
+    await buildPrintPdfBytes(
+      {
+        name: 'Ada Lovelace',
+        title: 'Project Manager',
+        degree: [],
+        additionalCredentials: '',
+        email: 'ada.lovelace@colliersprojectleaders.com',
+        phone: '4165550100',
+        address: 'Suite 100\n100 Main Street\nToronto, ON\nA1A 1A1 Canada',
+      },
+      'English',
+      {
+        placeholders: false,
+        adjustPlan: function (plan) {
+          captured = plan.pages[0].layout
+        },
+      }
+    )
+    expect(captured.inlineCredential).toBe('')
+    expect(captured.credentialLine).toBe('')
+    expect(String(captured.nameLines && captured.nameLines.join(' '))).not.toMatch(/C\.M\./)
   })
 
   it('keeps the C.M. sample and comma when no credential is entered', function () {

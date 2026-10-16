@@ -3,21 +3,8 @@ import { MOCK_OFFICES } from '../data/offices.js'
 
 export { MOCK_OFFICES }
 
-export const COLLIERS_API_HOST = 'https://colliers-dev-rc.clientportal.cloud'
-
-const FETCH_TIMEOUT_MS = 10000
-
-function isDev() {
-  try {
-    return Boolean(import.meta.env && import.meta.env.DEV)
-  } catch {
-    return false
-  }
-}
-
-function apiBase() {
-  return isDev() ? '/api' : COLLIERS_API_HOST + '/api'
-}
+// Offices come from the local managed list (Manage Addresses) until the FileMaker
+// hook supplies them. No GET to the old /api host.
 
 function field(address, camel, snake) {
   return String(
@@ -81,47 +68,6 @@ export function officeLabel(address) {
   const name = field(address, 'addressName', 'address_name')
   const line = formatAddressLine(address)
   return [name, line].filter(Boolean).join(' — ')
-}
-
-async function fetchJson(url) {
-  const controller = typeof AbortController === 'function' ? new AbortController() : null
-  const timer = setTimeout(function () {
-    if (controller) controller.abort()
-  }, FETCH_TIMEOUT_MS)
-  try {
-    const response = await fetch(url, {
-      method: 'GET',
-      headers: { Accept: 'application/json' },
-      signal: controller ? controller.signal : undefined,
-    })
-    if (!response.ok) {
-      throw new Error('HTTP ' + response.status + ' ' + response.statusText)
-    }
-    return await response.json()
-  } catch (error) {
-    if (error && error.name === 'AbortError') {
-      throw new Error('Request timed out after ' + FETCH_TIMEOUT_MS / 1000 + 's')
-    }
-    throw error
-  } finally {
-    clearTimeout(timer)
-  }
-}
-
-export async function fetchOffices() {
-  try {
-    const body = await fetchJson(apiBase() + '/addresses')
-    if (!body || body.success !== true || !Array.isArray(body.data)) {
-      throw new Error('Invalid addresses response')
-    }
-    return { data: body.data, source: 'api', error: '' }
-  } catch (error) {
-    return {
-      data: MOCK_OFFICES.slice(),
-      source: 'mock',
-      error: error && error.message ? error.message : 'Unable to load office addresses.',
-    }
-  }
 }
 
 export async function fetchTitles() {

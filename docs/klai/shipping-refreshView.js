@@ -306,10 +306,6 @@ if (typeof app !== 'undefined') collectDetached(app.order)
 var hasVisible = splits.some(function (split) {
   return split.itemIds && split.itemIds.length
 })
-if (!hasVisible && cart.length) {
-  detachedIds = []
-  skipAssign = {}
-}
 cart.forEach(function (line) {
   if (skipAssign[String(line.id)]) return
   var assigned = splits.some(function (split) {
@@ -609,8 +605,15 @@ function bindCartSortables() {
           var item = evt.item
           var movedId = item && item.getAttribute('data-line-id')
           var toId = evt.to && evt.to.getAttribute('data-split-id')
+          var fromId = evt.from && evt.from.getAttribute('data-split-id')
           if (!movedId || !toId) return
-          BF.namedAction('moveLine', { lineId: movedId, splitId: toId, newIndex: evt.newIndex })
+          if (String(fromId) === String(toId) && evt.oldIndex === evt.newIndex) return
+          BF.namedAction('moveLine', {
+            lineId: movedId,
+            splitId: toId,
+            fromSplitId: fromId,
+            newIndex: evt.newIndex,
+          })
         },
       })
     )

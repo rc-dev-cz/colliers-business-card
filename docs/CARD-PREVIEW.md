@@ -5,7 +5,7 @@
 **Source in code today:** `src/components/CardPreview.vue` (responsive stand-in only)  
 **Related:** [BUSINESS-RULES.md](BUSINESS-RULES.md) §4 · `USR-031` live preview · `USR-095` View order card preview
 
-**Title / region split (Oct 2026):** When `Title | Region` does not fit **141.52 pt** but each part fits alone, preview and print stack region under the title (no `|`) and lift the identity block one body line — valid, not an error. Bilingual Customize lists **English** titles; EN face shows the selection; FR face uses `titleLocale` EN→FR pairs, or the long placeholder **Titre à compléter — équivalent français requis** when unmapped.
+**Title / region split (Oct 2026):** Region never shares the title line, so bilingual EN and FR faces mirror. With a specialized team, preview and print show `Team | Region`; with no team, region stacks under the title (no `|`) and the identity block lifts one body line. Only when `Team | Region` overflows **141.52 pt** does the approved `Title | Region` line come back (if it fits). Bilingual Customize lists **English** titles; EN face shows the selection; FR face uses `titleLocale` EN→FR pairs, or the long placeholder **Titre à compléter — équivalent français requis** when unmapped.
 
 ---
 

@@ -415,14 +415,41 @@ export function unassignItem(order, itemId) {
   })
 }
 
-export function moveItem(order, itemId, toSplitId, newIndex) {
-  const target = order.splits.find(function (row) {
-    return String(row.id) === String(toSplitId)
+function findSplit(order, splitId) {
+  return (order.splits || []).find(function (row) {
+    return String(row.id) === String(splitId)
   })
+}
+
+/**
+ * Drag a card between or within shipping groups. Groups are independent: the same
+ * card can ship in several groups, so only the source and target groups change.
+ * Without `fromSplitId` the card leaves every other group (legacy behaviour).
+ */
+export function moveItem(order, itemId, toSplitId, newIndex, fromSplitId) {
+  const target = findSplit(order, toSplitId)
   if (!target) return
-  assignItem(order, target, itemId)
-  if (newIndex == null || newIndex === '') return
   var id = String(itemId)
+  var source = fromSplitId != null && fromSplitId !== '' ? findSplit(order, fromSplitId) : null
+  if (!source) {
+    assignItem(order, target, itemId)
+  } else if (source !== target) {
+    var hadQty = source.qtys && source.qtys[id] != null
+    var movedQty = hadQty ? source.qtys[id] : null
+    Vue.set(
+      source,
+      'itemIds',
+      (source.itemIds || []).filter(function (x) {
+        return String(x) !== id
+      })
+    )
+    if (source.qtys && source.qtys[id] != null) Vue.delete(source.qtys, id)
+    var alreadyThere = (target.itemIds || []).map(String).indexOf(id) !== -1
+    includeItem(order, target, id)
+    // Keep the boxes the card had in its old group unless the target already had it.
+    if (hadQty && !alreadyThere) writeSplitQty(target, { id: id }, movedQty)
+  }
+  if (newIndex == null || newIndex === '') return
   var ids = target.itemIds || []
   var at = ids.map(String).indexOf(id)
   if (at === -1) return
@@ -433,6 +460,19 @@ export function moveItem(order, itemId, toSplitId, newIndex) {
   ids.splice(idx, 0, row)
 }
 
+/** Same ship-to address, ignoring case and extra spaces. */
+function addressKey(address) {
+  return String(address || '')
+    .trim()
+    .replace(/\s+/g, ' ')
+    .toLowerCase()
+}
+
+/**
+ * Drag an address between or within groups. If the target group already ships to
+ * the same address, the boxes are added to that row instead of listing it twice.
+ * Returns the row that now holds the address (the existing one when merged).
+ */
 export function moveLocation(order, locId, toSplitId, newIndex) {
   var id = String(locId || '')
   if (!id) return null
@@ -453,6 +493,16 @@ export function moveLocation(order, locId, toSplitId, newIndex) {
   })
   if (!moved) return null
   target.locations = target.locations || []
+  var key = addressKey(moved.address)
+  var twin = key
+    ? target.locations.find(function (loc) {
+        return addressKey(loc && loc.address) === key
+      })
+    : null
+  if (twin) {
+    twin.qty = (Number(twin.qty) || 0) + (Number(moved.qty) || 0)
+    return twin
+  }
   var idx = newIndex == null || newIndex === '' ? target.locations.length : Number(newIndex)
   if (isNaN(idx) || idx < 0) idx = target.locations.length
   if (idx > target.locations.length) idx = target.locations.length

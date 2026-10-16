@@ -18,7 +18,9 @@
         {{ t(statusMessageKey) }}
       </p>
 
-      <div class="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
+      <div
+        class="colliers-list-panel--viewport overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm"
+      >
         <nav
           class="flex gap-6 border-b border-gray-200 px-5 pt-4"
           :aria-label="t('addressBookTabsAria')"
@@ -68,20 +70,26 @@
           :message="store.officesError"
         ></error-state>
 
-        <div v-else class="overflow-x-auto">
+        <div v-else class="colliers-list-panel-scroll overflow-x-auto">
           <table class="min-w-full text-left text-sm">
             <thead
-              class="border-b border-gray-200 bg-gray-50 text-xs font-medium uppercase tracking-wide text-gray-500"
+              class="sticky top-0 z-10 border-b border-gray-200 bg-gray-50 text-xs font-medium uppercase tracking-wide text-gray-500"
             >
               <tr>
                 <th class="w-48 px-4 py-3 sm:w-56">{{ t('locationName') }}</th>
                 <th class="px-4 py-3">{{ t('address') }}</th>
-                <th class="w-40 px-4 py-3 text-right">{{ t('actions') }}</th>
+                <th class="w-40 px-4 py-3 sm:w-48">{{ t('city') }}</th>
+                <th v-if="activeTab === 'personal'" class="w-40 px-4 py-3 text-right">
+                  {{ t('actions') }}
+                </th>
               </tr>
             </thead>
             <tbody>
               <tr v-if="!activeRows.length">
-                <td colspan="3" class="px-4 py-10 text-center text-sm italic text-gray-500">
+                <td
+                  :colspan="activeTab === 'personal' ? 4 : 3"
+                  class="px-4 py-10 text-center text-sm italic text-gray-500"
+                >
                   {{ emptyListLabel }}
                 </td>
               </tr>
@@ -91,27 +99,27 @@
                 class="border-b border-gray-100 last:border-0"
               >
                 <td class="px-4 py-3 font-semibold text-gray-900">{{ row.addressName }}</td>
-                <td class="px-4 py-3 text-gray-700">{{ formatAddressLine(row) }}</td>
-                <td class="whitespace-nowrap px-4 py-3 text-right">
-                  <template v-if="activeTab === 'personal'">
-                    <button
-                      type="button"
-                      class="btn-primary-sm"
-                      :aria-label="t('edit')"
-                      @click="openEdit(row.id)"
-                    >
-                      {{ t('edit') }}
-                    </button>
-                    <span class="mx-2 text-gray-300">|</span>
-                    <button
-                      type="button"
-                      class="colliers-link-action colliers-link-action--danger"
-                      :aria-label="t('delete')"
-                      @click="confirmDelete(row.id)"
-                    >
-                      {{ t('delete') }}
-                    </button>
-                  </template>
+                <td class="px-4 py-3 text-gray-700">{{ streetLine(row) }}</td>
+                <td class="px-4 py-3 text-gray-700">{{ cityLine(row) }}</td>
+                <!-- Colliers offices are read-only here (edited in Manage Addresses) -->
+                <td v-if="activeTab === 'personal'" class="whitespace-nowrap px-4 py-3 text-right">
+                  <button
+                    type="button"
+                    class="btn-primary-sm"
+                    :aria-label="t('edit')"
+                    @click="openEdit(row.id)"
+                  >
+                    {{ t('edit') }}
+                  </button>
+                  <span class="mx-2 text-gray-300">|</span>
+                  <button
+                    type="button"
+                    class="colliers-link-action colliers-link-action--danger"
+                    :aria-label="t('delete')"
+                    @click="confirmDelete(row.id)"
+                  >
+                    {{ t('delete') }}
+                  </button>
                 </td>
               </tr>
             </tbody>
@@ -277,6 +285,13 @@ export default {
   methods: {
     t: t,
     formatAddressLine: formatAddressLine,
+    streetLine: function (row) {
+      const street = [row.addressStreet, row.addressStreet2].filter(Boolean).join(', ')
+      return street || formatAddressLine(row)
+    },
+    cityLine: function (row) {
+      return [row.addressCity, row.addressProvince].filter(Boolean).join(', ')
+    },
     clearStatusMessage: function () {
       this.statusMessageKey = null
     },

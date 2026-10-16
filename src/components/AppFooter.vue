@@ -4,7 +4,9 @@
       class="mx-auto flex max-w-6xl flex-col gap-4 px-4 py-8 text-[13px] text-gray-500 sm:flex-row sm:items-center sm:justify-between sm:px-6 sm:py-10"
     >
       <div class="flex flex-wrap items-center gap-x-5 gap-y-3">
-        <button type="button" class="hover:text-gray-800">{{ t('contactUs') }}</button>
+        <button type="button" class="hover:text-gray-800" @click="goContact">
+          {{ t('contactUs') }}
+        </button>
         <button type="button" class="hover:text-gray-800">{{ t('securityPrivacy') }}</button>
         <button type="button" class="hover:text-gray-800">{{ t('terms') }}</button>
       </div>
@@ -15,11 +17,15 @@
 
 <script>
 import { t } from '../store'
+import { go } from '../adapters/nav'
 
 export default {
   name: 'AppFooter',
   methods: {
     t: t,
+    goContact: function () {
+      go('contact-us')
+    },
   },
 }
 </script>

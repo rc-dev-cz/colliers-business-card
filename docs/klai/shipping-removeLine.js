@@ -39,7 +39,9 @@ orders.forEach(function (order) {
   })
 })
 
-var keepCartLine = Boolean(
+// Removing from a group never deletes the card from the cart.
+var keepCartLine = Boolean(splitId)
+var stillAssigned = Boolean(
   splitId &&
   orders.some(function (order) {
     return order.splits.some(function (split) {
@@ -72,6 +74,15 @@ if (!keepCartLine) {
         return id !== lineId
       })
     )
+  })
+}
+
+// Last group gone: keep the card in the cart, just take it off shipping.
+if (keepCartLine && !stillAssigned) {
+  orders.forEach(function (order) {
+    var list = (order.detachedIds || []).map(String)
+    if (list.indexOf(lineId) === -1) list.push(lineId)
+    setValue(order, 'detachedIds', list)
   })
 }
 

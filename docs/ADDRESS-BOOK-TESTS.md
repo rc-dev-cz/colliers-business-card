@@ -66,7 +66,7 @@ Write specs next to code:
 | Dependency                           | In these tests                                                   |
 | ------------------------------------ | ---------------------------------------------------------------- |
 | Session / login                      | Assume signed in                                                 |
-| `loadOffices` / `GET /api/addresses` | Put a small office list on `store.offices`; do not hit FileMaker |
+| `loadOffices` (local managed list, no API) | Put a small office list on `store.offices`; do not hit FileMaker |
 | `localStorage`                       | Cleared / isolated per test                                      |
 | `ColliersPageShell`                  | Stub the layout wrapper                                          |
 | `window.confirm`                     | Stub for delete cases                                            |

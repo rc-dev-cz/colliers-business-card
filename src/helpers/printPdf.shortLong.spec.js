@@ -25,7 +25,9 @@ describe('print PDF short / long from JSON', function () {
       var sample = samples[i]
       var language = sample.language || 'English'
       var file = sample.file || 'Colliers-Sample-' + (sample.id || i) + '.pdf'
-      var bytes = await buildPrintPdfBytes(sample.details || {}, language)
+      var bytes = await buildPrintPdfBytes(sample.details || {}, language, {
+        placeholders: sample.placeholders !== false,
+      })
       var doc = await PDFDocument.load(bytes)
       expect(doc.getPageCount()).toBeGreaterThanOrEqual(2)
       writeFileSync(join(outDir, file), Buffer.from(bytes))

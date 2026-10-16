@@ -6,6 +6,8 @@ import {
   clearCart,
   ensureCartAssignedToShipping,
   itemCount,
+  moveLineToSplit,
+  moveLocationToSplit,
   removeLine,
   removeLineFromSplit,
   removeShipLocation,
@@ -13,6 +15,7 @@ import {
   selectedShippingItemCount,
   setGroupLocationQty,
   splitOrder,
+  startShippingFromCart,
   store,
   subtotal,
   syncAssignments,
@@ -302,6 +305,49 @@ describe('shipping flow: cart, split groups, and boxes', function () {
     ).toEqual([offId])
   })
 
+  it('Continue to Shipping rebuilds one group with every card when shipping is empty', function () {
+    seedCart(2)
+    ensureCartAssignedToShipping()
+    splitOrder(0)
+    store.cart.forEach(function (line) {
+      store.order.splits.slice().forEach(function (split) {
+        removeLineFromSplit(split, line.id)
+      })
+    })
+    expect(store.order.splits.length).toBe(2)
+    expect(cartLinesNotShipping().length).toBe(2)
+
+    startShippingFromCart()
+
+    expect(itemCount()).toBe(2)
+    expect(store.order.splits.length).toBe(1)
+    expect(store.order.detachedIds).toEqual([])
+    expect(store.order.splits[0].itemIds).toEqual(
+      store.cart.map(function (line) {
+        return String(line.id)
+      })
+    )
+  })
+
+  it('Continue to Shipping keeps groups and off-shipping cards when something still ships', function () {
+    seedCart(2)
+    ensureCartAssignedToShipping()
+    splitOrder(0)
+    var offId = store.cart[0].id
+    store.order.splits.slice().forEach(function (split) {
+      removeLineFromSplit(split, offId)
+    })
+
+    startShippingFromCart()
+
+    expect(store.order.splits.length).toBe(2)
+    expect(
+      cartLinesNotShipping().map(function (line) {
+        return line.id
+      })
+    ).toEqual([offId])
+  })
+
   it('adding a not-shipping card back to a group puts it on shipping again', function () {
     seedCart(2)
     ensureCartAssignedToShipping()
@@ -419,5 +465,72 @@ describe('shipping flow: cart, split groups, and boxes', function () {
     // 2 lines × 5 boxes × unit price
     expect(billedBoxesCart(store.cart, store.order)).toBe(10)
     expect(subtotal()).toBe(10 * price)
+  })
+
+  it('reordering a card inside one group leaves the other groups alone', function () {
+    seedCart(2)
+    ensureCartAssignedToShipping()
+    splitOrder(0)
+    var first = store.order.splits[0]
+    var second = store.order.splits[1]
+    var a = String(store.cart[0].id)
+    var b = String(store.cart[1].id)
+    addCartLineToSplit(second, a)
+    addCartLineToSplit(second, b)
+    expect(first.itemIds.map(String)).toEqual([a, b])
+    expect(second.itemIds.map(String)).toEqual([a, b])
+
+    moveLineToSplit(b, second.id, 0, second.id)
+
+    expect(second.itemIds.map(String)).toEqual([b, a])
+    expect(first.itemIds.map(String)).toEqual([a, b])
+  })
+
+  it('dragging a card to another group takes it out of the source group only', function () {
+    seedCart(2)
+    ensureCartAssignedToShipping()
+    splitOrder(0)
+    splitOrder(1)
+    var groups = store.order.splits
+    var a = String(store.cart[0].id)
+    var b = String(store.cart[1].id)
+    // Split Order copies every card; trim to Group 1 [a, b], Group 2 [b], Group 3 [a].
+    removeLineFromSplit(groups[1], a)
+    removeLineFromSplit(groups[2], b)
+    expect(groups[1].itemIds.map(String)).toEqual([b])
+
+    moveLineToSplit(a, groups[1].id, 0, groups[0].id)
+
+    expect(groups[0].itemIds.map(String)).toEqual([b])
+    expect(groups[1].itemIds.map(String)).toEqual([a, b])
+    expect(groups[2].itemIds.map(String)).toEqual([a])
+  })
+
+  it('dropping an address on a group that already ships there combines the boxes', function () {
+    seedCart(1)
+    ensureCartAssignedToShipping()
+    splitOrder(0)
+    var first = store.order.splits[0]
+    var second = store.order.splits[1]
+    addShipLocation(first, 'Office A', 1)
+    addShipLocation(first, 'Office B', 1)
+    addShipLocation(second, 'Office B', 2)
+    var moving = first.locations[1]
+
+    var merged = moveLocationToSplit(moving.id, second.id, 0)
+
+    expect(merged).toBe(true)
+    expect(
+      second.locations.map(function (loc) {
+        return loc.address
+      })
+    ).toEqual(['Office B'])
+    expect(second.locations[0].qty).toBe(3)
+    expect(
+      first.locations.map(function (loc) {
+        return loc.address
+      })
+    ).toEqual(['Office A'])
+    expect(moveLocationToSplit(first.locations[0].id, second.id, 0)).toBe(false)
   })
 })
