@@ -59,9 +59,10 @@ function emailLocalPart(value) {
 
 /**
  * firstname.lastname@colliersprojectleaders.com once the name has a first and last part.
- * Returns '' until then. The domain is kept intact if the local part must be shortened.
+ * Returns '' until then. The domain is kept intact if the local part must be shortened,
+ * both for EMAIL_MAX and, when `fits` is given, for the printed email line.
  */
-export function emailFromFullName(name) {
+export function emailFromFullName(name, fits) {
   var parts = String(name || '')
     .trim()
     .split(/\s+/)
@@ -74,6 +75,9 @@ export function emailFromFullName(name) {
   var local = first + '.' + last
   var maxLocal = EMAIL_MAX - domain.length
   if (local.length > maxLocal) local = local.slice(0, maxLocal).replace(/\.+$/, '')
+  if (typeof fits === 'function') {
+    while (local && !fits(local + domain)) local = local.slice(0, -1).replace(/\.+$/, '')
+  }
   if (!local || local.charAt(0) === '.') return ''
   return local + domain
 }
@@ -88,7 +92,7 @@ export function formatCanadianLocal(digits) {
   const source = String(digits || '')
   if (source.length <= 3) return source
   if (source.length <= 6) return source.slice(0, 3) + ' ' + source.slice(3)
-  return source.slice(0, 3) + ' ' + source.slice(3, 6) + '-' + source.slice(6)
+  return source.slice(0, 3) + ' ' + source.slice(3, 6) + ' ' + source.slice(6)
 }
 
 /** Card preview / PDF: Canadian 10-digit local, spaced, no country code. */
@@ -97,8 +101,7 @@ export function formatCardPhone(value) {
   var cleaned = String(value).replace(/\D/g, '')
   var local = cleaned
   if (cleaned.length === 11 && cleaned.charAt(0) === '1') local = cleaned.slice(1)
-  // Card style is spaces only. A partial number keeps the same grouping, never the
-  // form's "416 555-1234" hyphen.
+  // Spaces only, same as the Mobile field ("416 555 1234"); a partial number keeps the grouping.
   return [local.slice(0, 3), local.slice(3, 6), local.slice(6)].filter(Boolean).join(' ')
 }
 

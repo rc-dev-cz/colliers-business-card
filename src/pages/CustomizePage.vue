@@ -59,6 +59,7 @@
               :label="t('fullName')"
               :value="details.name"
               :maxlength="NAME_MAX"
+              :error="nameFieldError"
               name="name"
               autocomplete="name"
               required
@@ -190,6 +191,8 @@ import {
   LAYOUT_ERROR,
   credentialsFitOnCard,
   layoutErrorMessage,
+  emailFitsOnCard,
+  nameFitsOnCard,
   planProductLayout,
   teamFitsOnCard,
 } from '../helpers/cardLayout'
@@ -305,6 +308,13 @@ export default {
       var email = String(this.details.email || '').trim()
       if (this.emailTouched && email && !isValidEmail(email)) return t('emailInvalid')
       return ''
+    },
+    nameFieldError: function () {
+      if (this.credentialSpaceRejected && this.credentialNoticeField === 'name') {
+        return t('nameNoSpace')
+      }
+      if (this.layoutErrorCode !== LAYOUT_ERROR.name) return ''
+      return this.layoutError
     },
     teamFieldError: function () {
       if (this.credentialSpaceRejected && this.credentialNoticeField === 'team') {
@@ -448,10 +458,26 @@ export default {
       if (String(this.details.titleFr || '').trim()) return
       this.details.titleFr = suggestFrenchTitle(this.details.title)
     },
-    onName: function (value) {
-      this.details.name = clipName(value)
+    onName: function (value, event) {
+      var current = String(this.details.name || '')
+      var next = clipName(value)
+      var fonts = this.layoutFonts
+      if (!nameFitsOnCard(next, fonts) && next.length >= current.length) {
+        // Typing or pasting past two lines: keep what still fits and say why.
+        while (next.length > current.length && !nameFitsOnCard(next, fonts))
+          next = next.slice(0, -1)
+        this.flashCredentialNotice('name')
+        if (event && event.target) event.target.value = next
+      } else if (this.credentialNoticeField === 'name') {
+        this.clearCredentialNotice()
+      }
+      this.details.name = next
       if (this.emailEdited) return
-      this.details.email = emailFromFullName(this.details.name)
+      // The suggested email is shortened to fit its card line, so a long name never
+      // leaves an email the card cannot print.
+      this.details.email = emailFromFullName(next, function (email) {
+        return emailFitsOnCard(email, fonts)
+      })
     },
     flashCredentialNotice: function (field) {
       this.credentialNoticeField = field

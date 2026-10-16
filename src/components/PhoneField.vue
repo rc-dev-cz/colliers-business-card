@@ -31,7 +31,7 @@ export default {
     hint: { type: String, default: '' },
     error: { type: String, default: '' },
     required: { type: Boolean, default: false },
-    placeholder: { type: String, default: '416 555-1234' },
+    placeholder: { type: String, default: '416 555 1234' },
   },
   computed: {
     display: function () {

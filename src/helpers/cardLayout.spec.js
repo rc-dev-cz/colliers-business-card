@@ -11,6 +11,8 @@ import {
   applyEmptyTeamIdentityLayout,
   applyPreviewTitleRegionSplit,
   cardFaceTitles,
+  emailFitsOnCard,
+  nameFitsOnCard,
   resolveCardFields,
   teamFitsOnCard,
   titleSizeFor,
@@ -702,5 +704,19 @@ describe('bilingual region fallback', function () {
     })
     expect(views[0].regionLine).toBe('Ontario')
     expect(views[1].regionLine).toBe('Ontario')
+  })
+})
+
+describe('nameFitsOnCard and emailFitsOnCard', function () {
+  it('accepts names up to two lines and rejects a word wider than the column', function () {
+    expect(nameFitsOnCard('Christopher Harrington-Wellington', fonts)).toBe(true)
+    expect(nameFitsOnCard('sdfasdfasdfsadf sadfasdfsadasdfasdfsdfsdadasdasdas', fonts)).toBe(false)
+  })
+
+  it('matches the planner on the email line', function () {
+    var long = 'asdasdasdasdasd.asdasd@colliersprojectleaders.com'
+    expect(emailFitsOnCard('ada@colliersprojectleaders.com', fonts)).toBe(true)
+    expect(emailFitsOnCard(long, fonts)).toBe(false)
+    expect(plan({ email: long }).errors).toContain(LAYOUT_ERROR.email)
   })
 })

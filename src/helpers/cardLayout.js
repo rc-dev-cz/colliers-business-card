@@ -348,6 +348,21 @@ export function packCredentials(fontBold, lastNameLine, credText, L) {
   return { mode: 'split', inline: inline, row: row }
 }
 
+/** Name wraps by whole words onto at most two lines of the identity column. */
+export function nameFitsOnCard(name, fonts) {
+  var text = String(name || '').trim()
+  if (!text || !fonts || !fonts.fontBold) return true
+  var wrap = wrapByWords(fonts.fontBold, text, CARD_LAYOUT.nameSize, CARD_LAYOUT.identityWidth)
+  return wrap.ok && wrap.lines.length <= CARD_LAYOUT.nameMaxLines
+}
+
+/** Email prints on one line of the email lane. */
+export function emailFitsOnCard(email, fonts) {
+  var text = String(email || '').trim()
+  if (!text || !fonts || !fonts.font) return true
+  return fitsLine(fonts.font, text, CARD_LAYOUT.bodySize, CARD_LAYOUT.emailMaxWidth)
+}
+
 /** Whether all selected degrees + additional credentials fit the two credential lanes. */
 export function credentialsFitOnCard(details, fonts, language) {
   if (!fonts || !fonts.fontBold) return true

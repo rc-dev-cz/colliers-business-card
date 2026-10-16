@@ -101,3 +101,23 @@ describe('isValidEmail', function () {
     })
   })
 })
+
+describe('emailFromFullName with a fit check', function () {
+  it('shortens the local part until the email fits, keeping the domain', function () {
+    var fits = function (email) {
+      return email.length <= 40
+    }
+    var email = emailFromFullName('Christopher Harrington-Wellington', fits)
+    expect(email.length).toBeLessThanOrEqual(40)
+    expect(email.endsWith('@colliersprojectleaders.com')).toBe(true)
+    expect(email.startsWith('christopher.')).toBe(true)
+  })
+
+  it('leaves a short email unchanged', function () {
+    expect(
+      emailFromFullName('Ada Lovelace', function () {
+        return true
+      })
+    ).toBe('ada.lovelace@colliersprojectleaders.com')
+  })
+})
