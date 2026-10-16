@@ -3,9 +3,10 @@
 Place Order on Review runs named action `submitOrder`:
 
 1. `review-submitOrder.js` builds `model.orderPayload` (same shape as Vue `src/helpers/orderPayload.js`)
-2. `review-buildPrintPdfs.js` builds one print-ready PDF per ordered card and adds it to every item as
-   `print_pdf_file_name` + `print_pdf_base64` (Vue: `src/helpers/orderPdfs.js`). A card that cannot be printed
-   stops the order with a readable error and nothing is sent.
+2. `review-buildPrintPdfs.js` builds one print-ready PDF per ordered card and keeps its base64 in
+   localStorage `colliers-print-pdfs` (Vue: `colliers-v2.printPdfs`, `src/helpers/orderPdfs.js`), last 3 orders,
+   keyed by `order.date`. It is **not** part of the order request (sending ~210 000 characters per card in the
+   same request broke Place Order). A PDF problem never blocks the order.
 3. `runUtilityHook` `{ type: "submit", modelFilterKeys: ["cart", "order", "orderPayload"] }`
 4. JS: if `submitError` is empty → console "Order confirmed" → `/confirmed`
 
@@ -27,8 +28,6 @@ Shipment addresses go to `sync_BR_order_group_shipment_addresses` (see Order Gro
     "items": [{
       "line_ref": "line-1", "product_code": "BCAD-PL-ENG", "catalogue_id": null, "language": "English",
       "qty": 2, "cards": 500, "unit_price": 63, "price": 126,
-      "print_pdf_file_name": "Colliers-Business-Card-Firstname_Lastname-line-1.pdf",
-      "print_pdf_base64": "JVBERi0xLjcK…",
       "card": { "name": "Firstname Lastname", "title": "Associate", "title_fr": null, "degrees": [],
                 "additional_credentials": null, "region": null, "specialized_team": null,
                 "email": "first.lastname@colliersprojectleaders.com", "phone": "555 555 5555",
@@ -55,9 +54,10 @@ Notes:
   `address` object is always sent, so the shipment address can be created either way.
 - `boxes_per_item`: boxes of **each** item in that group sent to that address (Shipping box picker).
 - Blank text is `null`, money is a number rounded to cents.
-- `print_pdf_base64` is the whole print file (3.75 x 2.25 in with bleed; bilingual cards have EN + FR faces and the
-  blue back). About 210 000 characters per card, so an order of 10 cards is roughly 2 MB of JSON.
-  The same card shipped to several groups carries the same PDF. The console log shows it as `<base64 N chars>`.
+- Print PDFs (base64, about 210 000 characters per card, 3.75 x 2.25 in with bleed; bilingual cards have EN + FR
+  faces and the blue back) are saved in the browser by line id: `{ "<order.date>": { "<line_ref>": { "file_name", "base64" } } }`.
+  To get them into FileMaker without enlarging the order request, send them in a second request per card after the
+  order exists (Base64Decode into the container field).
 
 ## Script draft
 
@@ -91,9 +91,8 @@ Loop
   Commit Records ; Set Variable [ $groupId ; store_BFUsers_order_group::id ]
 
   # items[] → store_BFUsers_order_group_items (product_code, catalogue_id, group_id, qty, unit_price, price, card JSON)
-  #   Print PDF into the container field:
-  #   Set Field [ store_BFUsers_order_group_items::print_pdf ;
-  #               Base64Decode ( JSONGetElement ( $item ; "print_pdf_base64" ) ; JSONGetElement ( $item ; "print_pdf_file_name" ) ) ]
+  #   Print PDF (separate request, see notes): Set Field [ store_BFUsers_order_group_items::print_pdf ;
+  #               Base64Decode ( $base64 ; $fileName ) ]
   # locations[] → store_BFUsers_order_group_shipment (group_id, location_id, boxes_per_item)
   #             → shipment_addresses (address_name, address_contact, street_1, street_2, city, province, postal_code, country)
   #   If location_id is null: create/match the address record first, then use its id.

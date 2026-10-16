@@ -179,23 +179,6 @@ export function buildOrderPayload(input) {
 }
 
 /** One console block the backend can read when Place Order succeeds. */
-/** Console copy without the long base64 PDFs. Returns the payload itself when it has none. */
-function withoutPdfData(payload) {
-  var hasPdf = (payload.groups || []).some(function (group) {
-    return (group.items || []).some(function (item) {
-      return item.print_pdf_base64
-    })
-  })
-  if (!hasPdf) return payload
-  return JSON.parse(
-    JSON.stringify(payload, function (key, value) {
-      return key === 'print_pdf_base64' && typeof value === 'string'
-        ? '<base64 ' + value.length + ' chars>'
-        : value
-    })
-  )
-}
-
 export function logOrderPayload(orderId, payload, logger) {
   var out = logger || console
   var order = payload.order
@@ -210,6 +193,6 @@ export function logOrderPayload(orderId, payload, logger) {
       order.total_items.toFixed(2) +
       ' ' +
       order.currency,
-    withoutPdfData(payload)
+    payload
   )
 }

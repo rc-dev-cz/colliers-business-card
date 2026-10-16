@@ -1,10 +1,11 @@
 import { buildPrintPdfBytes } from './printPdf.js'
+import { readStorage, writeStorage } from './storage.js'
 
 /**
- * Place Order: every ordered card gets its print-ready PDF as base64, ready to be
- * stored in a FileMaker container field. Added to each payload item as
- * print_pdf_file_name + print_pdf_base64. The same card shipped to several groups is
- * built once. Real cards only: no preview samples (C.M., sample address).
+ * Place Order: every ordered card gets its print-ready PDF as base64 (FileMaker converts it
+ * back to a PDF). It is kept in localStorage, not added to the order request, so the request
+ * stays small and a PDF problem never blocks the order. Real cards only: no preview
+ * samples (C.M., sample address).
  */
 
 export function bytesToBase64(bytes) {
@@ -34,34 +35,42 @@ export async function printPdfForLine(line) {
   return { file_name: fileNameFor(line), base64: bytesToBase64(bytes) }
 }
 
-/** Adds the PDFs to payload.groups[].items[]. Throws a readable error if a card cannot be printed. */
-export async function attachPrintPdfs(payload, cart) {
-  var byId = {}
-  ;(cart || []).forEach(function (line) {
-    byId[String(line.id)] = line
+export var PRINT_PDFS_KEY = 'printPdfs'
+var KEEP_ORDERS = 3
+
+/** { [lineId]: { file_name, base64 } } for every card in the order payload. Throws if a card cannot be printed. */
+export async function buildPrintPdfs(payload, cart) {
+  var wanted = {}
+  ;((payload && payload.groups) || []).forEach(function (group) {
+    ;(group.items || []).forEach(function (item) {
+      wanted[String(item.line_ref)] = true
+    })
   })
-  var cache = {}
-  var groups = (payload && payload.groups) || []
-  for (var g = 0; g < groups.length; g += 1) {
-    var items = groups[g].items || []
-    for (var n = 0; n < items.length; n += 1) {
-      var item = items[n]
-      var line = byId[String(item.line_ref)]
-      if (!line) throw new Error('Card ' + item.line_ref + ' is no longer in the cart.')
-      var key = String(line.id)
-      if (!cache[key]) {
-        try {
-          cache[key] = await printPdfForLine(line)
-        } catch (error) {
-          var who = String((line.details && line.details.name) || 'A card').trim()
-          throw new Error(
-            who + ': ' + (error && error.message ? error.message : 'cannot be printed')
-          )
-        }
-      }
-      item.print_pdf_file_name = cache[key].file_name
-      item.print_pdf_base64 = cache[key].base64
+  var out = {}
+  var lines = (cart || []).filter(function (line) {
+    return wanted[String(line.id)]
+  })
+  for (var n = 0; n < lines.length; n += 1) {
+    try {
+      out[String(lines[n].id)] = await printPdfForLine(lines[n])
+    } catch (error) {
+      var who = String((lines[n].details && lines[n].details.name) || 'A card').trim()
+      throw new Error(who + ': ' + (error && error.message ? error.message : 'cannot be printed'))
     }
   }
-  return payload
+  return out
+}
+
+/** Keeps the PDFs of the last orders in localStorage ("colliers-v2.printPdfs"), keyed by order date. */
+export function savePrintPdfs(orderKey, pdfs) {
+  var all = readStorage(PRINT_PDFS_KEY, {}) || {}
+  all[orderKey] = pdfs
+  Object.keys(all)
+    .sort()
+    .slice(0, Math.max(0, Object.keys(all).length - KEEP_ORDERS))
+    .forEach(function (old) {
+      delete all[old]
+    })
+  writeStorage(PRINT_PDFS_KEY, all)
+  return all
 }

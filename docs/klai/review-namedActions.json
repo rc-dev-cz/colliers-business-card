@@ -1,5 +1,5 @@
 {
-  "_readme": "Review page named actions as saved in Klai Studio (Oct 16, 2026). submitOrder = 1) review-submitOrder.js builds model.orderPayload, 2) review-buildPrintPdfs.js adds print_pdf_file_name + print_pdf_base64 to every item (one print PDF per ordered card), 3) runUtilityHook sends it, 4) confirms or shows submitError / pdfError. FileMaker reads $$BF_Model.orderPayload in 'BF - onUtility - review' (type submit); it may set orderId or submitError. Draft FM script: fm-onUtility-review-submit.md.",
+  "_readme": "Review page named actions as saved in Klai Studio (Oct 16, 2026). submitOrder = 1) review-submitOrder.js builds model.orderPayload, 2) review-buildPrintPdfs.js builds the print PDF (base64) of every ordered card and keeps it in localStorage 'colliers-print-pdfs' (last 3 orders; NOT part of the request), 3) runUtilityHook sends the order, 4) confirms or shows submitError. FileMaker reads $$BF_Model.orderPayload in 'BF - onUtility - review' (type submit); it may set orderId or submitError. Draft FM script: fm-onUtility-review-submit.md.",
   "submitOrder": [
     {
       "action": "function",
@@ -22,7 +22,7 @@
     },
     {
       "action": "function",
-      "function": "model.submitting = 0\n// A card that could not be turned into a print PDF stops the order before FileMaker sees it.\nif (model.pdfError && !model.submitError) model.submitError = String(model.pdfError)\nif (model.submitError) return\n// Keep the console readable: the base64 PDFs are long.\nconsole.info('[Colliers order] Order confirmed: ' + (model.orderId || '(id from FileMaker)'), JSON.parse(JSON.stringify(model.orderPayload || {}, function (key, value) { return key === 'print_pdf_base64' && typeof value === 'string' ? '<base64 ' + value.length + ' chars>' : value })))\nBF.namedAction('goConfirmed')"
+      "function": "model.submitting = 0\nif (model.submitError) return\nconsole.info('[Colliers order] Order confirmed: ' + (model.orderId || '(id from FileMaker)'), model.orderPayload)\nBF.namedAction('goConfirmed')"
     }
   ],
   "printOrder": [

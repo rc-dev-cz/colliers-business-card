@@ -40,7 +40,7 @@ import { loadManagedTitles, saveManagedTitles } from './helpers/titleAdmin'
 import { loadManagedDegrees, saveManagedDegrees } from './helpers/degreeAdmin'
 import { loadAllPortalOrders } from './helpers/adminData'
 import { buildOrderPayload, logOrderPayload } from './helpers/orderPayload'
-import { attachPrintPdfs } from './helpers/orderPdfs'
+import { buildPrintPdfs, savePrintPdfs } from './helpers/orderPdfs'
 import { buildHistoryRecord, nextOrderId } from './helpers/orderHistory'
 import { getProduct } from './data/products.js'
 import { go } from './adapters/nav'
@@ -889,13 +889,11 @@ export async function confirmSubmit() {
       offices: offices,
       personalAddresses: store.personalAddresses,
     })
-    // Every ordered card travels with its print PDF (base64 for the FileMaker container).
+    // Print PDF of every ordered card (base64), kept in localStorage. A PDF problem never blocks the order.
     try {
-      await attachPrintPdfs(payload, store.cart)
+      savePrintPdfs(payload.order.date, await buildPrintPdfs(payload, store.cart))
     } catch (error) {
-      store.submitError =
-        'Could not prepare the print PDF. ' + (error && error.message ? error.message : '')
-      return false
+      console.warn('[Colliers order] print PDF not saved', error)
     }
     const result = await submitOrder(payload)
     if (!result.ok) {

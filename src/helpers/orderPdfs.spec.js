@@ -1,32 +1,29 @@
-import { describe, expect, it, vi } from 'vitest'
-import { attachPrintPdfs, bytesToBase64 } from './orderPdfs.js'
-import { logOrderPayload } from './orderPayload.js'
+import { beforeEach, describe, expect, it } from 'vitest'
+import { buildPrintPdfs, bytesToBase64, PRINT_PDFS_KEY, savePrintPdfs } from './orderPdfs.js'
+import { readStorage } from './storage.js'
 
-function line(id, name, extra) {
+function line(id, name) {
   return {
     id: id,
     code: 'BCAD-PL-ENG',
     language: 'English',
-    details: Object.assign(
-      {
-        name: name,
-        title: 'Director',
-        degree: [],
-        additionalCredentials: '',
-        region: '',
-        specializedTeam: '',
-        email: 'ada.lovelace@colliersprojectleaders.com',
-        phone: '416 555 0123',
-        address: 'Suite 100\n100 Main Street\nToronto, ON\nA1A 1A1 Canada',
-      },
-      extra || {}
-    ),
+    details: {
+      name: name,
+      title: 'Director',
+      degree: [],
+      additionalCredentials: '',
+      region: '',
+      specializedTeam: '',
+      email: 'ada.lovelace@colliersprojectleaders.com',
+      phone: '416 555 0123',
+      address: 'Suite 100\n100 Main Street\nToronto, ON\nA1A 1A1 Canada',
+    },
   }
 }
 
 function payloadFor(refs) {
   return {
-    order: {},
+    order: { date: '2026-10-16T10:00:00Z' },
     groups: [
       {
         items: refs.map(function (ref) {
@@ -38,35 +35,28 @@ function payloadFor(refs) {
   }
 }
 
-describe('attachPrintPdfs', function () {
-  it('adds a real PDF as base64 to every item and builds a shared card once', async function () {
-    var cart = [line('a', 'Ada Lovelace'), line('b', 'Grace Hopper')]
+describe('buildPrintPdfs', function () {
+  it('builds one real PDF (base64) per ordered card and leaves the payload alone', async function () {
+    var cart = [line('a', 'Ada Lovelace'), line('b', 'Grace Hopper'), line('c', 'Not ordered')]
     var payload = payloadFor(['a', 'b'])
-    await attachPrintPdfs(payload, cart)
-    var items = payload.groups[0].items.concat(payload.groups[1].items)
-    items.forEach(function (item) {
-      expect(item.print_pdf_file_name).toMatch(/^Colliers-Business-Card-.*\.pdf$/)
-      expect(atob(item.print_pdf_base64.slice(0, 8)).slice(0, 5)).toBe('%PDF-')
-    })
-    expect(payload.groups[0].items[0].print_pdf_base64).toBe(
-      payload.groups[1].items[0].print_pdf_base64
-    )
-    expect(payload.groups[0].items[0].print_pdf_file_name).toContain('Ada_Lovelace-a')
+    var before = JSON.stringify(payload)
+    var pdfs = await buildPrintPdfs(payload, cart)
+    expect(Object.keys(pdfs).sort()).toEqual(['a', 'b'])
+    expect(pdfs.a.file_name).toContain('Ada_Lovelace-a')
+    expect(atob(pdfs.a.base64.slice(0, 8)).slice(0, 5)).toBe('%PDF-')
+    expect(JSON.stringify(payload)).toBe(before)
   })
 
-  it('does not print the C.M. sample or the sample address on a real card', async function () {
-    var payload = payloadFor(['a'])
-    await attachPrintPdfs(payload, [line('a', 'Ada Lovelace')])
-    var text = atob(payload.groups[0].items[0].print_pdf_base64)
-    expect(text.indexOf('C.M.')).toBe(-1)
+  it('does not print the C.M. sample on a real card', async function () {
+    var pdfs = await buildPrintPdfs(payloadFor(['a']), [line('a', 'Ada Lovelace')])
+    expect(atob(pdfs.a.base64).indexOf('C.M.')).toBe(-1)
   })
 
-  it('stops with a readable error when a card cannot be printed', async function () {
+  it('names the card that cannot be printed', async function () {
     var bad = line('a', 'sdfasdfasdfsadfsadfasdfsadasdfasdfsdfsdadasdasdas')
-    await expect(attachPrintPdfs(payloadFor(['a']), [bad])).rejects.toThrow(
+    await expect(buildPrintPdfs(payloadFor(['a']), [bad])).rejects.toThrow(
       /sdfasdfasdfsadf.*too long/i
     )
-    await expect(attachPrintPdfs(payloadFor(['gone']), [])).rejects.toThrow(/no longer in the cart/)
   })
 
   it('encodes bytes as base64', function () {
@@ -74,17 +64,17 @@ describe('attachPrintPdfs', function () {
   })
 })
 
-describe('logOrderPayload with PDFs', function () {
-  it('keeps the base64 out of the console line', function () {
-    var logger = { info: vi.fn() }
-    var payload = {
-      order: { group_count: 1, item_count: 1, total_items: 63, currency: 'CAD' },
-      groups: [{ items: [{ line_ref: 'a', print_pdf_base64: 'JVBERg==' }] }],
-    }
-    logOrderPayload('ORD-1', payload, logger)
-    expect(logger.info.mock.calls[0][1].groups[0].items[0].print_pdf_base64).toBe(
-      '<base64 8 chars>'
-    )
-    expect(payload.groups[0].items[0].print_pdf_base64).toBe('JVBERg==')
+describe('savePrintPdfs', function () {
+  beforeEach(function () {
+    localStorage.clear()
+  })
+
+  it('keeps the PDFs of the last 3 orders in localStorage', function () {
+    ;['2026-10-16T1', '2026-10-16T2', '2026-10-16T3', '2026-10-16T4'].forEach(function (key) {
+      savePrintPdfs(key, { a: { file_name: 'x.pdf', base64: 'JVBERg==' } })
+    })
+    var all = readStorage(PRINT_PDFS_KEY, {})
+    expect(Object.keys(all)).toEqual(['2026-10-16T2', '2026-10-16T3', '2026-10-16T4'])
+    expect(all['2026-10-16T4'].a.base64).toBe('JVBERg==')
   })
 })

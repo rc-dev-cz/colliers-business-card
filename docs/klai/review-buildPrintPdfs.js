@@ -678,17 +678,22 @@ try {
       color: WHITE,
     })
   }
-  // Place Order: one print-ready PDF per ordered card, sent to FileMaker as base64
-  // (print_pdf_file_name + print_pdf_base64 on each item). Same layout code as the internal
-  // viewPrintPdf action, but no preview samples (C.M., sample address) and subset fonts so the
-  // payload stays small. A card that cannot be printed stops the order with a readable error.
+  // Place Order: build the print-ready PDF of every ordered card and keep it as base64 in
+  // localStorage ('colliers-print-pdfs', last 3 orders). It is NOT added to model.orderPayload,
+  // so the request to FileMaker stays small, and a PDF problem never blocks the order.
   var cart = Array.isArray(app.cart) ? app.cart : Array.isArray(model.cart) ? model.cart : []
   var payload = model.orderPayload
   if (!payload || !Array.isArray(payload.groups)) return
-  var byLine = {}
-  cart.forEach(function (row) {
-    byLine[String(row.id)] = row
+  var lineIds = {}
+  payload.groups.forEach(function (group) {
+    ;(group.items || []).forEach(function (item) {
+      lineIds[String(item.line_ref)] = true
+    })
   })
+  var lines = cart.filter(function (row) {
+    return lineIds[String(row.id)]
+  })
+  if (!lines.length) return
   var fontBytes = await Promise.all([fetchBytes(FONT_REG_URL), fetchBytes(FONT_BOLD_URL)])
   var logoBytes = await fetchBytes(LOGO_MARK_URL)
   var wordsEnBytes = await fetchBytes(WORDS_EN_URL)
@@ -701,10 +706,9 @@ try {
     }
     return btoa(out)
   }
-  var cache = {}
-  async function pdfForLine(line) {
-    var key = String(line.id)
-    if (cache[key]) return cache[key]
+  var pdfs = {}
+  for (var n = 0; n < lines.length; n++) {
+    var line = lines[n]
     var details = line.details || {}
     var language = String(line.language || details.language || 'English')
     var snapshot = snapshotCardDetails(details)
@@ -720,8 +724,11 @@ try {
     var productPlan = planProductLayout(snapshot, language, assets)
     applyRegionRule(productPlan, assets)
     if (!productPlan.valid) {
-      var who = String(details.name || 'a card').trim()
-      throw new Error(who + ': ' + (LAYOUT_MSG[productPlan.errors[0]] || productPlan.errors[0]))
+      throw new Error(
+        String(details.name || 'A card').trim() +
+          ': ' +
+          (LAYOUT_MSG[productPlan.errors[0]] || productPlan.errors[0])
+      )
     }
     productPlan.pages.forEach(function (pagePlan) {
       drawCardPage(pdfDoc, pagePlan, assets)
@@ -734,27 +741,36 @@ try {
         .replace(/[^\w\-]+/g, '_')
         .replace(/^_+|_+$/g, '')
         .slice(0, 40) || 'card'
-    cache[key] = {
-      file_name: 'Colliers-Business-Card-' + safeName + '-' + key + '.pdf',
+    pdfs[String(line.id)] = {
+      file_name: 'Colliers-Business-Card-' + safeName + '-' + line.id + '.pdf',
       base64: toBase64(bytes),
     }
-    return cache[key]
   }
-  for (var g = 0; g < payload.groups.length; g++) {
-    var items = payload.groups[g].items || []
-    for (var n = 0; n < items.length; n++) {
-      var line = byLine[String(items[n].line_ref)]
-      if (!line) throw new Error('Card ' + items[n].line_ref + ' is no longer in the cart.')
-      var pdf = await pdfForLine(line)
-      items[n].print_pdf_file_name = pdf.file_name
-      items[n].print_pdf_base64 = pdf.base64
-    }
+  var orderKey = String((payload.order && payload.order.date) || Date.now())
+  var store = {}
+  try {
+    store = JSON.parse(localStorage.getItem('colliers-print-pdfs') || '{}') || {}
+  } catch (e) {
+    store = {}
   }
-  setModel('pdfError', '')
+  store[orderKey] = pdfs
+  Object.keys(store)
+    .sort()
+    .slice(0, Math.max(0, Object.keys(store).length - 3))
+    .forEach(function (old) {
+      delete store[old]
+    })
+  localStorage.setItem('colliers-print-pdfs', JSON.stringify(store))
+  if (typeof console !== 'undefined' && console.info)
+    console.info(
+      '[Colliers order] Print PDFs saved in localStorage "colliers-print-pdfs" for ' +
+        orderKey +
+        ': ' +
+        Object.keys(pdfs).length +
+        ' card(s)'
+    )
 } catch (err) {
-  var msg = err && err.message ? err.message : String(err)
-  if (typeof console !== 'undefined' && console.error) console.error('[buildPrintPdfs]', err)
-  // Nothing is sent to FileMaker without its print PDFs.
-  setModel('pdfError', 'Could not prepare the print PDF. ' + msg)
-  model.orderPayload = null
+  // Never block Place Order because of a PDF problem (or a full localStorage).
+  if (typeof console !== 'undefined' && console.warn)
+    console.warn('[buildPrintPdfs] print PDF not saved', err)
 }
