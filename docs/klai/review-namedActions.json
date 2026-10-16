@@ -1,5 +1,5 @@
 {
-  "_readme": "Review page named actions as saved in Klai Studio (Oct 16, 2026). submitOrder = 1) review-submitOrder.js builds model.orderPayload, 2) review-buildPrintPdfs.js builds the print PDF (base64) of every ordered card and keeps it in localStorage 'colliers-print-pdfs' (last 3 orders; NOT part of the request), 3) runUtilityHook sends the order, 4) confirms or shows submitError. FileMaker reads $$BF_Model.orderPayload in 'BF - onUtility - review' (type submit); it may set orderId or submitError. Draft FM script: fm-onUtility-review-submit.md.",
+  "_readme": "Review page named actions as saved in Klai Studio (Oct 16, 2026). submitOrder = 1) review-submitOrder.js builds model.orderPayload, 2) review-buildPrintPdfs.js builds ONE print PDF (base64) per unique card, adds it to orderPayload.cards[] (linked to items by line_ref; order.print_pdf_status = ok | kept_in_browser | failed: ...) and keeps a copy in localStorage 'colliers-print-pdfs' (last 3 orders), 3) runUtilityHook sends the order, 4) confirms or shows submitError. FileMaker reads $$BF_Model.orderPayload in 'BF - onUtility - review' (type submit); it may set orderId or submitError. Draft FM script: fm-onUtility-review-submit.md.",
   "submitOrder": [
     {
       "action": "function",

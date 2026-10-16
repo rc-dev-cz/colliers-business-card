@@ -40,7 +40,12 @@ import { loadManagedTitles, saveManagedTitles } from './helpers/titleAdmin'
 import { loadManagedDegrees, saveManagedDegrees } from './helpers/degreeAdmin'
 import { loadAllPortalOrders } from './helpers/adminData'
 import { buildOrderPayload, logOrderPayload } from './helpers/orderPayload'
-import { buildPrintPdfs, savePrintPdfs } from './helpers/orderPdfs'
+import {
+  attachPrintPdfCards,
+  buildPrintPdfs,
+  markPrintPdfFailed,
+  savePrintPdfs,
+} from './helpers/orderPdfs'
 import { buildHistoryRecord, nextOrderId } from './helpers/orderHistory'
 import { getProduct } from './data/products.js'
 import { go } from './adapters/nav'
@@ -889,11 +894,15 @@ export async function confirmSubmit() {
       offices: offices,
       personalAddresses: store.personalAddresses,
     })
-    // Print PDF of every ordered card (base64), kept in localStorage. A PDF problem never blocks the order.
+    // One print PDF (base64) per unique card: in payload.cards[] and in localStorage.
+    // A PDF problem never blocks the order; order.print_pdf_status says what happened.
     try {
-      savePrintPdfs(payload.order.date, await buildPrintPdfs(payload, store.cart))
+      const pdfs = await buildPrintPdfs(payload, store.cart)
+      savePrintPdfs(payload.order.date, pdfs)
+      attachPrintPdfCards(payload, pdfs, store.cart)
     } catch (error) {
       console.warn('[Colliers order] print PDF not saved', error)
+      markPrintPdfFailed(payload, error)
     }
     const result = await submitOrder(payload)
     if (!result.ok) {

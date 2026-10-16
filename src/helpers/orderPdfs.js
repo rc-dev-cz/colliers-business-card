@@ -74,3 +74,38 @@ export function savePrintPdfs(orderKey, pdfs) {
   writeStorage(PRINT_PDFS_KEY, all)
   return all
 }
+
+/** Set to false to keep the PDFs only in localStorage and out of the order request. */
+export var SEND_PDFS_TO_FILEMAKER = true
+
+/**
+ * payload.cards[]: one PDF per unique card (however many shipping groups use it),
+ * linked to payload.groups[].items[] by line_ref. order.print_pdf_status says what happened.
+ */
+export function attachPrintPdfCards(payload, pdfs, lines, sendToFileMaker) {
+  var send = sendToFileMaker === undefined ? SEND_PDFS_TO_FILEMAKER : sendToFileMaker
+  payload.cards = send
+    ? Object.keys(pdfs).map(function (ref) {
+        var line = (lines || []).find(function (row) {
+          return String(row.id) === ref
+        })
+        return {
+          line_ref: ref,
+          language: String(
+            (line && (line.language || (line.details && line.details.language))) || ''
+          ),
+          print_pdf_file_name: pdfs[ref].file_name,
+          print_pdf_base64: pdfs[ref].base64,
+        }
+      })
+    : []
+  payload.order.print_pdf_status = send ? 'ok' : 'kept_in_browser'
+  return payload
+}
+
+export function markPrintPdfFailed(payload, error) {
+  payload.cards = []
+  payload.order.print_pdf_status =
+    'failed: ' + (error && error.message ? error.message : String(error))
+  return payload
+}

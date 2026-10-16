@@ -1,5 +1,12 @@
 import { beforeEach, describe, expect, it } from 'vitest'
-import { buildPrintPdfs, bytesToBase64, PRINT_PDFS_KEY, savePrintPdfs } from './orderPdfs.js'
+import {
+  attachPrintPdfCards,
+  buildPrintPdfs,
+  bytesToBase64,
+  markPrintPdfFailed,
+  PRINT_PDFS_KEY,
+  savePrintPdfs,
+} from './orderPdfs.js'
 import { readStorage } from './storage.js'
 
 function line(id, name) {
@@ -76,5 +83,35 @@ describe('savePrintPdfs', function () {
     var all = readStorage(PRINT_PDFS_KEY, {})
     expect(Object.keys(all)).toEqual(['2026-10-16T2', '2026-10-16T3', '2026-10-16T4'])
     expect(all['2026-10-16T4'].a.base64).toBe('JVBERg==')
+  })
+})
+
+describe('attachPrintPdfCards', function () {
+  var cart = [line('a', 'Ada Lovelace'), line('b', 'Grace Hopper')]
+
+  it('puts one PDF per unique card in payload.cards, however many groups use it', async function () {
+    var payload = {
+      order: {},
+      groups: [0, 1, 2, 3, 4].map(function (i) {
+        return {
+          items: [{ line_ref: 'a' }].concat(i < 2 ? [{ line_ref: 'b' }] : []),
+        }
+      }),
+    }
+    var pdfs = await buildPrintPdfs(payload, cart)
+    attachPrintPdfCards(payload, pdfs, cart, true)
+    expect(payload.cards.map((c) => c.line_ref)).toEqual(['a', 'b'])
+    expect(payload.order.print_pdf_status).toBe('ok')
+    expect(payload.cards[0].print_pdf_file_name).toContain('Ada_Lovelace')
+    expect(JSON.stringify(payload.groups)).not.toContain('print_pdf')
+  })
+
+  it('can keep the PDFs out of the request, and reports a failure', function () {
+    var payload = { order: {}, groups: [] }
+    attachPrintPdfCards(payload, { a: { file_name: 'x.pdf', base64: 'JVBERg==' } }, cart, false)
+    expect(payload.cards).toEqual([])
+    expect(payload.order.print_pdf_status).toBe('kept_in_browser')
+    markPrintPdfFailed(payload, new Error('Ada: too long'))
+    expect(payload.order.print_pdf_status).toBe('failed: Ada: too long')
   })
 })

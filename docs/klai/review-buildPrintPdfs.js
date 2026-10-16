@@ -678,9 +678,11 @@ try {
       color: WHITE,
     })
   }
-  // Place Order: build the print-ready PDF of every ordered card and keep it as base64 in
-  // localStorage ('colliers-print-pdfs', last 3 orders). It is NOT added to model.orderPayload,
-  // so the request to FileMaker stays small, and a PDF problem never blocks the order.
+  // Place Order: build the print-ready PDF of every ordered card (once per card, however many
+  // shipping groups use it) and add it to model.orderPayload.cards[] as base64, linked to the items
+  // by line_ref. A copy stays in localStorage ('colliers-print-pdfs', last 3 orders). A PDF problem
+  // never blocks the order: order.print_pdf_status says what happened.
+  var SEND_PDFS_TO_FILEMAKER = true // false = keep the PDFs only in localStorage
   var cart = Array.isArray(app.cart) ? app.cart : Array.isArray(model.cart) ? model.cart : []
   var payload = model.orderPayload
   if (!payload || !Array.isArray(payload.groups)) return
@@ -761,6 +763,18 @@ try {
       delete store[old]
     })
   localStorage.setItem('colliers-print-pdfs', JSON.stringify(store))
+  if (SEND_PDFS_TO_FILEMAKER) {
+    payload.cards = lines.map(function (row) {
+      var pdf = pdfs[String(row.id)]
+      return {
+        line_ref: String(row.id),
+        language: String(row.language || (row.details && row.details.language) || ''),
+        print_pdf_file_name: pdf.file_name,
+        print_pdf_base64: pdf.base64,
+      }
+    })
+  }
+  payload.order.print_pdf_status = SEND_PDFS_TO_FILEMAKER ? 'ok' : 'kept_in_browser'
   if (typeof console !== 'undefined' && console.info)
     console.info(
       '[Colliers order] Print PDFs saved in localStorage "colliers-print-pdfs" for ' +
@@ -773,4 +787,9 @@ try {
   // Never block Place Order because of a PDF problem (or a full localStorage).
   if (typeof console !== 'undefined' && console.warn)
     console.warn('[buildPrintPdfs] print PDF not saved', err)
+  if (model.orderPayload && model.orderPayload.order) {
+    model.orderPayload.cards = []
+    model.orderPayload.order.print_pdf_status =
+      'failed: ' + (err && err.message ? err.message : String(err))
+  }
 }
