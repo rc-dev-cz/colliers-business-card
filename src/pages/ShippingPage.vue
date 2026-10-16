@@ -191,10 +191,10 @@
                   {{ t('removeSplit') }}
                 </button>
               </div>
-              <div class="relative">
+              <div class="js-add-item-menu relative">
                 <div
                   v-if="addItemMenuIndex === splitIndex && cartLinesOutsideSplit(split).length"
-                  class="absolute bottom-full right-0 z-20 mb-2 w-[min(100%,22rem)] overflow-hidden rounded-md border border-gray-200 bg-white shadow-lg"
+                  class="absolute bottom-full right-0 z-20 mb-2 w-[22rem] max-w-[calc(100vw-3rem)] overflow-hidden rounded-md border border-gray-200 bg-white shadow-lg"
                 >
                   <ul class="max-h-64 overflow-y-auto py-1">
                     <li v-for="line in cartLinesOutsideSplit(split)" :key="line.id">
@@ -682,7 +682,7 @@ export default {
       if (this.addItemMenuIndex == null) return
       var root = this.$el
       if (!root) return
-      var menus = root.querySelectorAll('.relative.mt-4')
+      var menus = root.querySelectorAll('.js-add-item-menu')
       var inside = false
       menus.forEach(function (el) {
         if (el.contains(event.target)) inside = true
