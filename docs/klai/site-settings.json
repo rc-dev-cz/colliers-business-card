@@ -1352,6 +1352,18 @@
             "label_colliers_selectTitleFr": {
                 "en": "Select a French title",
                 "fr": "Sélectionner un titre français"
+            },
+            "label_colliers_addressMerged": {
+                "en": "This address was already in this group, so the boxes were added together.",
+                "fr": "Cette adresse était déjà dans ce groupe; les boîtes ont été additionnées."
+            },
+            "label_colliers_credentialsNoSpace": {
+                "en": "No more space for credentials on the card.",
+                "fr": "Il n’y a plus d’espace pour les diplômes et mentions sur la carte."
+            },
+            "label_colliers_nameNoSpace": {
+                "en": "No more space for the name on the card.",
+                "fr": "Il n’y a plus d’espace pour le nom sur la carte."
             }
         },
         "langDefault": "en",

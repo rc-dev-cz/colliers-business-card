@@ -11,7 +11,7 @@
             :key="previewLang"
             class="card-preview-frame"
           >
-            <div id="colliersCardPreview" class="relative aspect-[1.75/1] w-full overflow-hidden rounded-md border border-gray-200 bg-white text-[#4A4A4A] shadow-sm" style="container-type: inline-size; font-family: 'Open Sans', sans-serif">
+            <div id="colliersCardPreview" class="relative aspect-[1.75/1] w-full overflow-hidden border border-gray-200 bg-white text-[#4A4A4A]" style="container-type: inline-size; font-family: 'Open Sans', sans-serif">
               <img src="https://5t61ut5p19.ucarecd.net/66049ddf-e639-4104-9b94-5f1d96fc29a5/" alt="Colliers" class="absolute object-contain" style="left: 6.968%; bottom: 69.306%; width: 18.488%; height: 18.417%" />
               <img
                 :src="['French','Français','FR'].indexOf(previewLang) >= 0 ? 'https://5t61ut5p19.ucarecd.net/701d97ba-48e3-4b7b-a448-1ecee3b72a6e/' : 'https://5t61ut5p19.ucarecd.net/5c2ce46d-e9a5-441c-ad9a-8010efc9c9bf/'"
@@ -48,7 +48,7 @@
         <form class="space-y-4" @submit.prevent="BF.namedAction('previewProof')">
           <div>
             <label class="field-label text-[14px] font-normal text-gray-700" for="card-name">{{ BF.i18n('label_colliers_fullName') }}<span class="text-red-600" aria-hidden="true">*</span></label>
-            <input id="card-name" class="field-input" maxlength="30" v-model="model.card.name" @input="BF.namedAction('wrapCardName')" />
+            <input id="card-name" class="field-input" maxlength="50" v-model="model.card.name" :aria-invalid="Number(model.nameNotice) === 1 ? 'true' : 'false'" @input="BF.namedAction('wrapCardName')" />            <p v-if="Number(model.nameNotice) === 1" class="mt-1 text-sm text-red-600">{{ BF.i18n('label_colliers_nameNoSpace') }}</p>
           </div>
           <div>
             <label class="field-label text-[14px] font-normal text-gray-700" for="card-title">{{ BF.i18n('label_colliers_title') }}<span class="text-red-600" aria-hidden="true">*</span></label>
@@ -120,9 +120,9 @@
               inputmode="numeric"
               maxlength="12"
               class="field-input"
-              placeholder="416 555-1234"
-              :value="(function () { var d = String(model.card.phone || '').replace(/\D/g, ''); if (d.length === 11 && d.charAt(0) === '1') d = d.slice(1); d = d.slice(0, 10); if (!d) return ''; if (d.length <= 3) return d; if (d.length <= 6) return d.slice(0, 3) + ' ' + d.slice(3); return d.slice(0, 3) + ' ' + d.slice(3, 6) + '-' + d.slice(6); })()"
-              @input="(function (e) { var d = String(e.target.value).replace(/\D/g, ''); if (d.length === 11 && d.charAt(0) === '1') d = d.slice(1); d = d.slice(0, 10); model.card.phone = d ? (d.length <= 3 ? d : d.length <= 6 ? d.slice(0, 3) + ' ' + d.slice(3) : d.slice(0, 3) + ' ' + d.slice(3, 6) + '-' + d.slice(6)) : ''; BF.namedAction('wrapCardName'); })($event)"
+              placeholder="416 555 1234"
+              :value="(function () { var d = String(model.card.phone || '').replace(/\D/g, ''); if (d.length === 11 && d.charAt(0) === '1') d = d.slice(1); d = d.slice(0, 10); if (!d) return ''; if (d.length <= 3) return d; if (d.length <= 6) return d.slice(0, 3) + ' ' + d.slice(3); return d.slice(0, 3) + ' ' + d.slice(3, 6) + ' ' + d.slice(6); })()"
+              @input="(function (e) { var d = String(e.target.value).replace(/\D/g, ''); if (d.length === 11 && d.charAt(0) === '1') d = d.slice(1); d = d.slice(0, 10); model.card.phone = d ? (d.length <= 3 ? d : d.length <= 6 ? d.slice(0, 3) + ' ' + d.slice(3) : d.slice(0, 3) + ' ' + d.slice(3, 6) + ' ' + d.slice(6)) : ''; BF.namedAction('wrapCardName'); })($event)"
             />
           </div>
           <div>
