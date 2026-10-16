@@ -150,6 +150,10 @@ export const messages = {
   splitOrder: { EN: 'Split Order', FR: 'Diviser la commande' },
   removeSplit: { EN: 'Remove Split', FR: 'Supprimer la division' },
   shipToAddress: { EN: 'Ship to Address', FR: "Expédier à l'adresse" },
+  addressMerged: {
+    EN: 'This address was already in this group, so the boxes were added together.',
+    FR: 'Cette adresse était déjà dans ce groupe; les boîtes ont été additionnées.',
+  },
   noShipToAddresses: {
     EN: 'No ship-to addresses yet. Use + Add location to pick from your Address Book.',
     FR: "Aucune adresse d'expédition. Utilisez + Ajouter un lieu pour choisir dans votre carnet d'adresses.",

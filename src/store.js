@@ -659,15 +659,17 @@ export function moveLineToSplit(lineId, splitId, newIndex, fromSplitId) {
   persistOrder()
 }
 
+/** Returns true when the address was already in the target group and the boxes were combined. */
 export function moveLocationToSplit(locId, splitId, newIndex) {
   var target = (store.order.splits || []).find(function (row) {
     return String(row.id) === String(splitId)
   })
-  if (target && !linesInSplit(target).length) return
-  relocateLocation(store.order, locId, splitId, newIndex)
+  if (target && !linesInSplit(target).length) return false
+  var kept = relocateLocation(store.order, locId, splitId, newIndex)
   fitAllGroups()
   persistCart()
   persistOrder()
+  return Boolean(kept) && String(kept.id) !== String(locId)
 }
 
 export function assignLine(split, itemId) {

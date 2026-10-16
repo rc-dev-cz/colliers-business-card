@@ -346,6 +346,13 @@
                 </li>
               </ul>
             </div>
+            <p
+              v-if="String(mergedSplitId) === String(split.id)"
+              class="mt-3 text-sm text-gray-600"
+              role="status"
+            >
+              {{ t('addressMerged') }}
+            </p>
 
             <div class="relative mt-auto border-t border-gray-200 pt-4">
               <div class="flex flex-wrap items-center justify-end gap-3">
@@ -467,6 +474,8 @@ export default {
       modalSplitIndex: null,
       addItemMenuIndex: null,
       previewLine: null,
+      mergedSplitId: null,
+      mergedTimer: null,
     }
   },
   computed: {
@@ -513,6 +522,7 @@ export default {
     this.bindSortables()
   },
   beforeDestroy: function () {
+    if (this.mergedTimer) clearTimeout(this.mergedTimer)
     this.destroySortables()
     document.removeEventListener('click', this.onDocClick, true)
     var host = this.$refs.previewHost
@@ -700,6 +710,15 @@ export default {
         this.addItemMenuIndex = null
       }
     },
+    flashAddressMerged: function (splitId) {
+      var self = this
+      if (this.mergedTimer) clearTimeout(this.mergedTimer)
+      this.mergedSplitId = splitId
+      this.mergedTimer = setTimeout(function () {
+        self.mergedSplitId = null
+        self.mergedTimer = null
+      }, 5000)
+    },
     destroySortables: function () {
       this.sortables.forEach(function (instance) {
         instance.destroy()
@@ -749,7 +768,7 @@ export default {
               var fromId = evt.from && evt.from.getAttribute('data-split-id')
               if (!locId || !toId) return
               if (String(fromId) === String(toId) && evt.oldIndex === evt.newIndex) return
-              moveLocationToSplit(locId, toId, evt.newIndex)
+              if (moveLocationToSplit(locId, toId, evt.newIndex)) self.flashAddressMerged(toId)
             },
           })
         )

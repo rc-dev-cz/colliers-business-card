@@ -7,6 +7,7 @@ import {
   ensureCartAssignedToShipping,
   itemCount,
   moveLineToSplit,
+  moveLocationToSplit,
   removeLine,
   removeLineFromSplit,
   removeShipLocation,
@@ -503,5 +504,33 @@ describe('shipping flow: cart, split groups, and boxes', function () {
     expect(groups[0].itemIds.map(String)).toEqual([b])
     expect(groups[1].itemIds.map(String)).toEqual([a, b])
     expect(groups[2].itemIds.map(String)).toEqual([a])
+  })
+
+  it('dropping an address on a group that already ships there combines the boxes', function () {
+    seedCart(1)
+    ensureCartAssignedToShipping()
+    splitOrder(0)
+    var first = store.order.splits[0]
+    var second = store.order.splits[1]
+    addShipLocation(first, 'Office A', 1)
+    addShipLocation(first, 'Office B', 1)
+    addShipLocation(second, 'Office B', 2)
+    var moving = first.locations[1]
+
+    var merged = moveLocationToSplit(moving.id, second.id, 0)
+
+    expect(merged).toBe(true)
+    expect(
+      second.locations.map(function (loc) {
+        return loc.address
+      })
+    ).toEqual(['Office B'])
+    expect(second.locations[0].qty).toBe(3)
+    expect(
+      first.locations.map(function (loc) {
+        return loc.address
+      })
+    ).toEqual(['Office A'])
+    expect(moveLocationToSplit(first.locations[0].id, second.id, 0)).toBe(false)
   })
 })

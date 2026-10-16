@@ -460,6 +460,19 @@ export function moveItem(order, itemId, toSplitId, newIndex, fromSplitId) {
   ids.splice(idx, 0, row)
 }
 
+/** Same ship-to address, ignoring case and extra spaces. */
+function addressKey(address) {
+  return String(address || '')
+    .trim()
+    .replace(/\s+/g, ' ')
+    .toLowerCase()
+}
+
+/**
+ * Drag an address between or within groups. If the target group already ships to
+ * the same address, the boxes are added to that row instead of listing it twice.
+ * Returns the row that now holds the address (the existing one when merged).
+ */
 export function moveLocation(order, locId, toSplitId, newIndex) {
   var id = String(locId || '')
   if (!id) return null
@@ -480,6 +493,16 @@ export function moveLocation(order, locId, toSplitId, newIndex) {
   })
   if (!moved) return null
   target.locations = target.locations || []
+  var key = addressKey(moved.address)
+  var twin = key
+    ? target.locations.find(function (loc) {
+        return addressKey(loc && loc.address) === key
+      })
+    : null
+  if (twin) {
+    twin.qty = (Number(twin.qty) || 0) + (Number(moved.qty) || 0)
+    return twin
+  }
   var idx = newIndex == null || newIndex === '' ? target.locations.length : Number(newIndex)
   if (isNaN(idx) || idx < 0) idx = target.locations.length
   if (idx > target.locations.length) idx = target.locations.length
