@@ -73,7 +73,7 @@ Bus variables (FileMaker side): `$$BF_Payload`, `$$BF_Model`, `$$BF_Actions`, `$
 | Manage Degrees      | `/admin/degrees`   | `admindegrees`   | false (planned true) | `BF - onFormRequest - admindegrees`   | `create`, `update`, `delete`                                  | Live UI |
 | Admin Order History | `/admin/orders`    | `adminorders`    | false (planned true) | `BF - onFormRequest - adminorders`    | Admin-scoped order list (employee); no `repeat` in v1         | Live UI |
 | Invoice History     | `/admin/invoices`  | `admininvoices`  | false (planned true) | `BF - onFormRequest - admininvoices`  | Invoice table + download (mock)                               | Live UI |
-| Reporting           | `/admin/reporting` | `adminreporting` | false (planned true) | `BF - onFormRequest - adminreporting` | Charts / activity / export CTA (mock)                         | Live UI |
+| Reporting           | `/admin/reporting` | `adminreporting` | false (planned true) | `BF - onFormRequest - adminreporting` | Empty state until the FM hook supplies data                   | Live UI |
 
 ---
 
@@ -437,7 +437,7 @@ Tiles are UI-only. Counts may come from this object or from loading the three li
 }
 ```
 
-**Reporting** (`adminreporting`) — Live UI in Klai (route `/admin/reporting`). Mock chart / activity / spend bars until FM hook is on. UI may derive bar `%` from `amount`.
+**Reporting** (`adminreporting`) — Live UI in Klai (route `/admin/reporting`). Shows an empty state ("No reporting data yet…") until the FM hook supplies chart / activity / spend data. The fake charts, activity list and export button were removed.
 
 ```json
 {

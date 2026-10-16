@@ -396,6 +396,10 @@ export const messages = {
   },
   invoiceHistory: { EN: 'Invoice History', FR: 'Historique des factures' },
   reporting: { EN: 'Reporting', FR: 'Rapports' },
+  reportingEmpty: {
+    EN: 'No reporting data yet. Reports will appear here once FileMaker reporting is connected.',
+    FR: 'Aucune donnée de rapport pour le moment. Les rapports apparaîtront ici lorsque les rapports FileMaker seront connectés.',
+  },
   viewPastOrders: { EN: 'View past orders', FR: 'Voir les commandes passées' },
   manageBilling: { EN: 'Manage billing', FR: 'Gérer la facturation' },
   viewAnalytics: { EN: 'View analytics', FR: 'Voir les analyses' },
@@ -463,19 +467,6 @@ export const messages = {
   invoiceDownloadMock: {
     EN: 'Invoice download is mock data for',
     FR: 'Le téléchargement de facture est simulé pour',
-  },
-  monthlySpendOverview: { EN: 'Monthly Spend Overview', FR: 'Aperçu des dépenses mensuelles' },
-  recentActivity: { EN: 'Recent Activity', FR: 'Activité récente' },
-  spendByDepartment: { EN: 'Spend by Department', FR: 'Dépenses par département' },
-  generateCustomReport: { EN: 'Generate Custom Report', FR: 'Générer un rapport personnalisé' },
-  generateCustomReportHint: {
-    EN: 'Export detailed analytics in CSV or PDF format for specific date ranges.',
-    FR: 'Exportez des analyses détaillées en CSV ou PDF pour des plages de dates précises.',
-  },
-  exportData: { EN: 'Export Data', FR: 'Exporter les données' },
-  exportDataMock: {
-    EN: 'Export will be available when FileMaker reporting is connected.',
-    FR: "L'export sera disponible lorsque les rapports FileMaker seront connectés.",
   },
   loading: { EN: 'Loading...', FR: 'Chargement...' },
   profileMenu: { EN: 'Profile menu', FR: 'Menu profil' },
