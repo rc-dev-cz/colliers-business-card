@@ -134,6 +134,35 @@ Reference HTML sources:
 | `colliers-modal-overlay` / `colliers-modal-panel` / `colliers-modal-header` | Modals        |
 | `modal-footer` / `modal-footer-actions`                                     | Modal actions |
 
+## Auth pages (login, forgot, reset, verify, signup)
+
+Native BetterForms inputs and buttons inside one centered card. Matches [`src/pages/LoginPage.vue`](../../src/pages/LoginPage.vue).
+
+| Slot              | Classes                                                                    |
+| ----------------- | -------------------------------------------------------------------------- |
+| Page              | `colliers-page h-screen flex flex-col`                                     |
+| Body              | `colliers-page-body colliers-page-body--auth flex flex-col flex-1 min-h-0` |
+| Group             | `colliers-auth-card flex flex-col`                                         |
+| Header html field | styleClasses `colliers-auth-header`, html from [`auth-card-header.html`](auth-card-header.html) |
+| Button            | buttonClasses `btn-primary w-full`                                         |
+| Link html field   | styleClasses `text-center`, `<a class="colliers-auth-link">`               |
+| Message html      | `colliers-auth-message colliers-auth-message--{{authMessageType}}`         |
+
+- BF repeats the Body classes on the inner `.vue-form-generator`; CSS zeroes that padding so the gutter is 1rem (phone) / 1.5rem (≥640px).
+- Card padding is 1.5rem on phones, 2.5rem from 640px; max width 440px.
+- Message colors: `--error` red, `--info` / `--success` green. `authMessageType` is set by BF auth actions.
+- Continue-after-auth checks use `model.authMessageCode`, not message text: `auth.reset_link_sent` (Forgot → `/login/forgot/sent`), `auth.password_reset_success` (Reset → `/login/reset/success`).
+
+| Route                 | Page id         | Links to                         |
+| --------------------- | --------------- | -------------------------------- |
+| `login`               | `FR_2E8EA572-…` | `#/login/forgot`                 |
+| `login/forgot`        | `FR_1D3ABD00-…` | `#/login`, success → `/login/forgot/sent` |
+| `login/forgot/sent`   | `FR_E516F025-…` | `#/login`                        |
+| `login/reset`         | `FR_B0F2B3E6-…` | `#/login`, success → `/login/reset/success` |
+| `login/reset/success` | `FR_772F1C6C-…` | `#/login`                        |
+| `login/verify`        | `FR_A3760ABC-…` | Login button → `/login`          |
+| `login/signup`        | `FR_7A3D6A7B-…` | `#/login`, success → `/login`    |
+
 ## Per-page checklist
 
 ### Address Book (`FR_7192BDB6-…`)

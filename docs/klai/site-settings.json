@@ -45,6 +45,10 @@
                 "en": "Add item",
                 "fr": "Ajouter un article"
             },
+            "label_colliers_addNewCard": {
+                "en": "Add new card",
+                "fr": "Ajouter une nouvelle carte"
+            },
             "label_colliers_addLocation": {
                 "en": "Add location",
                 "fr": "Ajouter un lieu"

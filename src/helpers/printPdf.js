@@ -6,6 +6,7 @@ import {
   CARD_LAYOUT,
   applyEmptyTeamIdentityLayout,
   applyPreviewTitleRegionSplit,
+  cardFaceTitles,
   layoutErrorMessage,
   planProductLayout,
   snapshotCardDetails,
@@ -291,12 +292,17 @@ export async function buildPrintPdfBytes(details, language, opts) {
   var snapshot = snapshotCardDetails(details)
   var measureFonts = await loadLayoutFonts()
   var productPlan = planProductLayout(snapshot, language, measureFonts)
-  applyPrintCredentialPlaceholder(productPlan, snapshot)
-  applyPrintAddressPlaceholder(productPlan, snapshot)
+  // Real sample cards (short-long-examples.json) pass placeholders: false to skip C.M. / sample address.
+  if (!opts || opts.placeholders !== false) {
+    applyPrintCredentialPlaceholder(productPlan, snapshot)
+    applyPrintAddressPlaceholder(productPlan, snapshot)
+  }
+  var faceTitles = cardFaceTitles(snapshot, language)
   productPlan.pages.forEach(function (page) {
     page.layout = applyPreviewTitleRegionSplit(
       applyEmptyTeamIdentityLayout(page.layout),
-      measureFonts
+      measureFonts,
+      { faceTitles: faceTitles }
     )
   })
   if (opts && typeof opts.adjustPlan === 'function') opts.adjustPlan(productPlan)

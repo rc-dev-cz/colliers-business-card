@@ -415,14 +415,41 @@ export function unassignItem(order, itemId) {
   })
 }
 
-export function moveItem(order, itemId, toSplitId, newIndex) {
-  const target = order.splits.find(function (row) {
-    return String(row.id) === String(toSplitId)
+function findSplit(order, splitId) {
+  return (order.splits || []).find(function (row) {
+    return String(row.id) === String(splitId)
   })
+}
+
+/**
+ * Drag a card between or within shipping groups. Groups are independent: the same
+ * card can ship in several groups, so only the source and target groups change.
+ * Without `fromSplitId` the card leaves every other group (legacy behaviour).
+ */
+export function moveItem(order, itemId, toSplitId, newIndex, fromSplitId) {
+  const target = findSplit(order, toSplitId)
   if (!target) return
-  assignItem(order, target, itemId)
-  if (newIndex == null || newIndex === '') return
   var id = String(itemId)
+  var source = fromSplitId != null && fromSplitId !== '' ? findSplit(order, fromSplitId) : null
+  if (!source) {
+    assignItem(order, target, itemId)
+  } else if (source !== target) {
+    var hadQty = source.qtys && source.qtys[id] != null
+    var movedQty = hadQty ? source.qtys[id] : null
+    Vue.set(
+      source,
+      'itemIds',
+      (source.itemIds || []).filter(function (x) {
+        return String(x) !== id
+      })
+    )
+    if (source.qtys && source.qtys[id] != null) Vue.delete(source.qtys, id)
+    var alreadyThere = (target.itemIds || []).map(String).indexOf(id) !== -1
+    includeItem(order, target, id)
+    // Keep the boxes the card had in its old group unless the target already had it.
+    if (hadQty && !alreadyThere) writeSplitQty(target, { id: id }, movedQty)
+  }
+  if (newIndex == null || newIndex === '') return
   var ids = target.itemIds || []
   var at = ids.map(String).indexOf(id)
   if (at === -1) return

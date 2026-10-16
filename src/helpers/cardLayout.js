@@ -155,6 +155,23 @@ export function resolveCardFields(details, language) {
   }
 }
 
+/**
+ * `Title | Region` for every printed face. Bilingual cards have an English and a
+ * French face, and the region fallback must pick the same break on both.
+ */
+export function cardFaceTitles(details, language) {
+  var src = details || {}
+  if (!isBilingualLanguage(language) && !src.bilingualFaces) {
+    return [resolveCardFields(src, language).title]
+  }
+  var englishTitle = src.titleEn || src.title
+  var frenchTitle = String(src.titleFr || '').trim() || suggestFrenchTitle(englishTitle)
+  return [
+    resolveCardFields(Object.assign({}, src, { title: englishTitle }), 'English').title,
+    resolveCardFields(Object.assign({}, src, { title: frenchTitle }), 'French').title,
+  ]
+}
+
 export function fitsLine(font, text, size, maxWidth) {
   return font.widthOfTextAtSize(String(text || ''), size) <= maxWidth
 }
@@ -532,7 +549,7 @@ export function applyEmptyTeamIdentityLayout(view) {
  * No-op when already split or when title alone cannot fit. Before the measuring
  * fonts load (preview first paint) the split still applies, unmeasured.
  */
-export function applyPreviewTitleRegionSplit(view, fonts) {
+export function applyPreviewTitleRegionSplit(view, fonts, opts) {
   if (!view) return view
   if (view.regionLine) return view
   var L = CARD_LAYOUT
@@ -558,9 +575,14 @@ export function applyPreviewTitleRegionSplit(view, fonts) {
       withTeam.regionLine = ''
       return withTeam
     }
-    // `team | region` too wide: keep the approved `Title | Region` line when it fits.
+    // `team | region` too wide: keep the approved `Title | Region` line when it fits
+    // on every face (bilingual EN and FR must break the same way).
     // A third identity line would push a 2-line name into the wordmark (Maximum).
-    if (fitsLine(font, joined, titleSize, L.titleMaxWidth)) return view
+    var faces = (opts && opts.faceTitles) || [joined]
+    var everyFaceFits = faces.every(function (face) {
+      return fitsLine(font, face, titleSizeFor(font, face, L), L.titleMaxWidth)
+    })
+    if (everyFaceFits) return view
   }
 
   var lift = L.bodyLineHeight

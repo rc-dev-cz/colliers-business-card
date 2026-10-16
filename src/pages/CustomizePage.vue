@@ -194,7 +194,11 @@ import {
   teamFitsOnCard,
 } from '../helpers/cardLayout'
 import { isBilingualLanguage, websiteForProduct } from '../helpers/formatCardIdentity'
-import { bilingualFrenchPreviewDetails, suggestFrenchTitle } from '../helpers/titleLocale'
+import {
+  bilingualEnglishPreviewDetails,
+  bilingualFrenchPreviewDetails,
+  suggestFrenchTitle,
+} from '../helpers/titleLocale'
 import { titlesForProductLanguage } from '../helpers/titleAdmin'
 import { CANADIAN_REGION_OPTIONS } from '../helpers/canadianProvinces'
 
@@ -277,7 +281,11 @@ export default {
       }
       if (isBilingualLanguage(lang)) {
         return [
-          { language: 'English', details: this.details, plan: planFor('English') },
+          {
+            language: 'English',
+            details: bilingualEnglishPreviewDetails(this.details),
+            plan: planFor('English'),
+          },
           {
             language: 'French',
             details: bilingualFrenchPreviewDetails(this.details),
@@ -499,10 +507,16 @@ export default {
     onSpecializedTeam: function (value, event) {
       var current = String(this.details.specializedTeam || '')
       var next = cleanCardText(value)
-      var fits = teamFitsOnCard({ specializedTeam: next }, this.layoutFonts)
-      if (!fits && next.length >= current.length) {
+      var fonts = this.layoutFonts
+      var fits = function (text) {
+        return teamFitsOnCard({ specializedTeam: text }, fonts)
+      }
+      if (!fits(next) && next.length >= current.length) {
+        // Typing or pasting past the line: keep what still fits, like the other capped fields.
+        while (next.length > current.length && !fits(next)) next = next.slice(0, -1)
         this.flashCredentialNotice('team')
-        if (event && event.target) event.target.value = current
+        if (event && event.target) event.target.value = next
+        this.details.specializedTeam = next
         return
       }
       this.details.specializedTeam = next

@@ -138,6 +138,7 @@ export const messages = {
   selectedItems: { EN: 'Selected Items', FR: 'Articles sélectionnés' },
   noItemsSelected: { EN: 'No items selected', FR: 'Aucun article sélectionné' },
   addItem: { EN: 'Add item', FR: 'Ajouter un article' },
+  addNewCard: { EN: 'Add new card', FR: 'Ajouter une nouvelle carte' },
   addItemFromCart: { EN: 'Add from cart', FR: 'Ajouter depuis le panier' },
   allCartItemsInGroup: {
     EN: 'All cart items are already in this group.',

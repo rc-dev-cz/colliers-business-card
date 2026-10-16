@@ -22,8 +22,7 @@ export var TITLE_EN_TO_FR = {
 }
 
 /** Only this French title shrinks to fit the identity lane (Cynthia, Oct 2026). */
-export var TITLE_FR_TALENT_ACQUISITION =
-  TITLE_EN_TO_FR['Talent Acquisition Business Partner']
+export var TITLE_FR_TALENT_ACQUISITION = TITLE_EN_TO_FR['Talent Acquisition Business Partner']
 
 function frenchMapValues() {
   return Object.keys(TITLE_EN_TO_FR).map(function (key) {
@@ -63,5 +62,13 @@ export function bilingualFrenchPreviewDetails(details) {
   return Object.assign({}, src, {
     website: WEBSITE_FR,
     title: frenchTitle,
+    // Keep the English title so the preview can check both faces (cardFaceTitles).
+    titleEn: src.titleEn || src.title,
+    bilingualFaces: true,
   })
+}
+
+/** English face of a bilingual card: same details, flagged so the preview checks both faces. */
+export function bilingualEnglishPreviewDetails(details) {
+  return Object.assign({}, details || {}, { bilingualFaces: true })
 }

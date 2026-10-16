@@ -306,10 +306,6 @@ if (typeof app !== 'undefined') collectDetached(app.order)
 var hasVisible = splits.some(function (split) {
   return split.itemIds && split.itemIds.length
 })
-if (!hasVisible && cart.length) {
-  detachedIds = []
-  skipAssign = {}
-}
 cart.forEach(function (line) {
   if (skipAssign[String(line.id)]) return
   var assigned = splits.some(function (split) {

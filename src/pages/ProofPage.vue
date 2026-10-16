@@ -76,12 +76,15 @@ import ColliersPageShell from '../layout/ColliersPageShell.vue'
 import CardPreview from '../components/CardPreview.vue'
 import AppButton from '../components/AppButton.vue'
 import { getProduct } from '../data/products'
-import { t, store, addProofToCart, ensureProofInCart, ensureCartAssignedToShipping } from '../store'
+import { t, store, addProofToCart, ensureProofInCart, startShippingFromCart } from '../store'
 import { go } from '../adapters/nav'
 import { loadLayoutFonts } from '../helpers/cardFonts'
 import { planProductLayout } from '../helpers/cardLayout'
 import { isBilingualLanguage } from '../helpers/formatCardIdentity'
-import { bilingualFrenchPreviewDetails } from '../helpers/titleLocale'
+import {
+  bilingualEnglishPreviewDetails,
+  bilingualFrenchPreviewDetails,
+} from '../helpers/titleLocale'
 
 export default {
   name: 'ProofPage',
@@ -120,7 +123,11 @@ export default {
       }
       if (isBilingualLanguage(lang)) {
         return [
-          { language: 'English', details: details, plan: planFor('English') },
+          {
+            language: 'English',
+            details: bilingualEnglishPreviewDetails(details),
+            plan: planFor('English'),
+          },
           {
             language: 'French',
             details: bilingualFrenchPreviewDetails(details),
@@ -174,7 +181,7 @@ export default {
     continueToShipping: function () {
       if (!this.approved) return
       ensureProofInCart()
-      ensureCartAssignedToShipping()
+      startShippingFromCart()
       go('shipping')
     },
     backToEdit: function () {

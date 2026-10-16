@@ -1,0 +1,26 @@
+---
+description: Fix in the local Vue app first — do not touch Klai files or Klai Studio until the user asks
+alwaysApply: true
+---
+
+# Local first, Klai later
+
+The Vue app in `src/` is where changes land first. Klai is synced afterwards, as a separate step the user starts.
+
+## Default (no Klai mention in the request)
+
+- Edit **local files only**: `src/` (pages, components, helpers, store, styles) and their specs.
+- Do **not** edit the Klai mirror in `docs/klai/` (`*.html`, `*.js`, `environment.css`, `shipping-namedActions.json`, `build-*-mcp.py`, etc.).
+- Do **not** call the Klai / BetterForms MCP (`colliers_app_development`) to write pages, named actions, CSS, or site settings.
+- After the local fix, say in one line which Klai files would need the same change. Do not make that change.
+
+## Only when the user asks for Klai
+
+- Phrases like "now do Klai", "sync Klai", "mirror to Klai", "push to Klai Studio".
+- Then update `docs/klai/` to match Vue and keep `docs/klai/BACKEND-NAMING.md` notes current.
+- Writing to live Klai Studio through the MCP still needs a separate yes in that conversation.
+
+## Allowed without asking
+
+- **Reading** `docs/klai/` and reading Klai through the MCP to compare with Vue.
+- Reporting differences between Vue and Klai.

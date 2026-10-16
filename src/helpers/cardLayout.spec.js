@@ -10,6 +10,7 @@ import {
   previewContactYs,
   applyEmptyTeamIdentityLayout,
   applyPreviewTitleRegionSplit,
+  cardFaceTitles,
   resolveCardFields,
   teamFitsOnCard,
   titleSizeFor,
@@ -676,5 +677,30 @@ describe('teamFitsOnCard', function () {
     var team = 'Healthcare Infrastructure and Public Private Partnerships Advisory'
     expect(teamFitsOnCard({ specializedTeam: team }, fonts)).toBe(false)
     expect(plan({ specializedTeam: team }).errors).toContain(LAYOUT_ERROR.team)
+  })
+})
+
+describe('bilingual region fallback', function () {
+  it('stacks region on both faces when only the English Title | Region fits', function () {
+    var details = {
+      name: 'Ada Lovelace',
+      title: 'Business Development Manager',
+      titleFr: 'Responsable du développement commercial',
+      region: 'Ontario',
+      specializedTeam: 'Healthcare Infrastructure and Public Partnerships',
+      email: 'ada@example.com',
+      phone: '4165550100',
+    }
+    var faces = cardFaceTitles(details, 'Bilingual')
+    expect(faces).toEqual([
+      'Business Development Manager | Ontario',
+      'Responsable du développement commercial | Ontario',
+    ])
+    var product = planProductLayout(details, 'Bilingual', fonts)
+    var views = product.pages.map(function (page) {
+      return applyPreviewTitleRegionSplit(page.layout, fonts, { faceTitles: faces })
+    })
+    expect(views[0].regionLine).toBe('Ontario')
+    expect(views[1].regionLine).toBe('Ontario')
   })
 })

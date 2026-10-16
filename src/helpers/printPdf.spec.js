@@ -67,6 +67,18 @@ describe('printPdf', function () {
     expect(bytes.byteLength).toBeGreaterThan(500)
   })
 
+  it('omits the C.M. sample when placeholders are off', async function () {
+    var captured
+    await buildPrintPdfBytes(base, 'English', {
+      placeholders: false,
+      adjustPlan: function (plan) {
+        captured = plan.pages[0].layout
+      },
+    })
+    expect(captured.inlineCredential).toBe('')
+    expect(captured.credentialLine).toBe('')
+  })
+
   it('keeps the C.M. sample and comma when no credential is entered', function () {
     expect(printInlineCredential({ degree: [], additionalCredentials: '' }, 'English')).toBe(
       ', C.M.'

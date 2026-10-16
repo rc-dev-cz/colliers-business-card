@@ -11,6 +11,7 @@ import ReviewPage from './pages/ReviewPage.vue'
 import ConfirmedPage from './pages/ConfirmedPage.vue'
 import AddressBookPage from './pages/AddressBookPage.vue'
 import OrderHistoryPage from './pages/OrderHistoryPage.vue'
+import ContactUsPage from './pages/ContactUsPage.vue'
 import AdminDashboardPage from './pages/admin/AdminDashboardPage.vue'
 import ManageAddressesPage from './pages/admin/ManageAddressesPage.vue'
 import ManageTitlesPage from './pages/admin/ManageTitlesPage.vue'
@@ -61,6 +62,7 @@ const router = new VueRouter({
     { path: '/order-history', name: 'order-history', component: OrderHistoryPage },
     { path: '/review', name: 'review', component: ReviewPage },
     { path: '/confirmed', name: 'confirmed', component: ConfirmedPage },
+    { path: '/contact-us', name: 'contact-us', component: ContactUsPage },
     // Legacy Vue paths → Klai-aligned routes
     {
       path: '/details/:code',

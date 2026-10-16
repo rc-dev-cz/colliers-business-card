@@ -103,76 +103,7 @@
                   </svg>
                 </div>
                 <button type="button" class="card-preview-frame card-preview-frame--thumb cursor-pointer overflow-hidden border-0 bg-transparent p-0 text-left" :aria-label="BF.i18n('label_colliers_previewCard')" @click="BF.namedAction('previewLine', { lineId: line.id })">
-                  <div
-                    class="card-preview-face relative w-full overflow-hidden rounded-md border border-gray-200 bg-white font-sans text-[#4A4A4A] shadow-sm"
-                    style="container-type: inline-size; aspect-ratio: 1.75 / 1"
-                  >
-                    <img
-                      src="https://5t61ut5p19.ucarecd.net/66049ddf-e639-4104-9b94-5f1d96fc29a5/"
-                      alt="Colliers"
-                      class="absolute object-contain"
-                      style="left: 6.968%; bottom: 69.306%; width: 18.488%; height: 18.417%"
-                    />
-                    <img
-                      :src="['French','Français','FR'].indexOf(String(line.language || '')) >= 0 ? 'https://5t61ut5p19.ucarecd.net/701d97ba-48e3-4b7b-a448-1ecee3b72a6e/' : 'https://5t61ut5p19.ucarecd.net/5c2ce46d-e9a5-441c-ad9a-8010efc9c9bf/'"
-                      :alt="['French','Français','FR'].indexOf(String(line.language || '')) >= 0 ? 'Maîtres de projets' : 'Project Leaders'"
-                      class="absolute object-contain"
-                      :style="['French','Français','FR'].indexOf(String(line.language || '')) >= 0 ? 'left: 27.873%; bottom: 70.347%; width: 18.044%; height: 15.083%' : 'left: 27.917%; bottom: 72.125%; width: 13.96%; height: 13.083%'"
-                    />
-                    <div
-                      class="absolute whitespace-nowrap font-bold leading-none text-[#03438C]"
-                      :style="'left: 41.28%; right: 4%; bottom: ' + (line.details && String(line.details.specializedTeam || '').trim() ? 46.17 : 40.62) + '%; font-size: 3.7cqw'"
-                    >
-                      {{ (line.details && (line.details.nameWrapped || line.details.name)) ||
-                      line.personName || (['French','Français','FR'].indexOf(String(line.language || '')) >= 0 ? 'Prénom Nom' :
-                      'Firstname Lastname') }}
-                    </div>
-                    <div
-                      class="absolute whitespace-nowrap leading-none text-[#5F636A]"
-                      :style="'left: 41.28%; right: 4%; bottom: ' + (line.details && String(line.details.specializedTeam || '').trim() ? 40.27 : 34.72) + '%; font-size: 2.4cqw'"
-                    >
-                      {{ (line.details && (line.details.displayTitle || line.details.title)) ||
-                      (['French','Français','FR'].indexOf(String(line.language || '')) >= 0 ? 'Titre' : 'Title') }}
-                    </div>
-                    <div
-                      v-if="line.details && line.details.specializedTeam"
-                      class="absolute whitespace-nowrap leading-none text-[#5F636A]"
-                      style="left: 41.28%; right: 4%; bottom: 34.72%; font-size: 2.4cqw"
-                    >
-                      {{ line.details.specializedTeam }}
-                    </div>
-                    <div
-                      class="absolute whitespace-nowrap leading-none text-[#5F636A]"
-                      style="left: 41.28%; right: 4%; bottom: 23.61%; font-size: 2.4cqw"
-                    >
-                      {{ (line.details && line.details.email) ||
-                      (['French','Français','FR'].indexOf(String(line.language || '')) >= 0 ?
-                      'prenom.nom@colliersprojectleaders.com' :
-                      'first.lastname@colliersprojectleaders.com') }}
-                    </div>
-                    <div
-                      class="absolute whitespace-nowrap leading-none text-[#5F636A]"
-                      style="left: 41.28%; right: 4%; bottom: 18.06%; font-size: 2.4cqw"
-                    >
-                      {{ (line.details && line.details.phone) || '+1 555 555 5555' }}
-                    </div>
-                    <div
-                      class="absolute whitespace-nowrap leading-none text-[#5F636A]"
-                      style="left: 41.28%; right: 4%; bottom: 12.5%; font-size: 2.4cqw"
-                    >
-                      {{ (['French','Français','FR'].indexOf(String(line.language || '')) >= 0 ? ((line.details &&
-                      line.details.websiteFr) || 'colliersprojectleaders.com/fr') : ((line.details
-                      && line.details.website) || 'colliersprojectleaders.com')) }}
-                    </div>
-                    <div
-                      class="absolute overflow-hidden whitespace-pre leading-[1.2] text-[#5F636A]"
-                      style="left: 7.14%; right: 58%; bottom: 12.5%; font-size: 2.2cqw"
-                    >
-                      {{ (line.details && line.details.address) ||
-                      (['French','Français','FR'].indexOf(String(line.language || '')) >= 0 ? "Nom de l'adresse" :
-                      'Address name') }}
-                    </div>
-                  </div>
+                  <bfcomp name="CardPreview" :model="line.previewModel"></bfcomp>
                 </button>
                 <div class="min-w-0 flex-1">
                   <div class="flex items-start gap-3">
@@ -266,18 +197,28 @@
             </div>
             <div class="relative">
               <div
-                v-if="model.view.addItemMenuIndex === splitIndex && split.outsideLines && split.outsideLines.length"
-                class="absolute bottom-full right-0 z-20 mb-2 w-[min(100%,22rem)] overflow-hidden rounded-md border border-gray-200 bg-white shadow-lg"
+                v-if="model.view.addItemMenuIndex === splitIndex"
+                class="absolute bottom-full right-0 z-20 mb-2 overflow-hidden rounded-md border border-gray-200 bg-white shadow-lg"
+                style="width: 18rem"
               >
                 <ul class="max-h-64 overflow-y-auto py-1">
-                  <li v-for="line in split.outsideLines" :key="line.id">
+                  <li>
+                    <button
+                      type="button"
+                      class="block w-full border-b border-gray-100 px-3 py-2 text-left text-sm font-medium text-[#25408F] hover:bg-gray-100"
+                      @click="BF.namedAction('addItem', { splitIndex: splitIndex, mode: 'new' })"
+                    >
+                      {{ BF.i18n('label_colliers_addNewCard') }}
+                    </button>
+                  </li>
+                  <li v-for="line in (split.outsideLines || [])" :key="line.id">
                     <button
                       type="button"
                       class="block w-full px-3 py-2 text-left text-sm text-gray-800 hover:bg-gray-100"
                       @click="BF.namedAction('addCartLine', { splitId: split.id, lineId: line.id })"
                     >
-                      <span class="block font-medium">{{ line.personName || line.lineName }}</span>
-                      <span class="block truncate text-gray-500">{{ line.lineName }}</span>
+                      <span class="block font-medium" style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap">{{ line.personName || line.lineName }}</span>
+                      <span v-if="line.personName" class="block text-gray-500" style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap">{{ line.lineName }}</span>
                     </button>
                   </li>
                 </ul>

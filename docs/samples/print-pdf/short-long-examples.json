@@ -86,6 +86,24 @@
         "phone": "6045550199",
         "address": "1066 West Hastings Street, 23rd Floor\nVancouver, BC\nV6E 3X1 Canada"
       }
+    },
+    {
+      "id": "alyssa-morice",
+      "label": "Alyssa Morice — Project Manager (Calgary)",
+      "file": "Colliers-Sample-Alyssa-Morice.pdf",
+      "language": "English",
+      "placeholders": false,
+      "details": {
+        "name": "Alyssa Morice",
+        "title": "Project Manager",
+        "region": "",
+        "specializedTeam": "",
+        "degree": [],
+        "additionalCredentials": "",
+        "email": "alyssa.morice@colliersprojectleaders.com",
+        "phone": "5875720947",
+        "address": "Suite 300\nTransAlta Building\n1100 1st SE\nCalgary, AB\nT2P 1B1 Canada"
+      }
     }
   ]
 }

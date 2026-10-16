@@ -118,9 +118,14 @@
                           {{ lineName(line) }}
                         </div>
                       </div>
-                      <div v-if="(split.locations || []).length" class="shrink-0 pt-0.5 text-right">
-                        <div class="text-sm font-medium tabular-nums text-gray-900">
-                          {{ boxLabel(splitLineQty(split, line)) }}
+                      <div class="shrink-0 pt-0.5 text-right">
+                        <div
+                          class="text-sm font-medium tabular-nums"
+                          :class="
+                            (split.locations || []).length ? 'text-gray-900' : 'text-gray-400'
+                          "
+                        >
+                          {{ boxLabel(assignedLineQty(split, line)) }}
                         </div>
                         <div class="mt-0.5 text-xs tabular-nums text-gray-500">
                           {{ lineCards(split, line) }} {{ t('cards') }}
@@ -193,21 +198,30 @@
               </div>
               <div class="js-add-item-menu relative">
                 <div
-                  v-if="addItemMenuIndex === splitIndex && cartLinesOutsideSplit(split).length"
+                  v-if="addItemMenuIndex === splitIndex"
                   class="absolute bottom-full right-0 z-20 mb-2 w-[22rem] max-w-[calc(100vw-3rem)] overflow-hidden rounded-md border border-gray-200 bg-white shadow-lg"
                 >
                   <ul class="max-h-64 overflow-y-auto py-1">
+                    <li>
+                      <button
+                        type="button"
+                        class="block w-full border-b border-gray-100 px-3 py-2 text-left text-sm font-medium text-colliers-primary hover:bg-gray-100"
+                        @click="onAddNewCard(split)"
+                      >
+                        {{ t('addNewCard') }}
+                      </button>
+                    </li>
                     <li v-for="line in cartLinesOutsideSplit(split)" :key="line.id">
                       <button
                         type="button"
                         class="block w-full px-3 py-2 text-left text-sm text-gray-800 hover:bg-gray-100"
                         @click="onAddCartLine(split, line.id)"
                       >
-                        <span class="block font-medium">{{
+                        <span class="block truncate font-medium">{{
                           personName(line) || lineName(line)
                         }}</span>
-                        <span class="block truncate text-gray-500">{{
-                          personName(line) ? lineName(line) : t('qty') + ' ' + line.quantity
+                        <span v-if="personName(line)" class="block truncate text-gray-500">{{
+                          lineName(line)
                         }}</span>
                       </button>
                     </li>
@@ -369,7 +383,8 @@
           <div
             v-for="slot in previewSlots(previewLine)"
             :key="slot.language"
-            class="card-preview-frame mx-auto max-w-[480px]"
+            class="card-preview-frame mx-auto"
+            :style="previewFrameStyle(previewSlots(previewLine).length)"
           >
             <card-preview
               :details="slot.details"
@@ -384,6 +399,7 @@
 </template>
 
 <script>
+import { cardPreviewSlots, previewFrameStyle } from '../helpers/previewModal'
 import Sortable from 'sortablejs'
 import ColliersPageShell from '../layout/ColliersPageShell.vue'
 import AppButton from '../components/AppButton.vue'
@@ -392,8 +408,6 @@ import AppModal from '../components/AppModal.vue'
 import LocationModal from '../components/LocationModal.vue'
 import { productNameKey } from '../i18n/messages'
 import { catalogCodeFromLine } from '../data/products'
-import { isBilingualLanguage } from '../helpers/formatCardIdentity'
-import { bilingualFrenchPreviewDetails } from '../helpers/titleLocale'
 import {
   createLocation,
   boxesPerAddressForSplit,
@@ -542,6 +556,10 @@ export default {
     splitLineQty: function (split, line) {
       return readSplitQty(split, line)
     },
+    // Nothing ships until the split has an address, so show 0 instead of the stored qty.
+    assignedLineQty: function (split, line) {
+      return (split.locations || []).length ? this.splitLineQty(split, line) : 0
+    },
     maxQty: function (split, line) {
       return maxItemQty(split, store.cart, line && line.id)
     },
@@ -564,7 +582,7 @@ export default {
       return n + ' ' + (n === 1 ? t('box') : t('boxes'))
     },
     lineCards: function (split, line) {
-      return cardsFromBoxes(this.splitLineQty(split, line))
+      return cardsFromBoxes(this.assignedLineQty(split, line))
     },
     locationCards: function (split, loc) {
       return cardsFromBoxes(this.locationBoxes(split, loc))
@@ -575,16 +593,8 @@ export default {
     orderCards: function () {
       return cardsFromBoxes(this.orderBoxes())
     },
-    previewSlots: function (line) {
-      var details = line.details || {}
-      if (isBilingualLanguage(line.language)) {
-        return [
-          { language: 'English', details: details },
-          { language: 'French', details: bilingualFrenchPreviewDetails(details) },
-        ]
-      }
-      return [{ language: line.language, details: details }]
-    },
+    previewFrameStyle: previewFrameStyle,
+    previewSlots: cardPreviewSlots,
     openPreview: function (line) {
       this.previewLine = line
     },
@@ -616,10 +626,9 @@ export default {
       this.addItemMenuIndex = null
     },
     onAddItem: function (split, splitIndex) {
-      if (cartLinesOutsideSplit(split).length) {
-        this.addItemMenuIndex = this.addItemMenuIndex === splitIndex ? null : splitIndex
-        return
-      }
+      this.addItemMenuIndex = this.addItemMenuIndex === splitIndex ? null : splitIndex
+    },
+    onAddNewCard: function (split) {
       this.addItemMenuIndex = null
       addCartItemToSplit(split)
     },
@@ -716,7 +725,7 @@ export default {
               var fromId = evt.from && evt.from.getAttribute('data-split-id')
               if (!lineId || !toId) return
               if (String(fromId) === String(toId) && evt.oldIndex === evt.newIndex) return
-              moveLineToSplit(lineId, toId, evt.newIndex)
+              moveLineToSplit(lineId, toId, evt.newIndex, fromId)
             },
           })
         )

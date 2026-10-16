@@ -14,6 +14,7 @@
 | `Colliers-Sample-Short.pdf`                    | Standard / short **with** specialized team                                                                 |
 | `Colliers-Sample-Long.pdf`                     | Maximum / long: 2-line name, own-row credentials, team, extra air above email                              |
 | `Colliers-Sample-Long-FR.pdf`                  | Same Maximum stack, French wordmark                                                                        |
+| `Colliers-Sample-Alyssa-Morice.pdf`            | Alyssa Morice — Project Manager, Calgary office                                                            |
 | `Colliers-Print-PDF-Approval-Split-NoTeam.pdf` | Locked bilingual print file: split credentials, title \| Nova Scotia, **no** team row (empty team omitted) |
 | `Colliers-Print-PDF-Approval-Standard.png`     | Typical finished card (approval)                                                                           |
 | `Colliers-Print-PDF-Approval-Maximum.png`      | Demanding but still valid finished card (approval)                                                         |

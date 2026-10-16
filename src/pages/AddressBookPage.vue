@@ -78,6 +78,7 @@
               <tr>
                 <th class="w-48 px-4 py-3 sm:w-56">{{ t('locationName') }}</th>
                 <th class="px-4 py-3">{{ t('address') }}</th>
+                <th class="w-40 px-4 py-3 sm:w-48">{{ t('city') }}</th>
                 <th v-if="activeTab === 'personal'" class="w-40 px-4 py-3 text-right">
                   {{ t('actions') }}
                 </th>
@@ -86,7 +87,7 @@
             <tbody>
               <tr v-if="!activeRows.length">
                 <td
-                  :colspan="activeTab === 'personal' ? 3 : 2"
+                  :colspan="activeTab === 'personal' ? 4 : 3"
                   class="px-4 py-10 text-center text-sm italic text-gray-500"
                 >
                   {{ emptyListLabel }}
@@ -98,7 +99,8 @@
                 class="border-b border-gray-100 last:border-0"
               >
                 <td class="px-4 py-3 font-semibold text-gray-900">{{ row.addressName }}</td>
-                <td class="px-4 py-3 text-gray-700">{{ formatAddressLine(row) }}</td>
+                <td class="px-4 py-3 text-gray-700">{{ streetLine(row) }}</td>
+                <td class="px-4 py-3 text-gray-700">{{ cityLine(row) }}</td>
                 <!-- Colliers offices are read-only here (edited in Manage Addresses) -->
                 <td v-if="activeTab === 'personal'" class="whitespace-nowrap px-4 py-3 text-right">
                   <button
@@ -283,6 +285,13 @@ export default {
   methods: {
     t: t,
     formatAddressLine: formatAddressLine,
+    streetLine: function (row) {
+      const street = [row.addressStreet, row.addressStreet2].filter(Boolean).join(', ')
+      return street || formatAddressLine(row)
+    },
+    cityLine: function (row) {
+      return [row.addressCity, row.addressProvince].filter(Boolean).join(', ')
+    },
     clearStatusMessage: function () {
       this.statusMessageKey = null
     },

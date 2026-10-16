@@ -260,7 +260,10 @@ import {
   orderTotal,
 } from '../helpers/orderHistory'
 import { isBilingualLanguage } from '../helpers/formatCardIdentity'
-import { bilingualFrenchPreviewDetails } from '../helpers/titleLocale'
+import {
+  bilingualEnglishPreviewDetails,
+  bilingualFrenchPreviewDetails,
+} from '../helpers/titleLocale'
 import { go } from '../adapters/nav'
 
 export default {
@@ -332,7 +335,7 @@ export default {
       var language = line.language || details.language || 'English'
       if (isBilingualLanguage(language)) {
         return [
-          { language: 'English', details: details },
+          { language: 'English', details: bilingualEnglishPreviewDetails(details) },
           { language: 'French', details: bilingualFrenchPreviewDetails(details) },
         ]
       }

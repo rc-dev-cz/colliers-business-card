@@ -66,9 +66,9 @@
       {{ view.website }}
     </div>
 
-    <div class="absolute overflow-hidden whitespace-pre-wrap text-[#5F636A]" :style="addressStyle">{{
-      view.addressText
-    }}</div>
+    <div class="absolute overflow-hidden whitespace-pre-wrap text-[#5F636A]" :style="addressStyle">
+      {{ view.addressText }}
+    </div>
   </div>
 </template>
 
@@ -82,6 +82,7 @@ import {
   planProductLayout,
   applyEmptyTeamIdentityLayout,
   applyPreviewTitleRegionSplit,
+  cardFaceTitles,
   resolveCardFields,
   trimBottomPct,
   trimLeftPct,
@@ -103,8 +104,10 @@ function viewFromPlan(layout) {
 }
 
 /** Extra name/credential rows grow up. Contacts stay bottom-locked with the address. */
-function withPreviewContacts(view, fonts) {
-  return applyPreviewTitleRegionSplit(applyEmptyTeamIdentityLayout(view), fonts)
+function withPreviewContacts(view, fonts, faceTitles) {
+  return applyPreviewTitleRegionSplit(applyEmptyTeamIdentityLayout(view), fonts, {
+    faceTitles: faceTitles,
+  })
 }
 
 function plannedLayout(details, language, fonts) {
@@ -233,7 +236,11 @@ export default {
       if (!base) base = viewFromPlan(plannedLayout(this.details, this.language, this.layoutFonts))
       if (!base) base = fallbackView(resolveCardFields(this.details, this.language))
       if (this.placeholders) base = this.withOptionalPlaceholders(base)
-      return withPreviewContacts(base, this.layoutFonts)
+      return withPreviewContacts(
+        base,
+        this.layoutFonts,
+        cardFaceTitles(this.details, this.language)
+      )
     },
     addressStyle: function () {
       return {
@@ -264,9 +271,7 @@ export default {
         left: this.identityLeft,
         right: right || this.identityRight,
         bottom: trimBottomPct(y) + '%',
-        fontSize: ptCqw(
-          cred ? CARD_LAYOUT.credentialSize : size || CARD_LAYOUT.bodySize
-        ),
+        fontSize: ptCqw(cred ? CARD_LAYOUT.credentialSize : size || CARD_LAYOUT.bodySize),
       }
     },
     withOptionalPlaceholders: function (view) {

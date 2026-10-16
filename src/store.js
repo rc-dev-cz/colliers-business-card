@@ -564,6 +564,19 @@ export function ensureCartAssignedToShipping() {
   syncAssignments()
 }
 
+/**
+ * Continue to Shipping from the cart or proof. When no group holds a card
+ * (everything was removed from shipping), start over: one group with every
+ * cart card. Otherwise keep the user's groups as they are.
+ */
+export function startShippingFromCart() {
+  var hasVisible = (store.order.splits || []).some(function (split) {
+    return linesInSplit(split).length
+  })
+  if (!hasVisible && store.cart.length) resetOrder(store.order)
+  syncAssignments()
+}
+
 /** Empty cart only. Two placeholder lines on Group 1 so Shipping is usable in localhost. */
 export function ensureSampleShippingDraft() {
   if (Array.isArray(store.cart) && store.cart.length) {
@@ -638,8 +651,8 @@ export function removeSplit(index) {
   persistOrder()
 }
 
-export function moveLineToSplit(lineId, splitId, newIndex) {
-  moveItem(store.order, lineId, splitId, newIndex)
+export function moveLineToSplit(lineId, splitId, newIndex, fromSplitId) {
+  moveItem(store.order, lineId, splitId, newIndex, fromSplitId)
   pruneLocationsWithoutItems(store.order, store.cart)
   fitAllGroups()
   persistCart()
