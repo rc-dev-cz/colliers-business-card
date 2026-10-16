@@ -54,11 +54,11 @@
         >
           <input
             type="checkbox"
-            class="h-4 w-4 rounded border-gray-300 text-colliers-primary focus:ring-colliers-primary"
+            class="pointer-events-none h-4 w-4 rounded border-gray-300 text-colliers-primary focus:ring-colliers-primary"
             :checked="isSelected(option)"
             :disabled="isLocked(option)"
             tabindex="-1"
-            @click.stop.prevent="toggleOption(option)"
+            aria-hidden="true"
           />
           <span>{{ optionLabel(option) }}</span>
         </li>

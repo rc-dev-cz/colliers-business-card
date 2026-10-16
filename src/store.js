@@ -8,6 +8,7 @@ import {
   assignItem,
   attachLine,
   boxesPerAddressForSplit,
+  detachLine,
   fitGroupToLimit,
   includeItem,
   linesForSplit,
@@ -518,10 +519,8 @@ export function removeLineFromSplit(split, id) {
       return String(itemId) === lineId
     })
   })
-  if (!remainsAssigned) {
-    removeLine(id)
-    return
-  }
+  // Last group gone: keep the card in the cart, just stop shipping it.
+  if (!remainsAssigned) detachLine(store.order, lineId)
 
   var line = store.cart.find(function (item) {
     return String(item.id) === lineId
@@ -557,14 +556,11 @@ function stripPlaceholderShipTos() {
   if (changed) persistOrder()
 }
 
-/** Cart lines that are not on any group should show on Shipping Group 1. */
+/**
+ * Cart lines that are not on any group show on Shipping Group 1,
+ * unless the user took them off shipping (detachedIds).
+ */
 export function ensureCartAssignedToShipping() {
-  var hasVisible = (store.order.splits || []).some(function (split) {
-    return linesInSplit(split).length
-  })
-  if (!hasVisible && store.cart.length) {
-    Vue.set(store.order, 'detachedIds', [])
-  }
   syncAssignments()
 }
 
