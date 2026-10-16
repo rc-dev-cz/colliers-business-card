@@ -40,6 +40,7 @@ import { loadManagedTitles, saveManagedTitles } from './helpers/titleAdmin'
 import { loadManagedDegrees, saveManagedDegrees } from './helpers/degreeAdmin'
 import { loadAllPortalOrders } from './helpers/adminData'
 import { buildOrderPayload, logOrderPayload } from './helpers/orderPayload'
+import { attachPrintPdfs } from './helpers/orderPdfs'
 import { buildHistoryRecord, nextOrderId } from './helpers/orderHistory'
 import { getProduct } from './data/products.js'
 import { go } from './adapters/nav'
@@ -888,6 +889,14 @@ export async function confirmSubmit() {
       offices: offices,
       personalAddresses: store.personalAddresses,
     })
+    // Every ordered card travels with its print PDF (base64 for the FileMaker container).
+    try {
+      await attachPrintPdfs(payload, store.cart)
+    } catch (error) {
+      store.submitError =
+        'Could not prepare the print PDF. ' + (error && error.message ? error.message : '')
+      return false
+    }
     const result = await submitOrder(payload)
     if (!result.ok) {
       store.submitError = 'Submit failed'

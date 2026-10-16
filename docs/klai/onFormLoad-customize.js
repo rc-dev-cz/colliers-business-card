@@ -1,3 +1,5 @@
+// Internal tools (the View print PDF button) show only on /customize?...&internal=1.
+model.internalTools = /[?&]internal=1(&|$)/.test(String(window.location.hash || '')) ? 1 : 0
 var code = ''
 var id = ''
 var lineId = ''

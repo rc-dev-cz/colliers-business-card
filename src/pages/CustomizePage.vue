@@ -26,7 +26,9 @@
 
           <p v-if="layoutError" class="mt-3 text-sm text-red-600">{{ layoutError }}</p>
           <p v-else-if="printPdfError" class="mt-3 text-sm text-red-600">{{ printPdfError }}</p>
+          <!-- Internal tool: add &internal=1 to the URL to show it. The order itself builds the PDFs. -->
           <app-button
+            v-if="internalTools"
             class="mt-4"
             variant="outline"
             block
@@ -261,6 +263,9 @@ export default {
   computed: {
     product: function () {
       return getProduct(this.code)
+    },
+    internalTools: function () {
+      return Boolean(this.$route && this.$route.query && this.$route.query.internal === '1')
     },
     isBilingual: function () {
       return isBilingualLanguage(this.product && this.product.language)

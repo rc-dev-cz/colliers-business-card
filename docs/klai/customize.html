@@ -38,7 +38,7 @@
           </div>
         </div>
         <p v-if="model.layoutError" class="mt-3 text-sm text-red-600">{{ model.layoutError }}</p>
-        <button type="button" class="btn-outline mt-4 w-full" :disabled="!model.layoutReady" @click="BF.namedAction('viewPrintPdf')">{{ BF.i18n('label_colliers_viewPrintPdf') }}</button>
+        <button v-if="Number(model.internalTools) === 1" type="button" class="btn-outline mt-4 w-full" :disabled="!model.layoutReady" @click="BF.namedAction('viewPrintPdf')">{{ BF.i18n('label_colliers_viewPrintPdf') }}</button>
       </div>
       <div class="min-w-0 flex-1">
         <div class="mb-6 flex items-start justify-between gap-4">
@@ -146,4 +146,3 @@
     </div>
   </div>
 </div>
-
