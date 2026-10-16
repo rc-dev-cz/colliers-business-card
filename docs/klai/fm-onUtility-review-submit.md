@@ -5,8 +5,9 @@ Place Order on Review runs named action `submitOrder`:
 1. `review-submitOrder.js` builds `model.orderPayload` (same shape as Vue `src/helpers/orderPayload.js`)
 2. `review-buildPrintPdfs.js` builds one print-ready PDF per **unique** card and adds it to `orderPayload.cards[]`
    (Vue: `src/helpers/orderPdfs.js`). Items link to it by `line_ref`, so a card shipped in five groups carries one PDF.
-   A copy stays in localStorage `colliers-print-pdfs` (Vue: `colliers-v2.printPdfs`), last 3 orders, keyed by `order.date`.
-   A PDF problem never blocks the order; `order.print_pdf_status` is `ok`, `kept_in_browser` or `failed: <reason>`.
+   Nothing is stored in the browser: the PDFs hold names and addresses, so any leftover `colliers-print-pdfs`
+   (Vue: `colliers-v2.printPdfs`) is removed at login, logout and Place Order.
+   A PDF problem never blocks the order; `order.print_pdf_status` is `ok`, `disabled` or `failed: <reason>`.
    If a large request ever fails again, set `SEND_PDFS_TO_FILEMAKER = false` at the top of that step.
 3. `runUtilityHook` `{ type: "submit", modelFilterKeys: ["cart", "order", "orderPayload"] }`
 4. JS: if `submitError` is empty → console "Order confirmed" → `/confirmed`
@@ -62,7 +63,7 @@ Notes:
 - Blank text is `null`, money is a number rounded to cents.
 - `cards[].print_pdf_base64` is the whole print file (3.75 x 2.25 in with bleed; bilingual cards have EN + FR faces and
   the blue back), about 210 000 characters per unique card. Store it once per card and link the items by `line_ref`.
-- `order.print_pdf_status`: `ok` | `kept_in_browser` | `failed: <reason>` (then `cards` is empty).
+- `order.print_pdf_status`: `ok` | `disabled` | `failed: <reason>` (then `cards` is empty).
 
 ## Script draft
 

@@ -4,10 +4,8 @@ import {
   buildPrintPdfs,
   bytesToBase64,
   markPrintPdfFailed,
-  PRINT_PDFS_KEY,
-  savePrintPdfs,
+  clearStoredPrintPdfs,
 } from './orderPdfs.js'
-import { readStorage } from './storage.js'
 
 function line(id, name) {
   return {
@@ -71,18 +69,27 @@ describe('buildPrintPdfs', function () {
   })
 })
 
-describe('savePrintPdfs', function () {
+describe('clearStoredPrintPdfs', function () {
   beforeEach(function () {
     localStorage.clear()
   })
 
-  it('keeps the PDFs of the last 3 orders in localStorage', function () {
-    ;['2026-10-16T1', '2026-10-16T2', '2026-10-16T3', '2026-10-16T4'].forEach(function (key) {
-      savePrintPdfs(key, { a: { file_name: 'x.pdf', base64: 'JVBERg==' } })
-    })
-    var all = readStorage(PRINT_PDFS_KEY, {})
-    expect(Object.keys(all)).toEqual(['2026-10-16T2', '2026-10-16T3', '2026-10-16T4'])
-    expect(all['2026-10-16T4'].a.base64).toBe('JVBERg==')
+  it('removes the PDFs older versions kept in localStorage and nothing else', function () {
+    localStorage.setItem(
+      'colliers-v2.printPdfs',
+      JSON.stringify({ old: { a: { base64: 'AAAA' } } })
+    )
+    localStorage.setItem('colliers-v2.cart', '[]')
+    clearStoredPrintPdfs()
+    expect(localStorage.getItem('colliers-v2.printPdfs')).toBeNull()
+    expect(localStorage.getItem('colliers-v2.cart')).toBe('[]')
+  })
+
+  it('building the PDFs never writes to localStorage', async function () {
+    var cart = [line('a', 'Ada Lovelace')]
+    var payload = payloadFor(['a'])
+    attachPrintPdfCards(payload, await buildPrintPdfs(payload, cart), cart, true)
+    expect(Object.keys(localStorage).filter((k) => /pdf/i.test(k))).toEqual([])
   })
 })
 
@@ -106,11 +113,11 @@ describe('attachPrintPdfCards', function () {
     expect(JSON.stringify(payload.groups)).not.toContain('print_pdf')
   })
 
-  it('can keep the PDFs out of the request, and reports a failure', function () {
+  it('can skip the PDFs, and reports a failure', function () {
     var payload = { order: {}, groups: [] }
     attachPrintPdfCards(payload, { a: { file_name: 'x.pdf', base64: 'JVBERg==' } }, cart, false)
     expect(payload.cards).toEqual([])
-    expect(payload.order.print_pdf_status).toBe('kept_in_browser')
+    expect(payload.order.print_pdf_status).toBe('disabled')
     markPrintPdfFailed(payload, new Error('Ada: too long'))
     expect(payload.order.print_pdf_status).toBe('failed: Ada: too long')
   })

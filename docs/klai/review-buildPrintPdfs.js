@@ -680,12 +680,20 @@ try {
   }
   // Place Order: build the print-ready PDF of every ordered card (once per card, however many
   // shipping groups use it) and add it to model.orderPayload.cards[] as base64, linked to the items
-  // by line_ref. A copy stays in localStorage ('colliers-print-pdfs', last 3 orders). A PDF problem
+  // by line_ref. Nothing is stored in the browser (the PDFs hold names and addresses). A PDF problem
   // never blocks the order: order.print_pdf_status says what happened.
-  var SEND_PDFS_TO_FILEMAKER = true // false = keep the PDFs only in localStorage
+  var SEND_PDFS_TO_FILEMAKER = true // false = do not build or send the print PDFs
+  // Leftovers from earlier versions that kept the PDFs in localStorage.
+  try {
+    localStorage.removeItem('colliers-print-pdfs')
+  } catch (e) {}
   var cart = Array.isArray(app.cart) ? app.cart : Array.isArray(model.cart) ? model.cart : []
   var payload = model.orderPayload
   if (!payload || !Array.isArray(payload.groups)) return
+  if (!SEND_PDFS_TO_FILEMAKER) {
+    payload.order.print_pdf_status = 'disabled'
+    return
+  }
   var lineIds = {}
   payload.groups.forEach(function (group) {
     ;(group.items || []).forEach(function (item) {
@@ -748,43 +756,22 @@ try {
       base64: toBase64(bytes),
     }
   }
-  var orderKey = String((payload.order && payload.order.date) || Date.now())
-  var store = {}
-  try {
-    store = JSON.parse(localStorage.getItem('colliers-print-pdfs') || '{}') || {}
-  } catch (e) {
-    store = {}
-  }
-  store[orderKey] = pdfs
-  Object.keys(store)
-    .sort()
-    .slice(0, Math.max(0, Object.keys(store).length - 3))
-    .forEach(function (old) {
-      delete store[old]
-    })
-  localStorage.setItem('colliers-print-pdfs', JSON.stringify(store))
-  if (SEND_PDFS_TO_FILEMAKER) {
-    payload.cards = lines.map(function (row) {
-      var pdf = pdfs[String(row.id)]
-      return {
-        line_ref: String(row.id),
-        language: String(row.language || (row.details && row.details.language) || ''),
-        print_pdf_file_name: pdf.file_name,
-        print_pdf_base64: pdf.base64,
-      }
-    })
-  }
-  payload.order.print_pdf_status = SEND_PDFS_TO_FILEMAKER ? 'ok' : 'kept_in_browser'
+  payload.cards = lines.map(function (row) {
+    var pdf = pdfs[String(row.id)]
+    return {
+      line_ref: String(row.id),
+      language: String(row.language || (row.details && row.details.language) || ''),
+      print_pdf_file_name: pdf.file_name,
+      print_pdf_base64: pdf.base64,
+    }
+  })
+  payload.order.print_pdf_status = 'ok'
   if (typeof console !== 'undefined' && console.info)
     console.info(
-      '[Colliers order] Print PDFs saved in localStorage "colliers-print-pdfs" for ' +
-        orderKey +
-        ': ' +
-        Object.keys(pdfs).length +
-        ' card(s)'
+      '[Colliers order] Print PDFs added to the order: ' + payload.cards.length + ' card(s)'
     )
 } catch (err) {
-  // Never block Place Order because of a PDF problem (or a full localStorage).
+  // Never block Place Order because of a PDF problem.
   if (typeof console !== 'undefined' && console.warn)
     console.warn('[buildPrintPdfs] print PDF not saved', err)
   if (model.orderPayload && model.orderPayload.order) {

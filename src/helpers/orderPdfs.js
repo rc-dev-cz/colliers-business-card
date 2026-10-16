@@ -1,11 +1,11 @@
 import { buildPrintPdfBytes } from './printPdf.js'
-import { readStorage, writeStorage } from './storage.js'
+import { removeStorage } from './storage.js'
 
 /**
  * Place Order: every ordered card gets its print-ready PDF as base64 (FileMaker converts it
- * back to a PDF). It is kept in localStorage, not added to the order request, so the request
- * stays small and a PDF problem never blocks the order. Real cards only: no preview
- * samples (C.M., sample address).
+ * back to a PDF). It travels in the order object only: nothing is stored in the browser, and
+ * a PDF problem never blocks the order. Real cards only: no preview samples (C.M., sample
+ * address).
  */
 
 export function bytesToBase64(bytes) {
@@ -35,9 +35,6 @@ export async function printPdfForLine(line) {
   return { file_name: fileNameFor(line), base64: bytesToBase64(bytes) }
 }
 
-export var PRINT_PDFS_KEY = 'printPdfs'
-var KEEP_ORDERS = 3
-
 /** { [lineId]: { file_name, base64 } } for every card in the order payload. Throws if a card cannot be printed. */
 export async function buildPrintPdfs(payload, cart) {
   var wanted = {}
@@ -61,26 +58,22 @@ export async function buildPrintPdfs(payload, cart) {
   return out
 }
 
-/** Keeps the PDFs of the last orders in localStorage ("colliers-v2.printPdfs"), keyed by order date. */
-export function savePrintPdfs(orderKey, pdfs) {
-  var all = readStorage(PRINT_PDFS_KEY, {}) || {}
-  all[orderKey] = pdfs
-  Object.keys(all)
-    .sort()
-    .slice(0, Math.max(0, Object.keys(all).length - KEEP_ORDERS))
-    .forEach(function (old) {
-      delete all[old]
-    })
-  writeStorage(PRINT_PDFS_KEY, all)
-  return all
-}
-
-/** Set to false to keep the PDFs only in localStorage and out of the order request. */
+/** Set to false to not build or send the print PDFs at all. */
 export var SEND_PDFS_TO_FILEMAKER = true
 
 /**
+ * Older versions kept the PDFs of the last orders in localStorage ("colliers-v2.printPdfs").
+ * They hold names and addresses, so any leftovers are removed at login, logout and Place Order.
+ */
+export var LEGACY_PRINT_PDFS_KEY = 'printPdfs'
+export function clearStoredPrintPdfs() {
+  removeStorage(LEGACY_PRINT_PDFS_KEY)
+}
+
+/**
  * payload.cards[]: one PDF per unique card (however many shipping groups use it),
- * linked to payload.groups[].items[] by line_ref. order.print_pdf_status says what happened.
+ * linked to payload.groups[].items[] by line_ref. order.print_pdf_status says what happened
+ * (ok | disabled | failed: ...).
  */
 export function attachPrintPdfCards(payload, pdfs, lines, sendToFileMaker) {
   var send = sendToFileMaker === undefined ? SEND_PDFS_TO_FILEMAKER : sendToFileMaker
@@ -99,7 +92,7 @@ export function attachPrintPdfCards(payload, pdfs, lines, sendToFileMaker) {
         }
       })
     : []
-  payload.order.print_pdf_status = send ? 'ok' : 'kept_in_browser'
+  payload.order.print_pdf_status = send ? 'ok' : 'disabled'
   return payload
 }
 

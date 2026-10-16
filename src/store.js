@@ -43,8 +43,9 @@ import { buildOrderPayload, logOrderPayload } from './helpers/orderPayload'
 import {
   attachPrintPdfCards,
   buildPrintPdfs,
+  clearStoredPrintPdfs,
   markPrintPdfFailed,
-  savePrintPdfs,
+  SEND_PDFS_TO_FILEMAKER,
 } from './helpers/orderPdfs'
 import { buildHistoryRecord, nextOrderId } from './helpers/orderHistory'
 import { getProduct } from './data/products.js'
@@ -165,12 +166,14 @@ export function login(email) {
     loggedInAt: Date.now(),
   })
   persistSession()
+  clearStoredPrintPdfs()
   loadProfileCollections()
 }
 
 export function logout() {
   Vue.set(store, 'session', null)
   persistSession()
+  clearStoredPrintPdfs()
   replaceList(store.personalAddresses, [])
   replaceList(store.orderHistory, [])
   // Cart and shipping draft are not per-user, so the next login must not inherit them.
@@ -894,11 +897,11 @@ export async function confirmSubmit() {
       offices: offices,
       personalAddresses: store.personalAddresses,
     })
-    // One print PDF (base64) per unique card: in payload.cards[] and in localStorage.
+    // One print PDF (base64) per unique card, in payload.cards[] only (nothing is stored in the browser).
     // A PDF problem never blocks the order; order.print_pdf_status says what happened.
+    clearStoredPrintPdfs()
     try {
-      const pdfs = await buildPrintPdfs(payload, store.cart)
-      savePrintPdfs(payload.order.date, pdfs)
+      const pdfs = SEND_PDFS_TO_FILEMAKER ? await buildPrintPdfs(payload, store.cart) : {}
       attachPrintPdfCards(payload, pdfs, store.cart)
     } catch (error) {
       console.warn('[Colliers order] print PDF not saved', error)
