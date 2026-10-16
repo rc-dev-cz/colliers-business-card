@@ -14,20 +14,13 @@
         <div class="w-full lg:max-w-[480px]">
           <h2 class="mb-4 text-lg font-bold text-colliers-primary">{{ t('cardPreview') }}</h2>
           <div class="space-y-4">
-            <div
-              v-for="preview in previewSlots"
-              :key="preview.language"
-              class="card-preview-frame card-preview-frame--bleed"
-            >
-              <!-- Same page as the print PDF: card + 1/8 in bleed, dashed line = trim -->
-              <div class="card-preview-bleed">
-                <card-preview
-                  :details="preview.details"
-                  :language="preview.language"
-                  :plan="preview.plan"
-                  placeholders
-                ></card-preview>
-              </div>
+            <div v-for="preview in previewSlots" :key="preview.language" class="card-preview-frame">
+              <card-preview
+                :details="preview.details"
+                :language="preview.language"
+                :plan="preview.plan"
+                placeholders
+              ></card-preview>
             </div>
           </div>
 
@@ -462,10 +455,13 @@ export default {
       var current = String(this.details.name || '')
       var next = clipName(value)
       var fonts = this.layoutFonts
-      if (!nameFitsOnCard(next, fonts) && next.length >= current.length) {
-        // Typing or pasting past two lines: keep what still fits and say why.
-        while (next.length > current.length && !nameFitsOnCard(next, fonts))
-          next = next.slice(0, -1)
+      var details = this.details
+      var fits = function (name) {
+        return nameFitsOnCard(Object.assign({}, details, { name: name }), fonts)
+      }
+      if (!fits(next) && next.length >= current.length) {
+        // Typing or pasting past the room left for name + credentials: keep what fits, say why.
+        while (next.length > current.length && !fits(next)) next = next.slice(0, -1)
         this.flashCredentialNotice('name')
         if (event && event.target) event.target.value = next
       } else if (this.credentialNoticeField === 'name') {

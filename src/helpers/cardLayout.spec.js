@@ -13,6 +13,7 @@ import {
   cardFaceTitles,
   emailFitsOnCard,
   nameFitsOnCard,
+  withSampleCredential,
   resolveCardFields,
   teamFitsOnCard,
   titleSizeFor,
@@ -709,8 +710,33 @@ describe('bilingual region fallback', function () {
 
 describe('nameFitsOnCard and emailFitsOnCard', function () {
   it('accepts names up to two lines and rejects a word wider than the column', function () {
-    expect(nameFitsOnCard('Christopher Harrington-Wellington', fonts)).toBe(true)
-    expect(nameFitsOnCard('sdfasdfasdfsadf sadfasdfsadasdfasdfsdfsdadasdasdas', fonts)).toBe(false)
+    expect(nameFitsOnCard({ name: 'Christopher Harrington-Wellington' }, fonts)).toBe(true)
+    expect(
+      nameFitsOnCard({ name: 'sdfasdfasdfsadf sadfasdfsadasdfasdfsdfsdadasdasdas' }, fonts)
+    ).toBe(false)
+  })
+
+  it('moves the C.M. sample to its own row instead of clipping it', function () {
+    // Grow the last word until the name alone just fills its line (no room for C.M.).
+    var last = 'asdasd'
+    while (
+      credentialsFitOnCard({ name: 'asdasdasdasdasdasdasd ' + last + 'a' }, fonts, 'English')
+    ) {
+      last += 'a'
+    }
+    var name = 'asdasdasdasdasdasdasd ' + last
+    expect(nameFitsOnCard({ name: name }, fonts)).toBe(true)
+    var layout = plan(withSampleCredential({ name: name }, 'English'))
+    expect(layout.inlineCredential).toBe('')
+    expect(layout.credentialLine).toBe('C.M.')
+    // Short name: the sample stays after the name.
+    var short = plan(withSampleCredential({ name: 'Ada Lovelace' }, 'English'))
+    expect(short.inlineCredential).toBe(', C.M.')
+  })
+
+  it('stops the name when the chosen credentials cannot fit anywhere', function () {
+    var wide = 'Registered Professional Planner Certified Management Consultant'
+    expect(nameFitsOnCard({ name: 'Ada Lovelace', additionalCredentials: wide }, fonts)).toBe(false)
   })
 
   it('matches the planner on the email line', function () {

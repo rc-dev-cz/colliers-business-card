@@ -7,6 +7,7 @@ import {
   applyEmptyTeamIdentityLayout,
   applyPreviewTitleRegionSplit,
   cardFaceTitles,
+  withSampleCredential,
   layoutErrorMessage,
   planProductLayout,
   snapshotCardDetails,
@@ -263,21 +264,6 @@ export function printInlineCredential(details, language) {
   return ', ' + cred
 }
 
-function applyPrintCredentialPlaceholder(productPlan, details) {
-  productPlan.pages.forEach(function (page) {
-    var inline = printInlineCredential(details, page.language)
-    if (!inline || !page.layout) return
-    if (page.layout.credentialLine) {
-      page.layout.credentialLine = inline.replace(/^, /, '')
-      return
-    }
-    page.layout.inlineCredential = inline
-    page.layout.credentialLine = ''
-    page.layout.credMode = 'inline'
-    if (page.fields) page.fields.credentialSuffix = inline.replace(/^, /, '')
-  })
-}
-
 function applyPrintAddressPlaceholder(productPlan, details) {
   var address = details && details.address
   productPlan.pages.forEach(function (page) {
@@ -291,12 +277,13 @@ function applyPrintAddressPlaceholder(productPlan, details) {
 export async function buildPrintPdfBytes(details, language, opts) {
   var snapshot = snapshotCardDetails(details)
   var measureFonts = await loadLayoutFonts()
-  var productPlan = planProductLayout(snapshot, language, measureFonts)
   // Real sample cards (short-long-examples.json) pass placeholders: false to skip C.M. / sample address.
-  if (!opts || opts.placeholders !== false) {
-    applyPrintCredentialPlaceholder(productPlan, snapshot)
-    applyPrintAddressPlaceholder(productPlan, snapshot)
-  }
+  var placeholders = !opts || opts.placeholders !== false
+  // With no credential chosen, the sample C.M. is planned like a real token: after the
+  // name when it fits, otherwise on its own row (never clipped at the column edge).
+  var planDetails = placeholders ? withSampleCredential(snapshot, language) : snapshot
+  var productPlan = planProductLayout(planDetails, language, measureFonts)
+  if (placeholders) applyPrintAddressPlaceholder(productPlan, snapshot)
   var faceTitles = cardFaceTitles(snapshot, language)
   productPlan.pages.forEach(function (page) {
     page.layout = applyPreviewTitleRegionSplit(

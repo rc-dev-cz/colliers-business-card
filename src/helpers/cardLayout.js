@@ -3,7 +3,9 @@ import {
   formatTitleLine,
   isBilingualLanguage,
   isFrenchLanguage,
+  previewCredentialText,
   SAMPLE_ADDRESS,
+  SAMPLE_CREDENTIAL,
   WEBSITE_EN,
   WEBSITE_FR,
 } from './formatCardIdentity.js'
@@ -348,12 +350,34 @@ export function packCredentials(fontBold, lastNameLine, credText, L) {
   return { mode: 'split', inline: inline, row: row }
 }
 
-/** Name wraps by whole words onto at most two lines of the identity column. */
-export function nameFitsOnCard(name, fonts) {
-  var text = String(name || '').trim()
+/**
+ * Name wraps by whole words onto at most two lines and still leaves room for the
+ * credentials: the chosen ones (inline or on their own row), or the sample ", C.M."
+ * that the preview and print PDF draw on the name line when none are chosen.
+ */
+export function nameFitsOnCard(details, fonts) {
+  var src = details || {}
+  var text = String(src.name || '').trim()
   if (!text || !fonts || !fonts.fontBold) return true
-  var wrap = wrapByWords(fonts.fontBold, text, CARD_LAYOUT.nameSize, CARD_LAYOUT.identityWidth)
-  return wrap.ok && wrap.lines.length <= CARD_LAYOUT.nameMaxLines
+  var L = CARD_LAYOUT
+  var wrap = wrapByWords(fonts.fontBold, text, L.nameSize, L.identityWidth)
+  if (!wrap.ok || wrap.lines.length > L.nameMaxLines) return false
+  var lastLine = wrap.lines[wrap.lines.length - 1] || ''
+  // The sample packs like a real token: after the name when it fits, else its own row.
+  var cred = formatCredentialSuffix(src.degree, src.additionalCredentials) || SAMPLE_CREDENTIAL
+  return packCredentials(fonts.fontBold, lastLine, cred, L).mode !== 'error'
+}
+
+/**
+ * Details with the sample "C.M." as the credential when none is chosen, so the
+ * planner places it like a real token (inline, or its own row when the name is full).
+ */
+export function withSampleCredential(details, language) {
+  var src = details || {}
+  if (formatCredentialSuffix(src.degree, src.additionalCredentials)) return src
+  return Object.assign({}, src, {
+    additionalCredentials: previewCredentialText('', '', language),
+  })
 }
 
 /** Email prints on one line of the email lane. */

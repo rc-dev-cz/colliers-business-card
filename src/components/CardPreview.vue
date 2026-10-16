@@ -1,6 +1,6 @@
 <template>
   <div
-    class="card-preview-face relative aspect-[1.75/1] w-full overflow-hidden rounded-md border border-gray-200 bg-white text-[#4A4A4A] shadow-sm"
+    class="card-preview-face relative aspect-[1.75/1] w-full overflow-hidden border border-gray-200 bg-white text-[#4A4A4A]"
     style="container-type: inline-size; font-family: 'ColliersOpenSans', sans-serif"
   >
     <img :src="logoSrc" alt="Colliers" class="absolute object-contain" :style="logoStyle" />
@@ -66,9 +66,12 @@
       {{ view.website }}
     </div>
 
-    <div class="absolute overflow-hidden whitespace-pre-wrap text-[#5F636A]" :style="addressStyle">
-      {{ view.addressText }}
-    </div>
+    <!-- v-text: pre-wrap keeps any template whitespace, so the text is bound, not inlined -->
+    <div
+      class="absolute overflow-hidden whitespace-pre-wrap text-[#5F636A]"
+      :style="addressStyle"
+      v-text="view.addressText"
+    ></div>
   </div>
 </template>
 
@@ -83,6 +86,7 @@ import {
   applyEmptyTeamIdentityLayout,
   applyPreviewTitleRegionSplit,
   cardFaceTitles,
+  withSampleCredential,
   resolveCardFields,
   trimBottomPct,
   trimLeftPct,
@@ -232,7 +236,17 @@ export default {
       return (inset / L.trimW) * 100 + '%'
     },
     view: function () {
-      var base = viewFromPlan(this.plan)
+      // No credential chosen: plan with the sample C.M. so it sits after the name, or on
+      // its own row when the name line is full (same as the print PDF).
+      var sampled =
+        this.placeholders && this.layoutFonts
+          ? plannedLayout(
+              withSampleCredential(this.details, this.language),
+              this.language,
+              this.layoutFonts
+            )
+          : null
+      var base = viewFromPlan(sampled || this.plan)
       if (!base) base = viewFromPlan(plannedLayout(this.details, this.language, this.layoutFonts))
       if (!base) base = fallbackView(resolveCardFields(this.details, this.language))
       if (this.placeholders) base = this.withOptionalPlaceholders(base)
@@ -286,6 +300,8 @@ export default {
       var address = details.address != null ? String(details.address).trim() : ''
       if (!address) next.addressText = previewAddressText('', language)
       if (cred === real) return next
+      // Already planned with the sample (inline or own row): keep that placement.
+      if (view.credentialLine === cred || view.inlineCredential === ', ' + cred) return next
       // Degrees start on the name line, after the comma, same as "Lastname, C.M."
       // A real credential string that already needed its own row stays on that row.
       if (view.credentialLine) {
