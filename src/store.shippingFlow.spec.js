@@ -1,5 +1,6 @@
 import { beforeEach, describe, expect, it } from 'vitest'
 import {
+  addCartLineToSplit,
   addShipLocation,
   addToCart,
   clearCart,
@@ -14,13 +15,10 @@ import {
   splitOrder,
   store,
   subtotal,
+  syncAssignments,
   updateQty,
 } from './store.js'
-import {
-  billedBoxesCart,
-  billedBoxesForLine,
-  readSplitQty,
-} from './helpers/order.js'
+import { billedBoxesCart, billedBoxesForLine, readSplitQty } from './helpers/order.js'
 import { cardsFromBoxes } from './helpers/cart.js'
 
 var CODES = ['BCAD-PL-ENG', 'BCAD-PL-FR', 'BCAD-PL-BIL']
@@ -34,6 +32,14 @@ function placeholderDetails(index) {
     // Keep lines distinct so addToCart does not merge them.
     addressName: 'Address name ' + (index + 1),
   }
+}
+
+function cartLinesNotShipping() {
+  return store.cart.filter(function (line) {
+    return !store.order.splits.some(function (split) {
+      return (split.itemIds || []).map(String).indexOf(String(line.id)) >= 0
+    })
+  })
 }
 
 function seedCart(count) {
@@ -141,7 +147,7 @@ describe('shipping flow: cart, split groups, and boxes', function () {
     var split = store.order.splits[0]
 
     addShipLocation(split, 'Address name / Unit, Street', 2)
-    addShipLocation(split, 'Nom de l\'adresse', 3)
+    addShipLocation(split, "Nom de l'adresse", 3)
 
     expect(locationBoxSum(split)).toBe(5)
     store.cart.forEach(function (line) {
@@ -227,6 +233,86 @@ describe('shipping flow: cart, split groups, and boxes', function () {
     expect(itemCount()).toBe(2)
     expect(store.order.splits[0].itemIds).not.toContain(String(lineId))
     expect(store.order.splits[1].itemIds).toContain(String(lineId))
+  })
+
+  it('shipping trash on the only group keeps the card in the cart as not shipping', function () {
+    seedCart(3)
+    ensureCartAssignedToShipping()
+    splitOrder(0)
+
+    var lineId = store.cart[1].id
+    removeLineFromSplit(store.order.splits[0], lineId)
+    removeLineFromSplit(store.order.splits[1], lineId)
+
+    expect(itemCount()).toBe(3)
+    expect(selectedShippingItemCount()).toBe(2)
+    store.order.splits.forEach(function (split) {
+      expect(split.itemIds).not.toContain(String(lineId))
+    })
+    expect(store.order.detachedIds).toEqual([String(lineId)])
+    expect(
+      cartLinesNotShipping().map(function (line) {
+        return line.id
+      })
+    ).toEqual([lineId])
+  })
+
+  it('a not-shipping card is not pulled back onto group 1 by a sync', function () {
+    seedCart(2)
+    ensureCartAssignedToShipping()
+    var lineId = store.cart[0].id
+
+    removeLineFromSplit(store.order.splits[0], lineId)
+    syncAssignments()
+    ensureCartAssignedToShipping()
+
+    expect(store.order.splits[0].itemIds).not.toContain(String(lineId))
+    expect(cartLinesNotShipping().length).toBe(1)
+  })
+
+  it('removing the only card from the only group stays off shipping on re-entry', function () {
+    seedCart(1)
+    ensureCartAssignedToShipping()
+    var lineId = store.cart[0].id
+
+    removeLineFromSplit(store.order.splits[0], lineId)
+    ensureCartAssignedToShipping()
+
+    expect(itemCount()).toBe(1)
+    expect(store.order.splits[0].itemIds).toEqual([])
+    expect(cartLinesNotShipping().length).toBe(1)
+  })
+
+  it('a new cart card still lands on group 1 while another card is off shipping', function () {
+    seedCart(1)
+    ensureCartAssignedToShipping()
+    var offId = store.cart[0].id
+    removeLineFromSplit(store.order.splits[0], offId)
+
+    addToCart({ code: CODES[1], quantity: 1, details: placeholderDetails(1) }, { openCart: false })
+    ensureCartAssignedToShipping()
+
+    var newId = store.cart[store.cart.length - 1].id
+    expect(newId).not.toBe(offId)
+    expect(store.order.splits[0].itemIds).toEqual([String(newId)])
+    expect(
+      cartLinesNotShipping().map(function (line) {
+        return line.id
+      })
+    ).toEqual([offId])
+  })
+
+  it('adding a not-shipping card back to a group puts it on shipping again', function () {
+    seedCart(2)
+    ensureCartAssignedToShipping()
+    var lineId = store.cart[0].id
+    removeLineFromSplit(store.order.splits[0], lineId)
+
+    addCartLineToSplit(store.order.splits[0], lineId)
+
+    expect(store.order.splits[0].itemIds).toContain(String(lineId))
+    expect(store.order.detachedIds).toEqual([])
+    expect(cartLinesNotShipping()).toEqual([])
   })
 
   it('drawer delete removes a card from the cart and every shipping group', function () {

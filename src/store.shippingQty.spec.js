@@ -285,17 +285,18 @@ describe('shipping actions require selected cards', function () {
   it('clears leftover ship-tos when the last card leaves the group', function () {
     store.order.splits[0].itemIds = ['line-1']
     removeLineFromSplit(store.order.splits[0], 'line-1')
-    expect(store.cart).toEqual([])
+    expect(store.cart.length).toBe(1)
     expect(store.order.splits[0].itemIds).toEqual([])
     expect(store.order.splits[0].locations).toEqual([])
-    expect(itemCount()).toBe(0)
+    expect(store.order.detachedIds).toEqual(['line-1'])
+    expect(itemCount()).toBe(1)
   })
 
-  it('puts a detached cart line back on group 1 when shipping has no selected items', function () {
+  it('keeps a detached cart line off shipping even when every group is empty', function () {
     store.order.detachedIds = ['line-1']
     ensureCartAssignedToShipping()
-    expect(store.order.splits[0].itemIds).toEqual(['line-1'])
-    expect(store.order.detachedIds || []).toEqual([])
+    expect(store.order.splits[0].itemIds).toEqual([])
+    expect(store.order.detachedIds).toEqual(['line-1'])
   })
 
   it('assigns a new cart line to group 1 even if leftover dummy itemIds remain', function () {
