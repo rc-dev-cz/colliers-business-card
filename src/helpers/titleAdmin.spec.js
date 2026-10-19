@@ -4,28 +4,26 @@ import { titlesForProductLanguage } from './titleAdmin.js'
 
 describe('titlesForProductLanguage', function () {
   it('returns English titles for bilingual Customize', function () {
-    expect(titlesForProductLanguage('Bilingual', [])).toEqual(jobTitlesEn)
-    expect(titlesForProductLanguage('Bilingual', [])[0]).toBe('Business Development Manager')
-    expect(titlesForProductLanguage('Bilingual', [])).not.toContain(
-      'Responsable du développement commercial'
-    )
+    expect(titlesForProductLanguage('Bilingual', [], [])).toEqual(jobTitlesEn)
+    expect(titlesForProductLanguage('Bilingual', [], [])).toHaveLength(31)
+    expect(titlesForProductLanguage('Bilingual', [], [])).not.toContain('Directrice')
   })
 
   it('returns English titles for English Customize', function () {
-    expect(titlesForProductLanguage('English', jobTitlesEn)).toEqual(jobTitlesEn)
+    expect(titlesForProductLanguage('English', jobTitlesEn, jobTitlesFr)).toEqual(jobTitlesEn)
   })
 
   it('returns French titles for French-only Customize', function () {
-    expect(titlesForProductLanguage('French', jobTitlesEn)).toEqual(jobTitlesFr)
-    expect(titlesForProductLanguage('French', [])[0]).toBe(
-      'Responsable du développement commercial'
-    )
+    expect(titlesForProductLanguage('French', jobTitlesEn, [])).toEqual(jobTitlesFr)
+    expect(titlesForProductLanguage('French', [], [])).toHaveLength(8)
+    expect(titlesForProductLanguage('French', [], [])).toContain('Chef d’équipe')
   })
 
-  it('prefers managed English titles for bilingual when provided', function () {
-    expect(titlesForProductLanguage('Bilingual', ['Managing Director', 'Broker'])).toEqual([
+  it('prefers the managed list for the card language', function () {
+    expect(titlesForProductLanguage('Bilingual', ['Managing Director', 'Broker'], [])).toEqual([
       'Managing Director',
       'Broker',
     ])
+    expect(titlesForProductLanguage('French', ['Broker'], ['Courtier'])).toEqual(['Courtier'])
   })
 })

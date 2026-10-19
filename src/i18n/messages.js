@@ -18,14 +18,12 @@ export const messages = {
   titleFr: { EN: 'French title', FR: 'Titre français' },
   selectTitle: { EN: 'Select a title', FR: 'Sélectionner un titre' },
   selectRegion: { EN: 'Select a region', FR: 'Sélectionner une région' },
-  degree: { EN: 'Degree/Certification (Optional)', FR: 'Diplôme/Certification (facultatif)' },
-  selectDegree: {
-    EN: 'Search or select degree...',
-    FR: 'Rechercher ou sélectionner un diplôme...',
-  },
-  additionalCredentials: {
-    EN: 'Additional Credentials (Optional)',
-    FR: "Informations d'identification supplémentaires (facultatif)",
+  degree: { EN: 'Credentials (Optional)', FR: 'Désignations (facultatif)' },
+  selectDegree: { EN: 'Select credentials', FR: 'Sélectionner des désignations' },
+  additionalCredentials: { EN: 'Other credential', FR: 'Autre désignation' },
+  addOtherCredential: {
+    EN: 'Not on the list? Add another',
+    FR: 'Pas dans la liste ? En ajouter une',
   },
   region: { EN: 'Region (Optional)', FR: 'Région (facultatif)' },
   specializedTeam: { EN: 'Specialized Team (Optional)', FR: 'Équipe spécialisée (facultatif)' },
@@ -41,12 +39,12 @@ export const messages = {
     FR: 'Ce nom est trop long pour tenir sur deux lignes de la carte.',
   },
   layoutErrorCredentials: {
-    EN: 'These degrees and credentials are too long for the card.',
-    FR: 'Ces diplômes et mentions sont trop longs pour la carte.',
+    EN: 'These credentials are too long for the card.',
+    FR: 'Ces désignations sont trop longues pour la carte.',
   },
   credentialsNoSpace: {
     EN: 'No more space for credentials on the card.',
-    FR: 'Il n’y a plus d’espace pour les diplômes et mentions sur la carte.',
+    FR: 'Il n’y a plus d’espace pour les désignations sur la carte.',
   },
   layoutErrorTitle: {
     EN: 'This title and region are too long for the card.',
@@ -366,33 +364,31 @@ export const messages = {
     FR: 'Brouillon enregistré. Vous pourrez terminer cette adresse plus tard.',
   },
   manageTitles: { EN: 'Manage Titles', FR: 'Gérer les titres' },
-  manageTitlesHint: {
-    EN: 'Titles shown on business cards during customization.',
-    FR: 'Titres affichés sur les cartes lors de la personnalisation.',
+  manageDegrees: { EN: 'Manage Credentials', FR: 'Gérer les désignations' },
+  englishTitles: { EN: 'English titles', FR: 'Titres anglais' },
+  frenchTitles: { EN: 'French titles', FR: 'Titres français' },
+  newTitlePlaceholderEn: {
+    EN: 'Enter new English title...',
+    FR: 'Entrez un nouveau titre anglais...',
   },
-  manageDegrees: { EN: 'Manage Degrees', FR: 'Gérer les diplômes' },
-  manageDegreesHint: {
-    EN: 'Permitted degrees and certifications allowed on business cards.',
-    FR: 'Diplômes et certifications autorisés sur les cartes de visite.',
-  },
-  newTitlePlaceholder: {
-    EN: 'Enter new title...',
-    FR: 'Entrez un nouveau titre...',
+  newTitlePlaceholderFr: {
+    EN: 'Enter new French title...',
+    FR: 'Entrez un nouveau titre français...',
   },
   newDegreePlaceholder: {
-    EN: 'Enter new degree...',
-    FR: 'Entrez le nouveau diplôme...',
+    EN: 'Enter new credential...',
+    FR: 'Entrez une nouvelle désignation...',
   },
   addTitle: { EN: 'Add title', FR: 'Ajouter un titre' },
   editTitle: { EN: 'Edit title', FR: 'Modifier le titre' },
   deleteTitle: { EN: 'Delete title', FR: 'Supprimer le titre' },
-  addDegree: { EN: 'Add degree', FR: 'Ajouter un diplôme' },
-  editDegree: { EN: 'Edit degree', FR: 'Modifier le diplôme' },
-  deleteDegree: { EN: 'Delete degree', FR: 'Supprimer le diplôme' },
-  noDegrees: { EN: 'No degrees yet.', FR: 'Aucun diplôme pour le moment.' },
+  addDegree: { EN: 'Add credential', FR: 'Ajouter une désignation' },
+  editDegree: { EN: 'Edit credential', FR: 'Modifier la désignation' },
+  deleteDegree: { EN: 'Delete credential', FR: 'Supprimer la désignation' },
+  noDegrees: { EN: 'No credentials found.', FR: 'Aucune désignation trouvée.' },
   confirmDeleteDegree: {
-    EN: 'Remove this degree or certification?',
-    FR: 'Supprimer ce diplôme ou cette certification ?',
+    EN: 'Remove this credential?',
+    FR: 'Supprimer cette désignation ?',
   },
   invoiceHistory: { EN: 'Invoice History', FR: 'Historique des factures' },
   reporting: { EN: 'Reporting', FR: 'Rapports' },
@@ -409,8 +405,8 @@ export const messages = {
     FR: '{n} titres configurés',
   },
   degreesConfigured: {
-    EN: '{n} degrees configured',
-    FR: '{n} diplômes configurés',
+    EN: '{n} credentials configured',
+    FR: '{n} désignations configurées',
   },
   orderHistoryTileDesc: {
     EN: 'Review previous orders, track status, and reorder business cards.',
@@ -429,12 +425,12 @@ export const messages = {
     FR: "Configurez les destinations d'expédition, les bureaux et les adresses par défaut pour les cartes.",
   },
   manageTitlesTileDesc: {
-    EN: 'Manage permitted job titles allowed on business cards.',
-    FR: 'Gérez les titres de poste autorisés sur les cartes de visite.',
+    EN: 'Manage the English and French job titles allowed on business cards.',
+    FR: "Gérez les titres de poste anglais et français autorisés sur les cartes d'affaires.",
   },
   manageDegreesTileDesc: {
-    EN: 'Manage permitted degrees and certifications allowed on business cards.',
-    FR: 'Gérez les diplômes et certifications autorisés sur les cartes de visite.',
+    EN: 'Manage the credentials allowed after the name on business cards.',
+    FR: "Gérez les désignations autorisées après le nom sur les cartes d'affaires.",
   },
   adminStubHint: {
     EN: 'This screen will be filled in by',
@@ -448,7 +444,8 @@ export const messages = {
     EN: 'Remove this Colliers office address?',
     FR: 'Supprimer cette adresse de bureau Colliers ?',
   },
-  noTitles: { EN: 'No titles yet.', FR: 'Aucun titre pour le moment.' },
+  noTitlesEn: { EN: 'No English titles yet.', FR: 'Aucun titre anglais pour le moment.' },
+  noTitlesFr: { EN: 'No French titles yet.', FR: 'Aucun titre français pour le moment.' },
   confirmDeleteTitle: {
     EN: 'Remove this title?',
     FR: 'Supprimer ce titre ?',

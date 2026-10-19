@@ -34,8 +34,8 @@
                 "fr": "Actif"
             },
             "label_colliers_addDegree": {
-                "en": "Add degree",
-                "fr": "Ajouter un diplôme"
+                "en": "Add credential",
+                "fr": "Ajouter une désignation"
             },
             "label_colliers_addDesignation": {
                 "en": "Add designation",
@@ -62,8 +62,8 @@
                 "fr": "Ajouter au panier"
             },
             "label_colliers_additionalCredentialsOptional": {
-                "en": "Additional Credentials (Optional)",
-                "fr": "Informations d'identification supplémentaires (facultatif)"
+                "en": "Other credential",
+                "fr": "Autre désignation"
             },
             "label_colliers_address": {
                 "en": "Address",
@@ -166,8 +166,8 @@
                 "fr": "Supprimer cette adresse personnelle ?"
             },
             "label_colliers_confirmDeleteDegree": {
-                "en": "Remove this degree or certification?",
-                "fr": "Supprimer ce diplôme ou cette certification ?"
+                "en": "Remove this credential?",
+                "fr": "Supprimer cette désignation ?"
             },
             "label_colliers_confirmDeleteDesignation": {
                 "en": "Remove this designation?",
@@ -214,16 +214,16 @@
                 "fr": "2 maximum, après le nom"
             },
             "label_colliers_degreeOptional": {
-                "en": "Degree/Certification (Optional)",
-                "fr": "Diplôme/Certification (facultatif)"
+                "en": "Credentials (Optional)",
+                "fr": "Désignations (facultatif)"
             },
             "label_colliers_degreesConfiguredSuffix": {
-                "en": "degrees configured",
-                "fr": "diplômes configurés"
+                "en": "credentials configured",
+                "fr": "désignations configurées"
             },
             "label_colliers_deleteDegree": {
-                "en": "Delete degree",
-                "fr": "Supprimer le diplôme"
+                "en": "Delete credential",
+                "fr": "Supprimer la désignation"
             },
             "label_colliers_deleteDesignation": {
                 "en": "Delete designation",
@@ -258,8 +258,8 @@
                 "fr": "Modifier l'adresse"
             },
             "label_colliers_editDegree": {
-                "en": "Edit degree",
-                "fr": "Modifier le diplôme"
+                "en": "Edit credential",
+                "fr": "Modifier la désignation"
             },
             "label_colliers_editDesignation": {
                 "en": "Edit designation",
@@ -378,12 +378,12 @@
                 "fr": "Cette adresse de bureau est trop longue pour la carte."
             },
             "label_colliers_layoutErrorCredentials": {
-                "en": "These degrees and credentials are too long for the card.",
-                "fr": "Ces diplômes et mentions sont trop longs pour la carte."
+                "en": "These credentials are too long for the card.",
+                "fr": "Ces désignations sont trop longues pour la carte."
             },
             "label_colliers_layoutErrorDegrees": {
-                "en": "You can select up to 2 degrees or certifications.",
-                "fr": "Vous pouvez sélectionner jusqu’à 2 diplômes ou certifications."
+                "en": "You can select up to 2 credentials.",
+                "fr": "Vous pouvez sélectionner jusqu’à 2 désignations."
             },
             "label_colliers_layoutErrorEmail": {
                 "en": "This email is too long to fit on one line of the card.",
@@ -438,16 +438,12 @@
                 "fr": "Adresses de bureau Colliers utilisées sur les cartes et pour l'expédition."
             },
             "label_colliers_manageDegrees": {
-                "en": "Manage Degrees",
-                "fr": "Gérer les diplômes"
-            },
-            "label_colliers_manageDegreesHint": {
-                "en": "Permitted degrees and certifications allowed on business cards.",
-                "fr": "Diplômes et certifications autorisés sur les cartes de visite."
+                "en": "Manage Credentials",
+                "fr": "Gérer les désignations"
             },
             "label_colliers_manageDegreesTileDesc": {
-                "en": "Manage permitted degrees and certifications allowed on business cards.",
-                "fr": "Gérez les diplômes et certifications autorisés sur les cartes de visite."
+                "en": "Manage the credentials allowed after the name on business cards.",
+                "fr": "Gérez les désignations autorisées après le nom sur les cartes d'affaires."
             },
             "label_colliers_manageDesignations": {
                 "en": "Manage Designations",
@@ -494,8 +490,8 @@
                 "fr": "Nouvelle adresse"
             },
             "label_colliers_noDegrees": {
-                "en": "No degrees yet.",
-                "fr": "Aucun diplôme pour le moment."
+                "en": "No credentials found.",
+                "fr": "Aucune désignation trouvée."
             },
             "label_colliers_noDesignations": {
                 "en": "No designations yet.",
@@ -706,8 +702,8 @@
                 "fr": "Sélectionner une adresse de bureau"
             },
             "label_colliers_selectDegree": {
-                "en": "Select a degree or certification",
-                "fr": "Sélectionner un diplôme ou une certification"
+                "en": "Select credentials",
+                "fr": "Sélectionner des désignations"
             },
             "label_colliers_selectLocation": {
                 "en": "Select location",
@@ -1326,8 +1322,8 @@
                 "fr": "Entrez la nouvelle adresse..."
             },
             "placeholder_colliers_newDegree": {
-                "en": "Enter new degree...",
-                "fr": "Entrez le nouveau diplôme..."
+                "en": "Enter new credential...",
+                "fr": "Entrez une nouvelle désignation..."
             },
             "placeholder_colliers_newDesignation": {
                 "en": "Enter new designation...",
@@ -1352,6 +1348,70 @@
             "label_colliers_selectTitleFr": {
                 "en": "Select a French title",
                 "fr": "Sélectionner un titre français"
+            },
+            "label_colliers_manageTitles": {
+                "en": "Manage Titles",
+                "fr": "Gérer les titres"
+            },
+            "label_colliers_manageTitlesTileDesc": {
+                "en": "Manage the English and French job titles allowed on business cards.",
+                "fr": "Gérez les titres de poste anglais et français autorisés sur les cartes d'affaires."
+            },
+            "label_colliers_titlesConfiguredSuffix": {
+                "en": "titles configured",
+                "fr": "titres configurés"
+            },
+            "label_colliers_addTitle": {
+                "en": "Add title",
+                "fr": "Ajouter un titre"
+            },
+            "label_colliers_editTitle": {
+                "en": "Edit title",
+                "fr": "Modifier le titre"
+            },
+            "label_colliers_deleteTitle": {
+                "en": "Delete title",
+                "fr": "Supprimer le titre"
+            },
+            "label_colliers_confirmDeleteTitle": {
+                "en": "Remove this title?",
+                "fr": "Supprimer ce titre ?"
+            },
+            "label_colliers_noTitlesEn": {
+                "en": "No English titles yet.",
+                "fr": "Aucun titre anglais pour le moment."
+            },
+            "label_colliers_noTitlesFr": {
+                "en": "No French titles yet.",
+                "fr": "Aucun titre français pour le moment."
+            },
+            "placeholder_colliers_newTitleEn": {
+                "en": "Enter new English title...",
+                "fr": "Entrez un nouveau titre anglais..."
+            },
+            "placeholder_colliers_newTitleFr": {
+                "en": "Enter new French title...",
+                "fr": "Entrez un nouveau titre français..."
+            },
+            "label_colliers_englishTitles": {
+                "en": "English titles",
+                "fr": "Titres anglais"
+            },
+            "label_colliers_frenchTitles": {
+                "en": "French titles",
+                "fr": "Titres français"
+            },
+            "label_colliers_addOtherCredential": {
+                "en": "Not on the list? Add another",
+                "fr": "Pas dans la liste ? En ajouter une"
+            },
+            "label_colliers_credentialsNoSpace": {
+                "en": "No more space for credentials on the card.",
+                "fr": "Il n’y a plus d’espace pour les désignations sur la carte."
+            },
+            "label_colliers_addAddressInBook": {
+                "en": "Add a new address in your Address Book",
+                "fr": "Ajouter une adresse dans votre carnet d’adresses"
             }
         },
         "langDefault": "en",

@@ -1,5 +1,4 @@
 import { WEBSITE_EN, WEBSITE_FR, websiteForProduct } from '../helpers/formatCardIdentity.js'
-import { TITLE_EN_TO_FR } from '../helpers/titleLocale.js'
 
 export const CARD_COMPANY = 'Colliers Project Leaders'
 
@@ -65,13 +64,55 @@ export function catalogCodeFromLine(line) {
   return 'BCAD-PL-ENG'
 }
 
-/** English title seed (English + Bilingual Customize / Manage Titles) until FileMaker loads. */
-export const jobTitlesEn = Object.keys(TITLE_EN_TO_FR)
+/**
+ * English title seed (English + Bilingual Customize, Manage Titles English tab) until FileMaker
+ * loads store_titles. Colliers Project Leaders Titles.xlsx, Oct 2026.
+ */
+export const jobTitlesEn = [
+  'Advisor',
+  'Assistant Preconstruction Manager',
+  'Assistant Project Manager',
+  'Associate',
+  'Business Development Manager',
+  'Director',
+  'Director, Preconstruction',
+  'Human Resources Business Partner',
+  'Independent Consultant',
+  'Manager',
+  'Manager, Infrastructure Advisory',
+  'Managing Principal',
+  'National Sector Lead',
+  'Preconstruction Manager',
+  'Principal',
+  'Professional Practice Specialist',
+  'Project Director',
+  'Project Manager',
+  'Proposal Writer',
+  'Regional Marketing Specialist',
+  'Sector Director',
+  'Senior Advisor',
+  'Senior Associate - Infrastructure Advisory',
+  'Senior Manager, Project Controls',
+  'Senior Preconstruction Manager',
+  'Senior Project Manager',
+  'Senior Proposal Writer',
+  'Senior Vice President',
+  'Talent Acquisition Business Partner',
+  'Team Lead',
+  'Vice President',
+]
 
-/** French title seed (French Customize) until FileMaker loads. */
-export const jobTitlesFr = jobTitlesEn.map(function (title) {
-  return TITLE_EN_TO_FR[title]
-})
+/** French title seed (French Customize, bilingual French title, Manage Titles French tab). Titles French.xlsx, Oct 2026. */
+export const jobTitlesFr = [
+  'Chef d’équipe',
+  'Directrice',
+  'Gestionnaire de Projet',
+  'Gestionnaire de projet adjoint',
+  'Gestionnaire de projets principal',
+  'Gestionnaire de projets Senior',
+  'Partenaire d’affaires sénior en acquisition de talent',
+  'Responsable du développement commercial',
+]
 
 /** @deprecated Prefer jobTitlesEn / jobTitlesFr. Defaults to English for admin + bilingual. */
 export const jobTitles = jobTitlesEn

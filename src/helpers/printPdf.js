@@ -7,17 +7,11 @@ import {
   applyEmptyTeamIdentityLayout,
   applyPreviewTitleRegionSplit,
   cardFaceTitles,
-  withSampleCredential,
   layoutErrorMessage,
   planProductLayout,
   snapshotCardDetails,
 } from './cardLayout.js'
-import {
-  formatCredentialSuffix,
-  isBilingualLanguage,
-  previewAddressText,
-  previewCredentialText,
-} from './formatCardIdentity.js'
+import { isBilingualLanguage, previewAddressText } from './formatCardIdentity.js'
 import logoUrl from '../assets/colliers-logo-mark.png?url'
 import wordsEnUrl from '../assets/lockup-words-en.png?url'
 import wordsFrUrl from '../assets/lockup-words-fr.png?url'
@@ -254,16 +248,6 @@ export function printAddressLines(address, language) {
   return previewAddressText('', language).split('\n')
 }
 
-/** ", C.M." drawn when no degree or credential is entered. Null keeps the planned suffix. */
-export function printInlineCredential(details, language) {
-  var degree = details && details.degree
-  var extra = details && details.additionalCredentials
-  if (formatCredentialSuffix(degree, extra)) return null
-  var cred = previewCredentialText(degree, extra, language)
-  if (!cred) return null
-  return ', ' + cred
-}
-
 function applyPrintAddressPlaceholder(productPlan, details) {
   var address = details && details.address
   productPlan.pages.forEach(function (page) {
@@ -277,12 +261,9 @@ function applyPrintAddressPlaceholder(productPlan, details) {
 export async function buildPrintPdfBytes(details, language, opts) {
   var snapshot = snapshotCardDetails(details)
   var measureFonts = await loadLayoutFonts()
-  // Real sample cards (short-long-examples.json) pass placeholders: false to skip C.M. / sample address.
+  // Real sample cards (short-long-examples.json) pass placeholders: false to skip the sample address.
   var placeholders = !opts || opts.placeholders !== false
-  // With no credential chosen, the sample C.M. is planned like a real token: after the
-  // name when it fits, otherwise on its own row (never clipped at the column edge).
-  var planDetails = placeholders ? withSampleCredential(snapshot, language) : snapshot
-  var productPlan = planProductLayout(planDetails, language, measureFonts)
+  var productPlan = planProductLayout(snapshot, language, measureFonts)
   if (placeholders) applyPrintAddressPlaceholder(productPlan, snapshot)
   var faceTitles = cardFaceTitles(snapshot, language)
   productPlan.pages.forEach(function (page) {
@@ -323,7 +304,7 @@ var lastPrintPdfUrl = ''
 
 export async function viewPrintPdf(details, language) {
   var snapshot = snapshotCardDetails(details)
-  // Customize / Proof print must not inject preview samples (C.M., fake address).
+  // Customize / Proof print must not inject the preview sample address.
   var bytes = await buildPrintPdfBytes(snapshot, language, { placeholders: false })
   var blob = new Blob([bytes], { type: 'application/pdf' })
   if (lastPrintPdfUrl) {
