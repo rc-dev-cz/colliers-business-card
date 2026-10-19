@@ -1,11 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { PDFDocument } from 'pdf-lib'
-import {
-  buildPrintPdfBytes,
-  printAddressLines,
-  printInlineCredential,
-  PRINT_PDF_PAGE,
-} from './printPdf.js'
+import { buildPrintPdfBytes, printAddressLines, PRINT_PDF_PAGE } from './printPdf.js'
 import { CARD_LAYOUT } from './cardLayout.js'
 
 var base = {
@@ -61,16 +56,15 @@ describe('printPdf', function () {
 
   it('joins short degrees inline on the identity line', async function () {
     var bytes = await buildPrintPdfBytes(
-      Object.assign({}, base, { degree: ['CPA'], additionalCredentials: 'C.M.' }),
+      Object.assign({}, base, { degree: ['CPA'], additionalCredentials: 'ICD.D' }),
       'English'
     )
     expect(bytes.byteLength).toBeGreaterThan(500)
   })
 
-  it('omits the C.M. sample when placeholders are off', async function () {
+  it('prints no credential when none is chosen', async function () {
     var captured
     await buildPrintPdfBytes(base, 'English', {
-      placeholders: false,
       adjustPlan: function (plan) {
         captured = plan.pages[0].layout
       },
@@ -79,7 +73,7 @@ describe('printPdf', function () {
     expect(captured.credentialLine).toBe('')
   })
 
-  it('viewPrintPdf does not inject C.M. for a real order with no degrees', async function () {
+  it('viewPrintPdf prints no credential for a real order with no degrees', async function () {
     var captured
     await buildPrintPdfBytes(
       {
@@ -101,22 +95,7 @@ describe('printPdf', function () {
     )
     expect(captured.inlineCredential).toBe('')
     expect(captured.credentialLine).toBe('')
-    expect(String(captured.nameLines && captured.nameLines.join(' '))).not.toMatch(/C\.M\./)
-  })
-
-  it('keeps the C.M. sample and comma when no credential is entered', function () {
-    expect(printInlineCredential({ degree: [], additionalCredentials: '' }, 'English')).toBe(
-      ', C.M.'
-    )
-    expect(printInlineCredential({ degree: [], additionalCredentials: '' }, 'French')).toBe(
-      ', C.M.'
-    )
-    expect(printInlineCredential({ degree: ['CPA'], additionalCredentials: '' }, 'English')).toBe(
-      null
-    )
-    expect(printInlineCredential({ degree: [], additionalCredentials: 'P.Eng' }, 'English')).toBe(
-      null
-    )
+    expect(String(captured.nameLines && captured.nameLines.join(' '))).toBe('Ada Lovelace')
   })
 
   it('uses the address placeholder when no office is selected', function () {

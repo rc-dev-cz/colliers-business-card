@@ -3,14 +3,12 @@ import {
   formatTitleLine,
   isBilingualLanguage,
   isFrenchLanguage,
-  previewCredentialText,
   SAMPLE_ADDRESS,
-  SAMPLE_CREDENTIAL,
   WEBSITE_EN,
   WEBSITE_FR,
 } from './formatCardIdentity.js'
 import { EMAIL_MAX, formatCardPhone } from './validate.js'
-import { suggestFrenchTitle, TITLE_FR_TALENT_ACQUISITION } from './titleLocale.js'
+import { curlyApostrophes, TITLE_FR_TALENT_ACQUISITION } from './titleLocale.js'
 
 var IN = 72
 
@@ -167,7 +165,7 @@ export function cardFaceTitles(details, language) {
     return [resolveCardFields(src, language).title]
   }
   var englishTitle = src.titleEn || src.title
-  var frenchTitle = String(src.titleFr || '').trim() || suggestFrenchTitle(englishTitle)
+  var frenchTitle = String(src.titleFr || '').trim()
   return [
     resolveCardFields(Object.assign({}, src, { title: englishTitle }), 'English').title,
     resolveCardFields(Object.assign({}, src, { title: frenchTitle }), 'French').title,
@@ -199,7 +197,7 @@ function titlePartOf(joined) {
 export function titleSizeFor(font, joined, layout) {
   var L = layout || CARD_LAYOUT
   var titlePart = titlePartOf(joined)
-  if (titlePart !== TITLE_FR_TALENT_ACQUISITION) return L.bodySize
+  if (curlyApostrophes(titlePart) !== TITLE_FR_TALENT_ACQUISITION) return L.bodySize
   if (!font || typeof font.widthOfTextAtSize !== 'function') return L.bodySize
   if (fitsLine(font, titlePart, L.bodySize, L.titleMaxWidth)) return L.bodySize
   var width = font.widthOfTextAtSize(titlePart, L.bodySize)
@@ -352,8 +350,7 @@ export function packCredentials(fontBold, lastNameLine, credText, L) {
 
 /**
  * Name wraps by whole words onto at most two lines and still leaves room for the
- * credentials: the chosen ones (inline or on their own row), or the sample ", C.M."
- * that the preview and print PDF draw on the name line when none are chosen.
+ * chosen credentials (inline or on their own row).
  */
 export function nameFitsOnCard(details, fonts) {
   var src = details || {}
@@ -363,21 +360,9 @@ export function nameFitsOnCard(details, fonts) {
   var wrap = wrapByWords(fonts.fontBold, text, L.nameSize, L.identityWidth)
   if (!wrap.ok || wrap.lines.length > L.nameMaxLines) return false
   var lastLine = wrap.lines[wrap.lines.length - 1] || ''
-  // The sample packs like a real token: after the name when it fits, else its own row.
-  var cred = formatCredentialSuffix(src.degree, src.additionalCredentials) || SAMPLE_CREDENTIAL
+  var cred = formatCredentialSuffix(src.degree, src.additionalCredentials)
+  if (!cred) return true
   return packCredentials(fonts.fontBold, lastLine, cred, L).mode !== 'error'
-}
-
-/**
- * Details with the sample "C.M." as the credential when none is chosen, so the
- * planner places it like a real token (inline, or its own row when the name is full).
- */
-export function withSampleCredential(details, language) {
-  var src = details || {}
-  if (formatCredentialSuffix(src.degree, src.additionalCredentials)) return src
-  return Object.assign({}, src, {
-    additionalCredentials: previewCredentialText('', '', language),
-  })
 }
 
 /** Email prints on one line of the email lane. */
@@ -505,9 +490,8 @@ export function planProductLayout(details, language, fonts) {
     if (isFrenchLanguage(lang)) {
       pageDetails = Object.assign({}, snapshot, { website: WEBSITE_FR })
       if (isBilingualLanguage(language)) {
-        var frenchTitle = String(snapshot.titleFr || '').trim()
-        if (!frenchTitle) frenchTitle = suggestFrenchTitle(snapshot.title)
-        pageDetails.title = frenchTitle
+        // The French face uses the picked French title only (no English → French mapping).
+        pageDetails.title = String(snapshot.titleFr || '').trim()
       }
     }
     var fields = resolveCardFields(pageDetails, lang)

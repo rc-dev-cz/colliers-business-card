@@ -14,6 +14,9 @@ var here = dirname(fileURLToPath(import.meta.url))
 var outDir = join(here, '../../docs/samples/print-pdf')
 
 var SAMPLE_DETAILS = APPROVAL_STANDARD
+// Bilingual cards need a picked French title (no English → French mapping); this sample
+// keeps the approved wording on both faces.
+var BILINGUAL_DETAILS = Object.assign({}, APPROVAL_STANDARD, { titleFr: APPROVAL_STANDARD.title })
 
 var SAMPLES = [
   { language: 'English', file: 'Colliers-Sample-EN.pdf', pages: 2 },
@@ -26,7 +29,8 @@ describe('print PDF client samples', function () {
     mkdirSync(outDir, { recursive: true })
     for (var i = 0; i < SAMPLES.length; i++) {
       var sample = SAMPLES[i]
-      var bytes = await buildPrintPdfBytes(SAMPLE_DETAILS, sample.language)
+      var details = sample.language === 'Bilingual' ? BILINGUAL_DETAILS : SAMPLE_DETAILS
+      var bytes = await buildPrintPdfBytes(details, sample.language)
       var doc = await PDFDocument.load(bytes)
       expect(doc.getPageCount()).toBe(sample.pages)
       writeFileSync(join(outDir, sample.file), Buffer.from(bytes))

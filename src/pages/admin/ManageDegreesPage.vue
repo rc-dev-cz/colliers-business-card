@@ -1,10 +1,7 @@
 <template>
   <colliers-page-shell viewport-list>
     <div class="colliers-viewport-list mx-auto w-full max-w-2xl">
-      <admin-page-header
-        :title="t('manageDegrees')"
-        :subtitle="t('manageDegreesHint')"
-      ></admin-page-header>
+      <admin-page-header :title="t('manageDegrees')"></admin-page-header>
 
       <admin-string-list-panel
         viewport-fill

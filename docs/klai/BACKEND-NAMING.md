@@ -69,8 +69,8 @@ Bus variables (FileMaker side): `$$BF_Payload`, `$$BF_Model`, `$$BF_Actions`, `$
 | ------------------- | ------------------ | ---------------- | -------------------- | ------------------------------------- | ------------------------------------------------------------- | ------- |
 | Admin Home          | `/admin`           | `admin`          | false (planned true) | `BF - onFormRequest - admin`          | Dashboard / tool links; `model.counts` in modelDev            | Live UI |
 | Manage Addresses    | `/admin/addresses` | `adminaddresses` | false (planned true) | `BF - onFormRequest - adminaddresses` | `create`, `update`, `delete` (offices) — client stub until FM | Live UI |
-| Manage Titles       | `/admin/titles`    | `admintitles`    | false (planned true) | `BF - onFormRequest - admintitles`    | `create`, `update`, `delete`                                  | Live UI |
-| Manage Degrees      | `/admin/degrees`   | `admindegrees`   | false (planned true) | `BF - onFormRequest - admindegrees`   | `create`, `update`, `delete`                                  | Live UI |
+| Manage Titles       | `/admin/titles`    | `admintitles`    | true                 | `BF - onFormRequest - admintitles`    | `save`, `delete`                                              | Live UI |
+| Manage Degrees      | `/admin/degrees`   | `admindegrees`   | true                 | `BF - onFormRequest - admindegrees`   | `save`, `delete`                                              | Live UI |
 | Admin Order History | `/admin/orders`    | `adminorders`    | false (planned true) | `BF - onFormRequest - adminorders`    | Admin-scoped order list (employee); no `repeat` in v1         | Live UI |
 | Invoice History     | `/admin/invoices`  | `admininvoices`  | false (planned true) | `BF - onFormRequest - admininvoices`  | Invoice table + download (mock)                               | Live UI |
 | Reporting           | `/admin/reporting` | `adminreporting` | false (planned true) | `BF - onFormRequest - adminreporting` | Charts / activity / export CTA (mock)                         | Live UI |
@@ -232,7 +232,7 @@ Preview objects may include empty card fields the `CardPreview` component reads.
 
 `card` here is only the empty preview seed (`language`). Do not copy the customize form onto this page. FileMaker must return the same product `code` values as Catalogue, on `products` or on `product`. The page matches `?code=` and shows nothing when that code is missing.
 
-**Customize** (`customize`) — planned request load
+**Customize** (`customize`) — request load for title and degree lists ([`fm-onFormRequest-customize.xml`](fm-onFormRequest-customize.xml); turn on `requestHook` once that script is in)
 
 ```json
 {
@@ -245,7 +245,10 @@ Preview objects may include empty card fields the `CardPreview` component reads.
   },
   "card": {/* Card */},
   "cart": [],
+  "titles": [{ "id": 87, "title": "Principal", "language": "EN" }],
+  "degrees": ["Arch. Tech", "Architect"],
   "titleOptions": [],
+  "titleFrChoices": [],
   "degreeOptions": [],
   "offices": [],
   "officeOptions": [],
@@ -253,7 +256,7 @@ Preview objects may include empty card fields the `CardPreview` component reads.
 }
 ```
 
-FileMaker should return the same Product rows as Catalogue (`products`, or the one match on `product`). `code` must match `?code=`. `cart` is the lines this page appends. `titleOptions` / `degreeOptions` come from the FileMaker titles and degrees tables (plain strings, no `| Canada` suffix). FileMaker fills `offices` with Address records (`id`, `addressName`, `addressStreet`, `addressStreet2`, `listLabel`). `loadOffices` keeps those rows, builds `cardAddress` for the preview/print block, and only seeds stubs when the list is empty. The office select binds `office.cardAddress` into `model.card.address`.
+FileMaker should return the same Product rows as Catalogue (`products`, or the one match on `product`). `code` must match `?code=`. `cart` is the lines this page appends. FileMaker sends `titles` (records from `store_titles`, same as Manage Titles) and `degrees` (strings from `store_degrees`, same as Manage Degrees). `onFormLoad` builds `titleOptions` (English for English + bilingual cards, French for French-only), `titleFrChoices` (French titles for the bilingual French dropdown in `wrapCardName`), and `degreeOptions`; each falls back to its seed list when FileMaker sends none. FileMaker fills `offices` with Address records (`id`, `addressName`, `addressStreet`, `addressStreet2`, `listLabel`). `loadOffices` keeps those rows, builds `cardAddress` for the preview/print block, and only seeds stubs when the list is empty. The office select binds `office.cardAddress` into `model.card.address`.
 
 **Order draft (shared)** — `app.cart` + `app.order`. Shipping, Review, and Confirmed read/write this so the cart drawer and pages stay in sync. Page `model.cart` / `model.order` are the same objects for the current screen. `model.view` is computed in `refreshView` and is **not** sent to FileMaker.
 
@@ -373,13 +376,28 @@ Shipping & handling is always `$0.00` (included in the box price). No payment.
 
 Hook set names below are the agreed Mike / FileMaker contract. Build FM scripts to match; do not invent alternate names without updating this doc.
 
-**Manage Titles** (`admintitles`) — Live UI in Klai (`formName` Manage Titles; route `/admin/titles`). Title strings (FileMaker titles, not “designations”). Client stubs for `create` / `update` / `delete` until FM utilities exist (`update` sends old + new string).
+**Manage Titles** (`admintitles`) — Live UI in Klai (`formName` Manage Titles; route `/admin/titles`). English / French tabs over FileMaker `store_titles` (`id`, `title`, `language`). FileMaker scripts: [`fm-admintitles.md`](fm-admintitles.md).
+
+Request — one record per title, sorted by title:
 
 ```json
 {
-  "titles": ["Managing Director", "Associate"]
+  "titles": [
+    { "id": 87, "title": "Principal", "language": "EN" },
+    { "id": 91, "title": "Chef d'équipe", "language": "FR" }
+  ]
 }
 ```
+
+Utility — Klai sends only `payload` (`modelFilterKeys: ["payload"]`), one save at a time (`model.saving` locks add / edit / delete until FileMaker answers). FileMaker script: [`fm-onUtility-admintitles.xml`](fm-onUtility-admintitles.xml).
+
+| Named action | `options.type` | `payload` | FileMaker returns |
+| --- | --- | --- | --- |
+| `addTitle` → `persistTitle` | `save` | `{ id: "", tempId, title, language }` | `payload.newId` (Klai swaps `tempId` for it) |
+| `saveEdit` → `persistTitle` | `save` | `{ id, title, language }` | — |
+| `deleteTitle` → `removeTitle` | `delete` | `{ id, title, language }` | — |
+
+`onFormLoad` ([`admintitles-onFormLoad.js`](admintitles-onFormLoad.js)) turns plain-string responses into English records. When FileMaker returns nothing it seeds the 31 English titles (`Colliers Project Leaders Titles.xlsx`, Oct 2026) and the 8 French titles from `Titles French.xlsx`. Customize `titleOptions` uses the same 31 English titles for English + bilingual cards ([`onFormLoad-customize.js`](onFormLoad-customize.js)); French-only cards keep `TITLES_FR`. Admin Home falls back to `counts.titles = 39`.
 
 **Admin Home** (`admin`) — Live UI in Klai (route `/admin`). Dashboard tiles; counts from `model.counts` until FM request hook is on.
 
@@ -395,7 +413,7 @@ Hook set names below are the agreed Mike / FileMaker contract. Build FM scripts 
 
 Tiles are UI-only. Counts may come from this object or from loading the three lists on related pages.
 
-**Manage Addresses** (`adminaddresses`) — Live UI in Klai (route `/admin/addresses`). Company offices only (same **Address** shape). `saveOffice` calls utility `type: "save"` and swaps `model.payload.id` (`office-<timestamp>` on create) for `model.payload.newId` after FileMaker returns. `deleteOffice` calls utility `type: "delete"` with that Address id.
+**Manage Addresses** (`adminaddresses`) — Live UI in Klai (route `/admin/addresses`). Company offices only (same **Address** shape): FileMaker `Store_OfficeAddresses` rows with `address_type = "office"` and `active` not 0 ([`fm-offices.md`](fm-offices.md)). Address Book (Office Addresses tab), Customize and Shipping load the same `offices` list from their own request hooks. `saveOffice` calls utility `type: "save"` and swaps `model.payload.id` (`office-<timestamp>` on create) for `model.payload.newId` after FileMaker returns. `deleteOffice` calls utility `type: "delete"` with that Address id.
 
 ```json
 {
@@ -412,7 +430,9 @@ Tiles are UI-only. Counts may come from this object or from loading the three li
 }
 ```
 
-**Manage Degrees** (`admindegrees`) — Live UI in Klai (route `/admin/degrees`). Same pattern as titles. Client stubs until FM utilities exist.
+**Manage Degrees** (`admindegrees`) — Live UI in Klai, shown as **Manage Credentials** (route `/admin/degrees`). Degree strings from FileMaker `store_degrees`. Customize labels the same list "Credentials (Optional)"; free text is "Other credential" behind a "Not on the list? Add another" link. An empty card shows no sample credential (the old "C.M." placeholder is gone from preview, print and Vue).
+
+Until FileMaker returns `degrees`, `onFormLoad` seeds the 32 client-approved designations (`Designations.xlsx`, Oct 2026; [`admindegrees-onFormLoad.js`](admindegrees-onFormLoad.js)). Customize `degreeOptions` uses the same list ([`onFormLoad-customize.js`](onFormLoad-customize.js)), and Admin Home falls back to `counts.degrees = 32` ([`admin-onFormLoad.js`](admin-onFormLoad.js)). Any non-empty FileMaker list wins. Keep the three seeds in sync until FM serves the list.
 
 ```json
 {

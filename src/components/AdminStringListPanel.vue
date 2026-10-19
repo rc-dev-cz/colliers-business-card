@@ -1,5 +1,6 @@
 <template>
   <div class="colliers-list-panel" :class="{ 'colliers-list-panel--viewport': viewportFill }">
+    <slot name="header"></slot>
     <div class="mb-4 flex gap-2">
       <label class="sr-only" for="admin-string-list-add">{{ placeholder }}</label>
       <input

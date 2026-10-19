@@ -86,16 +86,13 @@ import {
   applyEmptyTeamIdentityLayout,
   applyPreviewTitleRegionSplit,
   cardFaceTitles,
-  withSampleCredential,
   resolveCardFields,
   trimBottomPct,
   trimLeftPct,
 } from '../helpers/cardLayout'
 import {
-  formatCredentialSuffix,
   isFrenchLanguage,
   previewAddressText,
-  previewCredentialText,
   previewTitleText,
 } from '../helpers/formatCardIdentity'
 
@@ -236,17 +233,7 @@ export default {
       return (inset / L.trimW) * 100 + '%'
     },
     view: function () {
-      // No credential chosen: plan with the sample C.M. so it sits after the name, or on
-      // its own row when the name line is full (same as the print PDF).
-      var sampled =
-        this.placeholders && this.layoutFonts
-          ? plannedLayout(
-              withSampleCredential(this.details, this.language),
-              this.language,
-              this.layoutFonts
-            )
-          : null
-      var base = viewFromPlan(sampled || this.plan)
+      var base = viewFromPlan(this.plan)
       if (!base) base = viewFromPlan(plannedLayout(this.details, this.language, this.layoutFonts))
       if (!base) base = fallbackView(resolveCardFields(this.details, this.language))
       if (this.placeholders) base = this.withOptionalPlaceholders(base)
@@ -291,25 +278,12 @@ export default {
     withOptionalPlaceholders: function (view) {
       var details = this.details || {}
       var language = this.language
-      var real = formatCredentialSuffix(details.degree, details.additionalCredentials)
-      var cred = previewCredentialText(details.degree, details.additionalCredentials, language)
       var next = Object.assign({}, view, {
         title: previewTitleText(details.title, details.region, language),
         team: String(details.specializedTeam || '').trim(),
       })
       var address = details.address != null ? String(details.address).trim() : ''
       if (!address) next.addressText = previewAddressText('', language)
-      if (cred === real) return next
-      // Already planned with the sample (inline or own row): keep that placement.
-      if (view.credentialLine === cred || view.inlineCredential === ', ' + cred) return next
-      // Degrees start on the name line, after the comma, same as "Lastname, C.M."
-      // A real credential string that already needed its own row stays on that row.
-      if (view.credentialLine) {
-        next.credentialLine = cred
-        return next
-      }
-      next.inlineCredential = ', ' + cred
-      next.credentialLine = ''
       return next
     },
   },

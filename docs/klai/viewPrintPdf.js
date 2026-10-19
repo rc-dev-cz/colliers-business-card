@@ -419,48 +419,16 @@ async function viewPrintPdfBody() {
       })
       return { valid: errors.length === 0, errors: errors, pages: pages }
     }
-    function printAddressLines(address, language) {
-      var text = address != null ? String(address).trim() : ''
-      if (text) return null
-      var sample = isFrenchLanguage(language) ? SAMPLE_FR : SAMPLE_EN
-      return sample.address.split(/\n/)
-    }
-    function printInlineCredential(details) {
-      if (
-        formatCredentialSuffix(details && details.degree, details && details.additionalCredentials)
-      )
-        return null
-      return ', C.M.'
-    }
-    function applyPrintPlaceholders(productPlan, details) {
-      productPlan.pages.forEach(function (page) {
-        var inline = printInlineCredential(details)
-        if (inline && page.layout) {
-          if (page.layout.credentialLine) page.layout.credentialLine = inline.replace(/^, /, '')
-          else {
-            page.layout.inlineCredential = inline
-            page.layout.credentialLine = ''
-            page.layout.credMode = 'inline'
-            if (page.fields) page.fields.credentialSuffix = inline.replace(/^, /, '')
-          }
-        }
-        var lines = printAddressLines(details && details.address, page.language)
-        if (lines && page.layout && page.layout.address) {
-          page.layout.address.lines = lines
-          if (page.fields) page.fields.address = lines.join('\n')
-        }
-      })
-    }
     var LAYOUT_MSG = {
       name: 'This name is too long to fit on two lines of the card.',
-      credentials: 'These degrees and credentials are too long for the card.',
+      credentials: 'These credentials are too long for the card.',
       title: 'This title and region are too long for the card.',
       team: 'This specialized team is too long for the card.',
       email: 'This email is too long to fit on one line of the card.',
       phone: 'This mobile number is too long for the card.',
       website: 'This website is too long for the card.',
       address: 'This office address is too long for the card.',
-      degrees: 'You can select up to 2 degrees or certifications.',
+      degrees: 'You can select up to 2 credentials.',
     }
 
     function applyPrintPageBoxes(page) {
@@ -644,8 +612,6 @@ async function viewPrintPdfBody() {
     }
 
     var productPlan = planProductLayout(snapshot, language, assets)
-    // Do not applyPrintPlaceholders — preview samples (C.M., fake address) must
-    // never land on a real Customize / order print PDF.
     if (!productPlan.valid) {
       throw new Error(LAYOUT_MSG[productPlan.errors[0]] || productPlan.errors[0])
     }
