@@ -4,7 +4,7 @@
     <button type="button" class="mb-6 inline-flex items-center gap-1 text-sm text-gray-600 hover:text-gray-900" @click="BF.namedAction('goBack')"><span aria-hidden="true">‹</span> {{ BF.i18n('label_colliers_back') }}</button>
     <div class="flex flex-col gap-10 lg:flex-row lg:gap-12">
       <div class="w-full lg:max-w-[480px]">
-        <h2 class="mb-4 text-lg font-bold text-[#25408F]">{{ BF.i18n('label_colliers_cardPreview') }}</h2>
+        <div class="colliers-split-head"><h2 class="text-lg font-bold text-[#25408F]">{{ BF.i18n('label_colliers_cardPreview') }}</h2></div>
         <div class="space-y-4">
           <div
             v-for="previewLang in (/bilingual|bilin/i.test(String((model.product && model.product.language) || model.card.language || '')) ? ['English','French'] : [((model.product && model.product.language) || model.card.language || 'English')])"
@@ -41,7 +41,7 @@
         <button type="button" class="btn-outline mt-4 w-full" :disabled="!model.layoutReady" @click="BF.namedAction('viewPrintPdf')">{{ BF.i18n('label_colliers_viewPrintPdf') }}</button>
       </div>
       <div class="min-w-0 flex-1">
-        <div class="mb-6 flex items-start justify-between gap-4">
+        <div class="colliers-split-head">
           <h1 class="colliers-page-title text-[28px] font-semibold tracking-tight text-[#0a1a3a]">{{ BF.i18n('label_colliers_customizeDetails') }}</h1>
           <button type="button" class="shrink-0 text-sm text-gray-500 underline-offset-2 hover:text-gray-800 hover:underline" @click="model.card.emailEdited = false; BF.namedAction('clearDesign')">{{ BF.i18n('label_colliers_clearDesign') }}</button>
         </div>

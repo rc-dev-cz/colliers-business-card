@@ -6,7 +6,7 @@
     </button>
     <div class="flex flex-col gap-10 lg:flex-row lg:items-start lg:gap-12">
       <div class="w-full min-w-0 lg:flex-[1.35]">
-        <h2 class="mb-4 text-lg font-bold text-[#25408F]">{{ BF.i18n('label_colliers_cardPreview') }}</h2>
+        <div class="colliers-split-head"><h2 class="text-lg font-bold text-[#25408F]">{{ BF.i18n('label_colliers_cardPreview') }}</h2></div>
         <div class="space-y-5">
           <div v-for="previewLang in (/bilingual|bilin/i.test(String((model.product && model.product.language) || (model.proof && model.proof.language) || '')) ? ['English','French'] : [((model.product && model.product.language) || (model.proof && model.proof.language) || 'English')])" :key="previewLang" class="card-preview-frame card-preview-frame--proof card-preview-frame--bleed">
             <div class="card-preview-bleed"><div id="colliersCardPreview" class="relative aspect-[1.75/1] w-full overflow-hidden rounded-md border border-gray-200 bg-white text-[#4A4A4A] shadow-sm" style="container-type: inline-size; font-family: 'Open Sans', sans-serif">
@@ -28,7 +28,7 @@
         </div>
       </div>
       <div class="w-full min-w-0 lg:max-w-md lg:flex-1">
-        <h1 class="colliers-page-title mb-4">{{ BF.i18n('label_colliers_proofApproval') }}</h1>
+        <div class="colliers-split-head"><h1 class="colliers-page-title">{{ BF.i18n('label_colliers_proofApproval') }}</h1></div>
         <div class="mb-6 rounded-md border border-amber-200 bg-amber-50 px-4 py-4 text-sm text-amber-950">
           <p class="font-semibold text-red-800">{{ BF.i18n('label_colliers_proofNoticeLead') }}</p>
           <p class="mt-2 leading-relaxed text-amber-950">{{ BF.i18n('label_colliers_proofNotice') }}</p>

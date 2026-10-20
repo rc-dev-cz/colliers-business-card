@@ -1,21 +1,14 @@
 <template>
   <header :class="['colliers-site-header', { 'colliers-site-header--admin': admin }]">
+    <!-- Same container, padding and logo gap for user and admin, so the logo never moves between roles. -->
     <div
-      class="colliers-header-inner mx-auto flex h-[64px] w-full items-stretch justify-between sm:h-[72px]"
-      :class="admin ? 'px-6 lg:px-12' : 'max-w-6xl items-center px-4 sm:px-6 lg:px-8'"
+      class="colliers-header-inner mx-auto flex h-[64px] w-full max-w-6xl items-stretch justify-between gap-4 sm:h-[72px]"
     >
-      <div
-        class="flex min-w-0"
-        :class="admin ? 'h-full flex-1 items-stretch' : 'items-center gap-4 sm:gap-8'"
-      >
+      <div class="flex h-full min-w-0 flex-1 items-stretch">
         <button
           type="button"
-          class="shrink-0 focus:outline-none"
-          :class="[
-            admin
-              ? 'mr-4 flex items-center self-center focus-visible:ring-2 focus-visible:ring-white sm:mr-6 lg:mr-12'
-              : 'focus-visible:ring-2 focus-visible:ring-colliers-primary',
-          ]"
+          class="flex shrink-0 items-center self-center focus:outline-none focus-visible:ring-2 sm:mr-8"
+          :class="admin ? 'focus-visible:ring-white' : 'focus-visible:ring-colliers-primary'"
           :aria-label="lockupAlt"
           @click="goCatalog"
         >
@@ -34,29 +27,7 @@
           </span>
         </button>
 
-        <button
-          v-if="admin"
-          type="button"
-          class="colliers-admin-menu-btn"
-          :aria-label="t('openMenu')"
-          :aria-expanded="mobileMenuOpen ? 'true' : 'false'"
-          @click="openMobileMenu"
-        >
-          <svg
-            class="h-6 w-6"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            stroke-width="2"
-          >
-            <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
-          </svg>
-        </button>
-
-        <nav
-          v-if="admin"
-          class="colliers-admin-nav h-full min-w-0 flex-1 items-stretch pr-2 lg:pr-8"
-        >
+        <nav v-if="admin" class="colliers-admin-nav h-full min-w-0 flex-1 items-stretch">
           <div class="colliers-admin-nav-links flex h-full min-w-0 flex-1 flex-wrap items-stretch">
             <button
               type="button"
@@ -93,7 +64,7 @@
           </div>
         </nav>
 
-        <nav v-else class="hidden h-full min-w-0 sm:flex">
+        <nav v-else class="colliers-user-nav h-full min-w-0">
           <button
             type="button"
             class="colliers-user-nav-link"
@@ -232,6 +203,25 @@
             </template>
           </div>
         </div>
+
+        <button
+          v-if="admin"
+          type="button"
+          class="colliers-admin-menu-btn"
+          :aria-label="t('openMenu')"
+          :aria-expanded="mobileMenuOpen ? 'true' : 'false'"
+          @click="openMobileMenu"
+        >
+          <svg
+            class="h-6 w-6"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+        </button>
       </div>
     </div>
 
@@ -507,6 +497,12 @@ export default {
   Heights follow the card artwork: words are 71% (EN) or 82% (FR) of the tile.
   On blue, only the wordmark is painted white. The tile keeps its color bar.
 */
+/* Same side padding as the page body (.colliers-main), so the logo lines up with the content. */
+.colliers-header-inner {
+  padding-left: var(--colliers-scroll-body-pad-x);
+  padding-right: var(--colliers-scroll-body-pad-x);
+}
+
 .colliers-header-lockup {
   display: inline-flex;
   align-items: center;
@@ -565,15 +561,25 @@ export default {
   box-shadow: 0 0 0 2px #fff;
 }
 
+/* Show/hide by viewport in plain CSS, same classes as Klai (where Tailwind's hidden beats sm:flex). */
+.colliers-user-nav,
 .colliers-admin-nav {
   display: none;
 }
 
+@media (min-width: 640px) {
+  .colliers-user-nav {
+    display: flex;
+  }
+}
+
+/* Opens from the right, next to the hamburger. */
 .colliers-admin-mobile-drawer {
   position: fixed;
   inset: 0;
   z-index: 50;
   display: flex;
+  justify-content: flex-end;
 }
 
 @media (min-width: 1024px) {
