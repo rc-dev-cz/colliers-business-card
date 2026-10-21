@@ -83,11 +83,14 @@ Shapes the request/utility hooks should put on `$$BF_Model` (Klai `model`). Incl
 
 ### Shared shapes
 
-**Product** — full row (Product Detail). Catalogue only needs `code`, `nameKey`, `price`, `previewKey`. Shipping only needs `code`, `language`.
+**Product** — full row (Product Detail). Catalogue only needs `id`, `code`, `nameKey`, `price`, `previewKey`. Shipping only needs `code`, `language`.
+
+FileMaker (`store_catalogue`) is the only source: Catalogue (`requestHook: true`) and Product Detail load it from their hooks; neither page keeps a local product list or a made-up fallback. Live codes are FileMaker's (`CPL-13617`, from `store_catalogue::code`); `BCAD-PL-*` is only in Vue mock data and Klai dev data. Links pass `?code=` and `?id=` (`store_catalogue::id`).
 
 ```json
 {
-  "code": "BCAD-PL-ENG",
+  "id": 13617,
+  "code": "CPL-13617",
   "nameKey": "label_colliers_productEnglish",
   "language": "English",
   "languageKey": "english",

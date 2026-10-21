@@ -12,7 +12,9 @@
 
       <div class="flex flex-col gap-10 lg:flex-row lg:gap-12">
         <div class="w-full lg:max-w-[480px]">
-          <h2 class="mb-4 text-lg font-bold text-colliers-primary">{{ t('cardPreview') }}</h2>
+          <div class="colliers-split-head">
+            <h2 class="text-lg font-bold text-colliers-primary">{{ t('cardPreview') }}</h2>
+          </div>
           <div class="space-y-4">
             <div v-for="preview in previewSlots" :key="preview.language" class="card-preview-frame">
               <card-preview
@@ -37,7 +39,7 @@
         </div>
 
         <div class="min-w-0 flex-1">
-          <div class="mb-6 flex items-start justify-between gap-4">
+          <div class="colliers-split-head">
             <h1 class="colliers-page-title">{{ t('customizeDetails') }}</h1>
             <button
               type="button"

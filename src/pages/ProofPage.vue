@@ -14,7 +14,9 @@
 
       <div class="flex flex-col gap-10 lg:flex-row lg:items-start lg:gap-12">
         <div class="w-full min-w-0 lg:flex-[1.35]">
-          <h2 class="mb-4 text-lg font-bold text-colliers-primary">{{ t('cardPreview') }}</h2>
+          <div class="colliers-split-head">
+            <h2 class="text-lg font-bold text-colliers-primary">{{ t('cardPreview') }}</h2>
+          </div>
           <div class="space-y-5">
             <div
               v-for="preview in previewSlots"
@@ -32,7 +34,9 @@
         </div>
 
         <div class="w-full min-w-0 lg:max-w-md lg:flex-1">
-          <h1 class="colliers-page-title mb-4">{{ t('proofApproval') }}</h1>
+          <div class="colliers-split-head">
+            <h1 class="colliers-page-title">{{ t('proofApproval') }}</h1>
+          </div>
 
           <div
             class="mb-6 rounded-md border border-amber-200 bg-amber-50 px-4 py-4 text-sm text-amber-950"
