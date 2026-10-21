@@ -104,6 +104,88 @@
                 </div>
                 <button type="button" class="card-preview-frame card-preview-frame--thumb cursor-pointer overflow-hidden border-0 bg-transparent p-0 text-left" :aria-label="BF.i18n('label_colliers_previewCard')" @click="BF.namedAction('previewLine', { lineId: line.id })">
                   <bfcomp name="CardPreview" :model="line.previewModel"></bfcomp>
+                  <div v-if="false" class="card-preview-face">
+                    <img
+                      src="https://5t61ut5p19.ucarecd.net/66049ddf-e639-4104-9b94-5f1d96fc29a5/"
+                      alt="Colliers"
+                      class="absolute object-contain"
+                      style="left: 6.968%; bottom: 69.306%; width: 18.488%; height: 18.417%"
+                    />
+                    <img
+                      :src="['French','Français','FR'].indexOf(String(line.language || '')) >= 0 ? 'https://5t61ut5p19.ucarecd.net/701d97ba-48e3-4b7b-a448-1ecee3b72a6e/' : 'https://5t61ut5p19.ucarecd.net/5c2ce46d-e9a5-441c-ad9a-8010efc9c9bf/'"
+                      :alt="['French','Français','FR'].indexOf(String(line.language || '')) >= 0 ? 'Maîtres de projets' : 'Project Leaders'"
+                      class="absolute object-contain"
+                      :style="['French','Français','FR'].indexOf(String(line.language || '')) >= 0 ? 'left: 27.873%; bottom: 70.347%; width: 18.044%; height: 15.083%' : 'left: 27.917%; bottom: 72.125%; width: 13.96%; height: 13.083%'"
+                    />
+                    <div
+                      v-for="(nameLine, nameIdx) in ((line.details && line.details.nameLines && line.details.nameLines.length) ? line.details.nameLines : [String((line.details && (line.details.name || '')) || line.personName || '').trim() || (['French','Français','FR'].indexOf(String(line.language || '')) >= 0 ? 'Prénom Nom' : 'Firstname Lastname')])"
+                      :key="line.id + '-name-' + nameIdx"
+                      class="absolute whitespace-nowrap font-bold leading-none text-[#03438C]"
+                      :style="'left: 41.28%; right: 2.56%; bottom: ' + ((line.details && line.details.previewNameYs && line.details.previewNameYs[nameIdx] != null && line.details.previewNameYs[nameIdx] !== '') ? line.details.previewNameYs[nameIdx] : (46.17 + ((((line.details && line.details.nameLines && line.details.nameLines.length) ? line.details.nameLines.length : 1) - 1 - nameIdx) * 7.64))) + '%; font-size: 3.968cqw'"
+                    >
+                      <span>{{ nameLine }}</span><span v-if="nameIdx === (((line.details && line.details.nameLines && line.details.nameLines.length) ? line.details.nameLines.length : 1) - 1) && line.details && line.details.inlineCredential" style="font-size: 0.7em">{{ line.details.inlineCredential }}</span>
+                    </div>
+                    <div
+                      v-if="line.details && line.details.credentialLine"
+                      class="absolute whitespace-nowrap font-bold leading-none text-[#03438C]"
+                      :style="'left: 41.28%; right: 2.56%; bottom: ' + ((line.details.previewCredY != null && line.details.previewCredY !== '') ? line.details.previewCredY : 40.27) + '%; font-size: 2.778cqw'"
+                    >
+                      {{ line.details.credentialLine }}
+                    </div>
+                    <div
+                      class="absolute whitespace-nowrap leading-none text-[#5F636A]"
+                      :style="'left: 41.28%; right: 2.56%; bottom: ' + ((line.details && line.details.previewTitleY != null && line.details.previewTitleY !== '') ? line.details.previewTitleY : 40.27) + '%; font-size: ' + ((line.details && line.details.previewTitleSize) || '2.579cqw')"
+                    >
+                      {{ ((line.details && String(line.details.title || '').split('|')[0].trim()) || (['French','Français','FR'].indexOf(String(line.language || '')) >= 0 ? 'Titre' : 'Title')) + ((line.details && line.details.previewRegionMode === 'title' && String(line.details.region || '').trim()) ? (' | ' + String(line.details.region).trim()) : '') }}
+                    </div>
+                    <div
+                      v-if="line.details && String(line.details.specializedTeam || '').trim()"
+                      class="absolute whitespace-nowrap leading-none text-[#5F636A]"
+                      :style="'left: 41.28%; right: 2.56%; bottom: ' + ((line.details.previewTeamY != null && line.details.previewTeamY !== '') ? line.details.previewTeamY : 34.72) + '%; font-size: 2.579cqw'"
+                    >
+                      {{ String(line.details.specializedTeam).trim() + ((line.details.previewRegionMode === 'team' && String(line.details.region || '').trim()) ? (' | ' + String(line.details.region).trim()) : '') }}
+                    </div>
+                    <div
+                      v-if="line.details && line.details.previewRegionMode === 'own' && String(line.details.region || '').trim()"
+                      class="absolute whitespace-nowrap leading-none text-[#5F636A]"
+                      :style="'left: 41.28%; right: 2.56%; bottom: ' + (line.details.previewRegionY || 34.72) + '%; font-size: 2.579cqw'"
+                    >
+                      {{ String(line.details.region).trim() }}
+                    </div>
+                    <div
+                      class="absolute whitespace-nowrap leading-none text-[#5F636A]"
+                      style="left: 41.28%; right: 4%; bottom: 23.61%; font-size: 2.4cqw"
+                    >
+                      {{ (line.details && line.details.email) ||
+                      (['French','Français','FR'].indexOf(String(line.language || '')) >= 0 ?
+                      'prenom.nom@colliersprojectleaders.com' :
+                      'first.lastname@colliersprojectleaders.com') }}
+                    </div>
+                    <div
+                      class="absolute whitespace-nowrap leading-none text-[#5F636A]"
+                      style="left: 41.28%; right: 4%; bottom: 18.06%; font-size: 2.4cqw"
+                    >
+                      {{ (line.details && line.details.phone) || '+1 555 555 5555' }}
+                    </div>
+                    <div
+                      class="absolute whitespace-nowrap leading-none text-[#5F636A]"
+                      style="left: 41.28%; right: 4%; bottom: 12.5%; font-size: 2.4cqw"
+                    >
+                      {{ (['French','Français','FR'].indexOf(String(line.language || '')) >= 0 ? ((line.details &&
+                      line.details.websiteFr) || 'colliersprojectleaders.com/fr') : ((line.details
+                      && line.details.website) || 'colliersprojectleaders.com')) }}
+                    </div>
+                    <div
+                      class="absolute overflow-hidden text-[#5F636A]"
+                      style="left: 7.14%; right: 58.72%; bottom: 12.5%; font-size: 2.15cqw; line-height: 1.2; font-family: 'Open Sans', sans-serif"
+                    >
+                      <div
+                        v-for="(addrLine, addrIdx) in String((line.details && (line.details.printAddress || line.details.address || line.details.addressWrapped)) || (['French','Français','FR'].indexOf(String(line.language || '')) >= 0 ? 'Nom de l\'adresse\nUnité, Rue\nVille, Province\nCode postal, Pays' : 'Address name\nUnit, Street\nCity, Province\nPostal Code, Country')).replace(/\r/g, '').split('\n')"
+                        :key="line.id + '-addr-' + addrIdx"
+                        class="truncate"
+                      >{{ addrLine }}</div>
+                    </div>
+                  </div>
                 </button>
                 <div class="min-w-0 flex-1">
                   <div class="flex items-start gap-3">
@@ -119,12 +201,8 @@
                         (line.language ? ' - ' + line.language : '') }}
                       </div>
                     </div>
-                    <div
-                      v-if="split.locations && split.locations.length"
-                      class="shrink-0 pt-0.5 text-right"
-                    >
-                      <div class="text-sm font-medium tabular-nums text-gray-900">
-                        {{ line.boxLabel }}
+                    <div class="shrink-0 pt-0.5 text-right">
+                      <div :class="split.locations && split.locations.length ? 'text-gray-900' : 'text-gray-400'" class="text-sm font-medium tabular-nums">{{ line.boxLabel }}
                       </div>
                       <div class="mt-0.5 text-xs tabular-nums text-gray-500">
                         {{ line.cardsLabel }}
@@ -198,20 +276,10 @@
             <div class="relative">
               <div
                 v-if="model.view.addItemMenuIndex === splitIndex"
-                class="absolute bottom-full right-0 z-20 mb-2 overflow-hidden rounded-md border border-gray-200 bg-white shadow-lg"
-                style="width: 18rem"
+                class="absolute bottom-full right-0 z-20 mb-2 overflow-hidden rounded-md border border-gray-200 bg-white shadow-lg" style="width: 18rem"
               >
                 <ul class="max-h-64 overflow-y-auto py-1">
-                  <li>
-                    <button
-                      type="button"
-                      class="block w-full border-b border-gray-100 px-3 py-2 text-left text-sm font-medium text-[#25408F] hover:bg-gray-100"
-                      @click="BF.namedAction('addItem', { splitIndex: splitIndex, mode: 'new' })"
-                    >
-                      {{ BF.i18n('label_colliers_addNewCard') }}
-                    </button>
-                  </li>
-                  <li v-for="line in (split.outsideLines || [])" :key="line.id">
+                  <li><button type="button" class="block w-full border-b border-gray-100 px-3 py-2 text-left text-sm font-medium text-[#25408F] hover:bg-gray-100" @click="BF.namedAction('addItem', { splitIndex: splitIndex, mode: 'new' })">{{ BF.i18n('label_colliers_addNewCard') }}</button></li><li v-for="line in (split.outsideLines || [])" :key="line.id">
                     <button
                       type="button"
                       class="block w-full px-3 py-2 text-left text-sm text-gray-800 hover:bg-gray-100"
@@ -339,8 +407,9 @@
                 </button>
               </li>
             </ul>
-          </div>
-          <div class="relative mt-auto border-t border-gray-200 pt-4">
+            </div>
+            <p v-if="String(model.mergedSplitId) === String(split.id)" class="mt-3 text-sm text-gray-600" role="status">{{ BF.i18n('label_colliers_addressMerged') }}</p>
+            <div class="relative mt-auto border-t border-gray-200 pt-4">
             <div class="flex flex-wrap items-center justify-end gap-3">
               <button
                 type="button"
@@ -409,3 +478,4 @@
     </div>
   </div>
 </div>
+

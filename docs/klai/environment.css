@@ -297,22 +297,6 @@ body.colliers-mobile-menu-open {
   overflow-y: auto;
 }
 
-/* Customize / Proof: show the card like the print PDF page (270 x 162 pt). 9 pt bleed / 270 pt = 3.3333%;
-   percentage padding is measured against the width on every side, so the box keeps the PDF 270:162 shape.
-   The card face (252 x 144 pt trim) sits inside; no outline is drawn, same as the PDF. */
-.card-preview-frame.card-preview-frame--bleed {
-  padding: 0;
-}
-.card-preview-bleed {
-  padding: 3.3333%;
-  background: #fff;
-}
-.card-preview-bleed #colliersCardPreview {
-  border: 0;
-  border-radius: 0;
-  box-shadow: none;
-}
-
 /* Brand color utilities used in page HTML (Vue gets these from tailwind.config.js colors.colliers). */
 .bg-colliers-primary {
   background-color: var(--colliers-primary);

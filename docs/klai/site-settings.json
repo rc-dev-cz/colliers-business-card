@@ -1412,6 +1412,18 @@
             "label_colliers_addAddressInBook": {
                 "en": "Add a new address in your Address Book",
                 "fr": "Ajouter une adresse dans votre carnet d’adresses"
+            },
+            "label_colliers_addressMerged": {
+                "en": "This address was already in this group, so the boxes were added together.",
+                "fr": "Cette adresse était déjà dans ce groupe; les boîtes ont été additionnées."
+            },
+            "label_colliers_nameNoSpace": {
+                "en": "No more space for the name on the card.",
+                "fr": "Il n’y a plus d’espace pour le nom sur la carte."
+            },
+            "label_colliers_reportingEmpty": {
+                "en": "No reporting data yet. Reports will appear here once FileMaker reporting is connected.",
+                "fr": "Aucune donnée de rapport pour le moment. Les rapports apparaîtront ici lorsque les rapports FileMaker seront connectés."
             }
         },
         "langDefault": "en",

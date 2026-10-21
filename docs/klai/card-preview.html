@@ -1,5 +1,5 @@
 <div
-  class="colliers-card-preview relative w-full overflow-hidden rounded-md border border-gray-200 bg-white text-[#4A4A4A] shadow-sm"
+  class="colliers-card-preview relative w-full overflow-hidden border border-gray-200 bg-white text-[#4A4A4A]"
   style="container-type: inline-size; aspect-ratio: 1.75 / 1; font-family: 'Open Sans', sans-serif"
 >
   <template v-for="k in [typeof model === 'string' && model.trim() ? model.trim() : (schema.model || 'card')]"><template v-for="c in [(model && typeof model === 'object' && _.get(model, k)) || (typeof app !== 'undefined' && _.get(app, k)) || (model && typeof model === 'object' ? model : {})]"><template v-for="fr in [/french|fran|previews.fr/i.test(k + ' ' + String(c.language || '')) && !/bilin/i.test(String(c.language || ''))]"><template v-for="bil in [/bilin/i.test(String(c.productLanguage || c.language || ''))]">
@@ -16,3 +16,4 @@
     <div class="absolute overflow-hidden text-[#5F636A]" style="left: 7.14%; right: 58.72%; bottom: 12.5%; font-size: 2.579cqw; line-height: 1.230769"><div v-for="(addrLine, addrIdx) in (String(c.addressWrapped || c.printAddress || c.address || '').trim() ? String(c.addressWrapped || c.printAddress || c.address).replace(/\r\n/g, '\n').replace(/\r/g, '\n').trim().split('\n') : (fr ? [&quot;Nom de l'adresse&quot;, 'Unité, Rue', 'Ville, Province', 'Code postal, Pays'] : ['Address name', 'Unit, Street', 'City, Province', 'Postal Code, Country']))" :key="'addr-' + addrIdx" class="overflow-hidden whitespace-nowrap">{{ addrLine }}</div></div>
   </template></template></template></template>
 </div>
+

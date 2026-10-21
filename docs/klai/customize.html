@@ -1,150 +1,131 @@
 <div id="customize-root" class="colliers-page-root px-4 py-8 sm:px-6 lg:px-8">
-  <div v-if="model.notFound" class="py-20 text-center text-gray-500">{{ BF.i18n('label_colliers_productNotFound') }}</div>
-  <div v-else-if="model.product && model.product.code">
-    <button type="button" class="mb-6 inline-flex items-center gap-1 text-sm text-gray-600 hover:text-gray-900" @click="BF.namedAction('goBack')"><span aria-hidden="true">‹</span> {{ BF.i18n('label_colliers_back') }}</button>
-    <div class="flex flex-col gap-10 lg:flex-row lg:gap-12">
-      <div class="w-full lg:max-w-[480px]">
-        <div class="colliers-split-head"><h2 class="text-lg font-bold text-[#25408F]">{{ BF.i18n('label_colliers_cardPreview') }}</h2></div>
-        <div class="space-y-4">
-          <div
-            v-for="previewLang in (/bilingual|bilin/i.test(String((model.product && model.product.language) || model.card.language || '')) ? ['English','French'] : [((model.product && model.product.language) || model.card.language || 'English')])"
-            :key="previewLang"
-            class="card-preview-frame"
-          >
-            <div id="colliersCardPreview" class="relative aspect-[1.75/1] w-full overflow-hidden rounded-md border border-gray-200 bg-white text-[#4A4A4A] shadow-sm" style="container-type: inline-size; font-family: 'Open Sans', sans-serif">
-              <img src="https://5t61ut5p19.ucarecd.net/66049ddf-e639-4104-9b94-5f1d96fc29a5/" alt="Colliers" class="absolute object-contain" style="left: 6.968%; bottom: 69.306%; width: 18.488%; height: 18.417%" />
-              <img
-                :src="['French','Français','FR'].indexOf(previewLang) >= 0 ? 'https://5t61ut5p19.ucarecd.net/701d97ba-48e3-4b7b-a448-1ecee3b72a6e/' : 'https://5t61ut5p19.ucarecd.net/5c2ce46d-e9a5-441c-ad9a-8010efc9c9bf/'"
-                :alt="['French','Français','FR'].indexOf(previewLang) >= 0 ? 'Maîtres de projets' : 'Project Leaders'"
-                class="absolute object-contain"
-                :style="['French','Français','FR'].indexOf(previewLang) >= 0 ? 'left: 27.873%; bottom: 70.347%; width: 18.044%; height: 15.083%' : 'left: 27.917%; bottom: 72.125%; width: 13.96%; height: 13.083%'"
-              />
-              <div
-                v-for="(line, idx) in (model.card.nameLines && model.card.nameLines.length ? model.card.nameLines : [(['French','Français','FR'].indexOf(previewLang) >= 0 ? 'Prénom Nom' : 'Firstname Lastname')])"
-                :key="'name-' + idx"
-                class="absolute whitespace-nowrap font-bold leading-none text-[#03438C]"
-                :style="'left: 41.28%; right: 2.56%; bottom: ' + ((model.card.previewNameYs && model.card.previewNameYs[idx] != null) ? model.card.previewNameYs[idx] : (46.17 + (((model.card.nameLines && model.card.nameLines.length) ? model.card.nameLines.length : 1) - 1 - idx) * 7.64)) + '%; font-size: 3.968cqw'"
-              >
-                <span>{{ line }}</span><span v-if="idx === ((model.card.nameLines && model.card.nameLines.length) ? model.card.nameLines.length : 1) - 1 && model.card.inlineCredential" class="align-baseline font-bold" style="font-size: 0.7em">{{ model.card.inlineCredential }}</span>
-              </div>
-              <div v-if="model.card.credentialLine" class="absolute whitespace-nowrap font-bold leading-none text-[#03438C]" :style="'left: 41.28%; right: 2.56%; bottom: ' + (model.card.previewCredY !== '' && model.card.previewCredY != null ? model.card.previewCredY : 40.27) + '%; font-size: 2.778cqw'">{{ model.card.credentialLine }}</div>
-              <div class="absolute whitespace-nowrap leading-none text-[#5F636A]" :style="'left: 41.28%; right: 2.56%; bottom: ' + (model.card.previewTitleY != null ? model.card.previewTitleY : (String(model.card.specializedTeam || '').trim() && model.card.credentialLine ? 34.72 : 40.27)) + '%; font-size: ' + ((['French','Français','FR'].indexOf(previewLang) >= 0 && /bilingual|bilin/i.test(String((model.product && model.product.language) || model.card.language || '')) && String(model.card.titleFr || '').trim() ? model.card.previewTitleFrSize : model.card.previewTitleSize) || '2.579cqw')">{{ ((['French','Français','FR'].indexOf(previewLang) >= 0 && /bilingual|bilin/i.test(String((model.product && model.product.language) || model.card.language || ''))) ? (String(model.card.titleFr || '').trim() || 'Titre') : (String(model.card.title || '').split('|')[0].trim() || (['French','Français','FR'].indexOf(previewLang) >= 0 ? 'Titre' : 'Title'))) + (model.card.previewRegionMode === 'title' ? ' | ' + String(model.card.region || '').trim() : '') }}</div>
-              <div v-if="String(model.card.specializedTeam || '').trim()" class="absolute whitespace-nowrap leading-none text-[#5F636A]" :style="'left: 41.28%; right: 2.56%; bottom: ' + (model.card.previewTeamY != null ? model.card.previewTeamY : (model.card.credentialLine ? 29.16 : 34.72)) + '%; font-size: 2.579cqw'">{{ String(model.card.specializedTeam || '').trim() + (model.card.previewRegionMode === 'team' ? ' | ' + String(model.card.region || '').trim() : '') }}</div><div v-if="model.card.previewRegionMode === 'own'" class="absolute whitespace-nowrap leading-none text-[#5F636A]" :style="'left: 41.28%; right: 2.56%; bottom: ' + model.card.previewRegionY + '%; font-size: 2.579cqw'">{{ String(model.card.region || '').trim() }}</div>
-              <div class="absolute whitespace-nowrap leading-none text-[#5F636A]" :style="'left: 41.28%; right: 2.56%; bottom: ' + (model.card.previewEmailY != null && model.card.previewEmailY !== '' ? model.card.previewEmailY : 23.61) + '%; font-size: 2.579cqw'">{{ model.card.email || (['French','Français','FR'].indexOf(previewLang) >= 0 ? 'prenom.nom@colliersprojectleaders.com' : 'first.lastname@colliersprojectleaders.com') }}</div>
-              <div class="absolute whitespace-nowrap leading-none text-[#5F636A]" :style="'left: 41.28%; right: 2.56%; bottom: ' + (model.card.previewPhoneY != null && model.card.previewPhoneY !== '' ? model.card.previewPhoneY : 18.06) + '%; font-size: 2.579cqw'">{{ model.card.displayPhone || model.card.phone || '555 555 5555' }}</div>
-              <div class="absolute whitespace-nowrap leading-none text-[#5F636A]" :style="'left: 41.28%; right: 2.56%; bottom: ' + (model.card.previewWebY != null && model.card.previewWebY !== '' ? model.card.previewWebY : 12.5) + '%; font-size: 2.579cqw'">{{ (['French','Français','FR'].indexOf(previewLang) >= 0 ? (model.card.websiteFr || 'colliersprojectleaders.com/fr') : (model.card.website || 'colliersprojectleaders.com')) }}</div>
-              <div class="absolute overflow-hidden text-[#5F636A]" style="left: 7.14%; right: 58.72%; bottom: 12.5%; font-size: 2.579cqw; line-height: 1.230769"><div v-for="(addrLine, addrIdx) in (String(model.card.addressWrapped || model.card.printAddress || model.card.address || '').trim() ? String(model.card.addressWrapped || model.card.printAddress || model.card.address).replace(/\r\n/g, '\n').replace(/\r/g, '\n').trim().split('\n') : (['French','Français','FR'].indexOf(previewLang) >= 0 ? [&quot;Nom de l'adresse&quot;, 'Unité, Rue', 'Ville, Province', 'Code postal, Pays'] : ['Address name', 'Unit, Street', 'City, Province', 'Postal Code, Country']))" :key="'addr-' + addrIdx" class="overflow-hidden whitespace-nowrap">{{ addrLine }}</div></div>
+    <div v-if="model.notFound" class="py-20 text-center text-gray-500">{{ BF.i18n('label_colliers_productNotFound') }}</div>
+    <div v-else-if="model.product && model.product.code">
+        <button type="button" class="mb-6 inline-flex items-center gap-1 text-sm text-gray-600 hover:text-gray-900" @click="BF.namedAction('goBack')"><span aria-hidden="true">‹</span> {{ BF.i18n('label_colliers_back') }}</button>
+        <div class="flex flex-col gap-10 lg:flex-row lg:gap-12">
+            <div class="w-full lg:max-w-[480px]">
+                <div class="colliers-split-head"><h2 class="text-lg font-bold text-[#25408F]">{{ BF.i18n('label_colliers_cardPreview') }}</h2></div>
+                <div class="space-y-4">
+                    <div v-for="previewLang in (/bilingual|bilin/i.test(String((model.product && model.product.language) || model.card.language || '')) ? ['English','French'] : [((model.product && model.product.language) || model.card.language || 'English')])" :key="previewLang" class="card-preview-frame">
+                        <div id="colliersCardPreview" class="relative aspect-[1.75/1] w-full overflow-hidden border border-gray-200 bg-white text-[#4A4A4A]" style="container-type: inline-size; font-family: 'Open Sans', sans-serif">
+                            <img src="https://5t61ut5p19.ucarecd.net/66049ddf-e639-4104-9b94-5f1d96fc29a5/" alt="Colliers" class="absolute object-contain" style="left: 6.968%; bottom: 69.306%; width: 18.488%; height: 18.417%" />
+                            <img :src="['French','Français','FR'].indexOf(previewLang) >= 0 ? 'https://5t61ut5p19.ucarecd.net/701d97ba-48e3-4b7b-a448-1ecee3b72a6e/' : 'https://5t61ut5p19.ucarecd.net/5c2ce46d-e9a5-441c-ad9a-8010efc9c9bf/'" :alt="['French','Français','FR'].indexOf(previewLang) >= 0 ? 'Maîtres de projets' : 'Project Leaders'" class="absolute object-contain" :style="['French','Français','FR'].indexOf(previewLang) >= 0 ? 'left: 27.873%; bottom: 70.347%; width: 18.044%; height: 15.083%' : 'left: 27.917%; bottom: 72.125%; width: 13.96%; height: 13.083%'" />
+                            <div v-for="(line, idx) in (model.card.nameLines && model.card.nameLines.length ? model.card.nameLines : [(['French','Français','FR'].indexOf(previewLang) >= 0 ? 'Prénom Nom' : 'Firstname Lastname')])" :key="'name-' + idx" class="absolute whitespace-nowrap font-bold leading-none text-[#03438C]" :style="'left: 41.28%; right: 2.56%; bottom: ' + ((model.card.previewNameYs && model.card.previewNameYs[idx] != null) ? model.card.previewNameYs[idx] : (46.17 + (((model.card.nameLines && model.card.nameLines.length) ? model.card.nameLines.length : 1) - 1 - idx) * 7.64)) + '%; font-size: 3.968cqw'">
+                                <span>{{ line }}</span><span v-if="idx === ((model.card.nameLines && model.card.nameLines.length) ? model.card.nameLines.length : 1) - 1 && model.card.inlineCredential" class="align-baseline font-bold" style="font-size: 0.7em">{{ model.card.inlineCredential }}</span>
+                            </div>
+                            <div v-if="model.card.credentialLine" class="absolute whitespace-nowrap font-bold leading-none text-[#03438C]" :style="'left: 41.28%; right: 2.56%; bottom: ' + (model.card.previewCredY !== '' && model.card.previewCredY != null ? model.card.previewCredY : 40.27) + '%; font-size: 2.778cqw'">{{ model.card.credentialLine }}</div>
+                            <div class="absolute whitespace-nowrap leading-none text-[#5F636A]" :style="'left: 41.28%; right: 2.56%; bottom: ' + (model.card.previewTitleY != null ? model.card.previewTitleY : (String(model.card.specializedTeam || '').trim() && model.card.credentialLine ? 34.72 : 40.27)) + '%; font-size: ' + ((['French','Français','FR'].indexOf(previewLang) >= 0 && /bilingual|bilin/i.test(String((model.product && model.product.language) || model.card.language || '')) && String(model.card.titleFr || '').trim() ? model.card.previewTitleFrSize : model.card.previewTitleSize) || '2.579cqw')">{{ ((['French','Français','FR'].indexOf(previewLang) >= 0 && /bilingual|bilin/i.test(String((model.product && model.product.language) || model.card.language || ''))) ? (String(model.card.titleFr || '').trim() || 'Titre') : (String(model.card.title || '').split('|')[0].trim() || (['French','Français','FR'].indexOf(previewLang) >= 0 ? 'Titre' : 'Title'))) + (model.card.previewRegionMode === 'title' ? ' | ' + String(model.card.region || '').trim() : '') }}</div>
+                            <div v-if="String(model.card.specializedTeam || '').trim()" class="absolute whitespace-nowrap leading-none text-[#5F636A]" :style="'left: 41.28%; right: 2.56%; bottom: ' + (model.card.previewTeamY != null ? model.card.previewTeamY : (model.card.credentialLine ? 29.16 : 34.72)) + '%; font-size: 2.579cqw'">{{ String(model.card.specializedTeam || '').trim() + (model.card.previewRegionMode === 'team' ? ' | ' + String(model.card.region || '').trim() : '') }}</div>
+                            <div v-if="model.card.previewRegionMode === 'own'" class="absolute whitespace-nowrap leading-none text-[#5F636A]" :style="'left: 41.28%; right: 2.56%; bottom: ' + model.card.previewRegionY + '%; font-size: 2.579cqw'">{{ String(model.card.region || '').trim() }}</div>
+                            <div class="absolute whitespace-nowrap leading-none text-[#5F636A]" :style="'left: 41.28%; right: 2.56%; bottom: ' + (model.card.previewEmailY != null && model.card.previewEmailY !== '' ? model.card.previewEmailY : 23.61) + '%; font-size: 2.579cqw'">{{ model.card.email || (['French','Français','FR'].indexOf(previewLang) >= 0 ? 'prenom.nom@colliersprojectleaders.com' : 'first.lastname@colliersprojectleaders.com') }}</div>
+                            <div class="absolute whitespace-nowrap leading-none text-[#5F636A]" :style="'left: 41.28%; right: 2.56%; bottom: ' + (model.card.previewPhoneY != null && model.card.previewPhoneY !== '' ? model.card.previewPhoneY : 18.06) + '%; font-size: 2.579cqw'">{{ model.card.displayPhone || model.card.phone || '555 555 5555' }}</div>
+                            <div class="absolute whitespace-nowrap leading-none text-[#5F636A]" :style="'left: 41.28%; right: 2.56%; bottom: ' + (model.card.previewWebY != null && model.card.previewWebY !== '' ? model.card.previewWebY : 12.5) + '%; font-size: 2.579cqw'">{{ (['French','Français','FR'].indexOf(previewLang) >= 0 ? (model.card.websiteFr || 'colliersprojectleaders.com/fr') : (model.card.website || 'colliersprojectleaders.com')) }}</div>
+                            <div class="absolute overflow-hidden text-[#5F636A]" style="left: 7.14%; right: 58.72%; bottom: 12.5%; font-size: 2.579cqw; line-height: 1.230769">
+                                <div v-for="(addrLine, addrIdx) in (String(model.card.addressWrapped || model.card.printAddress || model.card.address || '').trim() ? String(model.card.addressWrapped || model.card.printAddress || model.card.address).replace(/\r\n/g, '\n').replace(/\r/g, '\n').trim().split('\n') : (['French','Français','FR'].indexOf(previewLang) >= 0 ? [&quot;Nom de l'adresse&quot;, 'Unité, Rue', 'Ville, Province', 'Code postal, Pays'] : ['Address name', 'Unit, Street', 'City, Province', 'Postal Code, Country']))" :key="'addr-' + addrIdx" class="overflow-hidden whitespace-nowrap">{{ addrLine }}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <p v-if="model.layoutError" class="mt-3 text-sm text-red-600">{{ model.layoutError }}</p>
+                <button v-if="Number(model.internalTools) === 1" type="button" class="btn-outline mt-4 w-full" :disabled="!model.layoutReady" @click="BF.namedAction('viewPrintPdf')">{{ BF.i18n('label_colliers_viewPrintPdf') }}</button>
             </div>
-          </div>
+            <div class="min-w-0 flex-1">
+                <div class="colliers-split-head">
+                    <h1 class="colliers-page-title text-[28px] font-semibold tracking-tight text-[#0a1a3a]">{{ BF.i18n('label_colliers_customizeDetails') }}</h1>
+                    <button type="button" class="shrink-0 text-sm text-gray-500 underline-offset-2 hover:text-gray-800 hover:underline" @click="model.card.emailEdited = false; BF.namedAction('clearDesign')">{{ BF.i18n('label_colliers_clearDesign') }}</button>
+                </div>
+                <form class="space-y-4" @submit.prevent="BF.namedAction('previewProof')">
+                    <div>
+                        <label class="field-label text-[14px] font-normal text-gray-700" for="card-name">{{ BF.i18n('label_colliers_fullName') }}<span class="text-red-600" aria-hidden="true">*</span></label>
+                        <input id="card-name" class="field-input" maxlength="50" v-model="model.card.name" :aria-invalid="Number(model.nameNotice) === 1 ? 'true' : 'false'" @input="BF.namedAction('wrapCardName')" />
+                        <p v-if="Number(model.nameNotice) === 1" class="mt-1 text-sm text-red-600">{{ BF.i18n('label_colliers_nameNoSpace') }}</p>
+                    </div>
+                    <div class="relative">
+                        <label class="field-label text-[14px] font-normal text-gray-700">{{ BF.i18n('label_colliers_degreeOptional') }}</label>
+                        <button type="button" class="field-input flex w-full items-center justify-between text-left" @click="model.degreeMenuOpen = !model.degreeMenuOpen">
+                            <span :class="(Array.isArray(model.card.degree) && model.card.degree.length) ? 'text-gray-900' : 'text-gray-400'">{{ BF.i18n('label_colliers_selectDegree') }}</span>
+                            <svg class="ml-2 h-4 w-4 shrink-0 text-gray-500" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.17l3.71-3.94a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
+                            </svg>
+                        </button>
+                        <div v-if="model.degreeMenuOpen" class="fixed inset-0 z-10" @click="model.degreeMenuOpen = false"></div>
+                        <div v-if="model.degreeMenuOpen" class="absolute z-20 mt-1 flex max-h-56 w-full flex-col overflow-hidden rounded border border-gray-200 bg-white shadow-lg" @click.stop>
+                            <div class="shrink-0 border-b border-gray-100 bg-white p-2">
+                                <input type="search" class="field-input py-2" :placeholder="BF.i18n('label_colliers_selectDegree')" :value="model.degreeQuery" @input="model.degreeQuery = $event.target.value" @click.stop />
+                            </div>
+                            <ul class="min-h-0 flex-1 overflow-auto py-1">
+                                <li v-if="!(model.degreeOptions || []).filter(function (opt) { var q = String(model.degreeQuery || '').trim().toLowerCase(); return !q || String(opt).toLowerCase().indexOf(q) !== -1; }).length" class="px-3 py-2 text-sm text-gray-500">{{ BF.i18n('label_colliers_noDegrees') }}</li>
+                                <li v-for="opt in (model.degreeOptions || []).filter(function (opt) { var q = String(model.degreeQuery || '').trim().toLowerCase(); return !q || String(opt).toLowerCase().indexOf(q) !== -1; })" :key="opt" class="flex items-center gap-2 px-3 py-2 text-sm hover:bg-gray-50" :class="(model.lockedDegrees || []).indexOf(opt) !== -1 ? 'cursor-not-allowed opacity-40' : 'cursor-pointer'" :aria-disabled="(model.lockedDegrees || []).indexOf(opt) !== -1 ? 'true' : 'false'" @click.stop="if ((model.lockedDegrees || []).indexOf(opt) !== -1) { model.credentialLockedClick = 1; BF.namedAction('wrapCardName'); } else { var cur = Array.isArray(model.card.degree) ? model.card.degree : []; var next = cur.indexOf(opt) === -1 ? cur.concat([opt]) : cur.filter(function (d) { return d !== opt; }); model.card = Object.assign({}, model.card, { degree: next }); BF.namedAction('wrapCardName'); }">
+                                    <input type="checkbox" class="pointer-events-none h-4 w-4 rounded border-gray-300" :checked="Array.isArray(model.card.degree) && model.card.degree.indexOf(opt) !== -1" :disabled="(model.lockedDegrees || []).indexOf(opt) !== -1" tabindex="-1" aria-hidden="true" />
+                                    <span>{{ opt }}</span>
+                                </li>
+                            </ul>
+                        </div>
+                        <div v-if="Array.isArray(model.card.degree) && model.card.degree.length" class="mt-2 flex flex-wrap gap-2">
+                            <span v-for="d in model.card.degree" :key="d" class="inline-flex items-center gap-1 rounded-md bg-[#E8EEF7] px-2.5 py-1 text-sm text-[#24418A]">{{ d }} <button type="button" class="ml-0.5 inline-flex h-4 w-4 items-center justify-center rounded text-[#24418A] hover:bg-[#d4deef]" @click="model.card = Object.assign({}, model.card, { degree: model.card.degree.filter(function (x) { return x !== d; }) }); BF.namedAction('wrapCardName')">×</button></span>
+                        </div>
+                        <p v-if="model.credentialNotice === 'degree'" class="mt-1 text-sm text-red-600">{{ BF.i18n('label_colliers_credentialsNoSpace') }}</p>
+                        <button v-if="!(Number(model.otherCredentialOpen) === 1 || String(model.card.additionalCredentials || '').trim())" type="button" class="mt-2 text-sm font-medium text-[#25408F] underline-offset-2 hover:underline disabled:cursor-not-allowed disabled:opacity-40" :disabled="Number(model.additionalLocked) === 1" @click="model.otherCredentialOpen = 1">+ {{ BF.i18n('label_colliers_addOtherCredential') }}</button>
+                    </div>
+                    <div v-if="Number(model.otherCredentialOpen) === 1 || String(model.card.additionalCredentials || '').trim()">
+                        <label class="field-label text-[14px] font-normal text-gray-700" for="card-credentials">{{ BF.i18n('label_colliers_additionalCredentialsOptional') }}</label>
+                        <input id="card-credentials" class="field-input" v-model="model.card.additionalCredentials" :disabled="Number(model.additionalLocked) === 1" :aria-invalid="model.credentialNotice === 'additional' ? 'true' : 'false'" @input="BF.namedAction('wrapCardName')" />
+                        <p v-if="model.credentialNotice === 'additional'" class="mt-1 text-sm text-red-600">{{ BF.i18n('label_colliers_credentialsNoSpace') }}</p>
+                    </div>
+                    <div>
+                        <label class="field-label text-[14px] font-normal text-gray-700" for="card-title">{{ BF.i18n('label_colliers_title') }}<span class="text-red-600" aria-hidden="true">*</span></label>
+                        <select id="card-title" class="field-input" v-model="model.card.title" @change="BF.namedAction('wrapCardName')">
+                            <option value="">{{ BF.i18n('label_colliers_selectTitle') }}</option>
+                            <option v-for="opt in model.titleOptions" :key="opt" :value="opt">{{ opt }}</option>
+                        </select>
+                    </div>
+                    <!-- Bilingual only: French face title, picked from the French titles (no English → French mapping). -->
+                    <div v-if="/bilingual|bilin/i.test(String((model.product && model.product.language) || model.card.language || ''))">
+                        <label class="field-label text-[14px] font-normal text-gray-700" for="card-title-fr">{{ BF.i18n('label_colliers_titleFr') }}<span class="text-red-600" aria-hidden="true">*</span></label>
+                        <select id="card-title-fr" class="field-input" v-model="model.card.titleFr" @change="BF.namedAction('wrapCardName')">
+                            <option value="">{{ BF.i18n('label_colliers_selectTitleFr') }}</option>
+                            <option v-for="opt in (model.titleFrOptions || [])" :key="opt" :value="opt">{{ opt }}</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="field-label text-[14px] font-normal text-gray-700" for="card-region">{{ BF.i18n('label_colliers_regionOptional') }}</label>
+                        <select id="card-region" class="field-input" v-model="model.card.region" @change="BF.namedAction('wrapCardName')">
+                            <option value="">{{ BF.i18n('label_colliers_selectRegion') }}</option>
+                            <option v-for="opt in (model.regionOptions || [])" :key="opt" :value="opt">{{ opt }}</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="field-label text-[14px] font-normal text-gray-700" for="card-team">{{ BF.i18n('label_colliers_specializedTeamOptional') }}</label>
+                        <input id="card-team" class="field-input" v-model="model.card.specializedTeam" :aria-invalid="Number(model.teamNotice) === 1 ? 'true' : 'false'" @input="BF.namedAction('wrapCardName')" />
+                        <p v-if="Number(model.teamNotice) === 1" class="mt-1 text-sm text-red-600">{{ BF.i18n('label_colliers_teamNoSpace') }}</p>
+                    </div>
+                    <div>
+                        <label class="field-label text-[14px] font-normal text-gray-700" for="card-email">{{ BF.i18n('label_colliers_email') }}<span class="text-red-600" aria-hidden="true">*</span></label>
+                        <input id="card-email" type="email" class="field-input" maxlength="50" v-model="model.card.email" :aria-invalid="model.emailFormatError ? 'true' : 'false'" @input="model.card.emailEdited = true; BF.namedAction('wrapCardName')" @blur="model.card.emailTouched = 1; BF.namedAction('wrapCardName')" />
+                        <p v-if="model.emailFormatError" class="mt-1 text-sm text-red-600">{{ model.emailFormatError }}</p>
+                    </div>
+                    <div>
+                        <label class="field-label text-[14px] font-normal text-gray-700" for="card-phone">{{ BF.i18n('label_colliers_mobilePhone') }}<span class="text-red-600" aria-hidden="true">*</span></label>
+                        <input id="card-phone" type="tel" inputmode="numeric" maxlength="12" class="field-input" placeholder="416 555 1234" :value="(function () { var d = String(model.card.phone || '').replace(/\D/g, ''); if (d.length === 11 && d.charAt(0) === '1') d = d.slice(1); d = d.slice(0, 10); if (!d) return ''; if (d.length <= 3) return d; if (d.length <= 6) return d.slice(0, 3) + ' ' + d.slice(3); return d.slice(0, 3) + ' ' + d.slice(3, 6) + ' ' + d.slice(6); })()" @input="(function (e) { var d = String(e.target.value).replace(/\D/g, ''); if (d.length === 11 && d.charAt(0) === '1') d = d.slice(1); d = d.slice(0, 10); model.card.phone = d ? (d.length <= 3 ? d : d.length <= 6 ? d.slice(0, 3) + ' ' + d.slice(3) : d.slice(0, 3) + ' ' + d.slice(3, 6) + ' ' + d.slice(6)) : ''; BF.namedAction('wrapCardName'); })($event)" />
+                    </div>
+                    <div>
+                        <label class="field-label text-[14px] font-normal text-gray-700" for="card-address">{{ BF.i18n('label_colliers_officeLocation') }}<span class="text-red-600" aria-hidden="true">*</span></label>
+                        <select id="card-address" class="field-input" v-model="model.card.address" :disabled="Number(model.officesLoading) === 1" @change="BF.namedAction('wrapCardName')">
+                            <option value="">{{ Number(model.officesLoading) === 1 ? BF.i18n('label_colliers_loading') : BF.i18n('label_colliers_selectAddress') }}</option>
+                            <option v-for="office in (model.offices || [])" :key="office.id" :value="office.cardAddress">{{ office.listLabel }}</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="field-label text-[14px] font-normal text-gray-700" for="card-website">{{ BF.i18n('label_colliers_website') }}</label>
+                        <input id="card-website" class="field-input" :value="model.card.website" disabled />
+                    </div>
+                    <div>
+                        <label class="field-label text-[14px] font-normal text-gray-700" for="card-company">{{ BF.i18n('label_colliers_companyName') }}</label>
+                        <input id="card-company" class="field-input" :value="model.card.company" disabled />
+                    </div>
+                    <button type="submit" class="btn-primary w-full" :disabled="!model.canPreviewProof">{{ BF.i18n('label_colliers_previewProof') }}</button>
+                </form>
+            </div>
         </div>
-        <p v-if="model.layoutError" class="mt-3 text-sm text-red-600">{{ model.layoutError }}</p>
-        <button type="button" class="btn-outline mt-4 w-full" :disabled="!model.layoutReady" @click="BF.namedAction('viewPrintPdf')">{{ BF.i18n('label_colliers_viewPrintPdf') }}</button>
-      </div>
-      <div class="min-w-0 flex-1">
-        <div class="colliers-split-head">
-          <h1 class="colliers-page-title text-[28px] font-semibold tracking-tight text-[#0a1a3a]">{{ BF.i18n('label_colliers_customizeDetails') }}</h1>
-          <button type="button" class="shrink-0 text-sm text-gray-500 underline-offset-2 hover:text-gray-800 hover:underline" @click="model.card.emailEdited = false; BF.namedAction('clearDesign')">{{ BF.i18n('label_colliers_clearDesign') }}</button>
-        </div>
-        <form class="space-y-4" @submit.prevent="BF.namedAction('previewProof')">
-          <div>
-            <label class="field-label text-[14px] font-normal text-gray-700" for="card-name">{{ BF.i18n('label_colliers_fullName') }}<span class="text-red-600" aria-hidden="true">*</span></label>
-            <input id="card-name" class="field-input" maxlength="30" v-model="model.card.name" @input="BF.namedAction('wrapCardName')" />
-          </div>
-          <div>
-            <label class="field-label text-[14px] font-normal text-gray-700" for="card-title">{{ BF.i18n('label_colliers_title') }}<span class="text-red-600" aria-hidden="true">*</span></label>
-            <select id="card-title" class="field-input" v-model="model.card.title" @change="BF.namedAction('wrapCardName')">
-              <option value="">{{ BF.i18n('label_colliers_selectTitle') }}</option>
-              <option v-for="opt in model.titleOptions" :key="opt" :value="opt">{{ opt }}</option>
-            </select>
-          </div>
-          <!-- Bilingual only: French face title, picked from the French titles (no English → French mapping). -->
-          <div v-if="/bilingual|bilin/i.test(String((model.product && model.product.language) || model.card.language || ''))">
-            <label class="field-label text-[14px] font-normal text-gray-700" for="card-title-fr">{{ BF.i18n('label_colliers_titleFr') }}<span class="text-red-600" aria-hidden="true">*</span></label>
-            <select id="card-title-fr" class="field-input" v-model="model.card.titleFr" @change="BF.namedAction('wrapCardName')"><option value="">{{ BF.i18n('label_colliers_selectTitleFr') }}</option><option v-for="opt in (model.titleFrOptions || [])" :key="opt" :value="opt">{{ opt }}</option></select>
-          </div>
-          <div class="relative">
-            <label class="field-label text-[14px] font-normal text-gray-700">{{ BF.i18n('label_colliers_degreeOptional') }}</label>
-            <button type="button" class="field-input flex w-full items-center justify-between text-left" @click="model.degreeMenuOpen = !model.degreeMenuOpen">
-              <span :class="(Array.isArray(model.card.degree) && model.card.degree.length) ? 'text-gray-900' : 'text-gray-400'">{{ BF.i18n('label_colliers_selectDegree') }}</span>
-              <svg class="ml-2 h-4 w-4 shrink-0 text-gray-500" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.17l3.71-3.94a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd"/></svg>
-            </button>
-            <div v-if="model.degreeMenuOpen" class="fixed inset-0 z-10" @click="model.degreeMenuOpen = false"></div>
-            <div v-if="model.degreeMenuOpen" class="absolute z-20 mt-1 flex max-h-56 w-full flex-col overflow-hidden rounded border border-gray-200 bg-white shadow-lg" @click.stop>
-              <div class="shrink-0 border-b border-gray-100 bg-white p-2">
-                <input type="search" class="field-input py-2" :placeholder="BF.i18n('label_colliers_selectDegree')" :value="model.degreeQuery" @input="model.degreeQuery = $event.target.value" @click.stop />
-              </div>
-              <ul class="min-h-0 flex-1 overflow-auto py-1">
-                <li v-if="!(model.degreeOptions || []).filter(function (opt) { var q = String(model.degreeQuery || '').trim().toLowerCase(); return !q || String(opt).toLowerCase().indexOf(q) !== -1; }).length" class="px-3 py-2 text-sm text-gray-500">{{ BF.i18n('label_colliers_noDegrees') }}</li>
-                <li
-                  v-for="opt in (model.degreeOptions || []).filter(function (opt) { var q = String(model.degreeQuery || '').trim().toLowerCase(); return !q || String(opt).toLowerCase().indexOf(q) !== -1; })"
-                  :key="opt"
-                  class="flex items-center gap-2 px-3 py-2 text-sm hover:bg-gray-50"
-                  :class="(model.lockedDegrees || []).indexOf(opt) !== -1 ? 'cursor-not-allowed opacity-40' : 'cursor-pointer'"
-                  :aria-disabled="(model.lockedDegrees || []).indexOf(opt) !== -1 ? 'true' : 'false'"
-                  @click.stop="if ((model.lockedDegrees || []).indexOf(opt) !== -1) { model.credentialLockedClick = 1; BF.namedAction('wrapCardName'); } else { var cur = Array.isArray(model.card.degree) ? model.card.degree : []; var next = cur.indexOf(opt) === -1 ? cur.concat([opt]) : cur.filter(function (d) { return d !== opt; }); model.card = Object.assign({}, model.card, { degree: next }); BF.namedAction('wrapCardName'); }"
-                >
-                  <input type="checkbox" class="pointer-events-none h-4 w-4 rounded border-gray-300" :checked="Array.isArray(model.card.degree) && model.card.degree.indexOf(opt) !== -1" :disabled="(model.lockedDegrees || []).indexOf(opt) !== -1" tabindex="-1" aria-hidden="true" />
-                  <span>{{ opt }}</span>
-                </li>
-              </ul>
-            </div>
-            <div v-if="Array.isArray(model.card.degree) && model.card.degree.length" class="mt-2 flex flex-wrap gap-2">
-              <span v-for="d in model.card.degree" :key="d" class="inline-flex items-center gap-1 rounded-md bg-[#E8EEF7] px-2.5 py-1 text-sm text-[#24418A]">{{ d }} <button type="button" class="ml-0.5 inline-flex h-4 w-4 items-center justify-center rounded text-[#24418A] hover:bg-[#d4deef]" @click="model.card = Object.assign({}, model.card, { degree: model.card.degree.filter(function (x) { return x !== d; }) }); BF.namedAction('wrapCardName')">×</button></span>
-            </div>
-            <p v-if="model.credentialNotice === 'degree'" class="mt-1 text-sm text-red-600">{{ BF.i18n('label_colliers_credentialsNoSpace') }}</p>
-            <button v-if="!(Number(model.otherCredentialOpen) === 1 || String(model.card.additionalCredentials || '').trim())" type="button" class="mt-2 text-sm font-medium text-[#25408F] underline-offset-2 hover:underline disabled:cursor-not-allowed disabled:opacity-40" :disabled="Number(model.additionalLocked) === 1" @click="model.otherCredentialOpen = 1">+ {{ BF.i18n('label_colliers_addOtherCredential') }}</button>
-          </div>
-          <div v-if="Number(model.otherCredentialOpen) === 1 || String(model.card.additionalCredentials || '').trim()">
-            <label class="field-label text-[14px] font-normal text-gray-700" for="card-credentials">{{ BF.i18n('label_colliers_additionalCredentialsOptional') }}</label>
-            <input id="card-credentials" class="field-input" v-model="model.card.additionalCredentials" :disabled="Number(model.additionalLocked) === 1" :aria-invalid="model.credentialNotice === 'additional' ? 'true' : 'false'" @input="BF.namedAction('wrapCardName')" />            <p v-if="model.credentialNotice === 'additional'" class="mt-1 text-sm text-red-600">{{ BF.i18n('label_colliers_credentialsNoSpace') }}</p>
-          </div>
-          <div>
-            <label class="field-label text-[14px] font-normal text-gray-700" for="card-region">{{ BF.i18n('label_colliers_regionOptional') }}</label>
-            <select id="card-region" class="field-input" v-model="model.card.region" @change="BF.namedAction('wrapCardName')">
-              <option value="">{{ BF.i18n('label_colliers_selectRegion') }}</option>
-              <option v-for="opt in (model.regionOptions || [])" :key="opt" :value="opt">{{ opt }}</option>
-            </select>
-          </div>
-          <div>
-            <label class="field-label text-[14px] font-normal text-gray-700" for="card-team">{{ BF.i18n('label_colliers_specializedTeamOptional') }}</label>
-            <input id="card-team" class="field-input" v-model="model.card.specializedTeam" :aria-invalid="Number(model.teamNotice) === 1 ? 'true' : 'false'" @input="BF.namedAction('wrapCardName')" />            <p v-if="Number(model.teamNotice) === 1" class="mt-1 text-sm text-red-600">{{ BF.i18n('label_colliers_teamNoSpace') }}</p>
-          </div>
-          <div>
-            <label class="field-label text-[14px] font-normal text-gray-700" for="card-email">{{ BF.i18n('label_colliers_email') }}<span class="text-red-600" aria-hidden="true">*</span></label>
-            <input id="card-email" type="email" class="field-input" maxlength="50" v-model="model.card.email" :aria-invalid="model.emailFormatError ? 'true' : 'false'" @input="model.card.emailEdited = true; BF.namedAction('wrapCardName')" @blur="model.card.emailTouched = 1; BF.namedAction('wrapCardName')" />            <p v-if="model.emailFormatError" class="mt-1 text-sm text-red-600">{{ model.emailFormatError }}</p>
-          </div>
-          <div>
-            <label class="field-label text-[14px] font-normal text-gray-700" for="card-phone">{{ BF.i18n('label_colliers_mobilePhone') }}<span class="text-red-600" aria-hidden="true">*</span></label>
-            <input
-              id="card-phone"
-              type="tel"
-              inputmode="numeric"
-              maxlength="12"
-              class="field-input"
-              placeholder="416 555-1234"
-              :value="(function () { var d = String(model.card.phone || '').replace(/\D/g, ''); if (d.length === 11 && d.charAt(0) === '1') d = d.slice(1); d = d.slice(0, 10); if (!d) return ''; if (d.length <= 3) return d; if (d.length <= 6) return d.slice(0, 3) + ' ' + d.slice(3); return d.slice(0, 3) + ' ' + d.slice(3, 6) + '-' + d.slice(6); })()"
-              @input="(function (e) { var d = String(e.target.value).replace(/\D/g, ''); if (d.length === 11 && d.charAt(0) === '1') d = d.slice(1); d = d.slice(0, 10); model.card.phone = d ? (d.length <= 3 ? d : d.length <= 6 ? d.slice(0, 3) + ' ' + d.slice(3) : d.slice(0, 3) + ' ' + d.slice(3, 6) + '-' + d.slice(6)) : ''; BF.namedAction('wrapCardName'); })($event)"
-            />
-          </div>
-          <div>
-            <label class="field-label text-[14px] font-normal text-gray-700" for="card-address">{{ BF.i18n('label_colliers_officeLocation') }}<span class="text-red-600" aria-hidden="true">*</span></label>
-            <select id="card-address" class="field-input" v-model="model.card.address" :disabled="Number(model.officesLoading) === 1" @change="BF.namedAction('wrapCardName')">
-              <option value="">{{ Number(model.officesLoading) === 1 ? BF.i18n('label_colliers_loading') : BF.i18n('label_colliers_selectAddress') }}</option>
-              <option v-for="office in (model.offices || [])" :key="office.id" :value="office.cardAddress">{{ office.listLabel }}</option>
-            </select>
-          </div>
-          <div>
-            <label class="field-label text-[14px] font-normal text-gray-700" for="card-website">{{ BF.i18n('label_colliers_website') }}</label>
-            <input id="card-website" class="field-input" :value="model.card.website" disabled />
-          </div>
-          <div>
-            <label class="field-label text-[14px] font-normal text-gray-700" for="card-company">{{ BF.i18n('label_colliers_companyName') }}</label>
-            <input id="card-company" class="field-input" :value="model.card.company" disabled />
-          </div>
-          <button type="submit" class="btn-primary w-full" :disabled="!model.canPreviewProof">{{ BF.i18n('label_colliers_previewProof') }}</button>
-        </form>
-      </div>
     </div>
-  </div>
 </div>
-

@@ -62,8 +62,9 @@ function drawLinesUpFromBottom(page, lines, opts) {
 
 async function embedPrintAssets(pdfDoc) {
   var sans = await loadOpenSansBytes()
-  var regular = await pdfDoc.embedFont(sans.regular)
-  var bold = await pdfDoc.embedFont(sans.bold)
+  // Subset: only the glyphs used, so the PDF (and the base64 sent to FileMaker) stays small.
+  var regular = await pdfDoc.embedFont(sans.regular, { subset: true })
+  var bold = await pdfDoc.embedFont(sans.bold, { subset: true })
   var logo = await pdfDoc.embedPng(await loadBytes(logoUrl))
   var wordsEn = await pdfDoc.embedPng(await loadBytes(wordsEnUrl))
   var wordsFr = await pdfDoc.embedPng(await loadBytes(wordsFrUrl))
