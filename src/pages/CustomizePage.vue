@@ -12,7 +12,9 @@
 
       <div class="flex flex-col gap-10 lg:flex-row lg:gap-12">
         <div class="w-full lg:max-w-[480px]">
-          <h2 class="mb-4 text-lg font-bold text-colliers-primary">{{ t('cardPreview') }}</h2>
+          <div class="colliers-split-head">
+            <h2 class="text-lg font-bold text-colliers-primary">{{ t('cardPreview') }}</h2>
+          </div>
           <div class="space-y-4">
             <div v-for="preview in previewSlots" :key="preview.language" class="card-preview-frame">
               <card-preview
@@ -39,7 +41,7 @@
         </div>
 
         <div class="min-w-0 flex-1">
-          <div class="mb-6 flex items-start justify-between gap-4">
+          <div class="colliers-split-head">
             <h1 class="colliers-page-title">{{ t('customizeDetails') }}</h1>
             <button
               type="button"
@@ -59,6 +61,37 @@
               autocomplete="name"
               required
               @input="onName"
+            ></text-field>
+            <div>
+              <multi-select-field
+                :label="t('degree')"
+                :value="details.degree"
+                :options="degreeOptions"
+                :locked-values="lockedDegreeValues"
+                :placeholder="t('selectDegree')"
+                :search-placeholder="t('selectDegree')"
+                :empty-label="t('noDegrees')"
+                :error="degreeSpaceNotice"
+                @input="onDegrees"
+                @locked="onCredentialLocked"
+              ></multi-select-field>
+              <button
+                v-if="!showOtherCredential"
+                type="button"
+                class="mt-2 text-sm font-medium text-colliers-primary underline-offset-2 hover:underline disabled:cursor-not-allowed disabled:opacity-40"
+                :disabled="additionalCredentialsDisabled"
+                @click="otherCredentialOpen = true"
+              >
+                + {{ t('addOtherCredential') }}
+              </button>
+            </div>
+            <text-field
+              v-if="showOtherCredential"
+              :label="t('additionalCredentials')"
+              :value="details.additionalCredentials"
+              :disabled="additionalCredentialsDisabled"
+              :error="additionalSpaceNotice"
+              @input="onAdditionalCredentials"
             ></text-field>
             <select-field
               :label="t('title')"
@@ -80,25 +113,6 @@
               required
               @input="onTitleFr"
             ></select-field>
-            <multi-select-field
-              :label="t('degree')"
-              :value="details.degree"
-              :options="degreeOptions"
-              :locked-values="lockedDegreeValues"
-              :placeholder="t('selectDegree')"
-              :search-placeholder="t('selectDegree')"
-              :empty-label="t('noDegrees')"
-              :error="degreeSpaceNotice"
-              @input="onDegrees"
-              @locked="onCredentialLocked"
-            ></multi-select-field>
-            <text-field
-              :label="t('additionalCredentials')"
-              :value="details.additionalCredentials"
-              :disabled="additionalCredentialsDisabled"
-              :error="additionalSpaceNotice"
-              @input="onAdditionalCredentials"
-            ></text-field>
             <select-field
               :label="t('region')"
               :value="details.region"
@@ -195,7 +209,6 @@ import { isBilingualLanguage, websiteForProduct } from '../helpers/formatCardIde
 import {
   bilingualEnglishPreviewDetails,
   bilingualFrenchPreviewDetails,
-  suggestFrenchTitle,
 } from '../helpers/titleLocale'
 import { titlesForProductLanguage } from '../helpers/titleAdmin'
 import { CANADIAN_REGION_OPTIONS } from '../helpers/canadianProvinces'
@@ -258,6 +271,7 @@ export default {
       credentialSpaceRejected: false,
       credentialNoticeField: '',
       credentialNoticeTimer: null,
+      otherCredentialOpen: false,
     }
   },
   computed: {
@@ -359,15 +373,21 @@ export default {
         Boolean(String(details.address || '').trim())
       )
     },
+    /** "Other credential" shows once opened from the link, or when it already has text. */
+    showOtherCredential: function () {
+      return (
+        this.otherCredentialOpen || Boolean(String(this.details.additionalCredentials || '').trim())
+      )
+    },
     titleOptions: function () {
       var lang = (this.product && this.product.language) || 'English'
-      return titlesForProductLanguage(lang, store.titles).map(function (title) {
+      return titlesForProductLanguage(lang, store.titles, store.titlesFr).map(function (title) {
         return { value: title, label: title }
       })
     },
     /** Bilingual French title: French list, plus a saved value that is not on it. */
     titleFrOptions: function () {
-      var titles = titlesForProductLanguage('French')
+      var titles = titlesForProductLanguage('French', store.titles, store.titlesFr)
       var current = String(this.details.titleFr || '').trim()
       if (current && titles.indexOf(current) === -1) titles = [current].concat(titles)
       return titles.map(function (title) {
@@ -446,15 +466,9 @@ export default {
     t: t,
     onTitle: function (value) {
       this.details.title = value
-      this.details.titleFr = suggestFrenchTitle(value)
     },
     onTitleFr: function (value) {
       this.details.titleFr = cleanCardText(value)
-    },
-    fillMissingTitleFr: function () {
-      if (!this.isBilingual) return
-      if (String(this.details.titleFr || '').trim()) return
-      this.details.titleFr = suggestFrenchTitle(this.details.title)
     },
     onName: function (value, event) {
       var current = String(this.details.name || '')
@@ -597,7 +611,6 @@ export default {
         )
         this.emailEdited = true
         this.emailTouched = true
-        this.fillMissingTitleFr()
         return
       }
       if (editId && !line) {
@@ -616,7 +629,6 @@ export default {
         )
         this.emailEdited = true
         this.emailTouched = true
-        this.fillMissingTitleFr()
         return
       }
       this.details = emptyDetails(language)
@@ -628,6 +640,7 @@ export default {
       this.details = emptyDetails(language)
       this.emailEdited = false
       this.emailTouched = false
+      this.otherCredentialOpen = false
       this.clearCredentialNotice()
       this.printPdfError = ''
     },

@@ -4,20 +4,13 @@
   :class="app.header.role === 'admin' ? 'colliers-site-header--admin' : ''"
   :style="app.header.role === 'admin' ? { background: '#25408F', borderBottomColor: '#1A2E6E' } : null"
 >
-  <div
-    class="mx-auto flex h-[64px] w-full items-stretch justify-between sm:h-[72px]"
-    :class="app.header.role === 'admin' ? 'px-6 lg:px-12' : 'max-w-6xl items-center px-4 sm:px-6 lg:px-8'"
-  >
-    <div
-      class="flex min-w-0"
-      :class="app.header.role === 'admin' ? 'h-full flex-1 items-stretch' : 'items-center gap-4 sm:gap-8'"
-    >
+  <!-- Same container, padding and logo gap for user and admin, so the logo never moves between roles. -->
+  <div class="colliers-header-inner mx-auto flex h-[64px] w-full items-stretch justify-between gap-4 sm:h-[72px]">
+    <div class="flex h-full min-w-0 flex-1 items-stretch">
       <button
         type="button"
-        class="shrink-0 focus:outline-none"
-        :class="app.header.role === 'admin'
-          ? 'mr-4 flex items-center self-center focus-visible:ring-2 focus-visible:ring-white sm:mr-6 lg:mr-12'
-          : 'focus-visible:ring-2 focus-visible:ring-[#25408F]'"
+        class="flex shrink-0 items-center self-center focus:outline-none focus-visible:ring-2 sm:mr-8"
+        :class="app.header.role === 'admin' ? 'focus-visible:ring-white' : 'focus-visible:ring-[#25408F]'"
         :aria-label="(app.currentLang || (app.i18n && app.i18n.langSelected) || 'en') === 'fr'
           ? 'Colliers Maîtres de projets'
           : 'Colliers Project Leaders'"
@@ -48,23 +41,7 @@
         </span>
       </button>
 
-      <button
-        v-if="app.header.role === 'admin'"
-        type="button"
-        class="flex items-center self-center text-white lg:hidden focus:outline-none focus-visible:ring-2 focus-visible:ring-white"
-        :aria-label="BF.i18n('label_general_closeMenu')"
-        :aria-expanded="app.header.mobileMenuOpen ? 'true' : 'false'"
-        @click="namedAction('toggleMobileMenu')"
-      >
-        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
-        </svg>
-      </button>
-
-      <nav
-        v-if="app.header.role === 'admin'"
-        class="hidden h-full min-w-0 flex-1 items-stretch pr-2 lg:flex lg:pr-8"
-      >
+      <nav v-if="app.header.role === 'admin'" class="colliers-admin-nav h-full min-w-0 flex-1 items-stretch">
         <div class="flex h-full min-w-0 flex-1 flex-wrap items-stretch">
           <button
             type="button"
@@ -89,7 +66,7 @@
               ? 'border-white text-white'
               : 'border-transparent text-white/70 hover:text-white'"
             @click="namedAction('goAdminTitles')"
-          >{{ BF.i18n('label_colliers_manageDesignations') }}</button>
+          >{{ BF.i18n('label_colliers_manageTitles') }}</button>
           <button
             type="button"
             class="flex h-full items-center border-b-[3px] px-3 text-[13px] font-medium whitespace-nowrap lg:px-3.5 lg:text-sm"
@@ -101,10 +78,10 @@
         </div>
       </nav>
 
-      <nav v-else class="hidden h-full min-w-0 sm:flex">
+      <nav v-else class="colliers-user-nav h-full min-w-0">
         <button
           type="button"
-          class="flex h-[64px] items-center border-b-[3px] px-3 text-sm font-medium sm:h-[72px] sm:px-4 sm:text-base"
+          class="flex h-[64px] items-center border-b-[3px] px-3 text-sm font-medium sm:h-[72px] sm:px-4"
           :class="app.header.activeNav === 'catalog'
             ? 'border-[#25408F] text-gray-900'
             : 'border-transparent text-gray-600 hover:text-gray-900'"
@@ -221,16 +198,30 @@
           <button
             type="button"
             class="mt-1 w-full px-3 py-2 text-left text-sm text-gray-800 hover:bg-gray-50"
-            @click="namedAction('logout')"
+            @click="namedAction('logoutOfApp')"
           >{{ BF.i18n('label_general_logout') }}</button>
         </div>
       </div>
+
+      <button
+        v-if="app.header.role === 'admin'"
+        type="button"
+        class="colliers-admin-menu-btn focus:outline-none focus-visible:ring-2 focus-visible:ring-white"
+        :aria-label="BF.i18n('label_navMenu')"
+        :aria-expanded="app.header.mobileMenuOpen ? 'true' : 'false'"
+        @click="namedAction('toggleMobileMenu')"
+      >
+        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+        </svg>
+      </button>
     </div>
   </div>
 
+  <!-- Opens from the right, next to the hamburger. -->
   <div
     v-if="app.header.role === 'admin' && app.header.mobileMenuOpen"
-    class="fixed inset-0 z-50 flex lg:hidden"
+    class="fixed inset-0 z-50 flex justify-end lg:hidden"
     role="dialog"
     aria-modal="true"
     :aria-label="BF.i18n('label_colliers_adminDashboard')"
@@ -270,7 +261,7 @@
           class="w-full border-b border-white/20 py-3.5 text-left text-[15px] font-medium"
           :class="app.header.activeNav === 'admin-titles' ? 'text-white' : 'text-white/80'"
           @click="namedAction('goAdminTitles')"
-        >{{ BF.i18n('label_colliers_manageDesignations') }}</button>
+        >{{ BF.i18n('label_colliers_manageTitles') }}</button>
         <button
           type="button"
           class="w-full border-b border-white/20 py-3.5 text-left text-[15px] font-medium"

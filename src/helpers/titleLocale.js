@@ -1,67 +1,25 @@
-import { isBilingualLanguage, isFrenchLanguage, WEBSITE_FR } from './formatCardIdentity.js'
+import { WEBSITE_FR } from './formatCardIdentity.js'
 
-/**
- * Placeholder used only as a geometry fixture when Title | Region must overflow.
- * Live bilingual Customize uses titleFr / suggestFrenchTitle instead.
- */
+/** Placeholder used only as a geometry fixture when Title | Region must overflow. */
 export var TITLE_TODO = 'Titre à compléter — équivalent français requis'
 
-/**
- * Confirmed English → French title pairs (Cynthia / Colliers, Oct 2026).
- * Unknown English titles fall back to the English string so the field stays editable.
- */
-export var TITLE_EN_TO_FR = {
-  'Business Development Manager': 'Responsable du développement commercial',
-  Director: 'Directrice',
-  'Senior Project Manager': 'Gestionnaire de projets Senior',
-  'Team Lead': "Chef d'équipe",
-  'Project Manager': 'Gestionnaire de Projet',
-  'Project Director': 'Gestionnaire de projets principal',
-  'Assistant Project Manager': 'Gestionnaire de projet adjoint',
-  'Talent Acquisition Business Partner': "Partenaire d'affaires sénior en acquisition de talent",
-}
-
 /** Only this French title shrinks to fit the identity lane (Cynthia, Oct 2026). */
-export var TITLE_FR_TALENT_ACQUISITION = TITLE_EN_TO_FR['Talent Acquisition Business Partner']
+export var TITLE_FR_TALENT_ACQUISITION = 'Partenaire d’affaires sénior en acquisition de talent'
 
-function frenchMapValues() {
-  return Object.keys(TITLE_EN_TO_FR).map(function (key) {
-    return TITLE_EN_TO_FR[key]
-  })
-}
-
-/** Direct map, else identity so the bilingual field stays editable. */
-export function suggestFrenchTitle(title) {
-  var trimmed = String(title || '').trim()
-  if (!trimmed) return ''
-  if (TITLE_EN_TO_FR[trimmed]) return TITLE_EN_TO_FR[trimmed]
-  if (frenchMapValues().indexOf(trimmed) !== -1) return trimmed
-  return trimmed
-}
-
-export function resolveBilingualFrenchTitle(title) {
-  return suggestFrenchTitle(title)
+/** French titles use the typographic apostrophe (’); older cards may still hold a straight one. */
+export function curlyApostrophes(text) {
+  return String(text || '').replace(/'/g, '’')
 }
 
 /**
- * Face-language resolver. English (and bilingual product lang) returns the input.
- * French → mapped value or identity fallback.
+ * Details clone for the bilingual French preview face. The French title is picked by the
+ * user (titleFr); there is no English → French mapping, so an empty one shows "Titre".
  */
-export function resolveTitleForLanguage(title, language) {
-  var trimmed = String(title || '').trim()
-  if (!trimmed) return trimmed
-  if (!isFrenchLanguage(language) || isBilingualLanguage(language)) return trimmed
-  return suggestFrenchTitle(trimmed)
-}
-
-/** Details clone for the bilingual French preview face (website + titleFr or mapped title). */
 export function bilingualFrenchPreviewDetails(details) {
   var src = details || {}
-  var frenchTitle = String(src.titleFr || '').trim()
-  if (!frenchTitle) frenchTitle = suggestFrenchTitle(src.title)
   return Object.assign({}, src, {
     website: WEBSITE_FR,
-    title: frenchTitle,
+    title: String(src.titleFr || '').trim(),
     // Keep the English title so the preview can check both faces (cardFaceTitles).
     titleEn: src.titleEn || src.title,
     bilingualFaces: true,

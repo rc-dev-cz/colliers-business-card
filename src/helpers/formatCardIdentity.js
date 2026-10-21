@@ -16,7 +16,7 @@ export function formatCredentialSuffix(degree, extra) {
 }
 
 /**
- * Build the card identity line: "Name, Deg1, Deg2, C.M."
+ * Build the card identity line: "Name, Deg1, Deg2"
  * Returns '' when both name and credentials are empty.
  */
 export function formatNameLine(name, degree, extra) {
@@ -25,9 +25,6 @@ export function formatNameLine(name, degree, extra) {
   if (n && suffix) return n + ', ' + suffix
   return n || suffix || ''
 }
-
-/** ICT sample shown after the name comma until a degree or credential is entered. */
-export var SAMPLE_CREDENTIAL = 'C.M.'
 
 /** Card-face samples for empty optional lines. Not "(Optional)" labels. */
 /** Shown on the customize preview until an office address is selected. */
@@ -38,13 +35,11 @@ export var SAMPLE_ADDRESS = {
 
 export var OPTIONAL_PREVIEW = {
   EN: {
-    credential: SAMPLE_CREDENTIAL,
     region: 'Region',
     team: 'Specialized team',
     address: SAMPLE_ADDRESS.EN,
   },
   FR: {
-    credential: SAMPLE_CREDENTIAL,
     region: 'Région',
     team: 'Équipe spécialisée',
     address: SAMPLE_ADDRESS.FR,
@@ -53,16 +48,6 @@ export var OPTIONAL_PREVIEW = {
 
 function optionalPreview(language) {
   return isFrenchLanguage(language) ? OPTIONAL_PREVIEW.FR : OPTIONAL_PREVIEW.EN
-}
-
-/**
- * Credential text for the customize preview and the print PDF. Empty degree and
- * credentials show the ICT sample "C.M." after the name comma.
- */
-export function previewCredentialText(degree, extra, language) {
-  var real = formatCredentialSuffix(degree, extra)
-  if (real) return real
-  return optionalPreview(language).credential
 }
 
 /** Title line for the customize preview. Empty region omits "| Region". */

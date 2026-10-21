@@ -152,6 +152,43 @@ body {
   }
 }
 
+/* Header: same width and side padding as the page content (.colliers-page-root), for user and admin. */
+.colliers-header-inner {
+  max-width: 64rem;
+  padding-left: var(--colliers-scroll-body-pad-x);
+  padding-right: var(--colliers-scroll-body-pad-x);
+  box-sizing: border-box;
+}
+
+/* Show/hide by viewport in plain CSS: in Klai, Tailwind's hidden beats sm:flex / lg:flex. */
+.colliers-user-nav,
+.colliers-admin-nav {
+  display: none;
+}
+
+.colliers-admin-menu-btn {
+  display: flex;
+  align-items: center;
+  align-self: center;
+  color: #fff;
+}
+
+@media (min-width: 640px) {
+  .colliers-user-nav {
+    display: flex;
+  }
+}
+
+@media (min-width: 1024px) {
+  .colliers-admin-nav {
+    display: flex;
+  }
+
+  .colliers-admin-menu-btn {
+    display: none;
+  }
+}
+
 body.colliers-mobile-menu-open {
   overflow: hidden;
 }
@@ -339,6 +376,31 @@ body.colliers-mobile-menu-open {
 .colliers-page-title--center {
   width: 100%;
   text-align: center;
+}
+
+/*
+  Column heading row on two-column pages (Customize, Proof).
+  Both columns get the same row height with text on the last baseline, so
+  "Card Preview" lines up with the page title, and side links (Clear Design)
+  sit on the title's baseline. Same bottom margin, so the card and the first field start level.
+*/
+.colliers-split-head {
+  display: flex;
+  align-items: flex-end;
+  align-items: last baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  margin: 0 0 1.5rem;
+}
+
+.colliers-split-head > * {
+  margin: 0;
+}
+
+@media (min-width: 1024px) {
+  .colliers-split-head {
+    min-height: 2.5rem;
+  }
 }
 
 .colliers-page-title--compact {

@@ -318,9 +318,10 @@ try {
     var credMode = packed.mode === 'error' ? 'none' : packed.mode
     if (packed.mode === 'error') errors.push('credentials')
     if (!fitsLine(font, fields.website, L.bodySize, L.identityWidth)) errors.push('website')
-    var TA_FR = "Partenaire d'affaires sénior en acquisition de talent"
+    var TA_FR = 'Partenaire d’affaires sénior en acquisition de talent'
     var titleSize =
-      fields.titleOnly === TA_FR && !fitsLine(font, TA_FR, L.bodySize, L.titleMaxWidth)
+      String(fields.titleOnly || '').replace(/'/g, '’') === TA_FR &&
+      !fitsLine(font, TA_FR, L.bodySize, L.titleMaxWidth)
         ? (function () {
             var sz = Number(
               ((L.bodySize * L.titleMaxWidth) / font.widthOfTextAtSize(TA_FR, L.bodySize)).toFixed(
@@ -399,16 +400,6 @@ try {
       fields: fields,
     }
   }
-  var TITLE_EN_TO_FR = {
-    'Business Development Manager': 'Responsable du développement commercial',
-    Director: 'Directrice',
-    'Senior Project Manager': 'Gestionnaire de projets Senior',
-    'Team Lead': "Chef d'équipe",
-    'Project Manager': 'Gestionnaire de Projet',
-    'Project Director': 'Gestionnaire de projets principal',
-    'Assistant Project Manager': 'Gestionnaire de projet adjoint',
-    'Talent Acquisition Business Partner': "Partenaire d'affaires sénior en acquisition de talent",
-  }
   // Region never shares the title line (Cynthia, Oct 2026): team -> 'team | region'; no team -> own line;
   // 'team | region' too wide -> keep 'Title | Region' when it fits on every page, else own line.
   function applyRegionRule(productPlan, fonts) {
@@ -458,15 +449,10 @@ try {
       var pageDetails = snapshot
       if (isFrenchLanguage(lang)) pageDetails = Object.assign({}, snapshot, { website: WEBSITE_FR })
       if (isFrenchLanguage(lang) && isBilingualLanguage(language)) {
-        var frTitle =
-          String(snapshot.titleFr || '').trim() ||
-          TITLE_EN_TO_FR[
-            String(snapshot.title || '')
-              .split('|')[0]
-              .trim()
-          ] ||
-          snapshot.title
-        pageDetails = Object.assign({}, pageDetails, { title: frTitle })
+        // The French face uses the picked French title only (no English → French mapping).
+        pageDetails = Object.assign({}, pageDetails, {
+          title: String(snapshot.titleFr || '').trim(),
+        })
       }
       var fields = resolveCardFields(pageDetails, lang)
       return {
@@ -483,45 +469,16 @@ try {
     })
     return { valid: errors.length === 0, errors: errors, pages: pages }
   }
-  function printAddressLines(address, language) {
-    var text = address != null ? String(address).trim() : ''
-    if (text) return null
-    return (isFrenchLanguage(language) ? SAMPLE_FR : SAMPLE_EN).address.split(/\n/)
-  }
-  function printInlineCredential(details) {
-    if (formatCredentialSuffix(details && details.degree, details && details.additionalCredentials))
-      return null
-    return ', C.M.'
-  }
-  function applyPrintPlaceholders(productPlan, details) {
-    productPlan.pages.forEach(function (page) {
-      var inline = printInlineCredential(details)
-      if (inline && page.layout) {
-        if (page.layout.credentialLine) page.layout.credentialLine = inline.replace(/^, /, '')
-        else {
-          page.layout.inlineCredential = inline
-          page.layout.credentialLine = ''
-          page.layout.credMode = 'inline'
-          if (page.fields) page.fields.credentialSuffix = inline.replace(/^, /, '')
-        }
-      }
-      var lines = printAddressLines(details && details.address, page.language)
-      if (lines && page.layout && page.layout.address) {
-        page.layout.address.lines = lines
-        if (page.fields) page.fields.address = lines.join('\n')
-      }
-    })
-  }
   var LAYOUT_MSG = {
     name: 'Full name is too long for the business card.',
-    credentials: 'Selected degrees and credentials are too long for the business card.',
+    credentials: 'Selected credentials are too long for the business card.',
     title: 'The selected title and region are too long.',
     team: 'The specialized team is too long.',
     email: 'The email address is too long for the card.',
     phone: 'The mobile number is too long for the card.',
     website: 'The website is too long for the card.',
     address: 'The office address is too long for the card.',
-    degrees: 'A maximum of 2 degrees/certifications can be selected.',
+    degrees: 'A maximum of 2 credentials can be selected.',
   }
   function applyPrintPageBoxes(page) {
     page.setMediaBox(0, 0, PAGE_W, PAGE_H)
@@ -694,7 +651,6 @@ try {
     wordsFr: await pdfDoc.embedPng(wordsFrBytes),
   }
   var productPlan = planProductLayout(snapshot, language, assets)
-  // No applyPrintPlaceholders: preview samples (C.M., sample address) must never land on a real print PDF.
   applyRegionRule(productPlan, assets)
   if (!productPlan.valid)
     throw new Error(LAYOUT_MSG[productPlan.errors[0]] || productPlan.errors[0])

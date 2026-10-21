@@ -3,17 +3,15 @@ import { uniqueLabels } from './labels.js'
 
 export const DEGREES_STORAGE_KEY = 'managedDegrees'
 
-/** Unique FileMaker spellings. Do not add P.Eng / P.Eng. / M.Sc duplicates. */
+/** Bump when the official seed changes so local stubs refresh. */
+export const DEGREES_SEED_VERSION = 2
+export const DEGREES_SEED_VERSION_KEY = 'managedDegreesVersion'
+
+/** Client-approved credentials (Designations.xlsx, Oct 2026), same as FileMaker store_degrees. */
 export const DEFAULT_DEGREES = [
   'Arch. Tech',
   'Architect',
-  'B.A.',
-  'B.Arch',
-  'B.Comm',
-  'B.Eng.',
-  'B.Tech',
   'BA',
-  'BBA',
   'BSc',
   'CA',
   'CAPM',
@@ -22,14 +20,11 @@ export const DEFAULT_DEGREES = [
   'CET',
   'CGA',
   'CMA',
-  'CMC',
   'CPA',
   'CSDP',
-  'C.Tech',
   'Dipl. Arch. Tech',
   'Eng. Tech',
   'EP(CEA)',
-  'FMC',
   'GSC',
   'LEED AP',
   'LEED AP BD+C',
@@ -38,25 +33,21 @@ export const DEFAULT_DEGREES = [
   'LEED AP ND',
   'LEED AP O+M',
   'LEED Green Assoc.',
-  'M.A.',
-  'M.Arch',
-  'MBA',
-  'MCIP',
-  'MRICS',
   'MSc',
-  'OAA',
   'P. Eng.',
   'PgMP',
-  'Ph.D.',
   'PMI-RMP',
   'PMI-SP',
   'PMP',
   'PQS',
   'Real Estate Broker',
-  'RPP',
 ]
 
 export function loadManagedDegrees() {
+  if (readStorage(DEGREES_SEED_VERSION_KEY, 0) !== DEGREES_SEED_VERSION) {
+    saveManagedDegrees(DEFAULT_DEGREES)
+    writeStorage(DEGREES_SEED_VERSION_KEY, DEGREES_SEED_VERSION)
+  }
   const stored = readStorage(DEGREES_STORAGE_KEY, null)
   if (Array.isArray(stored) && stored.length) return uniqueLabels(stored)
   return DEFAULT_DEGREES.slice()

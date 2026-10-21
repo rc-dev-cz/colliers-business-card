@@ -13,7 +13,6 @@ import {
   cardFaceTitles,
   emailFitsOnCard,
   nameFitsOnCard,
-  withSampleCredential,
   resolveCardFields,
   teamFitsOnCard,
   titleSizeFor,
@@ -716,22 +715,10 @@ describe('nameFitsOnCard and emailFitsOnCard', function () {
     ).toBe(false)
   })
 
-  it('moves the C.M. sample to its own row instead of clipping it', function () {
-    // Grow the last word until the name alone just fills its line (no room for C.M.).
-    var last = 'asdasd'
-    while (
-      credentialsFitOnCard({ name: 'asdasdasdasdasdasdasd ' + last + 'a' }, fonts, 'English')
-    ) {
-      last += 'a'
-    }
-    var name = 'asdasdasdasdasdasdasd ' + last
-    expect(nameFitsOnCard({ name: name }, fonts)).toBe(true)
-    var layout = plan(withSampleCredential({ name: name }, 'English'))
+  it('leaves the name line bare when no credential is chosen', function () {
+    var layout = plan({ name: 'Ada Lovelace' })
     expect(layout.inlineCredential).toBe('')
-    expect(layout.credentialLine).toBe('C.M.')
-    // Short name: the sample stays after the name.
-    var short = plan(withSampleCredential({ name: 'Ada Lovelace' }, 'English'))
-    expect(short.inlineCredential).toBe(', C.M.')
+    expect(layout.credentialLine).toBe('')
   })
 
   it('stops the name when the chosen credentials cannot fit anywhere', function () {

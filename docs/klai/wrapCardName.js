@@ -15,34 +15,12 @@ if (name !== model.card.name) model.card.name = name
   var cleaned = model.card[key].replace(CARD_TEXT_DISALLOWED, '')
   if (cleaned !== model.card[key]) model.card[key] = cleaned
 })
-// Bilingual: French title for the FR face. Same EN→FR pairs as Vue titleLocale.js.
-var TITLE_EN_TO_FR = {
-  'Business Development Manager': 'Responsable du développement commercial',
-  Director: 'Directrice',
-  'Senior Project Manager': 'Gestionnaire de projets Senior',
-  'Team Lead': "Chef d'équipe",
-  'Project Manager': 'Gestionnaire de Projet',
-  'Project Director': 'Gestionnaire de projets principal',
-  'Assistant Project Manager': 'Gestionnaire de projet adjoint',
-  'Talent Acquisition Business Partner': "Partenaire d'affaires sénior en acquisition de talent",
-}
 var isBilingualCard = /bilingual|bilin/i.test(
   String((model.product && model.product.language) || model.card.language || '')
 )
-if (isBilingualCard && !Number(model.card.titleFrEdited)) {
-  var enTitleForFr = String(model.card.title || '')
-    .split('|')[0]
-    .trim()
-  var suggestedFr = TITLE_EN_TO_FR[enTitleForFr] || enTitleForFr
-  if (model.card.titleFr !== suggestedFr) {
-    if (typeof Vue !== 'undefined' && Vue.set) Vue.set(model.card, 'titleFr', suggestedFr)
-    else model.card.titleFr = suggestedFr
-  }
-}
-// Bilingual French title dropdown: the French titles, plus a saved value that is not on the list.
-var titleFrList = Object.keys(TITLE_EN_TO_FR).map(function (k) {
-  return TITLE_EN_TO_FR[k]
-})
+// Bilingual French title dropdown: FileMaker's French titles (onFormLoad titleFrChoices), plus a saved value that is not on the list.
+// The user picks the French title; there is no English → French mapping.
+var titleFrList = (Array.isArray(model.titleFrChoices) ? model.titleFrChoices : []).slice()
 var currentFr = String(model.card.titleFr || '').trim()
 if (currentFr && titleFrList.indexOf(currentFr) === -1) titleFrList.unshift(currentFr)
 function setModel(key, value) {
@@ -173,13 +151,13 @@ var nameLines = nameWrap.ok ? nameWrap.lines.slice(0, 2) : [planName]
 if (!nameLines.length) nameLines = [planName]
 var last = nameLines[nameLines.length - 1] || ''
 // Name stops at the measured card space (Vue nameFitsOnCard): two lines of the identity column
-// that still leave room for the credentials, or for the sample C.M. when none is chosen.
+// that still leave room for the chosen credentials.
 function nameFits(candidate) {
   var t = String(candidate || '').trim()
   if (!t) return true
   var w = wrapByWords(t, 10, IDENTITY_W)
   if (!w.ok || w.lines.length > 2) return false
-  return packCredentials(w.lines[w.lines.length - 1] || '', credText || 'C.M.').mode !== 'error'
+  return !credText || packCredentials(w.lines[w.lines.length - 1] || '', credText).mode !== 'error'
 }
 var namePrev = typeof model.namePrev === 'string' ? model.namePrev : ''
 var nameNow = String(model.card.name || '')
@@ -209,7 +187,7 @@ function credsFit(degreeList, extraText) {
   var list = degreeList.slice()
   var e = String(extraText || '').trim()
   if (e) list.push(e)
-  return packCredentials(last, list.join(', ') || 'C.M.').mode !== 'error'
+  return !list.length || packCredentials(last, list.join(', ')).mode !== 'error'
 }
 function flashCredentialNotice(field) {
   setModel('credentialNotice', field)
@@ -265,25 +243,12 @@ if ((model.lockedDegrees || []).join('|') !== lockedDegrees.join('|'))
   setModel('lockedDegrees', lockedDegrees)
 // Nothing more fits after the name: lock the empty Additional Credentials field too.
 setModel('additionalLocked', !extra && !credsFit(degrees, 'i') ? 1 : 0)
-// No degree/credential yet: plan + show the ICT sample ', C.M.' after the name, as the print PDF does (Vue previewCredentialText)
-packed = packCredentials(last, credText || 'C.M.')
-if (!trimmed) {
-  model.card.nameWrapped = ''
-  model.card.nameLines = []
-  if (!credText) {
-    model.card.inlineCredential = ', C.M.'
-    model.card.credentialLine = ''
-  } else {
-    model.card.inlineCredential = packed.inline ? ', ' + packed.inline : ''
-    model.card.credentialLine =
-      packed.mode === 'own-row' || packed.mode === 'split' ? packed.row : ''
-  }
-} else {
-  model.card.nameWrapped = nameLines.join('\n')
-  model.card.nameLines = nameLines
-  model.card.inlineCredential = packed.inline ? ', ' + packed.inline : ''
-  model.card.credentialLine = packed.mode === 'own-row' || packed.mode === 'split' ? packed.row : ''
-}
+// Only chosen credentials print after the name; an empty card shows none.
+packed = packCredentials(last, credText)
+model.card.nameWrapped = trimmed ? nameLines.join('\n') : ''
+model.card.nameLines = trimmed ? nameLines : []
+model.card.inlineCredential = packed.inline ? ', ' + packed.inline : ''
+model.card.credentialLine = packed.mode === 'own-row' || packed.mode === 'split' ? packed.row : ''
 if (typeof Vue !== 'undefined' && Vue.set) {
   Vue.set(model.card, 'nameLines', model.card.nameLines || [])
   Vue.set(model.card, 'inlineCredential', model.card.inlineCredential || '')
@@ -365,10 +330,12 @@ if (regionPart) {
   else regionMode = 'own'
 }
 // Only the Talent Acquisition French title may shrink below 6.5 pt to fit the lane (Cynthia, Oct 2026; Vue titleSizeFor).
-var TITLE_FR_TALENT_ACQUISITION = "Partenaire d'affaires sénior en acquisition de talent"
+var TITLE_FR_TALENT_ACQUISITION = 'Partenaire d’affaires sénior en acquisition de talent'
 function titleSizeFor(t) {
   t = String(t || '')
-  if (t !== TITLE_FR_TALENT_ACQUISITION || fitsLine(t, false, BODY, TITLE_W)) return BODY
+  // Older cards saved a straight apostrophe.
+  if (t.replace(/'/g, '’') !== TITLE_FR_TALENT_ACQUISITION || fitsLine(t, false, BODY, TITLE_W))
+    return BODY
   var size = Number(((BODY * TITLE_W) / measure(t, false, BODY)).toFixed(2))
   while (size > 1 && !fitsLine(t, false, size, TITLE_W)) size = Number((size - 0.01).toFixed(2))
   return size

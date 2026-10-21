@@ -6,7 +6,6 @@ import {
   isBilingualLanguage,
   isFrenchLanguage,
   previewAddressText,
-  previewCredentialText,
   previewTeamText,
   previewTitleText,
   websiteForProduct,
@@ -16,22 +15,22 @@ import {
 
 describe('formatCredentialSuffix', function () {
   it('joins degree array and additional credentials', function () {
-    expect(formatCredentialSuffix(['Arch. Tech', 'Architect'], 'C.M.')).toBe(
-      'Arch. Tech, Architect, C.M.'
+    expect(formatCredentialSuffix(['Arch. Tech', 'Architect'], 'ICD.D')).toBe(
+      'Arch. Tech, Architect, ICD.D'
     )
   })
 
   it('handles string degree and empty extra', function () {
     expect(formatCredentialSuffix('P.Eng', '')).toBe('P.Eng')
-    expect(formatCredentialSuffix('', 'C.M.')).toBe('C.M.')
+    expect(formatCredentialSuffix('', 'ICD.D')).toBe('ICD.D')
     expect(formatCredentialSuffix([], '')).toBe('')
   })
 })
 
 describe('formatNameLine', function () {
   it('builds Name, degrees, additional credentials', function () {
-    expect(formatNameLine('Firstname Lastname', ['Arch. Tech', 'Architect'], 'C.M.')).toBe(
-      'Firstname Lastname, Arch. Tech, Architect, C.M.'
+    expect(formatNameLine('Firstname Lastname', ['Arch. Tech', 'Architect'], 'ICD.D')).toBe(
+      'Firstname Lastname, Arch. Tech, Architect, ICD.D'
     )
   })
 
@@ -63,14 +62,6 @@ describe('formatTitleLine', function () {
 })
 
 describe('customize optional placeholders', function () {
-  it('shows the ICT credential sample until a degree or credential is entered', function () {
-    expect(previewCredentialText([], '', 'English')).toBe('C.M.')
-    expect(previewCredentialText(['CPA'], '', 'English')).toBe('CPA')
-    expect(previewCredentialText([], 'P.Eng', 'English')).toBe('P.Eng')
-    expect(previewCredentialText(['CPA'], 'C.M.', 'English')).toBe('CPA, C.M.')
-    expect(previewCredentialText([], '', 'French')).toBe('C.M.')
-  })
-
   it('shows title alone when region is empty; blank card keeps Title only', function () {
     expect(previewTitleText('', '', 'English')).toBe('Title')
     expect(previewTitleText('Broker', '', 'English')).toBe('Broker')
@@ -86,7 +77,6 @@ describe('customize optional placeholders', function () {
   })
 
   it('uses French labels on the French preview', function () {
-    expect(previewCredentialText([], '', 'French')).toBe('C.M.')
     expect(previewTitleText('', '', 'French')).toBe('Titre')
     expect(previewTitleText('Directrice', '', 'French')).toBe('Directrice')
     expect(previewTeamText('', 'French')).toBe('Équipe spécialisée')

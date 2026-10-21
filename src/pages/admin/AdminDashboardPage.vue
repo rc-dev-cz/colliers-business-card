@@ -138,7 +138,7 @@ export default {
     tiles: function () {
       void this.store.locale
       const addressCount = this.store.offices.length
-      const titleCount = this.store.titles.length
+      const titleCount = this.store.titles.length + this.store.titlesFr.length
       const degreeCount = this.store.degrees.length
       return [
         {

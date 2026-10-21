@@ -75,6 +75,7 @@ export const store = Vue.observable({
   officesError: '',
   officesSource: 'api',
   titles: [],
+  titlesFr: [],
   degrees: [],
   personalAddresses: [],
   orderHistory: [],
@@ -794,27 +795,43 @@ export function deleteOffice(id) {
   saveManagedOffices(store.offices)
 }
 
-export function addTitle(label) {
+/** English ('EN', default) or French ('FR') managed title list. */
+function titleList(language) {
+  return language === 'FR' ? store.titlesFr : store.titles
+}
+
+function sortTitles(list) {
+  list.sort(function (a, b) {
+    return a.localeCompare(b)
+  })
+}
+
+export function addTitle(label, language) {
+  const list = titleList(language)
   const trimmed = String(label || '').trim()
   if (!trimmed) return false
-  if (store.titles.indexOf(trimmed) !== -1) return false
-  store.titles.push(trimmed)
-  saveManagedTitles(store.titles)
+  if (list.indexOf(trimmed) !== -1) return false
+  list.push(trimmed)
+  sortTitles(list)
+  saveManagedTitles(list, language)
   return true
 }
 
-export function updateTitle(index, label) {
+export function updateTitle(index, label, language) {
+  const list = titleList(language)
   const trimmed = String(label || '').trim()
-  if (!trimmed || index < 0 || index >= store.titles.length) return false
-  store.titles.splice(index, 1, trimmed)
-  saveManagedTitles(store.titles)
+  if (!trimmed || index < 0 || index >= list.length) return false
+  list.splice(index, 1, trimmed)
+  sortTitles(list)
+  saveManagedTitles(list, language)
   return true
 }
 
-export function deleteTitle(index) {
-  if (index < 0 || index >= store.titles.length) return
-  store.titles.splice(index, 1)
-  saveManagedTitles(store.titles)
+export function deleteTitle(index, language) {
+  const list = titleList(language)
+  if (index < 0 || index >= list.length) return
+  list.splice(index, 1)
+  saveManagedTitles(list, language)
 }
 
 export function addDegree(label) {
@@ -863,23 +880,19 @@ export async function loadOffices(force) {
   store.offices = loadManagedOffices()
   store.officesSource = 'local'
   store.officesLoading = false
-  if (!store.titles.length) {
-    store.titles = loadManagedTitles()
-  }
+  if (!store.titles.length) store.titles = loadManagedTitles('EN')
+  if (!store.titlesFr.length) store.titlesFr = loadManagedTitles('FR')
   return store.offices
 }
 
-export async function loadTitles(force) {
-  // Always re-read managed titles so seed-version bumps (EN vs FR lists) apply.
-  if (!force && store.titles.length) {
-    store.titles = loadManagedTitles()
-    return store.titles
-  }
-  store.titles = loadManagedTitles()
+export async function loadTitles() {
+  // Always re-read managed titles so seed-version bumps apply.
+  store.titles = loadManagedTitles('EN')
+  store.titlesFr = loadManagedTitles('FR')
   if (!store.titles.length) {
     const titles = await fetchTitles()
     store.titles = titles.data.slice()
-    saveManagedTitles(store.titles)
+    saveManagedTitles(store.titles, 'EN')
   }
   return store.titles
 }

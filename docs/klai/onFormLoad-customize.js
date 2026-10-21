@@ -134,60 +134,111 @@ if (!c.website || c.website === 'colliers.com/canada') {
   c.website = isFrenchOnly(lang) ? 'colliersprojectleaders.com/fr' : 'colliersprojectleaders.com'
 }
 if (!c.websiteFr) c.websiteFr = 'colliersprojectleaders.com/fr'
-// Until FileMaker sends designations: Cynthia's approved titles (same as Vue products.js).
-// English + bilingual cards list English titles (the French title is derived); French-only cards list French titles.
+// Title and degree lists come from FileMaker (`titles` records + `degrees` strings, BF - onFormRequest - customize).
+// Seeds when FileMaker sends none: Colliers Project Leaders Titles.xlsx (31 EN), Titles French.xlsx (8 FR), Designations.xlsx (32), Oct 2026.
+// English + bilingual cards list English titles; French-only cards list French titles. Bilingual cards pick the French title (no mapping).
 var TITLES_EN = [
+  'Advisor',
+  'Assistant Preconstruction Manager',
+  'Assistant Project Manager',
+  'Associate',
   'Business Development Manager',
   'Director',
-  'Senior Project Manager',
-  'Team Lead',
-  'Project Manager',
+  'Director, Preconstruction',
+  'Human Resources Business Partner',
+  'Independent Consultant',
+  'Manager',
+  'Manager, Infrastructure Advisory',
+  'Managing Principal',
+  'National Sector Lead',
+  'Preconstruction Manager',
+  'Principal',
+  'Professional Practice Specialist',
   'Project Director',
-  'Assistant Project Manager',
+  'Project Manager',
+  'Proposal Writer',
+  'Regional Marketing Specialist',
+  'Sector Director',
+  'Senior Advisor',
+  'Senior Associate - Infrastructure Advisory',
+  'Senior Manager, Project Controls',
+  'Senior Preconstruction Manager',
+  'Senior Project Manager',
+  'Senior Proposal Writer',
+  'Senior Vice President',
   'Talent Acquisition Business Partner',
+  'Team Lead',
+  'Vice President',
 ]
 var TITLES_FR = [
-  'Responsable du développement commercial',
+  'Chef d’équipe',
   'Directrice',
-  'Gestionnaire de projets Senior',
-  "Chef d'équipe",
   'Gestionnaire de Projet',
-  'Gestionnaire de projets principal',
   'Gestionnaire de projet adjoint',
-  "Partenaire d'affaires sénior en acquisition de talent",
+  'Gestionnaire de projets principal',
+  'Gestionnaire de projets Senior',
+  'Partenaire d’affaires sénior en acquisition de talent',
+  'Responsable du développement commercial',
 ]
-var OLD_STUB = [
-  'Associate',
-  'Senior Associate',
-  'Vice President',
-  'Managing Director',
-  'Director',
-  'Principal',
-  'Broker',
-  'Sales Representative',
-].join('|')
-if (
-  !Array.isArray(model.titleOptions) ||
-  !model.titleOptions.length ||
-  model.titleOptions.join('|') === OLD_STUB ||
-  model.titleOptions.join('|') === TITLES_EN.join('|') ||
-  model.titleOptions.join('|') === TITLES_FR.join('|')
-) {
-  model.titleOptions = isFrenchOnly(lang) ? TITLES_FR : TITLES_EN
+// FileMaker titles win; a language FileMaker has no titles for falls back to its seed.
+var titleRows = Array.isArray(model.titles) ? model.titles : []
+function titlesFor(language, seed) {
+  var list = titleRows
+    .filter(function (row) {
+      return row && row.title && String(row.language || '').toUpperCase() === language
+    })
+    .map(function (row) {
+      return String(row.title).trim()
+    })
+  return (list.length ? list : seed.slice()).sort(function (a, b) {
+    return a.localeCompare(b)
+  })
 }
-if (!Array.isArray(model.degreeOptions) || !model.degreeOptions.length) {
-  model.degreeOptions = [
-    'Arch. Tech',
-    'Architect',
-    'BA',
-    'BSc',
-    'CET',
-    'LEED AP',
-    'MSc',
-    'P. Eng.',
-    'PMP',
-  ]
-}
+var titlesFr = titlesFor('FR', TITLES_FR)
+model.titleOptions = isFrenchOnly(lang) ? titlesFr : titlesFor('EN', TITLES_EN)
+// Bilingual cards pick their French title from these (wrapCardName).
+model.titleFrChoices = titlesFr
+// Credential seed, used when FileMaker sends no degrees.
+var DEGREES = [
+  'Arch. Tech',
+  'Architect',
+  'BA',
+  'BSc',
+  'CA',
+  'CAPM',
+  'CEC',
+  'CEM',
+  'CET',
+  'CGA',
+  'CMA',
+  'CPA',
+  'CSDP',
+  'Dipl. Arch. Tech',
+  'Eng. Tech',
+  'EP(CEA)',
+  'GSC',
+  'LEED AP',
+  'LEED AP BD+C',
+  'LEED AP Homes',
+  'LEED AP ID+C',
+  'LEED AP ND',
+  'LEED AP O+M',
+  'LEED Green Assoc.',
+  'MSc',
+  'P. Eng.',
+  'PgMP',
+  'PMI-RMP',
+  'PMI-SP',
+  'PMP',
+  'PQS',
+  'Real Estate Broker',
+]
+var degreeRows = (Array.isArray(model.degrees) ? model.degrees : [])
+  .map(function (d) {
+    return String(d || '').trim()
+  })
+  .filter(Boolean)
+model.degreeOptions = degreeRows.length ? degreeRows : DEGREES.slice()
 if (!Array.isArray(model.regionOptions) || !model.regionOptions.length) {
   model.regionOptions = [
     'Alberta',
@@ -238,6 +289,7 @@ if (c.phone) {
 }
 if (model.degreeQuery == null) model.degreeQuery = ''
 if (model.degreeMenuOpen == null) model.degreeMenuOpen = false
+model.otherCredentialOpen = 0
 BF.namedAction('loadOffices')
 BF.namedAction('hydrateFromStore')
 BF.namedAction('wrapCardName')

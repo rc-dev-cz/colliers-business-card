@@ -305,6 +305,31 @@ body.colliers-mobile-menu-open {
   text-align: center;
 }
 
+/*
+  Column heading row on two-column pages (Customize, Proof).
+  Both columns get the same row height with text on the last baseline, so
+  "Card Preview" lines up with the page title, and side links (Clear Design)
+  sit on the title's baseline. Same bottom margin, so the card and the first field start level.
+*/
+.colliers-split-head {
+  display: flex;
+  align-items: flex-end;
+  align-items: last baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  margin: 0 0 1.5rem;
+}
+
+.colliers-split-head > * {
+  margin: 0;
+}
+
+@media (min-width: 1024px) {
+  .colliers-split-head {
+    min-height: 2.5rem;
+  }
+}
+
 .colliers-page-title--compact {
   font-size: 1.25rem;
 }
