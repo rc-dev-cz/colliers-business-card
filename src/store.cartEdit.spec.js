@@ -155,16 +155,18 @@ describe('edit cart line from proof', function () {
     expect(store.proof.cartLineId).toBe(addedId)
   })
 
-  it('does not add a line when editLineId is set but missing from cart', function () {
+  it('adds the approved card as a new line when editLineId is missing from cart', function () {
     setEditLineId('missing-line')
     setProof({
       code: 'BCAD-PL-ENG',
       language: 'English',
-      details: { name: 'Pepe', title: 'Associate' },
+      details: { name: 'Firstname Lastname', title: 'Title' },
     })
     addProofToCart()
-    expect(store.cart.length).toBe(1)
+    expect(store.cart.length).toBe(2)
     expect(store.cart[0].id).toBe('line-1')
+    expect(store.cart[1].details.name).toBe('Firstname Lastname')
+    expect(store.editLineId).toBe(null)
   })
 })
 

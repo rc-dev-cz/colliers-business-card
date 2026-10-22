@@ -447,6 +447,7 @@ import {
   ensureSampleShippingDraft,
   ensureCartAssignedToShipping,
   syncShippingQuantities,
+  shippingReady,
 } from '../store'
 import { go } from '../adapters/nav'
 
@@ -498,15 +499,7 @@ export default {
       })
     },
     canCheckout: function () {
-      var splits = (store.order && store.order.splits) || []
-      var hasItems = false
-      for (var i = 0; i < splits.length; i++) {
-        var split = splits[i]
-        if (!linesInSplit(split).length) continue
-        hasItems = true
-        if (!(split.locations || []).length) return false
-      }
-      return hasItems
+      return shippingReady()
     },
   },
   mounted: function () {
@@ -670,11 +663,10 @@ export default {
         split.locations.push(loc)
       })
       fitGroupToLimit(split, store.cart)
-      setGroupLocationQty(
-        split,
-        split.locations.length - 1,
-        split.locations[split.locations.length - 1].qty
-      )
+      var last = split.locations.length - 1
+      // Every address unticked: nothing to re-fit, but the empty list still has to be saved.
+      if (last >= 0) setGroupLocationQty(split, last, split.locations[last].qty)
+      else syncShippingQuantities()
       this.$nextTick(function () {
         self.destroySortables()
         self.bindSortables()

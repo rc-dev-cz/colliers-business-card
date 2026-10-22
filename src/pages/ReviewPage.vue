@@ -158,11 +158,14 @@
         <app-button
           block
           class="mt-5"
-          :disabled="!store.cart.length || store.submitting"
+          :disabled="!canPlaceOrder || store.submitting"
           @click="confirm"
         >
           {{ t('placeOrder') }}
         </app-button>
+        <p v-if="!canPlaceOrder" class="mt-3 text-sm text-red-600">
+          {{ t('shipToRequired') }}
+        </p>
       </aside>
     </div>
 
@@ -198,7 +201,7 @@ import ErrorState from '../components/ErrorState.vue'
 import CardPreview from '../components/CardPreview.vue'
 import AppModal from '../components/AppModal.vue'
 import { cardPreviewSlots, previewFrameStyle } from '../helpers/previewModal'
-import { store, t, linesInSplit, subtotal, confirmSubmit } from '../store'
+import { store, t, linesInSplit, subtotal, confirmSubmit, shippingReady } from '../store'
 import { productNameKey } from '../i18n/messages'
 import { boxesPerAddressForSplit, readSplitQty } from '../helpers/order'
 import { getProduct } from '../data/products'
@@ -214,6 +217,9 @@ export default {
   computed: {
     cartTotal: function () {
       return subtotal()
+    },
+    canPlaceOrder: function () {
+      return store.cart.length > 0 && shippingReady()
     },
   },
   methods: {

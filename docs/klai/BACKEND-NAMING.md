@@ -75,6 +75,10 @@ Bus variables (FileMaker side): `$$BF_Payload`, `$$BF_Model`, `$$BF_Actions`, `$
 | Invoice History     | `/admin/invoices`  | `admininvoices`  | false (planned true) | `BF - onFormRequest - admininvoices`  | Invoice table + download (mock)                               | Live UI |
 | Reporting           | `/admin/reporting` | `adminreporting` | false (planned true) | `BF - onFormRequest - adminreporting` | Empty state until the FM hook supplies data                   | Live UI |
 
+### Site language and loader
+
+EN/FR lives on `app.currentLang` / `app.i18n.langSelected` and is saved in `localStorage` key `colliers.locale` (`en` | `fr`), because `appCaching` does not keep it across a reload. UserHeader `setLocale` → site [`selectLanguage`](selectLanguage.js) saves it; site [`onAppLoad`](onAppLoad.js) restores it. The site loader (`content.spinner`, [`site-spinner.html`](site-spinner.html)) is static HTML with EN and FR copies; a script at the top of `content.headerInsertions` ([`site-headerInsertions-locale.html`](site-headerInsertions-locale.html)) sets `html[data-colliers-lang]` before the loader paints. Vue twin: `index.html` loader + `colliers-v2.locale`. Not sent to FileMaker.
+
 ---
 
 ## Data models

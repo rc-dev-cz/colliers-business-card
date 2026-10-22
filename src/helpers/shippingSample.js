@@ -4,6 +4,9 @@ import { createSplit } from './order.js'
 /** Old preview seed — never a real ship-to. Strip if still persisted. */
 export var PLACEHOLDER_SHIP_ADDRESS = 'Unit, Street'
 
+/** Blank sample cards are a dev-server convenience only; a real cart never gets them. */
+export var SAMPLE_SHIPPING_ENABLED = Boolean(import.meta.env && import.meta.env.DEV)
+
 export function sampleShippingCart() {
   return [
     makeLine({
