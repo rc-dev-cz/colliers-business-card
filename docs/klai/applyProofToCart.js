@@ -44,7 +44,10 @@ if (editId != null && String(editId).trim() !== '') {
     if (shouldOpen) BF.namedAction('openCart')
     return
   }
-  return
+  // The line being edited left the cart meanwhile: add the approved card as a new line (Vue applyProofToCart).
+  app.editLineId = null
+  if (proof) proof.editLineId = null
+  if (typeof model !== 'undefined') model.editLineId = null
 }
 var existing = cart.find(function (item) {
   return item.code === proof.code && JSON.stringify(item.details || {}) === JSON.stringify(details)

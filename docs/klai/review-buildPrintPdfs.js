@@ -413,8 +413,8 @@ try {
     'Assistant Project Manager': 'Gestionnaire de projet adjoint',
     'Talent Acquisition Business Partner': "Partenaire d'affaires sénior en acquisition de talent",
   }
-  // Region never shares the title line (Cynthia, Oct 2026): team -> 'team | region'; no team -> own line;
-  // 'team | region' too wide -> keep 'Title | Region' when it fits on every page, else own line.
+  // Region (Vue cardLayout.js, Oct 2026): team -> 'team | region'; otherwise (or too wide) 'Title | Region'
+  // when it fits on every page (bilingual EN and FR together), else region on its own line.
   function applyRegionRule(productPlan, fonts) {
     var pages = productPlan.pages
     if (!pages.length) return
@@ -425,7 +425,6 @@ try {
     if (team && fitsLine(fonts.font, team + ' | ' + region, L.bodySize, L.identityWidth))
       mode = 'team'
     else if (
-      team &&
       pages.every(function (pg) {
         return fitsLine(
           fonts.font,

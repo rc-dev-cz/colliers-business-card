@@ -30,3 +30,9 @@ if (typeof Vue !== 'undefined' && Vue.set) {
 try {
   if (typeof BF !== 'undefined' && BF.rebuildReactivity) BF.rebuildReactivity()
 } catch (err) {}
+
+// Search box + My Addresses / Office Addresses groups (Vue LocationModal).
+if (typeof Vue !== 'undefined' && Vue.set) Vue.set(model.view, 'modalInitial', selected.slice())
+else model.view.modalInitial = selected.slice()
+if (typeof BF !== 'undefined' && BF.namedAction)
+  BF.namedAction('filterModalAddresses', { search: '' })
