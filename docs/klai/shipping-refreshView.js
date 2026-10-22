@@ -489,7 +489,12 @@ setModel('view', {
   modalOpen: Boolean(prev.modalOpen),
   modalSplitIndex: prev.modalSplitIndex == null ? null : prev.modalSplitIndex,
   modalSelected: Array.isArray(prev.modalSelected) ? prev.modalSelected : [],
+  modalInitial: Array.isArray(prev.modalInitial) ? prev.modalInitial : [],
+  modalSearch: prev.modalSearch || '',
 })
+// Keep the Add location groups current while the modal is open (filterModalAddresses).
+if (model.view.modalOpen && typeof BF !== 'undefined' && BF.namedAction)
+  BF.namedAction('filterModalAddresses', { search: model.view.modalSearch })
 function money(n) {
   return (Math.round(Number(n) * 100) / 100).toFixed(2)
 }

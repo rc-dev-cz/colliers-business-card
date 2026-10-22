@@ -4,7 +4,7 @@ Shared reference for frontend and FileMaker: **page name → route → `hookSetN
 
 **Source of truth for hook names:** live Klai Studio when the page exists there; otherwise the **Planned** rows below (from this Cursor/Vue app). FileMaker script names are **convention-derived** from BetterForms (`assistantGuide_fileMaker`), not verified against live FM scripts in this workspace.
 
-Last MCP refresh: 2026-10-07 (Shipping Vue parity: two-line modelDev, billed itemCount, empty Split Order, addToCart assigns itemIds).
+Last MCP refresh: 2026-10-22 (Vue parity: Title | Region rule, Review ship-to guard + cart cleared on submit, Shipping address modal search/sections, edit-link fix, header gaps, View print PDF shown).
 
 **Status:** Live = in Klai today · Planned = in Cursor/Vue, not in Klai yet.
 
@@ -42,7 +42,7 @@ Bus variables (FileMaker side): `$$BF_Payload`, `$$BF_Model`, `$$BF_Actions`, `$
 | Proof             | `/proof`          | `proof`         | false                               | —                                    | Client-only. Reads `app.proof`. Checkbox then site globals `addProofToCart` / `applyProofToCart`. No FileMaker hook                 | Live UI |
 | Shipping          | `/shipping`       | `shipping`      | true (planned; false in Klai today) | `BF - onFormRequest - shipping`      | Load personal + office addresses. Split/qty client until submit. Shared draft: `app.cart` + `app.order`                             | Live UI |
 | Review            | `/review`         | `review`        | false                               | —                                    | `submit` → create order → `BF - onUtility - review`                                                                                 | Live UI |
-| Confirmed         | `/confirmed`      | `confirmed`     | false                               | —                                    | Display-only; clears `app.cart` / `app.order`                                                                                       | Live UI |
+| Confirmed         | `/confirmed`      | `confirmed`     | false                               | —                                    | Display-only. Review `submitOrder` clears `app.cart` / `app.order` after a successful order                                         | Live UI |
 
 ### Profile
 
@@ -74,6 +74,12 @@ Bus variables (FileMaker side): `$$BF_Payload`, `$$BF_Model`, `$$BF_Actions`, `$
 | Admin Order History | `/admin/orders`    | `adminorders`    | false (planned true) | `BF - onFormRequest - adminorders`    | Admin-scoped order list (employee); no `repeat` in v1         | Live UI |
 | Invoice History     | `/admin/invoices`  | `admininvoices`  | false (planned true) | `BF - onFormRequest - admininvoices`  | Invoice table + download (mock)                               | Live UI |
 | Reporting           | `/admin/reporting` | `adminreporting` | false (planned true) | `BF - onFormRequest - adminreporting` | Empty state until the FM hook supplies data                   | Live UI |
+
+### Shipping address modal
+
+Add location (`openAddModal` → `filterModalAddresses` → `toggleModalAddress` → `applyModalAddresses`): search box, then **My Addresses** first and **Office Addresses** after (an address in both shows once, under My Addresses; a ship-to in neither list shows under Other). `model.view.modalGroups` / `modalMatchCount` / `modalSearch` / `modalInitial` are UI-only, not sent to FileMaker. Same as Vue `LocationModal.vue`.
+
+Review Place Order is disabled until every group with cards has a ship-to (`model.view.shipReady` from `refreshView`; Vue `shippingReady()`).
 
 ### Site language and loader
 

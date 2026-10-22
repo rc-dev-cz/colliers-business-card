@@ -132,11 +132,14 @@
       <button
         type="button"
         class="btn-primary mt-5 w-full"
-        :disabled="!((Array.isArray(app.cart) ? app.cart : model.cart || []).length) || Number(model.submitting) === 1"
+        :disabled="!((Array.isArray(app.cart) ? app.cart : model.cart || []).length) || !model.view.shipReady || Number(model.submitting) === 1"
         @click="BF.namedAction('submitOrder')"
       >
         {{ BF.i18n('label_colliers_placeOrder') }}
       </button>
+      <p v-if="model.cart.length && !model.view.shipReady" class="mt-3 text-sm text-red-600">
+        {{ BF.i18n('label_colliers_shipToRequired') }}
+      </p>
     </aside>
   </div>
 </div>

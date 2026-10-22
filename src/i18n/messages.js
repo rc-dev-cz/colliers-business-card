@@ -176,6 +176,13 @@ export const messages = {
   goToAddressBook: { EN: 'Go to Address Book', FR: "Aller au carnet d'adresses" },
   myAddressBook: { EN: 'My Address Book', FR: "Mon carnet d'adresses" },
   officeAddresses: { EN: 'Office Addresses', FR: 'Adresses de bureau' },
+  myAddresses: { EN: 'My Addresses', FR: 'Mes adresses' },
+  otherAddresses: { EN: 'Other', FR: 'Autres' },
+  noAddressMatches: {
+    EN: 'No addresses match your search.',
+    FR: 'Aucune adresse ne correspond à votre recherche.',
+  },
+  selectedCount: { EN: '{n} selected', FR: '{n} sélectionnée(s)' },
   addressBook: { EN: 'Address Book', FR: "Carnet d'adresses" },
   orderHistory: { EN: 'Order History', FR: 'Historique des commandes' },
   orderDetails: { EN: 'Order Details', FR: 'Détails de la commande' },

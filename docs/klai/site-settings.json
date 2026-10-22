@@ -17,6 +17,30 @@
     },
     "i18n": {
         "dict": {
+            "label_colliers_myAddresses": {
+                "en": "My Addresses",
+                "fr": "Mes adresses"
+            },
+            "label_colliers_noAddressMatches": {
+                "en": "No addresses match your search.",
+                "fr": "Aucune adresse ne correspond à votre recherche."
+            },
+            "label_colliers_noPersonalAddressesShip": {
+                "en": "No personal addresses yet. Add one in your Address Book.",
+                "fr": "Aucune adresse personnelle. Ajoutez-en une dans votre carnet d'adresses."
+            },
+            "label_colliers_otherAddresses": {
+                "en": "Other",
+                "fr": "Autres"
+            },
+            "label_colliers_selectedCount": {
+                "en": "{n} selected",
+                "fr": "{n} sélectionnée(s)"
+            },
+            "label_colliers_shipToRequired": {
+                "en": "Add a ship-to address to every shipment before placing the order.",
+                "fr": "Ajoutez une adresse d'expédition à chaque envoi avant de passer la commande."
+            },
             "label_addToCart": {
                 "en": "Add to Cart",
                 "fr": "Ajouter au panier"

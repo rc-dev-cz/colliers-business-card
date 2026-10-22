@@ -12,6 +12,13 @@ if (!lineId && opts.index != null) {
   lineId = row ? String(row.id) : ''
 }
 if (!lineId) return
+// Removing the card being edited drops the edit link, so Proof adds it again (Vue removeLine).
+if (typeof app !== 'undefined' && app.editLineId != null && String(app.editLineId) === lineId) {
+  app.editLineId = null
+  if (app.proof) app.proof.editLineId = null
+}
+if (typeof app !== 'undefined' && app.proof && String(app.proof.cartLineId) === lineId)
+  app.proof.cartLineId = null
 var next = cart.filter(function (row) {
   return String(row.id) !== lineId
 })

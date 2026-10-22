@@ -313,15 +313,14 @@ var titlePart = String(model.card.title || '')
 var titleFrPart = isBilingualCard ? String(model.card.titleFr || '').trim() : ''
 var regionPart = String(model.card.region || '').trim()
 var teamPart = String(model.card.specializedTeam || '').trim()
-// Region never shares the title line, so EN and FR faces mirror (Cynthia, Oct 2026; Vue cardLayout.js):
-// team filled -> 'team | region'; no team -> region on its own line under the title;
-// 'team | region' too wide -> keep 'Title | Region' if it fits on every face, else own line.
+// Region placement (Vue cardLayout.js applyPreviewTitleRegionSplit, Oct 2026):
+// team filled -> 'team | region'; otherwise (or 'team | region' too wide) 'Title | Region' on one line
+// when it fits on every face (bilingual EN and FR together), else region on its own line under the title.
 var regionMode = 'none'
 if (regionPart) {
   if (teamPart && fitsLine(teamPart + ' | ' + regionPart, false, BODY, IDENTITY_W))
     regionMode = 'team'
   else if (
-    teamPart &&
     [titlePart || 'Title', titleFrPart].filter(Boolean).every(function (t) {
       return fitsLine(t + ' | ' + regionPart, false, BODY, TITLE_W)
     })
