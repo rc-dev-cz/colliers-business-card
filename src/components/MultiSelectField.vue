@@ -26,7 +26,7 @@
     </button>
     <div
       v-if="open"
-      class="absolute z-20 mt-1 flex max-h-56 w-full flex-col overflow-hidden rounded border border-gray-200 bg-white shadow-lg"
+      class="absolute z-20 mt-1 flex max-h-[23.25rem] w-full flex-col overflow-hidden rounded border border-gray-200 bg-white shadow-lg"
     >
       <div class="shrink-0 border-b border-gray-100 bg-white p-2">
         <input
