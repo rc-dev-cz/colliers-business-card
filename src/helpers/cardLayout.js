@@ -564,13 +564,14 @@ export function applyEmptyTeamIdentityLayout(view) {
 }
 
 /**
- * Region leaves the title line so EN and FR faces mirror (Cynthia, Oct 2026).
- * Specialized team filled: region joins it as `team | region`. Team empty: region
- * gets its own line under the title, and name / credentials / title lift by one
- * body line. If `team | region` is too wide, keep `Title | Region` when it fits,
- * else stack region under the title. Used by CardPreview and print PDF.
+ * Specialized team filled: region joins it as `team | region`. Otherwise (team empty,
+ * or `team | region` too wide) keep `Title | Region` on one line when it fits on every
+ * face, so bilingual EN and FR still break the same way. When it does not fit, region
+ * gets its own line under the title, and name / credentials / title lift by one body
+ * line. Used by CardPreview and print PDF. Vue only for now (Oct 2026); Klai still
+ * always splits when the team is empty.
  * No-op when already split or when title alone cannot fit. Before the measuring
- * fonts load (preview first paint) the split still applies, unmeasured.
+ * fonts load (preview first paint) `Title | Region` stays joined, unmeasured.
  */
 export function applyPreviewTitleRegionSplit(view, fonts, opts) {
   if (!view) return view
@@ -598,15 +599,17 @@ export function applyPreviewTitleRegionSplit(view, fonts, opts) {
       withTeam.regionLine = ''
       return withTeam
     }
-    // `team | region` too wide: keep the approved `Title | Region` line when it fits
-    // on every face (bilingual EN and FR must break the same way).
-    // A third identity line would push a 2-line name into the wordmark (Maximum).
-    var faces = (opts && opts.faceTitles) || [joined]
-    var everyFaceFits = faces.every(function (face) {
+  }
+  // `Title | Region` stays on one line when it fits on every face (bilingual EN and FR
+  // must break the same way). With a team, a third identity line would push a 2-line
+  // name into the wordmark (Maximum), so this also keeps Maximum on its approved Ys.
+  var faces = (opts && opts.faceTitles) || [joined]
+  var everyFaceFits =
+    !font ||
+    faces.every(function (face) {
       return fitsLine(font, face, titleSizeFor(font, face, L), L.titleMaxWidth)
     })
-    if (everyFaceFits) return view
-  }
+  if (everyFaceFits) return view
 
   var lift = L.bodyLineHeight
   var titleY = Number(view.titleY)

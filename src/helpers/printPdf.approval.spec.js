@@ -86,12 +86,12 @@ describe('approval guide PDFs', function () {
         expect(dump.phoneY).toBe(35)
         expect(dump.websiteY).toBe(27)
         expect(dump.websiteY).toBe(dump.addressBottomY)
-        expect(dump.titleY).toBe(66.99)
-        expect(dump.nameLineYs[0]).toBe(75.49)
+        // No team: Title | Region fits, so it is one line where a region-less title sits
+        expect(dump.title).toBe('Business Services Administrator | Ontario')
+        expect(dump.titleY).toBe(58.99)
+        expect(dump.nameLineYs[0]).toBe(67.49)
         expect(dump.team).toBe('')
-        // No team: region takes its own line under the title (EN mirrors FR)
-        expect(dump.regionLine).toBe('Ontario')
-        expect(dump.regionY).toBe(58.99)
+        expect(dump.regionLine).toBe('')
       } else {
         expect(dump.credMode).toBe('split')
         expect(dump.inlineCredential).toMatch(/CPA/)

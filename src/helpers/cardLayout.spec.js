@@ -555,12 +555,29 @@ describe('previewContactYs', function () {
 })
 
 describe('applyPreviewTitleRegionSplit', function () {
-  it('puts region on its own line even when Title | Region would fit (EN mirrors FR)', function () {
+  it('keeps Title | Region on the title line when it fits', function () {
     var layout = applyEmptyTeamIdentityLayout(plan({ title: 'Broker', region: 'Ontario' }))
     expect(fitsLine(fonts.font, layout.title, L.bodySize, L.titleMaxWidth)).toBe(true)
     var preview = applyPreviewTitleRegionSplit(layout, fonts)
-    expect(preview.title).toBe('Broker')
-    expect(preview.regionLine).toBe('Ontario')
+    expect(preview.title).toBe('Broker | Ontario')
+    expect(preview.regionLine).toBeFalsy()
+    expect(preview.titleY).toBe(layout.titleY)
+    expect(preview.lastNameY).toBe(layout.lastNameY)
+  })
+
+  it('stacks region on both faces when the French face does not fit (EN mirrors FR)', function () {
+    var layout = applyEmptyTeamIdentityLayout(
+      plan({ title: 'Manager', region: 'British Columbia' })
+    )
+    var faces = [
+      'Manager | British Columbia',
+      'Gestionnaire de projets principal | British Columbia',
+    ]
+    expect(fitsLine(fonts.font, faces[0], L.bodySize, L.titleMaxWidth)).toBe(true)
+    expect(fitsLine(fonts.font, faces[1], L.bodySize, L.titleMaxWidth)).toBe(false)
+    var preview = applyPreviewTitleRegionSplit(layout, fonts, { faceTitles: faces })
+    expect(preview.title).toBe('Manager')
+    expect(preview.regionLine).toBe('British Columbia')
     expect(preview.regionY).toBeCloseTo(layout.titleY, 2)
     expect(preview.titleY).toBeCloseTo(layout.titleY + L.bodyLineHeight, 2)
   })
@@ -596,11 +613,11 @@ describe('applyPreviewTitleRegionSplit', function () {
     expect(preview.lastNameY).toBe(layout.lastNameY)
   })
 
-  it('splits before the measuring fonts load', function () {
+  it('keeps Title | Region joined before the measuring fonts load', function () {
     var layout = applyEmptyTeamIdentityLayout(plan({ title: 'Broker', region: 'Ontario' }))
     var preview = applyPreviewTitleRegionSplit(layout, null)
-    expect(preview.title).toBe('Broker')
-    expect(preview.regionLine).toBe('Ontario')
+    expect(preview.title).toBe('Broker | Ontario')
+    expect(preview.regionLine).toBeFalsy()
   })
 
   it('splits a wide French title and lifts identity by one body line', function () {

@@ -58,7 +58,7 @@ The Standard image shows the normal finished card:
 
 - One-line name with short credentials **inline** after the name (e.g. `Hannah Sharpe, B.Comm, PMP`)
 - When the full credential list does not fit after the name, **shorter tokens** (by measured width) stay on the name line and the remainder uses the credential row
-- Title, then Region on its own line (no team), or `Team | Region` when a team is filled
+- `Title | Region` on one line when it fits (no team; e.g. `Business Services Administrator | Ontario`), otherwise title then region on its own line; `Team | Region` when a team is filled
 - Email
 - Mobile
 - Website
@@ -68,7 +68,7 @@ The card should visually match the generated sample PDF and Cynthia’s referenc
 
 The last address line and the website share baseline **Y = 27**. Email and mobile stack up from there (43 / 35 / 27).
 
-On Standard (inline / no own-row credentials), name stays at **75.49** and title at **66.99**. Contacts stay bottom-locked (email 43). The unused band between title (or team) and email is the **client-approved short-card gap**. Do not pack short cards up from email.
+On Standard (inline / no own-row credentials), the last identity line sits at **58.99** (the closed team slot). With one line under the name (title, or `Title | Region` as in the Standard sample) name is at **67.49**; with two lines (title plus stacked region or team) title is at **66.99** and name at **75.49**. Contacts stay bottom-locked (email 43). The unused band between title (or team) and email is the **client-approved short-card gap**. Do not pack short cards up from email.
 
 On Maximum / own-row credentials **with team**, lift the identity block so the last identity line matches Standard team Y (**58.99**). That leaves the same ~16 pt air above email that Cynthia requested (Oct 2026). Email / mobile / website stay at 43 / 35 / 27.
 
@@ -86,7 +86,7 @@ Expected behavior:
 
 - Name can use up to two lines
 - Credentials have no fixed count cap. They pack by measured width: shorter tokens after the name, remainder on the credential row. Degree options and Additional Credentials share that same two-line space budget.
-- Title, then region (own line or `Team | Region`) remain below the name / credential area
+- `Title | Region` (or title, then region on its own line when the joined line does not fit, or `Team | Region`) remain below the name / credential area
 - Team remains optional
 - Email stays on one line
 - Mobile stays on one line
@@ -101,13 +101,13 @@ The exact vertical positions should come from the generated production PDF. Do *
 
 ## Title and region width
 
-Region does **not** share the title line, so EN and FR faces mirror (Cynthia, Oct 2026):
+Region shares the title line when it fits (Vue, Oct 2026; Klai still stacks it until synced):
 
 - Specialized team filled → `Team | Region` on the team line (e.g. `human resources | Alberta`)
-- Team empty → region on its own line under the title; name / credentials / title lift one body line
-- `Team | Region` wider than 141.52 pt → keep the approved `Title | Region` line when it fits (Maximum stays on its approved Ys), else stack region under the title
+- Team empty, or `Team | Region` wider than 141.52 pt → `Title | Region` on one line when it fits on every face (Maximum stays on its approved Ys)
+- Otherwise → region on its own line under the title; name / credentials / title lift one body line
 
-The width lock below still applies to any `Title | Region` fallback line.
+The width lock below applies to every `Title | Region` line.
 
 The lock is **Gestionnaire de projets principal | Nova Scotia** at Open Sans Regular 6.5 pt:
 
@@ -119,7 +119,7 @@ The lock is **Gestionnaire de projets principal | Nova Scotia** at Open Sans Reg
 
 The Talent Acquisition French title is the only line allowed to shrink below 6.5 pt so the title itself still fits the lane. Name, degrees, team, and email keep their own lanes.
 
-On a bilingual card the two faces match. Both faces follow the same region rule, and the `Title | Region` fallback is used only when it fits on **both** the English and the French face; otherwise both faces stack the region under the title.
+On a bilingual card the two faces match. Both faces follow the same region rule, and `Title | Region` is used only when it fits on **both** the English and the French face (e.g. `Assistant Project Manager | Ontario` / `Gestionnaire de Projet | Ontario`); otherwise both faces stack the region under the title.
 
 ---
 
