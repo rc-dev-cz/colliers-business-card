@@ -52,6 +52,7 @@ import { getProduct } from './data/products.js'
 import { go } from './adapters/nav'
 import {
   PLACEHOLDER_SHIP_ADDRESS,
+  SAMPLE_SHIPPING_ENABLED,
   sampleShippingCart,
   sampleShippingOrder,
 } from './helpers/shippingSample.js'
@@ -67,13 +68,10 @@ export const store = Vue.observable({
   editLineId: null,
   /** Shipping group to receive the next proof add-to-cart (from + Add item). */
   pendingSplitId: null,
-  locationOpen: false,
-  locationTarget: null,
   order: normalizeOrder(readStorage('order', null)),
   offices: [],
   officesLoading: false,
   officesError: '',
-  officesSource: 'api',
   titles: [],
   titlesFr: [],
   degrees: [],
@@ -272,12 +270,6 @@ export function selectedShippingItemCount() {
   return n
 }
 
-export function assignedItems() {
-  return store.cart.reduce(function (sum, line) {
-    return sum + (Number(line.quantity) || 0)
-  }, 0)
-}
-
 export function subtotal() {
   return store.cart.reduce(function (sum, line) {
     return sum + lineTotal(line)
@@ -429,7 +421,8 @@ function applyProofToCart(options) {
       if (opts.openCart) store.cartOpen = true
       return
     }
-    return
+    // The line being edited left the cart meanwhile: add the approved card as a new line.
+    clearEditLine()
   }
   const existing = findCartLineForProof(proof)
   if (existing) {
@@ -490,6 +483,10 @@ export function removeLine(id) {
   store.cart = store.cart.filter(function (item) {
     return String(item.id) !== lineId
   })
+  if (store.editLineId != null && String(store.editLineId) === lineId) clearEditLine()
+  if (store.proof && String(store.proof.cartLineId) === lineId) {
+    Vue.delete(store.proof, 'cartLineId')
+  }
   unassignItem(store.order, id)
   attachLine(store.order, lineId)
   pruneLocationsWithoutItems(store.order, store.cart)
@@ -544,6 +541,7 @@ export function removeLineFromSplit(split, id) {
 export function clearCart() {
   store.cart = []
   store.pendingSplitId = null
+  clearEditLine()
   persistCart()
   syncAssignments()
   persistOrder()
@@ -587,13 +585,14 @@ export function startShippingFromCart() {
   syncAssignments()
 }
 
-/** Empty cart only. Two placeholder lines on Group 1 so Shipping is usable in localhost. */
+/** Empty cart on the dev server only. Two placeholder lines on Group 1 so Shipping is usable in localhost. */
 export function ensureSampleShippingDraft() {
   if (Array.isArray(store.cart) && store.cart.length) {
     stripPlaceholderShipTos()
     ensureCartAssignedToShipping()
     return false
   }
+  if (!SAMPLE_SHIPPING_ENABLED) return false
   store.cart = sampleShippingCart()
   var sample = sampleShippingOrder()
   store.order.splits.splice(0, store.order.splits.length)
@@ -603,16 +602,6 @@ export function ensureSampleShippingDraft() {
   persistCart()
   persistOrder()
   return true
-}
-
-export function openLocationPicker(target) {
-  store.locationTarget = target
-  store.locationOpen = true
-}
-
-export function closeLocationPicker() {
-  store.locationOpen = false
-  store.locationTarget = null
 }
 
 export function syncAssignments() {
@@ -682,11 +671,6 @@ export function moveLocationToSplit(locId, splitId, newIndex) {
   return Boolean(kept) && String(kept.id) !== String(locId)
 }
 
-export function assignLine(split, itemId) {
-  assignItem(store.order, split, itemId)
-  persistOrder()
-}
-
 export function cartLinesOutsideSplit(split) {
   const ids = {}
   ;(split && split.itemIds ? split.itemIds : []).forEach(function (id) {
@@ -739,16 +723,20 @@ export function removeShipLocation(split, index) {
   persistOrder()
 }
 
-export function persistOrderNow() {
-  persistOrder()
-}
-
-export function persistCartNow() {
-  persistCart()
-}
-
 export function linesInSplit(split) {
   return linesForSplit(split, store.cart)
+}
+
+/** At least one group ships cards, and every group that ships cards has a ship-to address. */
+export function shippingReady() {
+  var hasItems = false
+  var splits = store.order.splits || []
+  for (var i = 0; i < splits.length; i++) {
+    if (!linesInSplit(splits[i]).length) continue
+    hasItems = true
+    if (!(splits[i].locations || []).length) return false
+  }
+  return hasItems
 }
 
 export function clearOrder() {
@@ -821,6 +809,7 @@ export function updateTitle(index, label, language) {
   const list = titleList(language)
   const trimmed = String(label || '').trim()
   if (!trimmed || index < 0 || index >= list.length) return false
+  if (list.indexOf(trimmed) !== -1 && list[index] !== trimmed) return false
   list.splice(index, 1, trimmed)
   sortTitles(list)
   saveManagedTitles(list, language)
@@ -878,7 +867,6 @@ export async function loadOffices(force) {
   store.officesError = ''
   // Local managed list (seed + Manage Addresses edits). FileMaker hook replaces this later.
   store.offices = loadManagedOffices()
-  store.officesSource = 'local'
   store.officesLoading = false
   if (!store.titles.length) store.titles = loadManagedTitles('EN')
   if (!store.titlesFr.length) store.titlesFr = loadManagedTitles('FR')
@@ -898,6 +886,11 @@ export async function loadTitles() {
 }
 
 export async function confirmSubmit() {
+  // Review can be reached by URL or Back, past the Shipping checkout check.
+  if (!shippingReady()) {
+    store.submitError = t('shipToRequired')
+    return false
+  }
   store.submitting = true
   store.submitError = ''
   try {
@@ -927,6 +920,9 @@ export async function confirmSubmit() {
     }
     const record = appendConfirmedOrder()
     logOrderPayload(result.orderId || record.id, payload)
+    // Empty the cart here, not on the Confirmed page, so opening /confirmed again keeps a draft.
+    clearCart()
+    clearOrder()
     return true
   } catch (error) {
     store.submitError = error && error.message ? error.message : 'Submit failed'

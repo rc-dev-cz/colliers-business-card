@@ -29,16 +29,12 @@
 <script>
 import ColliersPageShell from '../layout/ColliersPageShell.vue'
 import AppButton from '../components/AppButton.vue'
-import { t, clearCart, clearOrder } from '../store'
+import { t } from '../store'
 import { go } from '../adapters/nav'
 
 export default {
   name: 'ConfirmedPage',
   components: { ColliersPageShell, AppButton },
-  mounted: function () {
-    clearCart()
-    clearOrder()
-  },
   methods: {
     t: t,
     backToCatalog: function () {

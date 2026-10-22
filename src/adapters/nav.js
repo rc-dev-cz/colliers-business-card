@@ -1,3 +1,5 @@
+import VueRouter from 'vue-router'
+
 let router = null
 
 /** Route names and paths aligned with Klai `content.layouts` (see docs/klai/BACKEND-NAMING.md). */
@@ -57,6 +59,16 @@ export function bindRouter(instance) {
   router = instance
 }
 
+/** Going to the page already open, or a guard redirect, is not an error. */
+function push(location) {
+  var pending = router.push(location)
+  if (pending && typeof pending.catch === 'function') {
+    pending.catch(function (error) {
+      if (!VueRouter.isNavigationFailure(error)) throw error
+    })
+  }
+}
+
 export function go(name, params) {
   const source = params || {}
   const bf = typeof window !== 'undefined' && window.BF && window.BF.router
@@ -68,10 +80,10 @@ export function go(name, params) {
     if (QUERY_CODE_ROUTES[name] && source.code != null && source.code !== '') {
       var query = { code: source.code }
       if (source.lineId != null && source.lineId !== '') query.lineId = source.lineId
-      router.push({ name: name, query: query })
+      push({ name: name, query: query })
       return
     }
-    router.push({ name: name, params: source })
+    push({ name: name, params: source })
     return
   }
   if (typeof window !== 'undefined') {

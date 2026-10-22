@@ -160,6 +160,10 @@ export const messages = {
     EN: 'No ship-to addresses yet. Use + Add location to pick from your Address Book.',
     FR: "Aucune adresse d'expédition. Utilisez + Ajouter un lieu pour choisir dans votre carnet d'adresses.",
   },
+  shipToRequired: {
+    EN: 'Add a ship-to address to every shipment before placing the order.',
+    FR: "Ajoutez une adresse d'expédition à chaque envoi avant de passer la commande.",
+  },
   enterAddress: { EN: 'Enter address', FR: 'Entrer une adresse' },
   addLocation: { EN: 'Add location', FR: 'Ajouter un lieu' },
   selectLocation: { EN: 'Select location', FR: 'Sélectionner un lieu' },
