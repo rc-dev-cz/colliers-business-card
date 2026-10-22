@@ -76,7 +76,7 @@
         </nav>
       </div>
 
-      <div class="flex shrink-0 items-center gap-3 self-center sm:gap-6">
+      <div class="flex shrink-0 items-center gap-4 self-center sm:gap-6">
         <div class="flex items-center text-[14px] font-medium sm:text-[15px]">
           <button
             type="button"
