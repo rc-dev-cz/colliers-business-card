@@ -1,0 +1,107 @@
+<!--
+  Site loader (content.spinner). Static HTML, shown before the app has `app` or BF.i18n.
+  EN and FR copies sit side by side; site-headerInsertions-locale.html sets
+  html[data-colliers-lang] from localStorage before this paints and hides the other one.
+  Vue twin: index.html (#app loader).
+-->
+<div
+  class="loader"
+  role="status"
+  aria-live="polite"
+  style="
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    width: 100%;
+    min-height: 100vh;
+    padding: 16px;
+    background: #f8f9fa;
+    font-family:
+      Inter,
+      system-ui,
+      -apple-system,
+      'Segoe UI',
+      sans-serif;
+  "
+>
+  <div
+    style="
+      box-sizing: border-box;
+      width: 100%;
+      max-width: 440px;
+      padding: 56px 24px;
+      background: #ffffff;
+      border-radius: 8px;
+      box-shadow: 0 4px 24px rgba(0, 0, 0, 0.04);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    "
+  >
+    <div
+      aria-hidden="true"
+      style="
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 14px;
+        margin-bottom: 48px;
+        max-width: 100%;
+      "
+    >
+      <img
+        src="https://5t61ut5p19.ucarecd.net/66049ddf-e639-4104-9b94-5f1d96fc29a5/"
+        alt=""
+        style="display: block; height: 56px; width: auto"
+      />
+      <img
+        data-lang="en"
+        src="https://5t61ut5p19.ucarecd.net/5c2ce46d-e9a5-441c-ad9a-8010efc9c9bf/"
+        alt=""
+        style="display: block; height: 40px; width: auto; max-width: 100%"
+      />
+      <img
+        data-lang="fr"
+        src="https://5t61ut5p19.ucarecd.net/701d97ba-48e3-4b7b-a448-1ecee3b72a6e/"
+        alt=""
+        style="display: block; height: 40px; width: auto; max-width: 100%"
+      />
+    </div>
+    <svg
+      width="40"
+      height="40"
+      viewBox="0 0 48 48"
+      aria-hidden="true"
+      style="display: block; margin-bottom: 24px"
+    >
+      <circle cx="24" cy="24" r="18" fill="none" stroke="#e6eaf3" stroke-width="4"></circle>
+      <g>
+        <animateTransform
+          attributeName="transform"
+          type="rotate"
+          from="0 24 24"
+          to="360 24 24"
+          dur="0.9s"
+          repeatCount="indefinite"
+        ></animateTransform>
+        <circle
+          cx="24"
+          cy="24"
+          r="18"
+          fill="none"
+          stroke="#25408f"
+          stroke-width="4"
+          stroke-linecap="round"
+          stroke-dasharray="28 85"
+        ></circle>
+      </g>
+    </svg>
+    <p data-lang="en" style="margin: 0; font-size: 14px; line-height: 20px; color: #6b7280">
+      Loading…
+    </p>
+    <p data-lang="fr" style="margin: 0; font-size: 14px; line-height: 20px; color: #6b7280">
+      Chargement…
+    </p>
+  </div>
+</div>

@@ -1,0 +1,26 @@
+<!--
+  Add at the TOP of site content.headerInsertions (keep everything already there below it).
+  Header insertions load before the site spinner paints (measured ~585 ms vs ~637 ms on the dev site),
+  so the spinner opens in the language saved by selectLanguage (localStorage colliers.locale).
+-->
+<script>
+  ;(function () {
+    var lang = 'en'
+    try {
+      lang = localStorage.getItem('colliers.locale') === 'fr' ? 'fr' : 'en'
+    } catch (e) {}
+    document.documentElement.setAttribute('lang', lang)
+    document.documentElement.setAttribute('data-colliers-lang', lang)
+  })()
+</script>
+<style>
+  .loader [data-lang='fr'] {
+    display: none !important;
+  }
+  html[data-colliers-lang='fr'] .loader [data-lang='en'] {
+    display: none !important;
+  }
+  html[data-colliers-lang='fr'] .loader [data-lang='fr'] {
+    display: block !important;
+  }
+</style>

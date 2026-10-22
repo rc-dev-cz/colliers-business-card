@@ -92,6 +92,10 @@ function persistOrder() {
 
 function persistLocale() {
   writeStorage('locale', store.locale)
+  // index.html reads the same key so the startup loader opens in this language.
+  if (typeof document !== 'undefined') {
+    document.documentElement.lang = store.locale === 'FR' ? 'fr' : 'en'
+  }
 }
 
 function persistSession() {
