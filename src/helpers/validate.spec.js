@@ -5,6 +5,7 @@ import {
   formatCardPhone,
   isCompletePhone,
   isValidEmail,
+  localPhoneDigits,
   NAME_MAX,
   cleanName,
   cleanCardText,
@@ -43,6 +44,24 @@ describe('formatCardPhone', function () {
   it('never shows the form hyphen on a partial number', function () {
     expect(formatCardPhone('416 555-01')).toBe('416 555 01')
     expect(formatCardPhone('416 5')).toBe('416 5')
+  })
+})
+
+describe('localPhoneDigits', function () {
+  it('drops the +1 country code before keeping 10 digits (BUG-02)', function () {
+    expect(localPhoneDigits('+1 416 555 0199')).toBe('4165550199')
+    expect(localPhoneDigits('1-416-555-0199')).toBe('4165550199')
+    expect(localPhoneDigits('+14165550199')).toBe('4165550199')
+  })
+
+  it('keeps a pasted local number whole (BUG-04)', function () {
+    expect(localPhoneDigits('(416) 555-0199')).toBe('4165550199')
+    expect(localPhoneDigits('416 555 0199')).toBe('4165550199')
+  })
+
+  it('stops at 10 digits while typing', function () {
+    expect(localPhoneDigits('+1 4')).toBe('4')
+    expect(localPhoneDigits('416 555 01999')).toBe('4165550199')
   })
 })
 

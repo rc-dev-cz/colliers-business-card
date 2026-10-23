@@ -13,6 +13,7 @@
         :edit-label="t('editTitle')"
         :delete-label="t('deleteTitle')"
         :confirm-delete-message="t('confirmDeleteTitle')"
+        :validate="titleFitError"
         @add="onAdd"
         @update="onUpdate"
         @delete="onDelete"
@@ -41,6 +42,8 @@ import ColliersPageShell from '../../layout/ColliersPageShell.vue'
 import AdminPageHeader from '../../components/AdminPageHeader.vue'
 import AdminStringListPanel from '../../components/AdminStringListPanel.vue'
 import { store, t, loadTitles, addTitle, updateTitle, deleteTitle } from '../../store'
+import { loadLayoutFonts } from '../../helpers/cardFonts'
+import { titleFitsOnCard } from '../../helpers/cardLayout'
 
 export default {
   name: 'ManageTitlesPage',
@@ -65,6 +68,17 @@ export default {
   },
   methods: {
     t: t,
+    /** Refuse a title (EN or FR list) that the card's title line cannot print. */
+    titleFitError: function (value) {
+      return loadLayoutFonts()
+        .then(function (fonts) {
+          return titleFitsOnCard(value, fonts) ? '' : t('titleTooLongForCard')
+        })
+        .catch(function () {
+          // Fonts did not load: let it through; Customize still blocks an unprintable title.
+          return ''
+        })
+    },
     onAdd: function (value) {
       addTitle(value, this.activeTab)
     },

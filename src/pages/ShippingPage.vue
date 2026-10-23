@@ -223,7 +223,7 @@
                           personName(line) || lineName(line)
                         }}</span>
                         <span v-if="personName(line)" class="block truncate text-gray-500">{{
-                          lineName(line)
+                          addItemDetail(line)
                         }}</span>
                       </button>
                     </li>
@@ -431,6 +431,7 @@ import {
   store,
   t,
   selectedShippingItemCount,
+  shippedLines,
   linesInSplit,
   splitOrder,
   removeSplit,
@@ -550,6 +551,11 @@ export default {
       var label = ['english', 'french', 'bilingual'].indexOf(key) >= 0 ? t(key) : language
       return label ? name + ' - ' + label : name
     },
+    /** Add item menu: product plus title, so two cards for one person can be told apart. */
+    addItemDetail: function (line) {
+      var title = String((line && line.details && line.details.title) || '').trim()
+      return [this.lineName(line), title].filter(Boolean).join(' · ')
+    },
     personName: function (line) {
       var details = (line && line.details) || {}
       return String(
@@ -599,7 +605,7 @@ export default {
       return cardsFromBoxes(this.locationBoxes(split, loc))
     },
     orderBoxes: function () {
-      return billedBoxesCart(store.cart, store.order)
+      return billedBoxesCart(shippedLines(), store.order)
     },
     orderCards: function () {
       return cardsFromBoxes(this.orderBoxes())

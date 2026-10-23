@@ -3,7 +3,7 @@
     <div class="mb-4 flex flex-wrap items-center justify-between gap-3">
       <button
         type="button"
-        class="inline-flex items-center gap-1 text-sm text-gray-600 hover:text-gray-900"
+        class="inline-flex items-center gap-1 text-sm text-gray-600 hover:text-gray-900 print:hidden"
         @click="back"
       >
         <span aria-hidden="true">‹</span> {{ t('backToShipping') }}
@@ -37,7 +37,7 @@
 
     <error-state v-if="store.submitError" class="mb-4" :message="store.submitError"></error-state>
 
-    <empty-state v-if="!store.cart.length" :message="t('cartEmpty')"></empty-state>
+    <empty-state v-if="!hasShippedLines" :message="t('cartEmpty')"></empty-state>
 
     <div v-else class="space-y-6">
       <section
@@ -88,7 +88,7 @@
                         {{ lineName(line) }}
                       </div>
                       <div v-if="line.language" class="mt-1 text-[13px] text-gray-500">
-                        {{ t('language') }}: {{ line.language }}
+                        {{ t('language') }}: {{ languageText(line) }}
                       </div>
                     </div>
                   </div>
@@ -143,7 +143,7 @@
       >
         <div class="flex justify-between text-sm text-gray-700">
           <span>{{ t('subtotal') }}</span>
-          <span>${{ cartTotal.toFixed(2) }}</span>
+          <span>${{ orderTotal.toFixed(2) }}</span>
         </div>
         <div class="mt-2 flex justify-between text-sm text-gray-700">
           <span>{{ t('shipping') }}</span>
@@ -153,7 +153,7 @@
           class="mt-4 flex justify-between border-t border-gray-200 pt-4 text-base font-semibold text-colliers-primary"
         >
           <span>{{ t('total') }}</span>
-          <span>${{ cartTotal.toFixed(2) }}</span>
+          <span>${{ orderTotal.toFixed(2) }}</span>
         </div>
         <app-button
           block
@@ -205,12 +205,12 @@ import {
   store,
   t,
   linesInSplit,
-  subtotal,
+  shippedLines,
   confirmSubmit,
   shippingReady,
   removeEmptySplits,
 } from '../store'
-import { productNameKey } from '../i18n/messages'
+import { languageLabel, productNameKey } from '../i18n/messages'
 import { boxesPerAddressForSplit, readSplitQty } from '../helpers/order'
 import { getProduct } from '../data/products'
 import { cardsFromBoxes } from '../helpers/cart'
@@ -226,11 +226,18 @@ export default {
     removeEmptySplits()
   },
   computed: {
-    cartTotal: function () {
-      return subtotal()
+    hasShippedLines: function () {
+      return shippedLines().length > 0
+    },
+    /** Sum of the shipment subtotals: cards taken off shipping are not ordered. */
+    orderTotal: function () {
+      var self = this
+      return (store.order.splits || []).reduce(function (sum, split) {
+        return sum + self.splitSubtotal(split)
+      }, 0)
     },
     canPlaceOrder: function () {
-      return store.cart.length > 0 && shippingReady()
+      return this.hasShippedLines && shippingReady()
     },
   },
   methods: {
@@ -246,6 +253,9 @@ export default {
     cardsFromBoxes: cardsFromBoxes,
     lineName: function (line) {
       return t(productNameKey(line.code))
+    },
+    languageText: function (line) {
+      return languageLabel(line.language, t)
     },
     personName: function (line) {
       return String((line.details && line.details.name) || '').trim()

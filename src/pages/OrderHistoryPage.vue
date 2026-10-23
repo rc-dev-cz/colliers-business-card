@@ -149,7 +149,7 @@
                   <div class="min-w-0">
                     <div class="font-medium text-gray-900">{{ lineName(line) }}</div>
                     <div class="mt-0.5 text-[13px] text-gray-500">
-                      {{ t('language') }}: {{ line.language }}
+                      {{ t('language') }}: {{ languageText(line) }}
                     </div>
                   </div>
                   <div class="text-right text-sm tabular-nums">
@@ -248,7 +248,7 @@ import SearchField from '../components/SearchField.vue'
 import SelectField from '../components/SelectField.vue'
 import CardPreview from '../components/CardPreview.vue'
 import { store, t, isAdmin, loadAdminOrders, repeatOrder } from '../store'
-import { productNameKey } from '../i18n/messages'
+import { languageLabel, productNameKey } from '../i18n/messages'
 import { lineTotal, cardsFromBoxes } from '../helpers/cart'
 import { billedBoxesForLine } from '../helpers/order'
 import {
@@ -328,6 +328,9 @@ export default {
     cardsFromBoxes: cardsFromBoxes,
     lineName: function (line) {
       return t(productNameKey(line.code))
+    },
+    languageText: function (line) {
+      return languageLabel(line.language, t)
     },
     /** Bilingual orders show both printed faces, EN then FR. */
     lineSlots: function (line) {

@@ -151,9 +151,10 @@ describe('CardPreview', function () {
     await wrapper.vm.$nextTick()
 
     expect(wrapper.vm.view.title).toBe('Responsable du développement commercial')
-    expect(wrapper.vm.view.regionLine).toBe('Quebec')
+    // French face prints the French region name (BUG-10).
+    expect(wrapper.vm.view.regionLine).toBe('Québec')
     expect(wrapper.text()).toContain('Responsable du développement commercial')
-    expect(wrapper.text()).toContain('Quebec')
-    expect(wrapper.text()).not.toContain('Responsable du développement commercial | Quebec')
+    expect(wrapper.text()).toContain('Québec')
+    expect(wrapper.text()).not.toContain('Quebec')
   })
 })

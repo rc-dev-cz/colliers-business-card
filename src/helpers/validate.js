@@ -82,10 +82,16 @@ export function emailFromFullName(name, fits) {
   return local + domain
 }
 
-export function digitsOnly(value, max) {
+/**
+ * Mobile field: the 10 local digits from whatever was typed or pasted.
+ * Canadian area codes never start with 1, so a leading 1 is the +1 country
+ * code and is dropped before the 10-digit cut ("+1 416 555 0199" → 4165550199).
+ */
+export function localPhoneDigits(value) {
   return String(value || '')
     .replace(/\D/g, '')
-    .slice(0, max == null ? PHONE_DIGITS : max)
+    .replace(/^1/, '')
+    .slice(0, PHONE_DIGITS)
 }
 
 export function formatCanadianLocal(digits) {

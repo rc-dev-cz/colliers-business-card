@@ -158,7 +158,7 @@ function drawCardPage(pdfDoc, pagePlan, assets) {
     drawText(page, layout.team, {
       x: identityX,
       y: layout.teamY,
-      size: L.bodySize,
+      size: layout.teamSize || L.bodySize,
       font: font,
       color: GRAY,
     })

@@ -13,13 +13,17 @@ import {
   removeLineFromSplit,
   setEditLineId,
   setProof,
+  shippedLines,
   shippingReady,
   splitOrder,
   store,
   syncAssignments,
   updateTitle,
+  addTitle,
 } from './store.js'
 import { makeLine } from './helpers/cart.js'
+import { billedBoxesCart } from './helpers/order.js'
+import { orderTotal } from './helpers/orderHistory.js'
 import { bindRouter, go } from './adapters/nav.js'
 
 var CARD = {
@@ -62,6 +66,50 @@ describe('Review: ship-to required', function () {
     addShipLocation(store.order.splits[0], CARD.address)
     expect(await confirmSubmit()).toBe(true)
     expect(store.cart.length).toBe(0)
+  }, 20000)
+})
+
+describe('Review: built from shipping, not the cart (BUG-01)', function () {
+  beforeEach(function () {
+    seedCart()
+    store.cart.push(
+      makeLine({
+        id: 'line-2',
+        code: 'BCAD-PL-ENG',
+        language: 'English',
+        details: Object.assign({}, CARD, { title: 'Other title' }),
+      })
+    )
+    syncAssignments()
+    addShipLocation(store.order.splits[0], CARD.address)
+    // Shipping trash on card B: it stays in the cart, off shipping.
+    removeLineFromSplit(store.order.splits[0], 'line-2')
+  })
+  afterEach(function () {
+    clearCart()
+    clearOrder()
+    store.submitError = ''
+  })
+
+  it('keeps the trashed card in the cart but not in the shipped lines', function () {
+    expect(store.cart.length).toBe(2)
+    expect(
+      shippedLines().map(function (line) {
+        return line.id
+      })
+    ).toEqual(['line-1'])
+    expect(billedBoxesCart(shippedLines(), store.order)).toBe(1)
+  })
+
+  it('places an order that holds only the shipped card', async function () {
+    expect(await confirmSubmit()).toBe(true)
+    var record = store.orderHistory[0]
+    expect(
+      record.cart.map(function (line) {
+        return line.id
+      })
+    ).toEqual(['line-1'])
+    expect(orderTotal(record)).toBe(63)
   }, 20000)
 })
 
@@ -139,6 +187,18 @@ describe('Manage Titles rename', function () {
   it('does not rename a title onto one that already exists', function () {
     expect(updateTitle(0, 'Director', 'EN')).toBe(false)
     expect(store.titles).toEqual(['Advisor', 'Director'])
+  })
+
+  it('treats a different case as the same title (BUG-18)', function () {
+    expect(addTitle('director', 'EN')).toBe(false)
+    expect(addTitle('  DIRECTOR ', 'EN')).toBe(false)
+    expect(updateTitle(0, 'DIRECTOR', 'EN')).toBe(false)
+    expect(store.titles).toEqual(['Advisor', 'Director'])
+  })
+
+  it('still allows a case-only fix to the same title', function () {
+    expect(updateTitle(0, 'ADVISOR', 'EN')).toBe(true)
+    expect(store.titles).toContain('ADVISOR')
   })
 })
 

@@ -1,10 +1,14 @@
 import { describe, expect, it, beforeAll } from 'vitest'
 import { loadLayoutFonts } from './cardFonts.js'
+import { jobTitlesEn, jobTitlesFr } from '../data/products.js'
 import {
   CARD_LAYOUT,
   LAYOUT_ERROR,
   credentialsFitOnCard,
   fitsLine,
+  teamFitsOnCard,
+  teamSizeFor,
+  titleFitsOnCard,
   planCardLayout,
   planProductLayout,
   previewContactYs,
@@ -14,7 +18,6 @@ import {
   emailFitsOnCard,
   nameFitsOnCard,
   resolveCardFields,
-  teamFitsOnCard,
   titleSizeFor,
 } from './cardLayout.js'
 import { TITLE_FR_TALENT_ACQUISITION } from './titleLocale.js'
@@ -375,8 +378,8 @@ describe('planCardLayout', function () {
     expect(preview.title).toBe('Responsable du développement commercial')
   })
 
-  it('rejects a specialized team that is wider than the right-column cap', function () {
-    var over = padToWidth(fonts.font, L.bodySize, L.identityWidth, 'Long ') + ' overflow'
+  it('rejects a specialized team that is wider than the right-column cap at the minimum size', function () {
+    var over = padToWidth(fonts.font, L.lineMinSize, L.identityWidth, 'Long ') + ' overflow'
     var layout = plan({ specializedTeam: over })
     expect(layout.errors).toContain(LAYOUT_ERROR.team)
     expect(layout.valid).toBe(false)
@@ -748,5 +751,78 @@ describe('nameFitsOnCard and emailFitsOnCard', function () {
     expect(emailFitsOnCard('ada@colliersprojectleaders.com', fonts)).toBe(true)
     expect(emailFitsOnCard(long, fonts)).toBe(false)
     expect(plan({ email: long }).errors).toContain(LAYOUT_ERROR.email)
+  })
+})
+
+describe('titleFitsOnCard (Manage Titles check)', function () {
+  it('accepts every official English and French title', function () {
+    jobTitlesEn.concat(jobTitlesFr).forEach(function (title) {
+      expect(titleFitsOnCard(title, fonts)).toBe(true)
+    })
+  })
+
+  it('accepts the French Talent Acquisition title, which shrinks to fit', function () {
+    expect(titleFitsOnCard('Partenaire d’affaires sénior en acquisition de talent', fonts)).toBe(
+      true
+    )
+  })
+
+  it('shrinks any long title down to lineMinSize, then refuses it', function () {
+    var L = CARD_LAYOUT
+    expect(L.lineMinSize).toBe(5.5)
+    // One letter past the 6.5 pt line: shrinks, still fits.
+    var atBody = padToWidth(fonts.font, L.bodySize, L.titleMaxWidth, 'T') + 'W'
+    var size = titleSizeFor(fonts.font, atBody)
+    expect(size).toBeLessThan(L.bodySize)
+    expect(size).toBeGreaterThanOrEqual(L.lineMinSize)
+    expect(titleFitsOnCard(atBody, fonts)).toBe(true)
+    // Widest title that fits at 5.5 pt is the limit; one letter more is refused.
+    var atMin = padToWidth(fonts.font, L.lineMinSize, L.titleMaxWidth, 'T')
+    expect(titleFitsOnCard(atMin, fonts)).toBe(true)
+    expect(titleFitsOnCard(atMin + 'W', fonts)).toBe(false)
+    expect(titleSizeFor(fonts.font, atMin + 'W')).toBe(L.bodySize)
+    expect(
+      titleFitsOnCard(
+        'Senior Vice President and National Practice Leader, Infrastructure Advisory',
+        fonts
+      )
+    ).toBe(false)
+  })
+
+  it('a shrunk English title plans as valid, like the French Talent Acquisition one', function () {
+    var title = padToWidth(fonts.font, CARD_LAYOUT.bodySize, CARD_LAYOUT.titleMaxWidth, 'T') + 'WW'
+    var layout = plan({ title: title })
+    expect(layout.valid).toBe(true)
+    expect(layout.titleSize).toBeLessThan(CARD_LAYOUT.bodySize)
+  })
+})
+
+describe('specialized team shrinks to fit', function () {
+  var team = 'Healthcare and Life Sciences Infrastructure Group'
+
+  it('fits the whole team name by shrinking, not cutting it', function () {
+    var L = CARD_LAYOUT
+    expect(fitsLine(fonts.font, team, L.bodySize, L.identityWidth)).toBe(false)
+    var size = teamSizeFor(fonts.font, team)
+    expect(size).toBeLessThan(L.bodySize)
+    expect(size).toBeGreaterThanOrEqual(L.lineMinSize)
+    expect(teamFitsOnCard({ specializedTeam: team }, fonts)).toBe(true)
+    var layout = plan({ specializedTeam: team })
+    expect(layout.valid).toBe(true)
+    expect(layout.team).toBe(team)
+    expect(layout.teamSize).toBe(size)
+  })
+
+  it('keeps body size for a short team', function () {
+    expect(teamSizeFor(fonts.font, 'Infrastructure')).toBe(CARD_LAYOUT.bodySize)
+    expect(plan({ specializedTeam: 'Infrastructure' }).teamSize).toBe(CARD_LAYOUT.bodySize)
+  })
+
+  it('stops at the 5.5 pt minimum', function () {
+    var L = CARD_LAYOUT
+    var atMin = padToWidth(fonts.font, L.lineMinSize, L.identityWidth, 'T')
+    expect(teamFitsOnCard({ specializedTeam: atMin }, fonts)).toBe(true)
+    expect(teamFitsOnCard({ specializedTeam: atMin + 'W' }, fonts)).toBe(false)
+    expect(plan({ specializedTeam: atMin + 'W' }).errors).toContain(LAYOUT_ERROR.team)
   })
 })

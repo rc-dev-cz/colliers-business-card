@@ -246,6 +246,14 @@ describe('AddressBookPage', function () {
     expect(wrapper.text()).toContain('Temporary Location')
   })
 
+  it('AB-19b A search with no hits says so, not "no addresses yet" (BUG-19)', async function () {
+    const wrapper = mountPage()
+    setField(wrapper, 'address-search', 'zzzz')
+    await wrapper.vm.$nextTick()
+    expect(wrapper.text()).toContain('No matching addresses.')
+    expect(wrapper.text()).not.toContain('No personal addresses yet')
+  })
+
   it('AB-20 Search on Office tab filters offices', async function () {
     const wrapper = mountPage()
     buttonByText(wrapper, 'Office Addresses').trigger('click')

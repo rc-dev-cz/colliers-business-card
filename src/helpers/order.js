@@ -434,8 +434,6 @@ export function moveItem(order, itemId, toSplitId, newIndex, fromSplitId) {
   if (!source) {
     assignItem(order, target, itemId)
   } else if (source !== target) {
-    var hadQty = source.qtys && source.qtys[id] != null
-    var movedQty = hadQty ? source.qtys[id] : null
     Vue.set(
       source,
       'itemIds',
@@ -446,8 +444,8 @@ export function moveItem(order, itemId, toSplitId, newIndex, fromSplitId) {
     if (source.qtys && source.qtys[id] != null) Vue.delete(source.qtys, id)
     var alreadyThere = (target.itemIds || []).map(String).indexOf(id) !== -1
     includeItem(order, target, id)
-    // Keep the boxes the card had in its old group unless the target already had it.
-    if (hadQty && !alreadyThere) writeSplitQty(target, { id: id }, movedQty)
+    // Its old boxes belonged to the old group's addresses: a card new to this group starts at 1 box.
+    if (!alreadyThere) writeSplitQty(target, { id: id }, 1)
   }
   if (newIndex == null || newIndex === '') return
   var ids = target.itemIds || []
