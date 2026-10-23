@@ -41,6 +41,10 @@
                 "en": "Add a ship-to address to every shipment before placing the order.",
                 "fr": "Ajoutez une adresse d'expédition à chaque envoi avant de passer la commande."
             },
+            "label_colliers_emptyShipment": {
+                "en": "A shipment has no items. Add an item or remove the split to continue.",
+                "fr": "Un envoi ne contient aucun article. Ajoutez un article ou supprimez la division pour continuer."
+            },
             "label_addToCart": {
                 "en": "Add to Cart",
                 "fr": "Ajouter au panier"

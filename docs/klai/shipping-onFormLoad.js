@@ -99,6 +99,26 @@ if (typeof app !== 'undefined') {
     }
   }
 }
+// Opening Shipping drops groups with no items in the cart (Vue removeEmptySplits). Keeps one.
+function dropEmptySplits(order, cartRows) {
+  if (!order || !Array.isArray(order.splits) || order.splits.length < 2) return
+  if (!cartRows || !cartRows.length) return
+  var inCart = {}
+  ;(cartRows || []).forEach(function (line) {
+    inCart[String(line.id)] = true
+  })
+  var kept = order.splits.filter(function (split) {
+    return (split.itemIds || []).some(function (id) {
+      return inCart[String(id)]
+    })
+  })
+  if (!kept.length) kept = [order.splits[0]]
+  if (kept.length < order.splits.length)
+    order.splits.splice.apply(order.splits, [0, order.splits.length].concat(kept))
+}
+dropEmptySplits(model.order, normalizeCart(model.cart) || [])
+// An item added from an empty group is already assigned by now; a leftover id is stale.
+if (typeof app !== 'undefined') app.pendingSplitId = null
 var personalRows = firstNonEmpty(
   model.personalAddresses,
   typeof app !== 'undefined' ? app.personalAddresses : null,

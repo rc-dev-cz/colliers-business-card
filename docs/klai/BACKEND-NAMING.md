@@ -312,7 +312,7 @@ FileMaker should return the same Product rows as Catalogue (`products`, or the o
 
 `itemIds` point at `cart[].id` so a card can move between shipping groups without copying the line. Location `qty` is boxes **per address** (editable; defaults to Selected Items sum). Selected Items Qty is a readout (`quantity × 250`). Billed boxes = sum of location qty (×1 Selected Items if none). Adding or removing a ship-to address must **not** delete cart lines.
 
-**Shipping** (`shipping`) — planned request load (`personalAddresses`, `offices`, `products`). Client keeps cart/splits.
+**Shipping** (`shipping`) — planned request load (`personalAddresses`, `offices`, `products`). Client keeps cart/splits. `onFormLoad` drops groups with no items (keeps one). `view.canReview` is off while any group is empty (`view.hasEmptySplit` shows `label_colliers_emptyShipment`) or a group with items has no ship-to.
 
 ```json
 {
@@ -340,7 +340,7 @@ FileMaker should return the same Product rows as Catalogue (`products`, or the o
 
 Hook fills `personalAddresses`, `offices`, and slim `products`. Do not persist `view` or `split.lines` (those are UI).
 
-**Review** (`review`) — no request hook. Same `cart` + `order` + slim `products`. Utility `type: submit` sends `cart` and `order`. Each item line shows a CardPreview thumbnail (`line.previewModel` = `cart.N.details`, set in `refreshView`); clicking it runs `previewLine` (same popup as Shipping).
+**Review** (`review`) — no request hook. Same `cart` + `order` + slim `products`. Utility `type: submit` sends `cart` and `order`. Each item line shows a CardPreview thumbnail (`line.previewModel` = `cart.N.details`, set in `refreshView`); clicking it runs `previewLine` (same popup as Shipping). Groups with no items are dropped in `refreshView`, and Place Order needs items and a ship-to on every group.
 
 ```json
 {

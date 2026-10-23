@@ -16,6 +16,21 @@ if (typeof app !== 'undefined') {
 model.cart = Array.isArray(model.cart) ? model.cart : []
 model.order = model.order || { splits: [] }
 if (!Array.isArray(model.order.splits)) model.order.splits = []
+// Review drops groups with no items (reachable by URL past the Shipping check). Keeps one.
+var inCart = {}
+model.cart.forEach(function (line) {
+  inCart[String(line.id)] = true
+})
+var filledSplits = model.order.splits.filter(function (split) {
+  return (split.itemIds || []).some(function (id) {
+    return inCart[String(id)]
+  })
+})
+if (filledSplits.length && filledSplits.length < model.order.splits.length)
+  model.order.splits.splice.apply(
+    model.order.splits,
+    [0, model.order.splits.length].concat(filledSplits)
+  )
 model.view = model.view || {}
 model.view.lines = model.cart.map(function (line, cartIndex) {
   var p = findProduct(line.code)
@@ -69,14 +84,11 @@ model.view.splits = (model.order.splits || []).map(function (split) {
   })
   return { id: split.id, lines: lines, locations: locations, subtotal: money(splitSub) }
 })
-// Place Order needs a group with cards, and a ship-to on every group that has cards (Vue shippingReady).
-
+// Place Order needs cards and a ship-to on every group (Vue shippingReady).
 var shipReady =
-  model.view.splits.some(function (s) {
-    return s.lines.length
-  }) &&
+  model.view.splits.length > 0 &&
   model.view.splits.every(function (s) {
-    return !s.lines.length || s.locations.length
+    return s.lines.length && s.locations.length
   })
 if (typeof Vue !== 'undefined' && Vue.set) Vue.set(model.view, 'shipReady', shipReady)
 else model.view.shipReady = shipReady

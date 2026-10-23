@@ -51,6 +51,9 @@
       </button>
     </div>
   </div>
+  <p v-if="model.view.hasEmptySplit" class="mb-4 text-sm text-red-600">
+    {{ BF.i18n('label_colliers_emptyShipment') }}
+  </p>
   <div class="space-y-6">
     <div
       v-for="(split, splitIndex) in model.order.splits"
