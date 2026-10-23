@@ -305,4 +305,10 @@ export default {
   font-style: normal;
   font-display: swap;
 }
+/* Lay text out with the font's exact advances, like the print PDF. Without it, Chrome on
+   Linux (QA's headless runs) rounds small glyphs wider, so a line that fits in print can
+   run ~4% past the preview edge (BUG-25). */
+.card-preview-face {
+  text-rendering: geometricPrecision;
+}
 </style>

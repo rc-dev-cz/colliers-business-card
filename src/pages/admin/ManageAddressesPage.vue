@@ -1,10 +1,7 @@
 <template>
   <colliers-page-shell viewport-list>
     <div class="colliers-viewport-list mx-auto w-full max-w-2xl">
-      <admin-page-header
-        :title="t('manageAddresses')"
-        :subtitle="t('manageColliersOfficesHint')"
-      ></admin-page-header>
+      <admin-page-header :title="t('manageAddresses')"></admin-page-header>
 
       <loading-state v-if="store.officesLoading" :message="t('loading')"></loading-state>
       <error-state v-else-if="store.officesError" :message="store.officesError"></error-state>

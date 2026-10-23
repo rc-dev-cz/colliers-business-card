@@ -16,15 +16,22 @@ export const CANADIAN_PROVINCES = [
 
 /**
  * Full province/territory names for Customize Region. The saved value is the
- * English name; the label follows the site language (FR shows Québec, …).
+ * English name; the label follows the card's language, as printed: English
+ * card → Quebec, French card → Québec, bilingual → "Quebec / Québec" when they differ.
  */
 export const CANADIAN_REGION_OPTIONS = CANADIAN_PROVINCES.map(function (row) {
   return { value: row.label, label: row.label }
 })
 
-export function regionOptions(locale) {
+export function regionOptions(cardLanguage) {
+  var language = String(cardLanguage || '').toLowerCase()
   return CANADIAN_PROVINCES.map(function (row) {
-    return { value: row.label, label: locale === 'FR' ? row.labelFr : row.label }
+    var label = row.label
+    if (language === 'french') label = row.labelFr
+    else if (language === 'bilingual' && row.labelFr !== row.label) {
+      label = row.label + ' / ' + row.labelFr
+    }
+    return { value: row.label, label: label }
   })
 }
 

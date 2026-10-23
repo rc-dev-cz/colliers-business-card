@@ -68,8 +68,8 @@
                     >
                       <td class="px-3 py-2">{{ tier.from }} BX</td>
                       <td class="px-3 py-2">{{ tier.to }}</td>
-                      <td class="px-3 py-2">${{ tier.pricePer.toFixed(2) }} / BX</td>
-                      <td class="px-3 py-2">${{ tier.unitTotal.toFixed(2) }}</td>
+                      <td class="px-3 py-2">{{ money(tier.pricePer) }} / BX</td>
+                      <td class="px-3 py-2">{{ money(tier.unitTotal) }}</td>
                     </tr>
                   </tbody>
                 </table>
@@ -105,7 +105,7 @@ import AppButton from '../components/AppButton.vue'
 import { getProduct } from '../data/products'
 import { isBilingualLanguage } from '../helpers/formatCardIdentity'
 import { productNameKey } from '../i18n/messages'
-import { t, startNewCustomize } from '../store'
+import { t, startNewCustomize, money } from '../store'
 import { go } from '../adapters/nav'
 
 export default {
@@ -143,6 +143,7 @@ export default {
   },
   methods: {
     t: t,
+    money: money,
     back: function () {
       go('catalog')
     },

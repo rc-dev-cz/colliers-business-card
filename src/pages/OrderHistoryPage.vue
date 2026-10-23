@@ -38,13 +38,14 @@
               class="border-b border-gray-200 bg-gray-50 text-xs font-medium uppercase tracking-wide text-gray-500"
             >
               <tr>
-                <th class="px-4 py-3">{{ t('orderId') }}</th>
-                <th class="px-4 py-3">{{ personColumnLabel }}</th>
-                <th class="px-4 py-3">{{ t('item') }}</th>
-                <th class="px-4 py-3">{{ t('qty') }}</th>
-                <th class="px-4 py-3">{{ t('date') }}</th>
-                <th class="px-4 py-3">{{ t('status') }}</th>
-                <th class="px-4 py-3 text-right">{{ t('action') }}</th>
+                <th class="px-3 py-3 sm:px-4">{{ t('orderId') }}</th>
+                <!-- Phones: name and date fold under the order ID, item and qty are in View (BUG-24) -->
+                <th class="hidden px-4 py-3 sm:table-cell">{{ personColumnLabel }}</th>
+                <th class="hidden px-4 py-3 sm:table-cell">{{ t('item') }}</th>
+                <th class="hidden px-4 py-3 sm:table-cell">{{ t('qty') }}</th>
+                <th class="hidden px-4 py-3 sm:table-cell">{{ t('date') }}</th>
+                <th class="px-3 py-3 sm:px-4">{{ t('status') }}</th>
+                <th class="px-3 py-3 text-right sm:px-4">{{ t('action') }}</th>
               </tr>
             </thead>
             <tbody>
@@ -58,12 +59,24 @@
                 :key="rowKey(row)"
                 class="border-b border-gray-100 last:border-0"
               >
-                <td class="px-4 py-3 font-medium text-colliers-primary">{{ row.id }}</td>
-                <td class="px-4 py-3 text-gray-800">{{ cardholderName(row) }}</td>
-                <td class="px-4 py-3 text-gray-700">{{ itemLabel(row, t) }}</td>
-                <td class="px-4 py-3 text-gray-700">{{ cardCount(row) }}</td>
-                <td class="px-4 py-3 text-gray-700">{{ formatOrderDate(row.date) }}</td>
-                <td class="px-4 py-3">
+                <td class="px-3 py-3 sm:px-4">
+                  <div class="font-medium text-colliers-primary">{{ row.id }}</div>
+                  <div class="text-[13px] text-gray-500 sm:hidden">
+                    {{ formatOrderDate(row.date) }}
+                    <template v-if="cardholderName(row)"> · {{ cardholderName(row) }}</template>
+                  </div>
+                </td>
+                <td class="hidden px-4 py-3 text-gray-800 sm:table-cell">
+                  {{ cardholderName(row) }}
+                </td>
+                <td class="hidden px-4 py-3 text-gray-700 sm:table-cell">
+                  {{ itemLabel(row, t) }}
+                </td>
+                <td class="hidden px-4 py-3 text-gray-700 sm:table-cell">{{ cardCount(row) }}</td>
+                <td class="hidden px-4 py-3 text-gray-700 sm:table-cell">
+                  {{ formatOrderDate(row.date) }}
+                </td>
+                <td class="px-3 py-3 sm:px-4">
                   <span
                     class="inline-flex rounded-md px-2.5 py-1 text-xs font-medium"
                     :class="statusClass(row.status)"
@@ -71,18 +84,18 @@
                     {{ statusLabel(row.status) }}
                   </span>
                 </td>
-                <td class="whitespace-nowrap px-4 py-3 text-right">
+                <td class="px-3 py-3 text-right sm:whitespace-nowrap sm:px-4">
                   <button
                     type="button"
-                    class="text-colliers-primary hover:underline"
+                    class="block w-full whitespace-nowrap text-right text-colliers-primary hover:underline sm:inline sm:w-auto"
                     @click="onRepeat(row.id)"
                   >
                     {{ t('repeatOrder') }}
                   </button>
-                  <span class="mx-2 text-gray-300">|</span>
+                  <span class="mx-2 hidden text-gray-300 sm:inline">|</span>
                   <button
                     type="button"
-                    class="text-colliers-primary hover:underline"
+                    class="mt-1 block w-full text-right text-colliers-primary hover:underline sm:mt-0 sm:inline sm:w-auto"
                     @click="openDetails(row)"
                   >
                     {{ t('view') }}
@@ -153,7 +166,9 @@
                     </div>
                   </div>
                   <div class="text-right text-sm tabular-nums">
-                    <div class="font-medium text-gray-900">${{ lineCost(details, line) }}</div>
+                    <div class="font-medium text-gray-900">
+                      {{ money(lineCost(details, line)) }}
+                    </div>
                     <div class="text-xs text-gray-500">
                       {{ boxLabel(lineBoxes(details, line)) }} ·
                       {{ cardsFromBoxes(lineBoxes(details, line)) }} {{ t('cards') }}
@@ -221,7 +236,7 @@
         >
           <div class="text-sm text-gray-700">
             {{ t('totalCost') }}:
-            <span class="font-semibold text-gray-900">${{ orderTotal(details).toFixed(2) }}</span>
+            <span class="font-semibold text-gray-900">{{ money(orderTotal(details)) }}</span>
             <span class="text-gray-500">
               · {{ t('quantity') }}: {{ cardCount(details) }} {{ t('cards') }}</span
             >
@@ -247,7 +262,7 @@ import AdminPageHeader from '../components/AdminPageHeader.vue'
 import SearchField from '../components/SearchField.vue'
 import SelectField from '../components/SelectField.vue'
 import CardPreview from '../components/CardPreview.vue'
-import { store, t, isAdmin, loadAdminOrders, repeatOrder } from '../store'
+import { store, t, isAdmin, loadAdminOrders, repeatOrder, money } from '../store'
 import { languageLabel, productNameKey } from '../i18n/messages'
 import { lineTotal, cardsFromBoxes } from '../helpers/cart'
 import { billedBoxesForLine } from '../helpers/order'
@@ -318,6 +333,7 @@ export default {
   },
   methods: {
     t: t,
+    money: money,
     cardCount: cardCount,
     cardholderName: cardholderName,
     formatOrderDate: function (value) {

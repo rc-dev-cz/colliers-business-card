@@ -76,10 +76,11 @@
               class="sticky top-0 z-10 border-b border-gray-200 bg-gray-50 text-xs font-medium uppercase tracking-wide text-gray-500"
             >
               <tr>
-                <th class="w-48 px-4 py-3 sm:w-56">{{ t('locationName') }}</th>
-                <th class="px-4 py-3">{{ t('address') }}</th>
-                <th class="w-40 px-4 py-3 sm:w-48">{{ t('city') }}</th>
-                <th v-if="activeTab === 'personal'" class="w-40 px-4 py-3 text-right">
+                <th class="px-3 py-3 sm:w-56 sm:px-4">{{ t('locationName') }}</th>
+                <th class="px-3 py-3 sm:px-4">{{ t('address') }}</th>
+                <!-- Phones: city folds under the street so Edit / Delete stay on screen (BUG-24) -->
+                <th class="hidden w-40 px-4 py-3 sm:table-cell sm:w-48">{{ t('city') }}</th>
+                <th v-if="activeTab === 'personal'" class="px-3 py-3 text-right sm:w-40 sm:px-4">
                   {{ t('actions') }}
                 </th>
               </tr>
@@ -98,11 +99,17 @@
                 :key="row.id"
                 class="border-b border-gray-100 last:border-0"
               >
-                <td class="px-4 py-3 font-semibold text-gray-900">{{ row.addressName }}</td>
-                <td class="px-4 py-3 text-gray-700">{{ streetLine(row) }}</td>
-                <td class="px-4 py-3 text-gray-700">{{ cityLine(row) }}</td>
+                <td class="px-3 py-3 font-semibold text-gray-900 sm:px-4">{{ row.addressName }}</td>
+                <td class="px-3 py-3 text-gray-700 sm:px-4">
+                  {{ streetLine(row) }}
+                  <div class="text-gray-500 sm:hidden">{{ cityLine(row) }}</div>
+                </td>
+                <td class="hidden px-4 py-3 text-gray-700 sm:table-cell">{{ cityLine(row) }}</td>
                 <!-- Colliers offices are read-only here (edited in Manage Addresses) -->
-                <td v-if="activeTab === 'personal'" class="whitespace-nowrap px-4 py-3 text-right">
+                <td
+                  v-if="activeTab === 'personal'"
+                  class="whitespace-nowrap px-3 py-3 text-right sm:px-4"
+                >
                   <button
                     type="button"
                     class="btn-primary-sm"
@@ -111,7 +118,7 @@
                   >
                     {{ t('edit') }}
                   </button>
-                  <span class="mx-2 text-gray-300">|</span>
+                  <span class="mx-1 text-gray-300 sm:mx-2">|</span>
                   <button
                     type="button"
                     class="colliers-link-action colliers-link-action--danger"
@@ -132,7 +139,7 @@
       :open="formOpen"
       :title="editingId ? t('editAddress') : t('newAddressTitle')"
       size="xl"
-      @close="closeForm"
+      @close="onFormClose"
     >
       <form @submit="saveForm">
         <div class="space-y-4 px-5 py-5">
@@ -203,7 +210,7 @@
           </div>
         </div>
         <div class="modal-footer">
-          <app-button variant="outline" class="sm:w-auto" @click="closeForm">{{
+          <app-button variant="outline" class="sm:w-auto" @click="onFormClose">{{
             t('cancel')
           }}</app-button>
           <div class="modal-footer-actions">
@@ -231,6 +238,8 @@ import {
   updatePersonal,
   deletePersonal,
   getPersonal,
+  finishNewAddressForShipping,
+  cancelNewAddressForShipping,
 } from '../store'
 import { emptyPersonal, matchesSearch, formatAddressLine } from '../helpers/addressBook'
 
@@ -283,6 +292,8 @@ export default {
   },
   mounted: function () {
     loadOffices()
+    // Came from Shipping "+ Add new address": open the form straight away (BUG-20).
+    if (store.pendingAddressSplitId != null) this.openNew()
   },
   methods: {
     t: t,
@@ -345,6 +356,11 @@ export default {
       this.editingId = id
       this.formOpen = true
     },
+    /** Cancel / close: when Shipping sent us here, go back there with nothing added. */
+    onFormClose: function () {
+      this.closeForm()
+      if (store.pendingAddressSplitId != null) cancelNewAddressForShipping()
+    },
     closeForm: function () {
       this.formOpen = false
       this.clearFormErrors()
@@ -362,11 +378,11 @@ export default {
         addressCountry: String(this.form.addressCountry || '').trim() || 'Canada',
       }
       const isEdit = Boolean(this.editingId)
-      if (isEdit) updatePersonal(this.editingId, payload)
-      else addPersonal(payload)
+      const saved = isEdit ? updatePersonal(this.editingId, payload) : addPersonal(payload)
       this.statusMessageKey = isEdit ? 'addressUpdated' : 'addressSaved'
       this.closeForm()
       this.activeTab = 'personal'
+      if (!isEdit && store.pendingAddressSplitId != null) finishNewAddressForShipping(saved)
     },
     confirmDelete: function (id) {
       this.clearStatusMessage()

@@ -93,6 +93,14 @@
               :error="additionalSpaceNotice"
               @input="onAdditionalCredentials"
             ></text-field>
+            <button
+              v-if="showOtherCredential && otherCredentialRejected"
+              type="button"
+              class="-mt-2 text-sm font-medium text-colliers-primary underline-offset-2 hover:underline"
+              @click="removeOtherCredential"
+            >
+              {{ t('removeOtherCredential') }}
+            </button>
             <select-field
               :label="t('title')"
               :value="details.title"
@@ -180,7 +188,16 @@ import MultiSelectField from '../components/MultiSelectField.vue'
 import PhoneField from '../components/PhoneField.vue'
 import AppButton from '../components/AppButton.vue'
 import { CARD_COMPANY, emptyCard, getProduct } from '../data/products'
-import { t, store, setProof, loadOffices, loadDegrees, loadTitles } from '../store'
+import {
+  t,
+  store,
+  setProof,
+  loadOffices,
+  loadDegrees,
+  loadTitles,
+  readCustomizeDraft,
+  saveCustomizeDraft,
+} from '../store'
 import { cloneCardDetails } from '../helpers/cart'
 import {
   cleanCardText,
@@ -190,6 +207,7 @@ import {
   EMAIL_MAX,
   isCompletePhone,
   isValidEmail,
+  localPhoneDigits,
   NAME_MAX,
 } from '../helpers/validate'
 import { formatAddressCard, officeLabel } from '../adapters/api'
@@ -366,10 +384,12 @@ export default {
       })
       return unselected.length > 0 && this.lockedDegreeValues.length === unselected.length
     },
+    /** Full: "No more space". Some options greyed out: say why they are locked (BUG-09). */
     degreeSpaceNotice: function () {
       var flashed = this.credentialSpaceRejected && this.credentialNoticeField === 'degree'
-      if (!flashed && !this.degreesFull) return ''
-      return t('credentialsNoSpace')
+      if (flashed || this.degreesFull) return t('credentialsNoSpace')
+      if (this.lockedDegreeValues.length) return t('credentialsSomeLocked')
+      return ''
     },
     /** Other credential text that does not fit stays in the field only, never on the card. */
     otherCredentialRejected: function () {
@@ -384,11 +404,12 @@ export default {
     phoneHint: function () {
       return this.phoneError ? '' : t('mobilePhoneHint')
     },
-    /** Partial number: say so instead of silently keeping Preview Proof disabled. */
+    /** Partial, too long or not Canadian: say so instead of silently keeping Preview Proof off. */
     phoneError: function () {
       var digits = String((this.details && this.details.phone) || '').replace(/\D/g, '')
       if (!digits || isCompletePhone(digits)) return ''
-      return t('mobilePhoneIncomplete')
+      if (localPhoneDigits(digits).length < 10) return t('mobilePhoneIncomplete')
+      return t('mobilePhoneInvalid')
     },
     layoutReady: function () {
       return this.layoutStatus === 'valid'
@@ -425,8 +446,9 @@ export default {
         return { value: title, label: title }
       })
     },
+    /** Region names in the card's language (what prints), not the site's. */
     regionOptions: function () {
-      return regionOptions(store.locale)
+      return regionOptions(this.product && this.product.language)
     },
     degreeOptions: function () {
       return (store.degrees || []).map(function (degree) {
@@ -472,6 +494,7 @@ export default {
       handler: function () {
         this.commitOtherCredentialDraft()
         this.replan()
+        this.saveDraft()
       },
     },
   },
@@ -573,6 +596,12 @@ export default {
       var candidate = Object.assign({}, this.details, { additionalCredentials: next })
       this.details.additionalCredentials = this.credentialsFit(candidate) ? next : ''
     },
+    /** Drop a refused Other credential in one click, so Preview Proof comes back on. */
+    removeOtherCredential: function () {
+      this.otherCredentialDraft = ''
+      this.details.additionalCredentials = ''
+      this.otherCredentialOpen = false
+    },
     /** A draft that did not fit goes on the card once something else frees the room. */
     commitOtherCredentialDraft: function () {
       if (!this.otherCredentialRejected) return
@@ -654,6 +683,19 @@ export default {
           }) || null
         if (line) store.editLineId = line.id
       }
+      // A draft for this card (typed before a refresh) wins over the cart line / proof copy.
+      var draft = readCustomizeDraft(this.product.code, line ? line.id : null)
+      if (draft) {
+        this.setDetails(
+          applyLockedBrand(
+            Object.assign(emptyDetails(language), cloneCardDetails(draft.details)),
+            language
+          )
+        )
+        this.emailEdited = draft.emailEdited
+        this.emailTouched = draft.emailEdited
+        return
+      }
       if (line) {
         this.setDetails(
           applyLockedBrand(
@@ -688,6 +730,16 @@ export default {
       this.setDetails(emptyDetails(language))
       this.emailEdited = false
       this.emailTouched = false
+    },
+    /** Save the form as it is typed, so a refresh keeps it (Vue's twin of Klai app.proof). */
+    saveDraft: function () {
+      if (!this.product) return
+      saveCustomizeDraft({
+        code: this.product.code,
+        lineId: store.editLineId,
+        details: this.details,
+        emailEdited: this.emailEdited,
+      })
     },
     /** Loads card details and the Other credential field together. */
     setDetails: function (details) {

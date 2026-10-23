@@ -13,7 +13,7 @@
         :edit-label="t('editTitle')"
         :delete-label="t('deleteTitle')"
         :confirm-delete-message="t('confirmDeleteTitle')"
-        :validate="titleFitError"
+        :validate="titleError"
         @add="onAdd"
         @update="onUpdate"
         @delete="onDelete"
@@ -68,8 +68,18 @@ export default {
   },
   methods: {
     t: t,
-    /** Refuse a title (EN or FR list) that the card's title line cannot print. */
-    titleFitError: function (value) {
+    /**
+     * Refuse a duplicate (any case, other than the row being renamed) or a title
+     * (EN or FR list) that the card's title line cannot print.
+     */
+    titleError: function (value, oldValue) {
+      const key = String(value || '')
+        .trim()
+        .toLowerCase()
+      const duplicate = (this.items || []).some(function (row) {
+        return row !== oldValue && String(row).toLowerCase() === key
+      })
+      if (duplicate) return t('titleAlreadyExists')
       return loadLayoutFonts()
         .then(function (fonts) {
           return titleFitsOnCard(value, fonts) ? '' : t('titleTooLongForCard')

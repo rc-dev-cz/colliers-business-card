@@ -91,6 +91,18 @@ describe('CustomizePage credential space guards', function () {
     expect(ctx.details.additionalCredentials).toBe('MBA')
   })
 
+  it('Remove other credential clears the refused text and closes the field', function () {
+    var ctx = {
+      details: { additionalCredentials: '' },
+      otherCredentialDraft: 'MBA, PhD',
+      otherCredentialOpen: true,
+    }
+    CustomizePage.methods.removeOtherCredential.call(ctx)
+    expect(ctx.otherCredentialDraft).toBe('')
+    expect(ctx.details.additionalCredentials).toBe('')
+    expect(ctx.otherCredentialOpen).toBe(false)
+  })
+
   it('blocks Preview Proof while Other credential is refused', function () {
     var ctx = {
       isBilingual: false,
@@ -125,9 +137,16 @@ describe('CustomizePage credential space guards', function () {
         'No more space for credentials on the card.'
       )
 
+      // Some options still fit: say why the greyed-out ones are locked.
       ctx.lockedDegreeValues = ['PgMP']
       ctx.degreesFull = CustomizePage.computed.degreesFull.call(ctx)
       expect(ctx.degreesFull).toBe(false)
+      expect(CustomizePage.computed.degreeSpaceNotice.call(ctx)).toBe(
+        'Greyed-out credentials no longer fit on the card.'
+      )
+
+      ctx.lockedDegreeValues = []
+      ctx.degreesFull = CustomizePage.computed.degreesFull.call(ctx)
       expect(CustomizePage.computed.degreeSpaceNotice.call(ctx)).toBe('')
     } finally {
       store.degrees = prior

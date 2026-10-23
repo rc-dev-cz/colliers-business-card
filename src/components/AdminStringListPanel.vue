@@ -129,7 +129,10 @@ export default {
     deleteLabel: { type: String, required: true },
     confirmDeleteMessage: { type: String, required: true },
     viewportFill: { type: Boolean, default: false },
-    /** Optional check before add / save: returns (or resolves to) an error message, or ''. */
+    /**
+     * Optional check before add / save: (value, oldValue) returns (or resolves to) an error
+     * message, or ''. oldValue is the row being renamed, null when adding.
+     */
     validate: { type: Function, default: null },
   },
   data: function () {
@@ -151,8 +154,9 @@ export default {
   methods: {
     t: t,
     /** Refused values stay in the input with the message, so they can be shortened. */
-    check: function (value) {
-      return Promise.resolve(this.validate ? this.validate(value) : '').then(function (error) {
+    check: function (value, oldValue) {
+      const result = this.validate ? this.validate(value, oldValue == null ? null : oldValue) : ''
+      return Promise.resolve(result).then(function (error) {
         return error || ''
       })
     },
@@ -190,7 +194,11 @@ export default {
       }
       const self = this
       const oldValue = this.editingKey
-      return this.check(next).then(function (error) {
+      if (next === oldValue) {
+        this.cancelEdit()
+        return
+      }
+      return this.check(next, oldValue).then(function (error) {
         self.editError = error
         if (error) return
         self.$emit('update', { oldValue: oldValue, newValue: next })

@@ -53,3 +53,18 @@ describe('title too long (BUG-12)', function () {
     )
   })
 })
+
+describe('Mobile error (BUG-26)', function () {
+  function phoneError(phone) {
+    return CustomizePage.computed.phoneError.call({ details: { phone: phone } })
+  }
+
+  it('says incomplete for too few digits and invalid for too many or a non-Canadian number', function () {
+    expect(phoneError('416 555 01')).toBe('Enter all 10 digits of the mobile number.')
+    expect(phoneError('416 555 50199')).toBe('Enter a valid 10-digit Canadian number.')
+    expect(phoneError('442 079 460958')).toBe('Enter a valid 10-digit Canadian number.')
+    expect(phoneError('000 000 0000')).toBe('Enter a valid 10-digit Canadian number.')
+    expect(phoneError('416 555 0199')).toBe('')
+    expect(phoneError('')).toBe('')
+  })
+})

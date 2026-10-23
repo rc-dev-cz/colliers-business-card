@@ -11,16 +11,19 @@ describe('French region names (BUG-10)', function () {
     expect(regionForCard('', true)).toBe('')
   })
 
-  it('lists French labels in FR and keeps the English value', function () {
-    var quebec = regionOptions('FR').find(function (row) {
-      return row.value === 'Quebec'
-    })
-    expect(quebec.label).toBe('Québec')
-    expect(
-      regionOptions('EN').find(function (row) {
-        return row.value === 'Quebec'
+  it('lists names in the card language and keeps the English value', function () {
+    function label(language, value) {
+      return regionOptions(language).find(function (row) {
+        return row.value === value
       }).label
-    ).toBe('Quebec')
+    }
+    expect(label('English', 'Quebec')).toBe('Quebec')
+    expect(label('French', 'Quebec')).toBe('Québec')
+    expect(label('Bilingual', 'Quebec')).toBe('Quebec / Québec')
+    expect(label('Bilingual', 'Ontario')).toBe('Ontario')
+    regionOptions('French').forEach(function (row) {
+      expect(row.value).not.toMatch(/[éÉî]/)
+    })
   })
 
   it('French card and the bilingual French face use the French region', function () {
