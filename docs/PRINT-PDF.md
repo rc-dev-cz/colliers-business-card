@@ -2,7 +2,7 @@
 
 **Status:** view + download (Sep 2026); **print layout LOCKED** for approval — see [LAYOUT-GUIDE.md](samples/print-pdf/LAYOUT-GUIDE.md)  
 **Primary runtime:** **Vue web app** (`CustomizePage` → View print PDF)  
-**Klai:** Customize button → `viewPrintPdf` named action (anchor download; Studio-safe) — **synced 2026-10-06** (`identityWidth` 141.52, `emailGapMin` 15.99, `packCredentials`, no `Mobile:` prefix)  
+**Klai:** no View print PDF button for users (Vue only, Oct 23, 2026). Place Order builds the base64 print PDFs (`review-buildPrintPdfs.js`) and sends them to FileMaker. Layout code synced 2026-10-06 (`identityWidth` 141.52, `emailGapMin` 15.99, `packCredentials`, no `Mobile:` prefix)  
 **Code:** [src/helpers/printPdf.js](../src/helpers/printPdf.js) · Klai mirror [docs/klai/viewPrintPdf.js](klai/viewPrintPdf.js)  
 **Samples:** [docs/samples/print-pdf/](samples/print-pdf/) (`npm run export:print-pdfs`)  
 **Approval images (locked):** [LAYOUT-GUIDE.md](samples/print-pdf/LAYOUT-GUIDE.md) (`npm run export:approval-guide`)  
@@ -17,14 +17,9 @@
 2. Product → **Customize**
 3. Fill fields → **View print PDF**
 
-### Klai Customize
+### Klai
 
-1. Open Customize (preview or Studio).
-2. Click **View print PDF** under the card preview.
-3. Browser downloads `Colliers-Business-Card.pdf` (3.75″ × 2.25″ with bleed/marks).
-4. On failure, a BF alert shows the error (CDN / library / draw).
-
-**Studio note:** `window.open(blob)` is unreliable in Klai iframes. Klai uses `<a download>` with a **unique filename** each click (`Colliers-Business-Card-{name}-{timestamp}.pdf`) so the browser never reopens a stale Downloads entry.
+Users do not see a View print PDF button in Klai (Vue only, Oct 23, 2026). The same layout runs at Place Order: `review-buildPrintPdfs.js` builds one base64 print PDF per card and adds it to `orderPayload.cards[]` for FileMaker. `viewPrintPdf.js` (the old Customize download) stays in the mirror, unused.
 
 ## Geometry
 
@@ -69,7 +64,7 @@ Sample PDFs for Kevin → Cynthia → Mark live in [docs/samples/print-pdf/](sam
 
 - Files are **RGB proofs** (not DeviceCMYK). Mark’s press RIP converts color; physical cards answer CMYK match vs Colliers samples.
 - Geometry: trim 3.5″ × 2″, ⅛″ bleed, TrimBox/ArtBox set; no crop marks.
-- Vue remains the geometry source of truth. Klai `viewPrintPdf` on Customize matches the locked layout (verify downloads against [docs/samples/print-pdf/](samples/print-pdf/); locked samples have no `Mobile:` label).
+- Vue remains the geometry source of truth. Klai `review-buildPrintPdfs.js` (Place Order) matches the locked layout (verify downloads against [docs/samples/print-pdf/](samples/print-pdf/); locked samples have no `Mobile:` label).
 
 ## Later
 
