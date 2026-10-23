@@ -8,12 +8,17 @@ const base =
   process.env.VITE_BASE ||
   (process.env.NODE_ENV === 'production' ? '/colliers-business-card/' : '/')
 
-// These specs write sample PDFs into docs/samples/print-pdf. They run only through the
-// export:* scripts (EXPORT_PDFS=1), never in a plain `yarn test`.
+// These specs write PDFs (docs/samples/print-pdf, and the local-only orders/ spec). They run
+// only with EXPORT_PDFS=1 (the export:* scripts), never in a plain `yarn test`.
 const pdfExportSpecs = [
   'src/helpers/printPdf.samples.spec.js',
   'src/helpers/printPdf.shortLong.spec.js',
+  'src/helpers/printPdf.order.spec.js',
 ]
+
+// Claude Code session worktrees live in .claude/worktrees (full copies of the repo).
+// Their specs are not this checkout's tests.
+const testExclude = configDefaults.exclude.concat(['**/.claude/**'])
 
 export default defineConfig({
   base,
@@ -21,9 +26,7 @@ export default defineConfig({
   test: {
     environment: 'jsdom',
     globals: false,
-    exclude: process.env.EXPORT_PDFS
-      ? configDefaults.exclude
-      : configDefaults.exclude.concat(pdfExportSpecs),
+    exclude: process.env.EXPORT_PDFS ? testExclude : testExclude.concat(pdfExportSpecs),
   },
   server: {
     port: 5173,
