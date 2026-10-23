@@ -175,6 +175,8 @@ Shipping page today: Split Order, Remove Split only if more than one split, add/
   1. Click Split Order.
 - Expected:
   - 2 split panels visible
+  - The new split is empty: no cards, no ship-tos (SH-02). Cards are moved in by drag or added with Add item.
+  - Review / Checkout is off and the empty-shipment message shows until the new split has a card and a ship-to
   - Remove Split is visible
 
 ### TC-12 — Cannot remove the last split

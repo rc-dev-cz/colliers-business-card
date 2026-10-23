@@ -164,7 +164,7 @@ describe('Address Book delete does not touch the cart', function () {
   })
 })
 
-describe('splitOrder copies products into the new group', function () {
+describe('splitOrder starts an empty group (SH-02)', function () {
   beforeEach(function () {
     clearCart()
     store.cart = [
@@ -185,18 +185,26 @@ describe('splitOrder copies products into the new group', function () {
     ]
   })
 
-  it('copies the source split item ids', function () {
+  it('adds a group with no cards and no ship-tos; the source group keeps its cards', function () {
     splitOrder(0)
     expect(store.order.splits.length).toBe(2)
     expect(store.order.splits[0].itemIds).toEqual(['line-1'])
-    expect(store.order.splits[1].itemIds).toEqual(['line-1'])
+    expect(store.order.splits[1].itemIds).toEqual([])
+    expect(store.order.splits[1].locations).toEqual([])
+  })
+
+  it('does nothing when the source group has no cards', function () {
+    store.order.splits[0].itemIds = []
+    splitOrder(0)
+    expect(store.order.splits.length).toBe(1)
   })
 
   it('changes quantity in the second split only', function () {
     store.cart[0].quantity = 3
-    store.order.splits[0].locations = [{ id: 'loc-1', address: '123 Street', qty: 4 }]
+    store.order.splits[0].locations = [{ id: 'loc-1', address: '123 Street', qty: 3 }]
     store.order.splits[0].qtys = { 'line-1': 3 }
     splitOrder(0)
+    addCartLineToSplit(store.order.splits[1], 'line-1')
     store.order.splits[1].locations = [{ id: 'loc-2', address: '99 West Street', qty: 4 }]
     updateQty('line-1', 2, store.order.splits[1])
     expect(readSplitQty(store.order.splits[0], store.cart[0])).toBe(3)
