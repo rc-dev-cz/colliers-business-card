@@ -118,10 +118,19 @@
       <footer
         class="flex shrink-0 items-center justify-between gap-4 border-t border-gray-100 px-5 py-4 sm:px-6"
       >
-        <span class="text-sm text-gray-500">{{ selectedLabel }}</span>
-        <button type="button" class="btn-primary min-w-[7rem]" @click="done">
-          {{ t('done') }}
+        <button
+          type="button"
+          class="text-left text-sm font-medium text-colliers-primary underline-offset-2 hover:underline"
+          @click="goAddressBook"
+        >
+          + {{ t('addAddressInBook') }}
         </button>
+        <div class="flex shrink-0 items-center gap-4">
+          <span v-if="selectedLabel" class="text-sm text-gray-500">{{ selectedLabel }}</span>
+          <button type="button" class="btn-primary min-w-[7rem]" @click="done">
+            {{ t('done') }}
+          </button>
+        </div>
       </footer>
     </div>
   </div>
@@ -133,6 +142,7 @@ import ErrorState from './ErrorState.vue'
 import SearchField from './SearchField.vue'
 import { store, t, loadOffices } from '../store'
 import { formatAddressLine, matchesSearch } from '../helpers/addressBook'
+import { go } from '../adapters/nav'
 
 var modalCount = 0
 
@@ -215,7 +225,7 @@ export default {
         {
           key: 'personal',
           titleKey: 'myAddresses',
-          emptyKey: 'noPersonalAddresses',
+          emptyKey: 'noPersonalAddressesShip',
           options: personal,
         },
         { key: 'offices', titleKey: 'officeAddresses', emptyKey: '', options: offices },
@@ -288,6 +298,10 @@ export default {
     },
     onClose: function () {
       this.$emit('close')
+    },
+    goAddressBook: function () {
+      this.$emit('close')
+      go('address-book')
     },
   },
 }
