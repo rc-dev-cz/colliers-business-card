@@ -9,7 +9,7 @@ const base =
   (process.env.NODE_ENV === 'production' ? '/colliers-business-card/' : '/')
 
 // These specs write PDFs (docs/samples/print-pdf, and the local-only orders/ spec). They run
-// only with EXPORT_PDFS=1 (the export:* scripts), never in a plain `yarn test`.
+// only with EXPORT_PDFS=1 (the export:* scripts), never in a plain `npm test`.
 const pdfExportSpecs = [
   'src/helpers/printPdf.samples.spec.js',
   'src/helpers/printPdf.shortLong.spec.js',
