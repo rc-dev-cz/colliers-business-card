@@ -534,8 +534,8 @@
                 "fr": "Aucune commande ne correspond à votre recherche."
             },
             "label_colliers_noPersonalAddresses": {
-                "en": "No personal addresses yet. Add one with + New Address.",
-                "fr": "Aucune adresse personnelle. Ajoutez-en une avec + Nouvelle adresse."
+                "en": "No personal addresses yet. Add one with + Add New Address.",
+                "fr": "Aucune adresse personnelle. Ajoutez-en une avec + Ajouter une nouvelle adresse."
             },
             "label_colliers_noShipToAddresses": {
                 "en": "No ship-to addresses yet. Use + Add location to pick from your Address Book.",
@@ -686,7 +686,7 @@
                 "fr": "Générez des rapports de volume, analysez les dépenses par département et exportez en CSV/Excel."
             },
             "label_colliers_returnToCatalog": {
-                "en": "Return to Catalog",
+                "en": "Return to Catalogue",
                 "fr": "Retour au catalogue"
             },
             "label_colliers_reviewCheckout": {
@@ -699,7 +699,7 @@
             },
             "label_colliers_salesDigital": {
                 "en": "*Online Products & Courses: Digital products and courses are considered final once redeemed; at that point, such products are not eligible for return, exchange, or transfer.",
-                "fr": "*Produits et cours en ligne : Les produits et cours numériques sont considérés comme définitifs une fois échangés ; à ce stade, ces produits ne sont pas admissibles au retour, à l\\"
+                "fr": "*Produits et cours en ligne : Les produits et cours numériques sont considérés comme définitifs une fois échangés ; à ce stade, ces produits ne sont pas admissibles au retour, à l'échange ou au transfert."
             },
             "label_colliers_salesFinal": {
                 "en": "All sales of products—including but not limited to online products, printed materials, and courses—are final and non-refundable, non-exchangeable, and non-transferable. Returns must be received within seven days of delivery to the purchaser and will be processed pursuant to the following terms:",
@@ -1434,8 +1434,8 @@
                 "fr": "Il n’y a plus d’espace pour les désignations sur la carte."
             },
             "label_colliers_addAddressInBook": {
-                "en": "Add a new address in your Address Book",
-                "fr": "Ajouter une adresse dans votre carnet d’adresses"
+                "en": "Add new address",
+                "fr": "Ajouter une nouvelle adresse"
             },
             "label_colliers_addressMerged": {
                 "en": "This address was already in this group, so the boxes were added together.",
