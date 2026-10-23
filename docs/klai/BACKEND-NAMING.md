@@ -312,7 +312,7 @@ FileMaker should return the same Product rows as Catalogue (`products`, or the o
 
 `itemIds` point at `cart[].id` so a card can move between shipping groups without copying the line. Location `qty` is boxes **per address** (editable; defaults to Selected Items sum). Selected Items Qty is a readout (`quantity × 250`). Billed boxes = sum of location qty (×1 Selected Items if none). Adding or removing a ship-to address must **not** delete cart lines.
 
-**Shipping** (`shipping`) — planned request load (`personalAddresses`, `offices`, `products`). Client keeps cart/splits. `onFormLoad` drops groups with no items (keeps one). `view.canReview` is off while any group is empty (`view.hasEmptySplit` shows `label_colliers_emptyShipment`) or a group with items has no ship-to.
+**Shipping** (`shipping`) — planned request load (`personalAddresses`, `offices`, `products`). Client keeps cart/splits. `splitOrder` adds an empty group (SH-02; reads `action.options.splitIndex`). `onFormLoad` drops groups with no items (keeps one). `view.canReview` is off while any group is empty (`view.hasEmptySplit` shows `label_colliers_emptyShipment`) or a group with items has no ship-to.
 
 ```json
 {

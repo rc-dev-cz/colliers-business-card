@@ -14,6 +14,7 @@ import {
   removeSplit,
   selectedShippingItemCount,
   setGroupLocationQty,
+  shippingReady,
   splitOrder,
   startShippingFromCart,
   store,
@@ -65,22 +66,9 @@ function locationBoxSum(split) {
   }, 0)
 }
 
+// Same rule the Shipping page uses for Review / Checkout.
 function canCheckoutLikeShippingPage() {
-  var splits = (store.order && store.order.splits) || []
-  var hasItems = false
-  var i
-  for (i = 0; i < splits.length; i += 1) {
-    var split = splits[i]
-    var hasLines = (split.itemIds || []).some(function (id) {
-      return store.cart.some(function (line) {
-        return String(line.id) === String(id)
-      })
-    })
-    if (!hasLines) continue
-    hasItems = true
-    if (!(split.locations || []).length) return false
-  }
-  return hasItems
+  return shippingReady()
 }
 
 function resetShippingState() {
@@ -93,6 +81,17 @@ function resetShippingState() {
     qtys: {},
   })
   store.pendingSplitId = null
+}
+
+// Split Order starts an empty shipment (SH-02). Tests that need the same cards in both
+// shipments add them with Add item, as a user would.
+function splitWithSameCards(splitIndex) {
+  var ids = store.order.splits[splitIndex].itemIds.slice()
+  splitOrder(splitIndex)
+  var added = store.order.splits[store.order.splits.length - 1]
+  ids.forEach(function (id) {
+    addCartLineToSplit(added, id)
+  })
 }
 
 describe('shipping flow: cart, split groups, and boxes', function () {
@@ -200,7 +199,7 @@ describe('shipping flow: cart, split groups, and boxes', function () {
     expect(billedBoxesCart(store.cart, store.order)).toBe(6)
   })
 
-  it('splitOrder copies selected items; per-group boxes stay independent', function () {
+  it('splitOrder adds an empty group; cards added to it keep per-group boxes', function () {
     seedCart(3)
     ensureCartAssignedToShipping()
     var first = store.order.splits[0]
@@ -210,6 +209,16 @@ describe('shipping flow: cart, split groups, and boxes', function () {
     expect(store.order.splits.length).toBe(2)
 
     var second = store.order.splits[1]
+    expect(second.itemIds).toEqual([])
+    expect(second.locations).toEqual([])
+    expect(first.itemIds.length).toBe(3)
+    store.cart.forEach(function (line) {
+      expect(line.quantity).toBe(2)
+    })
+
+    first.itemIds.forEach(function (id) {
+      addCartLineToSplit(second, id)
+    })
     expect(second.itemIds.slice().sort()).toEqual(first.itemIds.slice().sort())
 
     addShipLocation(second, 'Address name 2', 3)
@@ -228,7 +237,7 @@ describe('shipping flow: cart, split groups, and boxes', function () {
   it('shipping trash removes a card from one group only when it still lives on another', function () {
     seedCart(2)
     ensureCartAssignedToShipping()
-    splitOrder(0)
+    splitWithSameCards(0)
 
     var lineId = store.cart[0].id
     removeLineFromSplit(store.order.splits[0], lineId)
@@ -364,7 +373,7 @@ describe('shipping flow: cart, split groups, and boxes', function () {
   it('drawer delete removes a card from the cart and every shipping group', function () {
     seedCart(4)
     ensureCartAssignedToShipping()
-    splitOrder(0)
+    splitWithSameCards(0)
     var gone = store.cart[1].id
 
     removeLine(gone)
@@ -389,7 +398,7 @@ describe('shipping flow: cart, split groups, and boxes', function () {
     expect(locationBoxSum(group1)).toBe(3)
     expect(billedBoxesCart(store.cart, store.order)).toBe(15)
 
-    splitOrder(0)
+    splitWithSameCards(0)
     expect(store.order.splits.length).toBe(2)
     var group2 = store.order.splits[1]
     addShipLocation(group2, 'Address name 3', 4)
@@ -446,7 +455,11 @@ describe('shipping flow: cart, split groups, and boxes', function () {
     addShipLocation(store.order.splits[0], 'Address name 1', 1)
     expect(canCheckoutLikeShippingPage()).toBe(true)
 
+    // The new group is empty: no checkout until it has a card and a ship-to.
     splitOrder(0)
+    expect(canCheckoutLikeShippingPage()).toBe(false)
+
+    addCartLineToSplit(store.order.splits[1], store.cart[0].id)
     expect(canCheckoutLikeShippingPage()).toBe(false)
 
     addShipLocation(store.order.splits[1], 'Address name 2', 1)
@@ -490,13 +503,13 @@ describe('shipping flow: cart, split groups, and boxes', function () {
     seedCart(2)
     ensureCartAssignedToShipping()
     splitOrder(0)
-    splitOrder(1)
+    splitOrder(0)
     var groups = store.order.splits
     var a = String(store.cart[0].id)
     var b = String(store.cart[1].id)
-    // Split Order copies every card; trim to Group 1 [a, b], Group 2 [b], Group 3 [a].
-    removeLineFromSplit(groups[1], a)
-    removeLineFromSplit(groups[2], b)
+    // Split Order adds empty groups; fill them: Group 1 [a, b], Group 2 [b], Group 3 [a].
+    addCartLineToSplit(groups[1], b)
+    addCartLineToSplit(groups[2], a)
     expect(groups[1].itemIds.map(String)).toEqual([b])
 
     moveLineToSplit(a, groups[1].id, 0, groups[0].id)
@@ -509,7 +522,7 @@ describe('shipping flow: cart, split groups, and boxes', function () {
   it('dropping an address on a group that already ships there combines the boxes', function () {
     seedCart(1)
     ensureCartAssignedToShipping()
-    splitOrder(0)
+    splitWithSameCards(0)
     var first = store.order.splits[0]
     var second = store.order.splits[1]
     addShipLocation(first, 'Office A', 1)

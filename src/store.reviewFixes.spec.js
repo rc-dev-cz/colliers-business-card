@@ -69,8 +69,8 @@ describe('Shipping: empty shipment', function () {
   beforeEach(function () {
     seedCart()
     addShipLocation(store.order.splits[0], CARD.address)
+    // Split Order adds an empty shipment.
     splitOrder(0)
-    removeLineFromSplit(store.order.splits[1], 'line-1')
   })
   afterEach(function () {
     clearCart()

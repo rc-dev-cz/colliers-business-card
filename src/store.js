@@ -626,24 +626,8 @@ export function splitOrder(splitIndex) {
   var source = splits[idx] || splits[0]
   if (!linesInSplit(source).length) return
   syncAssignments()
-  var ids = source && Array.isArray(source.itemIds) ? source.itemIds.slice() : []
-  var qtys = {}
-  ids.forEach(function (id) {
-    var key = String(id)
-    var line = store.cart.find(function (row) {
-      return String(row.id) === key
-    })
-    var stored = source && source.qtys ? source.qtys[key] : null
-    qtys[key] =
-      stored != null && stored !== ''
-        ? Math.max(1, Number(stored) || 1)
-        : Math.max(1, line ? Number(line.quantity) || 1 : 1)
-  })
-  addSplit(store.order, ids, qtys)
-  store.cart.forEach(function (line) {
-    syncLineQuantityFromSplits(store.order, line)
-  })
-  persistCart()
+  // Business rule SH-02: the new shipment starts empty. Cards are moved in or added with Add item.
+  addSplit(store.order, [])
   persistOrder()
 }
 

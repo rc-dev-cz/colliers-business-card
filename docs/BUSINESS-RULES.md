@@ -171,6 +171,7 @@ The customization page controls the information shown on the business card previ
 | Saved location        | Shipping locations are selected from the saved address list.                                                                                                                                                                                                                                                                                                  |
 | Add / remove location | Shipping locations can be added to or removed from a shipping group **only when that group has at least one selected card**. That does not remove or empty the cart. Each address stores boxes of each selected design. Selected Items copies the address total. Two designs in one group both show that total. Billed boxes are designs × the address total. |
 | Empty Selected Items  | Split Order, Add location, and deleting a ship-to are disabled until the group has a card. Removing the last card from a group also clears its ship-to rows.                                                                                                                                                                                                  |
+| Empty shipping group  | Review / Checkout stays disabled while any group has no cards, with the message “A shipment has no items. Add an item or remove the split to continue.” Reopening Shipping or Review removes empty groups (one group always remains). Every group also needs at least one ship-to before checkout.                                                             |
 
 ### Example
 
@@ -192,6 +193,7 @@ Shipping Group 1 contains the current business cards and shipping location. Sele
 | SH-10 | Use the cart drawer trash control.                                             | The card leaves the cart and every shipping group. Navbar count drops.                                                                                |
 | SH-11 | Group with no selected cards.                                                  | Split Order, Add location, and location delete are disabled.                                                                                          |
 | SH-12 | Remove the last card from a group that had ship-tos.                           | Ship-to rows on that group are cleared.                                                                                                               |
+| SH-13 | Select Split Order and leave the new group empty.                              | Review / Checkout is disabled and the empty-shipment message shows. Reopening Shipping removes the empty group.                                       |
 
 ---
 
