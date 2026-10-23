@@ -116,7 +116,7 @@ FileMaker (`store_catalogue`) is the only source: Catalogue (`requestHook: true`
 
 `previewKey` is a path into `previews` for `CardPreview` (`previews.eng` | `previews.fr` | `previews.bil`).
 
-**CardPreview usage:** Catalogue, Product Detail, CartDrawer, and Shipping embed `<bfcomp name="CardPreview" :model="…">`. Customize and Proof **inline** the same face (live `model.card` / `model.proof.details`) because `bfcomp` scopes/clones `model` and does not track form edits. Do **not** add Catalogue or Admin Home page namedActions for preview layout — that lives on the component (`onUpdated` / `onMount`). HTML also falls back to CU-07 samples when `name` is empty.
+**CardPreview usage:** Catalogue, Product Detail, CartDrawer, Shipping, and Review embed `<bfcomp name="CardPreview" :model="…">`. Customize and Proof **inline** the same face (live `model.card` / `model.proof.details`) because `bfcomp` scopes/clones `model` and does not track form edits. Do **not** add Catalogue or Admin Home page namedActions for preview layout — that lives on the component (`onUpdated` / `onMount`). HTML also falls back to CU-07 samples when `name` is empty.
 
 **Card** — customize form. `degree` is always an array with no fixed count cap; selected degrees and Additional Credentials are limited by the measured name-line + credential-row space. `websiteFr` is the French face URL.
 
@@ -340,7 +340,7 @@ FileMaker should return the same Product rows as Catalogue (`products`, or the o
 
 Hook fills `personalAddresses`, `offices`, and slim `products`. Do not persist `view` or `split.lines` (those are UI).
 
-**Review** (`review`) — no request hook. Same `cart` + `order` + slim `products`. Utility `type: submit` sends `cart` and `order`.
+**Review** (`review`) — no request hook. Same `cart` + `order` + slim `products`. Utility `type: submit` sends `cart` and `order`. Each item line shows a CardPreview thumbnail (`line.previewModel` = `cart.N.details`, set in `refreshView`); clicking it runs `previewLine` (same popup as Shipping).
 
 ```json
 {

@@ -7,10 +7,14 @@ import {
   clearCart,
   clearOrder,
   confirmSubmit,
+  hasEmptySplit,
+  removeEmptySplits,
   removeLine,
+  removeLineFromSplit,
   setEditLineId,
   setProof,
   shippingReady,
+  splitOrder,
   store,
   syncAssignments,
   updateTitle,
@@ -59,6 +63,37 @@ describe('Review: ship-to required', function () {
     expect(await confirmSubmit()).toBe(true)
     expect(store.cart.length).toBe(0)
   }, 20000)
+})
+
+describe('Shipping: empty shipment', function () {
+  beforeEach(function () {
+    seedCart()
+    addShipLocation(store.order.splits[0], CARD.address)
+    splitOrder(0)
+    removeLineFromSplit(store.order.splits[1], 'line-1')
+  })
+  afterEach(function () {
+    clearCart()
+    clearOrder()
+  })
+
+  it('blocks checkout while a shipment has no items', function () {
+    expect(hasEmptySplit()).toBe(true)
+    expect(shippingReady()).toBe(false)
+  })
+
+  it('Shipping and Review drop the empty shipment and keep the filled one', function () {
+    removeEmptySplits()
+    expect(store.order.splits.length).toBe(1)
+    expect(store.order.splits[0].itemIds).toContain('line-1')
+    expect(hasEmptySplit()).toBe(false)
+    expect(shippingReady()).toBe(true)
+  })
+  it('keeps the only shipment even when it is empty', function () {
+    removeLineFromSplit(store.order.splits[0], 'line-1')
+    removeEmptySplits()
+    expect(store.order.splits.length).toBe(1)
+  })
 })
 
 describe('Proof: edited line removed from the cart', function () {

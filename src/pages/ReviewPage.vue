@@ -201,7 +201,15 @@ import ErrorState from '../components/ErrorState.vue'
 import CardPreview from '../components/CardPreview.vue'
 import AppModal from '../components/AppModal.vue'
 import { cardPreviewSlots, previewFrameStyle } from '../helpers/previewModal'
-import { store, t, linesInSplit, subtotal, confirmSubmit, shippingReady } from '../store'
+import {
+  store,
+  t,
+  linesInSplit,
+  subtotal,
+  confirmSubmit,
+  shippingReady,
+  removeEmptySplits,
+} from '../store'
 import { productNameKey } from '../i18n/messages'
 import { boxesPerAddressForSplit, readSplitQty } from '../helpers/order'
 import { getProduct } from '../data/products'
@@ -213,6 +221,9 @@ export default {
   components: { ColliersPageShell, AppButton, AppModal, EmptyState, ErrorState, CardPreview },
   data: function () {
     return { store: store, previewLine: null }
+  },
+  created: function () {
+    removeEmptySplits()
   },
   computed: {
     cartTotal: function () {

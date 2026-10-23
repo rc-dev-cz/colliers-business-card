@@ -45,6 +45,8 @@
       </div>
     </div>
 
+    <p v-if="emptySplit" class="mb-4 text-sm text-red-600">{{ t('emptyShipment') }}</p>
+
     <div class="space-y-6">
       <div
         v-for="(split, splitIndex) in store.order.splits"
@@ -448,6 +450,8 @@ import {
   ensureCartAssignedToShipping,
   syncShippingQuantities,
   shippingReady,
+  hasEmptySplit,
+  removeEmptySplits,
 } from '../store'
 import { go } from '../adapters/nav'
 
@@ -501,10 +505,14 @@ export default {
     canCheckout: function () {
       return shippingReady()
     },
+    emptySplit: function () {
+      return hasEmptySplit()
+    },
   },
   mounted: function () {
     ensureSampleShippingDraft()
     ensureCartAssignedToShipping()
+    removeEmptySplits()
     syncShippingQuantities()
     loadOffices(true)
     this.bindSortables()
