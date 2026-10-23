@@ -731,16 +731,37 @@ export function linesInSplit(split) {
   return linesForSplit(split, store.cart)
 }
 
-/** At least one group ships cards, and every group that ships cards has a ship-to address. */
+/** Every group ships cards and has a ship-to address. An empty group blocks checkout. */
 export function shippingReady() {
-  var hasItems = false
   var splits = store.order.splits || []
+  if (!splits.length) return false
   for (var i = 0; i < splits.length; i++) {
-    if (!linesInSplit(splits[i]).length) continue
-    hasItems = true
+    if (!linesInSplit(splits[i]).length) return false
     if (!(splits[i].locations || []).length) return false
   }
-  return hasItems
+  return true
+}
+
+/** True when there is more than one group and at least one of them has no items. */
+export function hasEmptySplit() {
+  var splits = store.order.splits || []
+  return (
+    splits.length > 1 &&
+    splits.some(function (split) {
+      return !linesInSplit(split).length
+    })
+  )
+}
+
+/** Drops groups with no items when Shipping or Review opens. Keeps one. */
+export function removeEmptySplits() {
+  var splits = store.order.splits || []
+  for (var i = splits.length - 1; i >= 0 && splits.length > 1; i--) {
+    if (!linesInSplit(splits[i]).length) splits.splice(i, 1)
+  }
+  // An item added from an empty group is already assigned by now; a leftover id is stale.
+  store.pendingSplitId = null
+  persistOrder()
 }
 
 export function clearOrder() {

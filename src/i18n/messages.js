@@ -158,6 +158,10 @@ export const messages = {
     EN: 'Add a ship-to address to every shipment before placing the order.',
     FR: "Ajoutez une adresse d'expédition à chaque envoi avant de passer la commande.",
   },
+  emptyShipment: {
+    EN: 'A shipment has no items. Add an item or remove the split to continue.',
+    FR: 'Un envoi ne contient aucun article. Ajoutez un article ou supprimez la division pour continuer.',
+  },
   enterAddress: { EN: 'Enter address', FR: 'Entrer une adresse' },
   addLocation: { EN: 'Add location', FR: 'Ajouter un lieu' },
   selectLocation: { EN: 'Select location', FR: 'Sélectionner un lieu' },
