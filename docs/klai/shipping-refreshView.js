@@ -442,7 +442,13 @@ splits.forEach(function (split) {
   hasReviewItems = true
   if (!(split.locations && split.locations.length)) missingShipTo = true
 })
-var canReview = hasReviewItems && !missingShipTo
+// An empty group blocks checkout too (Vue shippingReady / hasEmptySplit).
+var hasEmptySplit =
+  splits.length > 1 &&
+  splits.some(function (split) {
+    return !(split.lines && split.lines.length)
+  })
+var canReview = hasReviewItems && !missingShipTo && !hasEmptySplit
 var hasAssignedBoxes = splits.some(function (split) {
   return split.lines && split.lines.length && split.locations && split.locations.length
 })
@@ -480,6 +486,7 @@ setModel('view', {
   boxesLabel: boxesLabel,
   canReview: canReview ? 1 : 0,
   hasAssignedBoxes: hasAssignedBoxes ? 1 : 0,
+  hasEmptySplit: hasEmptySplit ? 1 : 0,
   addressOptions: { personal: personal, offices: offices, all: known },
   knownAddresses: known.map(function (opt) {
     return opt.value
