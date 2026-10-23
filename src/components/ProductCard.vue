@@ -49,9 +49,7 @@ export default {
     },
     price: function () {
       var amount = Number(this.product.price)
-      var priceStr = Number.isFinite(amount)
-        ? String(Math.round(amount))
-        : String(this.product.price)
+      var priceStr = Number.isFinite(amount) ? amount.toFixed(2) : String(this.product.price)
       return t('pricePerBox').replace('{price}', priceStr)
     },
   },

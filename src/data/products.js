@@ -2,15 +2,16 @@ import { WEBSITE_EN, WEBSITE_FR, websiteForProduct } from '../helpers/formatCard
 
 export const CARD_COMPANY = 'Colliers Project Leaders'
 
-export const PRICE_TIERS = [
-  { from: 1, to: 1, pricePer: 63, unitTotal: 63 },
-  { from: 2, to: 99, pricePer: 60.26, unitTotal: 120.52 },
-]
+/** Every box is $63.00 at any quantity: no volume discount, so the math stays simple. */
+export const BOX_PRICE = 63
+
+// Product Detail price table: one row, the same box price the cart bills.
+export const PRICE_TIERS = [{ from: 1, to: 99, pricePer: BOX_PRICE, unitTotal: BOX_PRICE }]
 
 function makeProduct(row) {
   return Object.assign(
     {
-      price: 63,
+      price: BOX_PRICE,
       packaging: '250/BX',
       minQty: 1,
       status: 'Active',

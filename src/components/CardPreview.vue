@@ -45,7 +45,7 @@
     <div
       v-if="view.team"
       class="absolute whitespace-nowrap leading-none text-[#5F636A]"
-      :style="rowStyle(view.teamY, false)"
+      :style="rowStyle(view.teamY, false, null, view.teamSize)"
     >
       {{ view.team }}
     </div>

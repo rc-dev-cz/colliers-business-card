@@ -222,7 +222,7 @@ export function getPersonal(id) {
 }
 
 export function appendConfirmedOrder() {
-  const record = buildHistoryRecord(store.cart, store.order, {
+  const record = buildHistoryRecord(shippedLines(), store.order, {
     id: nextOrderId(store.orderHistory),
     status: 'Processing',
   })
@@ -258,6 +258,22 @@ function loadOrderIntoCart(record) {
 
 export function itemCount() {
   return store.cart.length
+}
+
+/**
+ * Cart lines on at least one shipping group, in cart order. Review and Place Order
+ * use these: a card taken off shipping stays in the cart but is not ordered.
+ */
+export function shippedLines() {
+  var onShipping = {}
+  ;(store.order.splits || []).forEach(function (split) {
+    ;(split.itemIds || []).forEach(function (id) {
+      onShipping[String(id)] = true
+    })
+  })
+  return store.cart.filter(function (line) {
+    return onShipping[String(line.id)]
+  })
 }
 
 export function selectedShippingItemCount() {
@@ -676,7 +692,10 @@ export function addCartItemToSplit(split) {
 
 export function addCartLineToSplit(split, lineId) {
   if (!split || lineId == null || lineId === '') return
+  var alreadyThere = (split.itemIds || []).map(String).indexOf(String(lineId)) !== -1
   includeItem(store.order, split, lineId)
+  // Without this the group would copy the card's total from every other group.
+  if (!alreadyThere) writeSplitQty(split, { id: lineId }, 1)
   fitAllGroups()
   persistCart()
   persistOrder()
@@ -803,11 +822,21 @@ function sortTitles(list) {
   })
 }
 
+/** Index of a title in the list, ignoring case ("director" matches "Director"), or -1. */
+function titleIndex(list, label) {
+  const key = String(label || '')
+    .trim()
+    .toLowerCase()
+  return list.findIndex(function (row) {
+    return String(row).toLowerCase() === key
+  })
+}
+
 export function addTitle(label, language) {
   const list = titleList(language)
   const trimmed = String(label || '').trim()
   if (!trimmed) return false
-  if (list.indexOf(trimmed) !== -1) return false
+  if (titleIndex(list, trimmed) !== -1) return false
   list.push(trimmed)
   sortTitles(list)
   saveManagedTitles(list, language)
@@ -818,7 +847,9 @@ export function updateTitle(index, label, language) {
   const list = titleList(language)
   const trimmed = String(label || '').trim()
   if (!trimmed || index < 0 || index >= list.length) return false
-  if (list.indexOf(trimmed) !== -1 && list[index] !== trimmed) return false
+  // A case-only rename of the same row ("director" → "Director") is allowed.
+  const match = titleIndex(list, trimmed)
+  if (match !== -1 && match !== index) return false
   list.splice(index, 1, trimmed)
   sortTitles(list)
   saveManagedTitles(list, language)
@@ -905,8 +936,9 @@ export async function confirmSubmit() {
   try {
     // Review can load straight from a refresh, before any page filled store.offices
     const offices = await loadOffices()
+    const lines = shippedLines()
     const payload = buildOrderPayload({
-      cart: store.cart,
+      cart: lines,
       order: snapshotOrder(store.order),
       session: store.session,
       offices: offices,
@@ -916,8 +948,8 @@ export async function confirmSubmit() {
     // A PDF problem never blocks the order; order.print_pdf_status says what happened.
     clearStoredPrintPdfs()
     try {
-      const pdfs = SEND_PDFS_TO_FILEMAKER ? await buildPrintPdfs(payload, store.cart) : {}
-      attachPrintPdfCards(payload, pdfs, store.cart)
+      const pdfs = SEND_PDFS_TO_FILEMAKER ? await buildPrintPdfs(payload, lines) : {}
+      attachPrintPdfCards(payload, pdfs, lines)
     } catch (error) {
       console.warn('[Colliers order] print PDF not saved', error)
       markPrintPdfFailed(payload, error)

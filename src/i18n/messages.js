@@ -44,6 +44,10 @@ export const messages = {
     EN: 'This title and region are too long for the card.',
     FR: 'Ce titre et cette région sont trop longs pour la carte.',
   },
+  layoutErrorTitleOnly: {
+    EN: 'This title is too long for the card.',
+    FR: 'Ce titre est trop long pour la carte.',
+  },
   layoutErrorTeam: {
     EN: 'This specialized team is too long for the card.',
     FR: 'Cette équipe spécialisée est trop longue pour la carte.',
@@ -215,6 +219,10 @@ export const messages = {
   noPersonalAddresses: {
     EN: 'No personal addresses yet. Add one with + Add New Address.',
     FR: 'Aucune adresse personnelle. Ajoutez-en une avec + Ajouter une nouvelle adresse.',
+  },
+  noMatchingAddresses: {
+    EN: 'No matching addresses.',
+    FR: 'Aucune adresse correspondante.',
   },
   noPersonalAddressesShip: {
     EN: 'No personal addresses yet. Add one in your Address Book.',
@@ -464,6 +472,10 @@ export const messages = {
   },
   noTitlesEn: { EN: 'No English titles yet.', FR: 'Aucun titre anglais pour le moment.' },
   noTitlesFr: { EN: 'No French titles yet.', FR: 'Aucun titre français pour le moment.' },
+  titleTooLongForCard: {
+    EN: 'This title is too long for the card’s title line. Shorten it so it fits.',
+    FR: 'Ce titre est trop long pour la ligne de titre de la carte. Raccourcissez-le.',
+  },
   confirmDeleteTitle: {
     EN: 'Remove this title?',
     FR: 'Supprimer ce titre ?',
@@ -491,4 +503,11 @@ export function productNameKey(code) {
   if (code === 'BCAD-PL-ENG') return 'productEnglish'
   if (code === 'BCAD-PL-FR') return 'productFrench'
   return 'productBilingual'
+}
+
+/** Card language as shown to the user: English / Anglais, French / Français, Bilingual / Bilingue. */
+export function languageLabel(language, translate) {
+  var value = String(language || '').trim()
+  var key = { english: 'english', french: 'french', bilingual: 'bilingual' }[value.toLowerCase()]
+  return key && typeof translate === 'function' ? translate(key) : value
 }

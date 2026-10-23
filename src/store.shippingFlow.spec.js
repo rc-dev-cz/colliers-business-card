@@ -547,3 +547,44 @@ describe('shipping flow: cart, split groups, and boxes', function () {
     expect(moveLocationToSplit(first.locations[0].id, second.id, 0)).toBe(false)
   })
 })
+
+describe('a card new to a shipment starts at 1 box (BUG-03)', function () {
+  beforeEach(function () {
+    resetShippingState()
+    seedCart(2)
+    ensureCartAssignedToShipping()
+    var first = store.order.splits[0]
+    addShipLocation(first, 'Address name 1', 3)
+    addShipLocation(first, 'Address name 2', 1)
+    splitOrder(0)
+  })
+
+  it('after a drag from another shipment', function () {
+    var first = store.order.splits[0]
+    var second = store.order.splits[1]
+    var line = store.cart[1]
+    expect(readSplitQty(first, line)).toBe(4)
+
+    moveLineToSplit(line.id, second.id, 0, first.id)
+    addShipLocation(second, 'Address name 3')
+
+    expect(second.locations[0].qty).toBe(1)
+    expect(readSplitQty(second, line)).toBe(1)
+    expect(billedBoxesForLine(line, store.order)).toBe(1)
+    expect(readSplitQty(first, store.cart[0])).toBe(4)
+  })
+
+  it('after Add item, while it still ships from the first shipment', function () {
+    var first = store.order.splits[0]
+    var second = store.order.splits[1]
+    var line = store.cart[1]
+
+    addCartLineToSplit(second, line.id)
+    addShipLocation(second, 'Address name 3')
+
+    expect(second.locations[0].qty).toBe(1)
+    expect(readSplitQty(first, line)).toBe(4)
+    expect(readSplitQty(second, line)).toBe(1)
+    expect(billedBoxesForLine(line, store.order)).toBe(5)
+  })
+})

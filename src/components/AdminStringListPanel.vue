@@ -9,6 +9,8 @@
         type="text"
         class="flex-1 rounded-[4px] border border-gray-300 bg-white px-3 py-2 text-[14px] focus:border-colliers-primary focus:outline-none focus:ring-1 focus:ring-colliers-primary"
         :placeholder="placeholder"
+        :aria-invalid="addError ? 'true' : 'false'"
+        @input="addError = ''"
         @keydown.enter.prevent="onAdd"
       />
       <button
@@ -30,6 +32,8 @@
       </button>
     </div>
 
+    <p v-if="addError" class="-mt-2 mb-4 text-sm text-red-600" role="alert">{{ addError }}</p>
+
     <div v-if="sortedItems.length" class="colliers-list-panel-scroll">
       <ul class="space-y-2">
         <li
@@ -37,12 +41,14 @@
           :key="item + '-' + index"
           class="colliers-list-row group"
         >
-          <div v-if="editingKey === item" class="flex w-full gap-2">
+          <div v-if="editingKey === item" class="flex w-full flex-wrap gap-2">
             <input
               ref="editInput"
               v-model="editValue"
               type="text"
-              class="flex-1 rounded-[4px] border border-colliers-primary bg-white px-2 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-colliers-primary"
+              class="min-w-0 flex-1 rounded-[4px] border border-colliers-primary bg-white px-2 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-colliers-primary"
+              :aria-invalid="editError ? 'true' : 'false'"
+              @input="editError = ''"
               @keydown.enter.prevent="saveEdit"
               @keydown.esc.prevent="cancelEdit"
             />
@@ -80,6 +86,9 @@
                 <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
               </svg>
             </button>
+            <p v-if="editError" class="w-full text-sm text-red-600" role="alert">
+              {{ editError }}
+            </p>
           </div>
           <template v-else>
             <span class="colliers-list-row-body text-sm text-gray-800">{{ item }}</span>
@@ -120,12 +129,16 @@ export default {
     deleteLabel: { type: String, required: true },
     confirmDeleteMessage: { type: String, required: true },
     viewportFill: { type: Boolean, default: false },
+    /** Optional check before add / save: returns (or resolves to) an error message, or ''. */
+    validate: { type: Function, default: null },
   },
   data: function () {
     return {
       newValue: '',
       editingKey: null,
       editValue: '',
+      addError: '',
+      editError: '',
     }
   },
   computed: {
@@ -137,11 +150,22 @@ export default {
   },
   methods: {
     t: t,
+    /** Refused values stay in the input with the message, so they can be shortened. */
+    check: function (value) {
+      return Promise.resolve(this.validate ? this.validate(value) : '').then(function (error) {
+        return error || ''
+      })
+    },
     onAdd: function () {
       const value = String(this.newValue || '').trim()
       if (!value) return
-      this.$emit('add', value)
-      this.newValue = ''
+      const self = this
+      return this.check(value).then(function (error) {
+        self.addError = error
+        if (error) return
+        self.$emit('add', value)
+        self.newValue = ''
+      })
     },
     startEdit: function (item) {
       this.editingKey = item
@@ -156,6 +180,7 @@ export default {
     cancelEdit: function () {
       this.editingKey = null
       this.editValue = ''
+      this.editError = ''
     },
     saveEdit: function () {
       const next = String(this.editValue || '').trim()
@@ -163,8 +188,14 @@ export default {
         this.cancelEdit()
         return
       }
-      this.$emit('update', { oldValue: this.editingKey, newValue: next })
-      this.cancelEdit()
+      const self = this
+      const oldValue = this.editingKey
+      return this.check(next).then(function (error) {
+        self.editError = error
+        if (error) return
+        self.$emit('update', { oldValue: oldValue, newValue: next })
+        self.cancelEdit()
+      })
     },
     onDelete: function (item) {
       if (window.confirm(this.confirmDeleteMessage)) {

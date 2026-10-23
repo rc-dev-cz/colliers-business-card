@@ -1,3 +1,5 @@
+import { regionForCard } from './canadianProvinces.js'
+
 /** Join degree list (string or array) and optional free-text credentials with commas. */
 export function formatCredentialSuffix(degree, extra) {
   var parts = []
@@ -54,8 +56,7 @@ function optionalPreview(language) {
 export function previewTitleText(title, region, language) {
   var french = isFrenchLanguage(language)
   var sampleTitle = french ? 'Titre' : 'Title'
-  var regionPart = region != null ? String(region).trim() : ''
-  return formatTitleLine(title, regionPart, sampleTitle)
+  return formatTitleLine(title, regionForCard(region, french), sampleTitle)
 }
 
 /** Team line. Empty specialized team keeps the generic sample. */

@@ -275,6 +275,8 @@ export default {
       return this.activeTab === 'personal' ? this.filteredPersonal : this.filteredOffices
     },
     emptyListLabel: function () {
+      // A search with no hits is not the same as an empty list.
+      if (String(this.search || '').trim()) return t('noMatchingAddresses')
       if (this.activeTab === 'personal') return t('noPersonalAddresses')
       return t('noOfficeAddresses')
     },

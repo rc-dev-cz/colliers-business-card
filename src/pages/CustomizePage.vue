@@ -26,7 +26,9 @@
             </div>
           </div>
 
-          <p v-if="layoutError" class="mt-3 text-sm text-red-600">{{ layoutError }}</p>
+          <p v-if="previewLayoutError" class="mt-3 text-sm text-red-600">
+            {{ previewLayoutError }}
+          </p>
           <p v-else-if="printPdfError" class="mt-3 text-sm text-red-600">{{ printPdfError }}</p>
           <app-button
             class="mt-4"
@@ -86,7 +88,7 @@
             <text-field
               v-if="showOtherCredential"
               :label="t('additionalCredentials')"
-              :value="details.additionalCredentials"
+              :value="otherCredentialDraft"
               :disabled="additionalCredentialsDisabled"
               :error="additionalSpaceNotice"
               @input="onAdditionalCredentials"
@@ -106,7 +108,7 @@
               :value="details.titleFr"
               :options="titleFrOptions"
               :placeholder="t('selectTitleFr')"
-              :error="titleFieldError"
+              :error="titleFrFieldError"
               name="titleFr"
               required
               @input="onTitleFr"
@@ -209,9 +211,16 @@ import {
   bilingualFrenchPreviewDetails,
 } from '../helpers/titleLocale'
 import { titlesForProductLanguage } from '../helpers/titleAdmin'
-import { CANADIAN_REGION_OPTIONS } from '../helpers/canadianProvinces'
+import { regionOptions } from '../helpers/canadianProvinces'
 
 var CREDENTIAL_SPACE_NOTICE_MS = 3000
+// These layout errors show under their own field; the rest show under the preview.
+var FIELD_LAYOUT_ERRORS = [
+  LAYOUT_ERROR.name,
+  LAYOUT_ERROR.title,
+  LAYOUT_ERROR.team,
+  LAYOUT_ERROR.email,
+]
 
 function emptyDetails(language) {
   var card = emptyCard(language)
@@ -270,6 +279,8 @@ export default {
       credentialNoticeField: '',
       credentialNoticeTimer: null,
       otherCredentialOpen: false,
+      // What the user typed in Other credential. It reaches the card only when it fits.
+      otherCredentialDraft: '',
     }
   },
   computed: {
@@ -305,12 +316,19 @@ export default {
       }
       return [{ language: lang, details: this.details, plan: planFor(lang) }]
     },
-    layoutError: function () {
-      if (!this.layoutErrorCode) return ''
-      return layoutErrorMessage(this.layoutErrorCode, t)
+    layoutErrors: function () {
+      var plan = this.productPlan
+      if (plan && !plan.valid) return plan.errors
+      return this.layoutErrorCode ? [this.layoutErrorCode] : []
+    },
+    previewLayoutError: function () {
+      var code = this.layoutErrors.find(function (row) {
+        return FIELD_LAYOUT_ERRORS.indexOf(row) === -1
+      })
+      return code ? this.layoutMessage(code) : ''
     },
     emailFieldError: function () {
-      if (this.layoutErrorCode === LAYOUT_ERROR.email) return this.layoutError
+      if (this.hasLayoutError(LAYOUT_ERROR.email)) return this.layoutMessage(LAYOUT_ERROR.email)
       // Format is checked once the field is left, then live while it is fixed.
       var email = String(this.details.email || '').trim()
       if (this.emailTouched && email && !isValidEmail(email)) return t('emailInvalid')
@@ -320,28 +338,47 @@ export default {
       if (this.credentialSpaceRejected && this.credentialNoticeField === 'name') {
         return t('nameNoSpace')
       }
-      if (this.layoutErrorCode !== LAYOUT_ERROR.name) return ''
-      return this.layoutError
+      if (!this.hasLayoutError(LAYOUT_ERROR.name)) return ''
+      return this.layoutMessage(LAYOUT_ERROR.name)
     },
     teamFieldError: function () {
       if (this.credentialSpaceRejected && this.credentialNoticeField === 'team') {
         return t('teamNoSpace')
       }
-      if (this.layoutErrorCode !== LAYOUT_ERROR.team) return ''
-      return this.layoutError
+      if (!this.hasLayoutError(LAYOUT_ERROR.team)) return ''
+      return this.layoutMessage(LAYOUT_ERROR.team)
     },
+    /** Bilingual: Title owns the English face, French title the French face. */
     titleFieldError: function () {
-      if (this.layoutErrorCode !== LAYOUT_ERROR.title) return ''
-      return this.layoutError
+      var face = this.isBilingual ? 'English' : null
+      if (!this.hasLayoutError(LAYOUT_ERROR.title, face)) return ''
+      return this.layoutMessage(LAYOUT_ERROR.title)
+    },
+    titleFrFieldError: function () {
+      if (!this.hasLayoutError(LAYOUT_ERROR.title, 'French')) return ''
+      return this.layoutMessage(LAYOUT_ERROR.title)
+    },
+    /** Every credential left in the list is locked: the card is full (CU-02). */
+    degreesFull: function () {
+      var selected = Array.isArray(this.details.degree) ? this.details.degree : []
+      var unselected = (store.degrees || []).filter(function (degree) {
+        return selected.indexOf(degree) === -1
+      })
+      return unselected.length > 0 && this.lockedDegreeValues.length === unselected.length
     },
     degreeSpaceNotice: function () {
-      if (!this.credentialSpaceRejected || this.credentialNoticeField !== 'degree') return ''
+      var flashed = this.credentialSpaceRejected && this.credentialNoticeField === 'degree'
+      if (!flashed && !this.degreesFull) return ''
       return t('credentialsNoSpace')
     },
+    /** Other credential text that does not fit stays in the field only, never on the card. */
+    otherCredentialRejected: function () {
+      return (
+        String(this.otherCredentialDraft || '') !== String(this.details.additionalCredentials || '')
+      )
+    },
     additionalSpaceNotice: function () {
-      if (!this.credentialSpaceRejected || this.credentialNoticeField !== 'additional') {
-        return ''
-      }
+      if (!this.otherCredentialRejected) return ''
       return t('credentialsNoSpace')
     },
     phoneHint: function () {
@@ -360,6 +397,7 @@ export default {
       var details = this.details || {}
       return (
         this.layoutReady &&
+        !this.otherCredentialRejected &&
         Boolean(String(details.name || '').trim()) &&
         Boolean(String(details.title || '').trim()) &&
         (!this.isBilingual || Boolean(String(details.titleFr || '').trim())) &&
@@ -370,9 +408,7 @@ export default {
     },
     /** "Other credential" shows once opened from the link, or when it already has text. */
     showOtherCredential: function () {
-      return (
-        this.otherCredentialOpen || Boolean(String(this.details.additionalCredentials || '').trim())
-      )
+      return this.otherCredentialOpen || Boolean(String(this.otherCredentialDraft || '').trim())
     },
     titleOptions: function () {
       var lang = (this.product && this.product.language) || 'English'
@@ -390,7 +426,7 @@ export default {
       })
     },
     regionOptions: function () {
-      return CANADIAN_REGION_OPTIONS
+      return regionOptions(store.locale)
     },
     degreeOptions: function () {
       return (store.degrees || []).map(function (degree) {
@@ -411,7 +447,7 @@ export default {
     },
     additionalCredentialsDisabled: function () {
       if (!this.layoutFonts || !this.product) return false
-      if (String(this.details.additionalCredentials || '').length) return false
+      if (String(this.otherCredentialDraft || '').length) return false
       var candidate = Object.assign({}, this.details, { additionalCredentials: 'i' })
       return !credentialsFitOnCard(candidate, this.layoutFonts, this.product.language)
     },
@@ -434,6 +470,7 @@ export default {
     details: {
       deep: true,
       handler: function () {
+        this.commitOtherCredentialDraft()
         this.replan()
       },
     },
@@ -526,19 +563,37 @@ export default {
     onCredentialLocked: function () {
       this.flashCredentialNotice('degree')
     },
-    onAdditionalCredentials: function (value, event) {
-      var current = String(this.details.additionalCredentials || '')
+    /**
+     * Other credential is refused whole: text that does not fit stays in the field with the
+     * no-space message, and the card shows none of it (no "MB" from "MBA").
+     */
+    onAdditionalCredentials: function (value) {
       var next = cleanCardText(value)
+      this.otherCredentialDraft = next
       var candidate = Object.assign({}, this.details, { additionalCredentials: next })
-      var fits = this.credentialsFit(candidate)
-      var isShorter = next.length < current.length
-      if (!fits && !isShorter) {
-        this.flashCredentialNotice('additional')
-        if (event && event.target) event.target.value = current
-        return
+      this.details.additionalCredentials = this.credentialsFit(candidate) ? next : ''
+    },
+    /** A draft that did not fit goes on the card once something else frees the room. */
+    commitOtherCredentialDraft: function () {
+      if (!this.otherCredentialRejected) return
+      var draft = this.otherCredentialDraft
+      if (this.credentialsFit(Object.assign({}, this.details, { additionalCredentials: draft }))) {
+        this.details.additionalCredentials = draft
       }
-      this.details.additionalCredentials = next
-      this.clearCredentialNotice()
+    },
+    hasLayoutError: function (code, language) {
+      var plan = this.productPlan
+      if (!language || !plan || !plan.pages) return this.layoutErrors.indexOf(code) !== -1
+      return plan.pages.some(function (page) {
+        return page.language === language && page.layout.errors.indexOf(code) !== -1
+      })
+    },
+    /** No region chosen: the title alone is too long, so the message leaves region out. */
+    layoutMessage: function (code) {
+      if (code === LAYOUT_ERROR.title && !String(this.details.region || '').trim()) {
+        return t('layoutErrorTitleOnly')
+      }
+      return layoutErrorMessage(code, t)
     },
     onSpecializedTeam: function (value, event) {
       var current = String(this.details.specializedTeam || '')
@@ -600,9 +655,11 @@ export default {
         if (line) store.editLineId = line.id
       }
       if (line) {
-        this.details = applyLockedBrand(
-          Object.assign(emptyDetails(language), cloneCardDetails(line.details)),
-          language
+        this.setDetails(
+          applyLockedBrand(
+            Object.assign(emptyDetails(language), cloneCardDetails(line.details)),
+            language
+          )
         )
         this.emailEdited = true
         this.emailTouched = true
@@ -618,21 +675,28 @@ export default {
         store.proof &&
         store.proof.code === this.product.code
       ) {
-        this.details = applyLockedBrand(
-          Object.assign(emptyDetails(language), cloneCardDetails(store.proof.details)),
-          language
+        this.setDetails(
+          applyLockedBrand(
+            Object.assign(emptyDetails(language), cloneCardDetails(store.proof.details)),
+            language
+          )
         )
         this.emailEdited = true
         this.emailTouched = true
         return
       }
-      this.details = emptyDetails(language)
+      this.setDetails(emptyDetails(language))
       this.emailEdited = false
       this.emailTouched = false
     },
+    /** Loads card details and the Other credential field together. */
+    setDetails: function (details) {
+      this.details = details
+      this.otherCredentialDraft = String(details.additionalCredentials || '')
+    },
     clearDesign: function () {
       var language = (this.product && this.product.language) || 'English'
-      this.details = emptyDetails(language)
+      this.setDetails(emptyDetails(language))
       this.emailEdited = false
       this.emailTouched = false
       this.otherCredentialOpen = false

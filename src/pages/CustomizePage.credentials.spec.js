@@ -1,5 +1,6 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import CustomizePage from './CustomizePage.vue'
+import { store } from '../store.js'
 
 afterEach(function () {
   vi.useRealTimers()
@@ -38,33 +39,99 @@ describe('CustomizePage credential space guards', function () {
     expect(ctx.clearCredentialNotice).toHaveBeenCalled()
   })
 
-  it('rejects additional credential growth and restores the controlled input value', function () {
-    var input = { value: 'PMP, EIT' }
+  it('refuses a whole Other credential that does not fit: field keeps it, card shows none (BUG-05)', function () {
     var ctx = {
-      details: { degree: ['BSc Civil Engineering'], additionalCredentials: 'PMP' },
-      credentialSpaceRejected: false,
-      flashCredentialNotice: vi.fn(),
-      credentialsFit: vi.fn(function () {
-        return false
+      details: { degree: ['PMP'], additionalCredentials: 'MB' },
+      otherCredentialDraft: 'MB',
+      credentialsFit: vi.fn(function (details) {
+        return details.additionalCredentials.length < 3
       }),
     }
 
-    CustomizePage.methods.onAdditionalCredentials.call(ctx, 'PMP, EIT', { target: input })
+    CustomizePage.methods.onAdditionalCredentials.call(ctx, 'MBA')
 
-    expect(ctx.details.additionalCredentials).toBe('PMP')
-    expect(input.value).toBe('PMP')
-    expect(ctx.flashCredentialNotice).toHaveBeenCalledWith('additional')
-  })
-
-  it('shows the no-space notice only on the field that was just limited', function () {
-    var ctx = {
-      credentialSpaceRejected: true,
-      credentialNoticeField: 'additional',
-    }
-    expect(CustomizePage.computed.degreeSpaceNotice.call(ctx)).toBe('')
+    expect(ctx.otherCredentialDraft).toBe('MBA')
+    expect(ctx.details.additionalCredentials).toBe('')
+    ctx.otherCredentialRejected = CustomizePage.computed.otherCredentialRejected.call(ctx)
+    expect(ctx.otherCredentialRejected).toBe(true)
     expect(CustomizePage.computed.additionalSpaceNotice.call(ctx)).toBe(
       'No more space for credentials on the card.'
     )
+  })
+
+  it('keeps an Other credential that fits on the card', function () {
+    var ctx = {
+      details: { degree: [], additionalCredentials: '' },
+      otherCredentialDraft: '',
+      credentialsFit: vi.fn(function () {
+        return true
+      }),
+    }
+
+    CustomizePage.methods.onAdditionalCredentials.call(ctx, 'MBA')
+
+    expect(ctx.details.additionalCredentials).toBe('MBA')
+    expect(CustomizePage.computed.otherCredentialRejected.call(ctx)).toBe(false)
+  })
+
+  it('puts a refused Other credential on the card once a degree is removed', function () {
+    var ctx = {
+      details: { degree: ['PMP'], additionalCredentials: '' },
+      otherCredentialDraft: 'MBA',
+      otherCredentialRejected: true,
+      credentialsFit: vi.fn(function (details) {
+        return details.degree.length === 0
+      }),
+    }
+    CustomizePage.methods.commitOtherCredentialDraft.call(ctx)
+    expect(ctx.details.additionalCredentials).toBe('')
+
+    ctx.details.degree = []
+    CustomizePage.methods.commitOtherCredentialDraft.call(ctx)
+    expect(ctx.details.additionalCredentials).toBe('MBA')
+  })
+
+  it('blocks Preview Proof while Other credential is refused', function () {
+    var ctx = {
+      isBilingual: false,
+      layoutReady: true,
+      otherCredentialRejected: true,
+      details: {
+        name: 'Firstname Lastname',
+        title: 'Director',
+        email: 'first.lastname@colliersprojectleaders.com',
+        phone: '4165550100',
+        address: '1 University Ave',
+      },
+    }
+    expect(CustomizePage.computed.canPreviewProof.call(ctx)).toBe(false)
+    ctx.otherCredentialRejected = false
+    expect(CustomizePage.computed.canPreviewProof.call(ctx)).toBe(true)
+  })
+
+  it('shows the no-space notice when every remaining credential is locked (BUG-09)', function () {
+    var ctx = {
+      details: { degree: ['PMP'] },
+      lockedDegreeValues: ['MSc', 'PgMP'],
+      credentialSpaceRejected: false,
+      credentialNoticeField: '',
+    }
+    var prior = store.degrees
+    store.degrees = ['PMP', 'MSc', 'PgMP']
+    try {
+      ctx.degreesFull = CustomizePage.computed.degreesFull.call(ctx)
+      expect(ctx.degreesFull).toBe(true)
+      expect(CustomizePage.computed.degreeSpaceNotice.call(ctx)).toBe(
+        'No more space for credentials on the card.'
+      )
+
+      ctx.lockedDegreeValues = ['PgMP']
+      ctx.degreesFull = CustomizePage.computed.degreesFull.call(ctx)
+      expect(ctx.degreesFull).toBe(false)
+      expect(CustomizePage.computed.degreeSpaceNotice.call(ctx)).toBe('')
+    } finally {
+      store.degrees = prior
+    }
   })
 
   it('clears the no-space notice after three seconds', function () {

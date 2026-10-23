@@ -12,6 +12,13 @@ describe('products catalogue', function () {
     ).toEqual(['BCAD-PL-BIL', 'BCAD-PL-ENG', 'BCAD-PL-FR'])
   })
 
+  it('every product is $63.00 a box with no volume discount (BUG-06)', function () {
+    products.forEach(function (product) {
+      expect(product.price).toBe(63)
+      expect(product.priceTiers).toEqual([{ from: 1, to: 99, pricePer: 63, unitTotal: 63 }])
+    })
+  })
+
   it('getProduct resolves by code', function () {
     expect(getProduct('BCAD-PL-ENG').language).toBe('English')
     expect(getProduct('missing')).toBe(null)

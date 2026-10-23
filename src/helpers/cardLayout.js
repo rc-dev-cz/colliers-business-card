@@ -7,8 +7,8 @@ import {
   WEBSITE_EN,
   WEBSITE_FR,
 } from './formatCardIdentity.js'
+import { regionForCard } from './canadianProvinces.js'
 import { EMAIL_MAX, formatCardPhone } from './validate.js'
-import { curlyApostrophes, TITLE_FR_TALENT_ACQUISITION } from './titleLocale.js'
 
 var IN = 72
 
@@ -57,6 +57,10 @@ export var CARD_LAYOUT = {
 
   bodySize: 6.5,
   bodyLineHeight: 8,
+  // A long title or specialized team shrinks to fit its line, but never below this
+  // (Oct 2026). Smaller does not fit: Customize shows the error / stops the team field,
+  // and Manage Titles refuses the title.
+  lineMinSize: 5.5,
 
   // Last contact line shares the address bottom baseline. Email / mobile stack up.
   emailY: 43,
@@ -144,7 +148,7 @@ export function resolveCardFields(details, language) {
     isFrench: isFrench,
     name: rawName || sample.name,
     credentialSuffix: formatCredentialSuffix(card.degree, card.additionalCredentials),
-    title: formatTitleLine(card.title, card.region, sample.title),
+    title: formatTitleLine(card.title, regionForCard(card.region, isFrench), sample.title),
     team: String(card.specializedTeam || '').trim(),
     email: String(card.email || '').trim() || sample.email,
     phone: phoneRaw ? formatCardPhone(phoneRaw) : sample.phone,
@@ -176,11 +180,49 @@ export function fitsLine(font, text, size, maxWidth) {
   return font.widthOfTextAtSize(String(text || ''), size) <= maxWidth
 }
 
-/** Specialized team prints on one line (same text on the EN and FR faces). */
+/**
+ * Font size for one body line: body size when it fits, else scaled down to fit maxWidth,
+ * but not below lineMinSize. Text that needs less keeps body size, so it reports too long.
+ */
+function shrinkToFitSize(font, text, maxWidth, layout) {
+  var L = layout || CARD_LAYOUT
+  var line = String(text || '').trim()
+  if (!line || !font || typeof font.widthOfTextAtSize !== 'function') return L.bodySize
+  if (fitsLine(font, line, L.bodySize, maxWidth)) return L.bodySize
+  var width = font.widthOfTextAtSize(line, L.bodySize)
+  if (!width) return L.bodySize
+  var size = Number(((L.bodySize * maxWidth) / width).toFixed(2))
+  while (size > 1 && !fitsLine(font, line, size, maxWidth)) {
+    size = Number((size - 0.01).toFixed(2))
+  }
+  var floor = L.lineMinSize || CARD_LAYOUT.lineMinSize
+  return size >= floor ? size : L.bodySize
+}
+
+/** Size for the specialized team line (same text on the EN and FR faces). */
+export function teamSizeFor(font, team, layout) {
+  var L = layout || CARD_LAYOUT
+  return shrinkToFitSize(font, team, L.identityWidth, L)
+}
+
+/** Specialized team prints on one line, shrinking down to lineMinSize if needed. */
 export function teamFitsOnCard(details, fonts) {
   var team = String((details && details.specializedTeam) || '').trim()
   if (!team || !fonts) return true
-  return fitsLine(fonts.font, team, CARD_LAYOUT.bodySize, CARD_LAYOUT.identityWidth)
+  var size = teamSizeFor(fonts.font, team, CARD_LAYOUT)
+  return fitsLine(fonts.font, team, size, CARD_LAYOUT.identityWidth)
+}
+
+/**
+ * A title (without region) fits the card's title line: 141.52 pt, shrinking from 6.5 pt
+ * down to lineMinSize if needed (titleSizeFor). Region can stack on its own line, so it
+ * is not part of this check. Manage Titles uses this as the title limit.
+ */
+export function titleFitsOnCard(title, fonts) {
+  var text = String(title || '').trim()
+  if (!text || !fonts || !fonts.font) return true
+  var size = titleSizeFor(fonts.font, text, CARD_LAYOUT)
+  return fitsLine(fonts.font, text, size, CARD_LAYOUT.titleMaxWidth)
 }
 
 function titlePartOf(joined) {
@@ -191,22 +233,12 @@ function titlePartOf(joined) {
 }
 
 /**
- * Body size for the title line. Only the Talent Acquisition French title
- * scales down so the title itself fits titleMaxWidth.
+ * Size for the title line (title part only; region stacks when needed). A long title
+ * scales down to fit, down to lineMinSize (Talent Acquisition French lands near 6 pt).
  */
 export function titleSizeFor(font, joined, layout) {
   var L = layout || CARD_LAYOUT
-  var titlePart = titlePartOf(joined)
-  if (curlyApostrophes(titlePart) !== TITLE_FR_TALENT_ACQUISITION) return L.bodySize
-  if (!font || typeof font.widthOfTextAtSize !== 'function') return L.bodySize
-  if (fitsLine(font, titlePart, L.bodySize, L.titleMaxWidth)) return L.bodySize
-  var width = font.widthOfTextAtSize(titlePart, L.bodySize)
-  if (!width) return L.bodySize
-  var size = Number(((L.bodySize * L.titleMaxWidth) / width).toFixed(2))
-  while (size > 1 && !fitsLine(font, titlePart, size, L.titleMaxWidth)) {
-    size = Number((size - 0.01).toFixed(2))
-  }
-  return size
+  return shrinkToFitSize(font, titlePartOf(joined), L.titleMaxWidth, L)
 }
 
 function wrapByWords(font, text, size, maxWidth) {
@@ -419,8 +451,9 @@ export function planCardLayout(fields, fonts) {
   if (!titleRegionFitsOrSplits(font, fields.title, titleSize, L.titleMaxWidth, L.bodySize)) {
     errors.push(LAYOUT_ERROR.title)
   }
+  var teamSize = teamSizeFor(font, fields.team, L)
   if (String(fields.team || '').trim()) {
-    requireOneLine(font, fields.team, L.bodySize, L.identityWidth, LAYOUT_ERROR.team, errors)
+    requireOneLine(font, fields.team, teamSize, L.identityWidth, LAYOUT_ERROR.team, errors)
   }
   requireOneLine(font, fields.email, L.bodySize, L.emailMaxWidth, LAYOUT_ERROR.email, errors)
   if (String(fields.email || '').length > EMAIL_MAX) errors.push(LAYOUT_ERROR.email)
@@ -465,6 +498,7 @@ export function planCardLayout(fields, fonts) {
     titleSize: titleSize,
     titleY: titleY,
     team: fields.team,
+    teamSize: teamSize,
     teamY: teamY,
     email: fields.email,
     emailY: L.emailY,
@@ -596,6 +630,7 @@ export function applyPreviewTitleRegionSplit(view, fonts, opts) {
       var withTeam = Object.assign({}, view)
       withTeam.title = titlePart
       withTeam.team = merged
+      withTeam.teamSize = L.bodySize
       withTeam.regionLine = ''
       return withTeam
     }

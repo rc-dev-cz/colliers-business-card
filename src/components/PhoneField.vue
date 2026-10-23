@@ -12,7 +12,6 @@
       :aria-invalid="error ? 'true' : 'false'"
       :placeholder="placeholder"
       :required="required"
-      maxlength="12"
       @input="onInput"
     />
     <p v-if="hint" class="field-hint">{{ hint }}</p>
@@ -21,7 +20,7 @@
 </template>
 
 <script>
-import { digitsOnly, formatCanadianLocal } from '../helpers/validate'
+import { formatCanadianLocal, localPhoneDigits } from '../helpers/validate'
 
 export default {
   name: 'PhoneField',
@@ -35,14 +34,13 @@ export default {
   },
   computed: {
     display: function () {
-      var cleaned = String(this.value || '').replace(/\D/g, '')
-      if (cleaned.length === 11 && cleaned.charAt(0) === '1') cleaned = cleaned.slice(1)
-      return formatCanadianLocal(digitsOnly(cleaned))
+      return formatCanadianLocal(localPhoneDigits(this.value))
     },
   },
   methods: {
     onInput: function (event) {
-      const digits = digitsOnly(event.target.value)
+      // No maxlength on the input: a pasted "(416) 555-0199" is longer than the formatted number.
+      const digits = localPhoneDigits(event.target.value)
       this.$emit('input', digits ? formatCanadianLocal(digits) : '')
     },
   },

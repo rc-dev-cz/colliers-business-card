@@ -36,7 +36,7 @@
                     {{ lineName(line) }}
                   </div>
                   <div class="mt-1.5 text-[13px] leading-snug text-gray-500">
-                    {{ t('language') }}: {{ line.language }}
+                    {{ t('language') }}: {{ languageText(line) }}
                   </div>
                   <div class="mt-0.5 text-[13px] leading-snug text-gray-500">
                     {{ t('qty') }}: {{ line.quantity }}
@@ -109,7 +109,7 @@
           </div>
           <div class="flex justify-between text-sm text-gray-700">
             <span>{{ t('shippingHandling') }}</span>
-            <span>$0.00</span>
+            <span>{{ t('shippingTbd') }}</span>
           </div>
           <div
             class="flex justify-between border-t border-gray-200 pt-2 text-[15px] font-semibold text-gray-900"
@@ -167,7 +167,7 @@ import {
   setEditLineId,
   startShippingFromCart,
 } from '../store'
-import { productNameKey } from '../i18n/messages'
+import { languageLabel, productNameKey } from '../i18n/messages'
 import { lineTotal } from '../helpers/cart'
 import { go } from '../adapters/nav'
 
@@ -207,6 +207,9 @@ export default {
     clearCart: clearCart,
     lineName: function (line) {
       return t(productNameKey(line.code))
+    },
+    languageText: function (line) {
+      return languageLabel(line.language, t)
     },
     personName: function (line) {
       return String((line.details && line.details.name) || '').trim()
