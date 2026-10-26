@@ -135,21 +135,26 @@ describe('CustomizePage credential space guards', function () {
     try {
       ctx.degreesFull = CustomizePage.computed.degreesFull.call(ctx)
       expect(ctx.degreesFull).toBe(true)
-      expect(CustomizePage.computed.degreeSpaceNotice.call(ctx)).toBe(
-        'No more space for credentials on the card.'
-      )
+      ctx.degreeSpaceNotice = CustomizePage.computed.degreeSpaceNotice.call(ctx)
+      expect(ctx.degreeSpaceNotice).toBe('No more space for credentials on the card.')
+      // Full: red only, no yellow warning on top.
+      expect(CustomizePage.computed.degreeSpaceWarning.call(ctx)).toBe('')
 
-      // Some options still fit: say why the greyed-out ones are locked.
+      // Some options still fit: yellow warning, no red error.
       ctx.lockedDegreeValues = ['PgMP']
       ctx.degreesFull = CustomizePage.computed.degreesFull.call(ctx)
       expect(ctx.degreesFull).toBe(false)
-      expect(CustomizePage.computed.degreeSpaceNotice.call(ctx)).toBe(
-        'Greyed-out credentials no longer fit on the card.'
+      ctx.degreeSpaceNotice = CustomizePage.computed.degreeSpaceNotice.call(ctx)
+      expect(ctx.degreeSpaceNotice).toBe('')
+      expect(CustomizePage.computed.degreeSpaceWarning.call(ctx)).toBe(
+        'Little space left: only short credentials still fit on the card.'
       )
 
       ctx.lockedDegreeValues = []
       ctx.degreesFull = CustomizePage.computed.degreesFull.call(ctx)
-      expect(CustomizePage.computed.degreeSpaceNotice.call(ctx)).toBe('')
+      ctx.degreeSpaceNotice = CustomizePage.computed.degreeSpaceNotice.call(ctx)
+      expect(ctx.degreeSpaceNotice).toBe('')
+      expect(CustomizePage.computed.degreeSpaceWarning.call(ctx)).toBe('')
     } finally {
       store.degrees = prior
     }

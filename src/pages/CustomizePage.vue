@@ -82,6 +82,8 @@
                 :search-placeholder="t('selectDegree')"
                 :empty-label="t('noDegrees')"
                 :error="degreeSpaceNotice"
+                :warning="degreeSpaceWarning"
+                :locked-title="t('credentialTooLong')"
                 @input="onDegrees"
                 @locked="onCredentialLocked"
               ></multi-select-field>
@@ -408,11 +410,16 @@ export default {
       return unselected.length > 0 && this.lockedDegreeValues.length === unselected.length
     },
     /** Full: "No more space". Some options greyed out: say why they are locked (BUG-09). */
+    /** Red: the card is full (or a locked option was clicked). */
     degreeSpaceNotice: function () {
       var flashed = this.credentialSpaceRejected && this.credentialNoticeField === 'degree'
       if (flashed || this.degreesFull) return t('credentialsNoSpace')
-      if (this.lockedDegreeValues.length) return t('credentialsSomeLocked')
       return ''
+    },
+    /** Yellow: some options are greyed out, short ones still fit (BUG-09). */
+    degreeSpaceWarning: function () {
+      if (this.degreeSpaceNotice || !this.lockedDegreeValues.length) return ''
+      return t('credentialsSomeLocked')
     },
     /** Other credential text that does not fit stays in the field only, never on the card. */
     otherCredentialRejected: function () {

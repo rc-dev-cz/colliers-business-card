@@ -38,9 +38,10 @@ export const messages = {
   },
   removeOtherCredential: { EN: 'Remove other credential', FR: 'Retirer cette désignation' },
   credentialsSomeLocked: {
-    EN: 'Greyed-out credentials no longer fit on the card.',
-    FR: 'Les désignations grisées ne tiennent plus sur la carte.',
+    EN: 'Little space left: only short credentials still fit on the card.',
+    FR: 'Peu d’espace restant : seules les désignations courtes tiennent encore sur la carte.',
   },
+  credentialTooLong: { EN: 'Too long to fit on the card', FR: 'Trop long pour tenir sur la carte' },
   credentialsNoSpace: {
     EN: 'No more space for credentials on the card.',
     FR: 'Il n’y a plus d’espace pour les désignations sur la carte.',

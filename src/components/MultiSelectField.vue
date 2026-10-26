@@ -50,6 +50,7 @@
           :aria-selected="isSelected(option) ? 'true' : 'false'"
           :aria-disabled="isLocked(option) ? 'true' : 'false'"
           :class="isLocked(option) ? 'cursor-not-allowed opacity-40' : ''"
+          :title="isLocked(option) && lockedTitle ? lockedTitle : null"
           @click.stop="toggleOption(option)"
         >
           <input
@@ -83,6 +84,7 @@
     </div>
     <p v-if="hint" class="field-hint">{{ hint }}</p>
     <p v-if="error" class="field-hint text-red-600">{{ error }}</p>
+    <p v-else-if="warning" class="field-hint text-amber-700" role="status">{{ warning }}</p>
   </div>
 </template>
 
@@ -127,6 +129,10 @@ export default {
     disabled: { type: Boolean, default: false },
     hint: { type: String, default: '' },
     error: { type: String, default: '' },
+    /** Softer note shown in yellow when there is no error (e.g. little space left). */
+    warning: { type: String, default: '' },
+    /** Tooltip on locked options (e.g. "Too long to fit on the card"). */
+    lockedTitle: { type: String, default: '' },
     max: { type: Number, default: 0 },
     lockedValues: {
       type: Array,
@@ -200,11 +206,16 @@ export default {
       if (idx === -1) {
         if (this.isLocked(option)) {
           this.$emit('locked', val)
+          // Searched for a locked one: close so the "no space" message is not hidden.
+          if (String(this.query || '').trim()) this.close()
           return
         }
         next.push(val)
       } else next.splice(idx, 1)
       this.emitValues(next)
+      // A pick found by searching: close and clear, so the card and any message show (BUG-09).
+      // Picks made by scrolling keep the list open for the next tick.
+      if (String(this.query || '').trim()) this.close()
     },
     remove: function (item) {
       this.emitValues(
