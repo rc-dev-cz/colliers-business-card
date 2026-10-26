@@ -32,78 +32,106 @@
           </div>
         </div>
 
-        <div class="overflow-x-auto">
-          <table class="min-w-full text-left text-sm">
-            <thead
-              class="border-b border-gray-200 bg-gray-50 text-xs font-medium uppercase tracking-wide text-gray-500"
-            >
-              <tr>
-                <th class="px-3 py-3 sm:px-4">{{ t('orderId') }}</th>
-                <!-- Phones: name and date fold under the order ID, item and qty are in View (BUG-24) -->
-                <th class="hidden px-4 py-3 sm:table-cell">{{ personColumnLabel }}</th>
-                <th class="hidden px-4 py-3 sm:table-cell">{{ t('item') }}</th>
-                <th class="hidden px-4 py-3 sm:table-cell">{{ t('qty') }}</th>
-                <th class="hidden px-4 py-3 sm:table-cell">{{ t('date') }}</th>
-                <th class="px-3 py-3 sm:px-4">{{ t('status') }}</th>
-                <th class="px-3 py-3 text-right sm:px-4">{{ t('action') }}</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-if="!filteredOrders.length">
-                <td colspan="7" class="px-4 py-10 text-center text-gray-500">
-                  {{ t('noOrders') }}
-                </td>
-              </tr>
-              <tr
-                v-for="row in filteredOrders"
-                :key="rowKey(row)"
-                class="border-b border-gray-100 last:border-0"
+        <div>
+          <!-- Phones: one card per order, actions under it, no sideways scroll (BUG-24) -->
+          <ul class="divide-y divide-gray-100 sm:hidden">
+            <li v-if="!filteredOrders.length" class="px-4 py-10 text-center text-gray-500">
+              {{ t('noOrders') }}
+            </li>
+            <li v-for="row in filteredOrders" :key="'card-' + rowKey(row)" class="px-4 py-4">
+              <div class="flex items-start justify-between gap-3">
+                <div class="font-medium text-colliers-primary">{{ row.id }}</div>
+                <span
+                  class="inline-flex shrink-0 rounded-md px-2.5 py-1 text-xs font-medium"
+                  :class="statusClass(row.status)"
+                >
+                  {{ statusLabel(row.status) }}
+                </span>
+              </div>
+              <div class="mt-1 text-sm text-gray-800">{{ itemLabel(row, t) }}</div>
+              <div class="text-[13px] text-gray-500">
+                {{ formatOrderDate(row.date) }} · {{ cardCount(row) }} {{ t('cards') }}
+                <template v-if="cardholderName(row)"> · {{ cardholderName(row) }}</template>
+              </div>
+              <div class="mt-3 flex items-center gap-4 text-sm">
+                <button
+                  type="button"
+                  class="font-medium text-colliers-primary hover:underline"
+                  @click="onRepeat(row.id)"
+                >
+                  {{ t('repeatOrder') }}
+                </button>
+                <button
+                  type="button"
+                  class="font-medium text-colliers-primary hover:underline"
+                  @click="openDetails(row)"
+                >
+                  {{ t('view') }}
+                </button>
+              </div>
+            </li>
+          </ul>
+
+          <div class="hidden overflow-x-auto sm:block">
+            <table class="min-w-full text-left text-sm">
+              <thead
+                class="border-b border-gray-200 bg-gray-50 text-xs font-medium uppercase tracking-wide text-gray-500"
               >
-                <td class="px-3 py-3 sm:px-4">
-                  <div class="font-medium text-colliers-primary">{{ row.id }}</div>
-                  <div class="text-[13px] text-gray-500 sm:hidden">
-                    {{ formatOrderDate(row.date) }}
-                    <template v-if="cardholderName(row)"> · {{ cardholderName(row) }}</template>
-                  </div>
-                </td>
-                <td class="hidden px-4 py-3 text-gray-800 sm:table-cell">
-                  {{ cardholderName(row) }}
-                </td>
-                <td class="hidden px-4 py-3 text-gray-700 sm:table-cell">
-                  {{ itemLabel(row, t) }}
-                </td>
-                <td class="hidden px-4 py-3 text-gray-700 sm:table-cell">{{ cardCount(row) }}</td>
-                <td class="hidden px-4 py-3 text-gray-700 sm:table-cell">
-                  {{ formatOrderDate(row.date) }}
-                </td>
-                <td class="px-3 py-3 sm:px-4">
-                  <span
-                    class="inline-flex rounded-md px-2.5 py-1 text-xs font-medium"
-                    :class="statusClass(row.status)"
-                  >
-                    {{ statusLabel(row.status) }}
-                  </span>
-                </td>
-                <td class="px-3 py-3 text-right sm:whitespace-nowrap sm:px-4">
-                  <button
-                    type="button"
-                    class="block w-full whitespace-nowrap text-right text-colliers-primary hover:underline sm:inline sm:w-auto"
-                    @click="onRepeat(row.id)"
-                  >
-                    {{ t('repeatOrder') }}
-                  </button>
-                  <span class="mx-2 hidden text-gray-300 sm:inline">|</span>
-                  <button
-                    type="button"
-                    class="mt-1 block w-full text-right text-colliers-primary hover:underline sm:mt-0 sm:inline sm:w-auto"
-                    @click="openDetails(row)"
-                  >
-                    {{ t('view') }}
-                  </button>
-                </td>
-              </tr>
-            </tbody>
-          </table>
+                <tr>
+                  <th class="px-4 py-3">{{ t('orderId') }}</th>
+                  <th class="px-4 py-3">{{ personColumnLabel }}</th>
+                  <th class="px-4 py-3">{{ t('item') }}</th>
+                  <th class="px-4 py-3">{{ t('qty') }}</th>
+                  <th class="px-4 py-3">{{ t('date') }}</th>
+                  <th class="px-4 py-3">{{ t('status') }}</th>
+                  <th class="px-4 py-3 text-right">{{ t('action') }}</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-if="!filteredOrders.length">
+                  <td colspan="7" class="px-4 py-10 text-center text-gray-500">
+                    {{ t('noOrders') }}
+                  </td>
+                </tr>
+                <tr
+                  v-for="row in filteredOrders"
+                  :key="rowKey(row)"
+                  class="border-b border-gray-100 last:border-0"
+                >
+                  <td class="px-4 py-3 font-medium text-colliers-primary">{{ row.id }}</td>
+                  <td class="px-4 py-3 text-gray-800">{{ cardholderName(row) }}</td>
+                  <td class="px-4 py-3 text-gray-700">{{ itemLabel(row, t) }}</td>
+                  <td class="px-4 py-3 text-gray-700">{{ cardCount(row) }}</td>
+                  <td class="px-4 py-3 text-gray-700">{{ formatOrderDate(row.date) }}</td>
+                  <td class="px-4 py-3">
+                    <span
+                      class="inline-flex rounded-md px-2.5 py-1 text-xs font-medium"
+                      :class="statusClass(row.status)"
+                    >
+                      {{ statusLabel(row.status) }}
+                    </span>
+                  </td>
+                  <td class="whitespace-nowrap px-4 py-3 text-right">
+                    <button
+                      type="button"
+                      class="text-colliers-primary hover:underline"
+                      @click="onRepeat(row.id)"
+                    >
+                      {{ t('repeatOrder') }}
+                    </button>
+                    <span class="mx-2 text-gray-300">|</span>
+                    <button
+                      type="button"
+                      class="text-colliers-primary hover:underline"
+                      @click="openDetails(row)"
+                    >
+                      {{ t('view') }}
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
     </div>

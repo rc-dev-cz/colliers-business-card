@@ -256,7 +256,7 @@
                 {{ t('noShipToAddresses') }}
               </p>
               <ul
-                class="js-loc-sortable relative z-10 min-h-[8rem] space-y-3"
+                class="js-loc-sortable relative z-10 min-h-[8rem] space-y-3 pb-5"
                 :data-split-id="split.id"
                 :data-has-items="splitHasCards(split) ? '1' : '0'"
               >
