@@ -4,23 +4,39 @@ function uid(prefix) {
   return prefix + Date.now() + '-' + Math.random().toString(36).slice(2, 8)
 }
 
-export function createLocation(address, qty) {
-  return {
-    id: uid('loc-'),
-    address: address || '',
-    qty: Number(qty) > 0 ? Number(qty) : 1,
-  }
+/**
+ * Address-book id of a ship-to (db_addresses::id) and whether it is an office or a personal
+ * address. Place Order sends it as location_id; the address text is only for display.
+ */
+function addressRef(source) {
+  var src = source || {}
+  if (src.addressId == null || src.addressId === '') return {}
+  return { addressId: String(src.addressId), addressType: src.addressType || '' }
+}
+
+export function createLocation(address, qty, ref) {
+  return Object.assign(
+    {
+      id: uid('loc-'),
+      address: address || '',
+      qty: Number(qty) > 0 ? Number(qty) : 1,
+    },
+    addressRef(ref)
+  )
 }
 
 export function createSplit(options) {
   const opts = options || {}
   const locations = opts.locations
     ? opts.locations.map(function (loc) {
-        return {
-          id: loc.id || uid('loc-'),
-          address: loc.address || '',
-          qty: Number(loc.qty) > 0 ? Number(loc.qty) : 1,
-        }
+        return Object.assign(
+          {
+            id: loc.id || uid('loc-'),
+            address: loc.address || '',
+            qty: Number(loc.qty) > 0 ? Number(loc.qty) : 1,
+          },
+          addressRef(loc)
+        )
       })
     : []
   var qtys = {}
@@ -74,11 +90,14 @@ export function snapshotOrder(value) {
         itemIds: (split.itemIds || []).slice(),
         qtys: Object.assign({}, split.qtys || {}),
         locations: (split.locations || []).map(function (loc) {
-          return {
-            id: loc.id,
-            address: loc.address || '',
-            qty: Number(loc.qty) > 0 ? Number(loc.qty) : 1,
-          }
+          return Object.assign(
+            {
+              id: loc.id,
+              address: loc.address || '',
+              qty: Number(loc.qty) > 0 ? Number(loc.qty) : 1,
+            },
+            addressRef(loc)
+          )
         }),
       }
     }),
@@ -508,9 +527,9 @@ export function moveLocation(order, locId, toSplitId, newIndex) {
   return moved
 }
 
-export function addLocation(split, address, qty) {
+export function addLocation(split, address, qty, ref) {
   const trimmed = String(address || '').trim()
-  split.locations.push(createLocation(trimmed, qty == null ? 1 : qty))
+  split.locations.push(createLocation(trimmed, qty == null ? 1 : qty, ref))
 }
 
 export function removeLocation(split, index) {

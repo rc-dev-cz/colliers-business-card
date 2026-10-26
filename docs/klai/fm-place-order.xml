@@ -1,0 +1,776 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fmxmlsnippet type="FMObjectList">
+  <Step enable="True" id="89" name="# (comment)">
+    <Text>###########################################################################################</Text>
+  </Step>
+  <Step enable="True" id="89" name="# (comment)">
+    <Text>Place Order (Support Scripts - review)</Text>
+  </Step>
+  <Step enable="True" id="89" name="# (comment)">
+    <Text>CALLED BY: BF - onUtility - review, when options.type = "submit"</Text>
+  </Step>
+  <Step enable="True" id="89" name="# (comment)">
+    <Text>READS: $$BF_Model.orderPayload, built on Review (see docs/klai/fm-place-order.md)</Text>
+  </Step>
+  <Step enable="True" id="89" name="# (comment)">
+    <Text>  order        header: totals, order type</Text>
+  </Step>
+  <Step enable="True" id="89" name="# (comment)">
+    <Text>  groups[]     one per shipping group &gt; items[] and locations[] (with address)</Text>
+  </Step>
+  <Step enable="True" id="89" name="# (comment)">
+    <Text>  cards[]      one print PDF (base64) per unique card, linked to items by line_ref</Text>
+  </Step>
+  <Step enable="True" id="89" name="# (comment)">
+    <Text>CREATES: 1 order &gt; 1 order_group per group &gt; items, and 1 shipment per ship-to address</Text>
+  </Step>
+  <Step enable="True" id="89" name="# (comment)">
+    <Text>RETURNS: 1 and $$BF_Model.orderId, or 0 and $$BF_Model.submitError</Text>
+  </Step>
+  <Step enable="True" id="89" name="# (comment)">
+    <Text>Always a NEW order: Place Order never updates an earlier one.</Text>
+  </Step>
+  <Step enable="True" id="89" name="# (comment)">
+    <Text>###########################################################################################</Text>
+  </Step>
+  <Step enable="True" id="86" name="Set Error Capture">
+    <Set state="True"/>
+  </Step>
+  <Step enable="True" id="141" name="Set Variable">
+    <Value>
+      <Calculation><![CDATA[JSONGetElement ( $$BF_Model ; "orderPayload" )]]></Calculation>
+    </Value>
+    <Repetition>
+      <Calculation><![CDATA[1]]></Calculation>
+    </Repetition>
+    <Name>$p</Name>
+  </Step>
+  <Step enable="True" id="141" name="Set Variable">
+    <Value>
+      <Calculation><![CDATA[JSONGetElement ( $p ; "order" )]]></Calculation>
+    </Value>
+    <Repetition>
+      <Calculation><![CDATA[1]]></Calculation>
+    </Repetition>
+    <Name>$order</Name>
+  </Step>
+  <Step enable="True" id="141" name="Set Variable">
+    <Value>
+      <Calculation><![CDATA[ValueCount ( JSONListKeys ( $p ; "groups" ) )]]></Calculation>
+    </Value>
+    <Repetition>
+      <Calculation><![CDATA[1]]></Calculation>
+    </Repetition>
+    <Name>$groupCount</Name>
+  </Step>
+  <Step enable="True" id="141" name="Set Variable">
+    <Value>
+      <Calculation><![CDATA[ValueCount ( JSONListKeys ( $p ; "cards" ) )]]></Calculation>
+    </Value>
+    <Repetition>
+      <Calculation><![CDATA[1]]></Calculation>
+    </Repetition>
+    <Name>$cardCount</Name>
+  </Step>
+  <Step enable="True" id="141" name="Set Variable">
+    <Value>
+      <Calculation><![CDATA[JSONGetElement ( $$BF_User ; "id" )]]></Calculation>
+    </Value>
+    <Repetition>
+      <Calculation><![CDATA[1]]></Calculation>
+    </Repetition>
+    <Name>$userId</Name>
+  </Step>
+  <Step enable="True" id="141" name="Set Variable">
+    <Value>
+      <Calculation><![CDATA[""]]></Calculation>
+    </Value>
+    <Repetition>
+      <Calculation><![CDATA[1]]></Calculation>
+    </Repetition>
+    <Name>$error</Name>
+  </Step>
+  <Step enable="True" id="89" name="# (comment)"/>
+  <Step enable="True" id="68" name="If">
+    <Restore state="False"/>
+    <Calculation><![CDATA[IsEmpty ( $userId )]]></Calculation>
+  </Step>
+  <Step enable="True" id="141" name="Set Variable">
+    <Value>
+      <Calculation><![CDATA["Please sign in again to place your order."]]></Calculation>
+    </Value>
+    <Repetition>
+      <Calculation><![CDATA[1]]></Calculation>
+    </Repetition>
+    <Name>$error</Name>
+  </Step>
+  <Step enable="True" id="141" name="Set Variable">
+    <Value>
+      <Calculation><![CDATA[JSONSetElement ( $$BF_Model ;
+  [ "submitError" ; $error ; JSONString ] ;
+  [ "submitting" ; 0 ; JSONNumber ]
+)]]></Calculation>
+    </Value>
+    <Repetition>
+      <Calculation><![CDATA[1]]></Calculation>
+    </Repetition>
+    <Name>$$BF_Model</Name>
+  </Step>
+  <Step enable="True" id="103" name="Exit Script">
+    <Calculation><![CDATA[0]]></Calculation>
+  </Step>
+  <Step enable="True" id="70" name="End If"/>
+  <Step enable="True" id="68" name="If">
+    <Restore state="False"/>
+    <Calculation><![CDATA[IsEmpty ( $p ) or $groupCount = 0]]></Calculation>
+  </Step>
+  <Step enable="True" id="141" name="Set Variable">
+    <Value>
+      <Calculation><![CDATA["There is nothing to order."]]></Calculation>
+    </Value>
+    <Repetition>
+      <Calculation><![CDATA[1]]></Calculation>
+    </Repetition>
+    <Name>$error</Name>
+  </Step>
+  <Step enable="True" id="141" name="Set Variable">
+    <Value>
+      <Calculation><![CDATA[JSONSetElement ( $$BF_Model ;
+  [ "submitError" ; $error ; JSONString ] ;
+  [ "submitting" ; 0 ; JSONNumber ]
+)]]></Calculation>
+    </Value>
+    <Repetition>
+      <Calculation><![CDATA[1]]></Calculation>
+    </Repetition>
+    <Name>$$BF_Model</Name>
+  </Step>
+  <Step enable="True" id="103" name="Exit Script">
+    <Calculation><![CDATA[0]]></Calculation>
+  </Step>
+  <Step enable="True" id="70" name="End If"/>
+  <Step enable="True" id="89" name="# (comment)">
+    <Text>Every ship-to must be a saved address before anything is created: location_id + location_type</Text>
+  </Step>
+  <Step enable="True" id="89" name="# (comment)">
+    <Text>(office = Store_OfficeAddresses::id, personal = db_addresses::id; the two tables can share ids)</Text>
+  </Step>
+  <Step enable="True" id="141" name="Set Variable">
+    <Value>
+      <Calculation><![CDATA[0]]></Calculation>
+    </Value>
+    <Repetition>
+      <Calculation><![CDATA[1]]></Calculation>
+    </Repetition>
+    <Name>$g</Name>
+  </Step>
+  <Step enable="True" id="71" name="Loop">
+    <Restore state="False"/>
+    <FlushType value="Always"/>
+  </Step>
+  <Step enable="True" id="72" name="Exit Loop If">
+    <Calculation><![CDATA[$g >= $groupCount or not IsEmpty ( $error )]]></Calculation>
+  </Step>
+  <Step enable="True" id="141" name="Set Variable">
+    <Value>
+      <Calculation><![CDATA[0]]></Calculation>
+    </Value>
+    <Repetition>
+      <Calculation><![CDATA[1]]></Calculation>
+    </Repetition>
+    <Name>$l</Name>
+  </Step>
+  <Step enable="True" id="141" name="Set Variable">
+    <Value>
+      <Calculation><![CDATA[ValueCount ( JSONListKeys ( $p ; "groups[" & $g & "].locations" ) )]]></Calculation>
+    </Value>
+    <Repetition>
+      <Calculation><![CDATA[1]]></Calculation>
+    </Repetition>
+    <Name>$locCount</Name>
+  </Step>
+  <Step enable="True" id="71" name="Loop">
+    <Restore state="False"/>
+    <FlushType value="Always"/>
+  </Step>
+  <Step enable="True" id="72" name="Exit Loop If">
+    <Calculation><![CDATA[$l >= $locCount or not IsEmpty ( $error )]]></Calculation>
+  </Step>
+  <Step enable="True" id="141" name="Set Variable">
+    <Value>
+      <Calculation><![CDATA[JSONGetElement ( $p ; "groups[" & $g & "].locations[" & $l & "].location_id" )]]></Calculation>
+    </Value>
+    <Repetition>
+      <Calculation><![CDATA[1]]></Calculation>
+    </Repetition>
+    <Name>$locId</Name>
+  </Step>
+  <Step enable="True" id="141" name="Set Variable">
+    <Value>
+      <Calculation><![CDATA[JSONGetElement ( $p ; "groups[" & $g & "].locations[" & $l & "].location_type" )]]></Calculation>
+    </Value>
+    <Repetition>
+      <Calculation><![CDATA[1]]></Calculation>
+    </Repetition>
+    <Name>$locType</Name>
+  </Step>
+  <Step enable="True" id="68" name="If">
+    <Restore state="False"/>
+    <Calculation><![CDATA[IsEmpty ( $locId ) or Filter ( $locId ; "0123456789" ) <> $locId or ( $locType <> "office" and $locType <> "personal" )]]></Calculation>
+  </Step>
+  <Step enable="True" id="141" name="Set Variable">
+    <Value>
+      <Calculation><![CDATA["Ship-to address " & ( $l + 1 ) & " of shipment " & ( $g + 1 ) & " is not saved in your Address Book. Add it there, then pick it again on Shipping."]]></Calculation>
+    </Value>
+    <Repetition>
+      <Calculation><![CDATA[1]]></Calculation>
+    </Repetition>
+    <Name>$error</Name>
+  </Step>
+  <Step enable="True" id="70" name="End If"/>
+  <Step enable="True" id="141" name="Set Variable">
+    <Value>
+      <Calculation><![CDATA[$l + 1]]></Calculation>
+    </Value>
+    <Repetition>
+      <Calculation><![CDATA[1]]></Calculation>
+    </Repetition>
+    <Name>$l</Name>
+  </Step>
+  <Step enable="True" id="73" name="End Loop"/>
+  <Step enable="True" id="141" name="Set Variable">
+    <Value>
+      <Calculation><![CDATA[$g + 1]]></Calculation>
+    </Value>
+    <Repetition>
+      <Calculation><![CDATA[1]]></Calculation>
+    </Repetition>
+    <Name>$g</Name>
+  </Step>
+  <Step enable="True" id="73" name="End Loop"/>
+  <Step enable="True" id="68" name="If">
+    <Restore state="False"/>
+    <Calculation><![CDATA[not IsEmpty ( $error )]]></Calculation>
+  </Step>
+  <Step enable="True" id="141" name="Set Variable">
+    <Value>
+      <Calculation><![CDATA[JSONSetElement ( $$BF_Model ;
+  [ "submitError" ; $error ; JSONString ] ;
+  [ "submitting" ; 0 ; JSONNumber ]
+)]]></Calculation>
+    </Value>
+    <Repetition>
+      <Calculation><![CDATA[1]]></Calculation>
+    </Repetition>
+    <Name>$$BF_Model</Name>
+  </Step>
+  <Step enable="True" id="103" name="Exit Script">
+    <Calculation><![CDATA[0]]></Calculation>
+  </Step>
+  <Step enable="True" id="70" name="End If"/>
+  <Step enable="True" id="89" name="# (comment)"/>
+  <Step enable="True" id="89" name="# (comment)">
+    <Text>1) ORDER</Text>
+  </Step>
+  <Step enable="True" id="6" name="Go to Layout">
+    <LayoutDestination value="SelectedLayout"/>
+    <Layout id="0" name="store_BFUsers_order"/>
+  </Step>
+  <Step enable="True" id="7" name="New Record/Request"/>
+  <Step enable="True" id="76" name="Set Field">
+    <Calculation><![CDATA[$userId]]></Calculation>
+    <Field table="store_BFUsers_order" id="0" name="contact_id"/>
+  </Step>
+  <Step enable="True" id="76" name="Set Field">
+    <Calculation><![CDATA[store_BFUsers::name]]></Calculation>
+    <Field table="store_BFUsers_order" id="0" name="name"/>
+  </Step>
+  <Step enable="True" id="76" name="Set Field">
+    <Calculation><![CDATA[store_BFUsers::email]]></Calculation>
+    <Field table="store_BFUsers_order" id="0" name="customerEmail"/>
+  </Step>
+  <Step enable="True" id="76" name="Set Field">
+    <Calculation><![CDATA["Ordered"]]></Calculation>
+    <Field table="store_BFUsers_order" id="0" name="status"/>
+  </Step>
+  <Step enable="True" id="76" name="Set Field">
+    <Calculation><![CDATA[JSONGetElement ( $order ; "order_type" )]]></Calculation>
+    <Field table="store_BFUsers_order" id="0" name="order_type"/>
+  </Step>
+  <Step enable="True" id="76" name="Set Field">
+    <Calculation><![CDATA[JSONGetElement ( $order ; "total_items" )]]></Calculation>
+    <Field table="store_BFUsers_order" id="0" name="total_items"/>
+  </Step>
+  <Step enable="True" id="76" name="Set Field">
+    <Calculation><![CDATA[JSONGetElement ( $order ; "total_shipping" )]]></Calculation>
+    <Field table="store_BFUsers_order" id="0" name="total_shipping"/>
+  </Step>
+  <Step enable="True" id="76" name="Set Field">
+    <Calculation><![CDATA[Get ( CurrentDate )]]></Calculation>
+    <Field table="store_BFUsers_order" id="0" name="date"/>
+  </Step>
+  <Step enable="True" id="75" name="Commit Records/Requests">
+    <NoInteract state="True"/>
+    <Option state="True"/>
+    <ESSForceCommit state="False"/>
+  </Step>
+  <Step enable="True" id="141" name="Set Variable">
+    <Value>
+      <Calculation><![CDATA[If ( IsEmpty ( $error ) and Get ( LastError ) ; "Saving the order (FileMaker error " & Get ( LastError ) & ")" ; $error )]]></Calculation>
+    </Value>
+    <Repetition>
+      <Calculation><![CDATA[1]]></Calculation>
+    </Repetition>
+    <Name>$error</Name>
+  </Step>
+  <Step enable="True" id="141" name="Set Variable">
+    <Value>
+      <Calculation><![CDATA[store_BFUsers_order::id]]></Calculation>
+    </Value>
+    <Repetition>
+      <Calculation><![CDATA[1]]></Calculation>
+    </Repetition>
+    <Name>$orderId</Name>
+  </Step>
+  <Step enable="True" id="89" name="# (comment)"/>
+  <Step enable="True" id="89" name="# (comment)">
+    <Text>2) ONE ORDER GROUP PER SHIPPING GROUP</Text>
+  </Step>
+  <Step enable="True" id="141" name="Set Variable">
+    <Value>
+      <Calculation><![CDATA[0]]></Calculation>
+    </Value>
+    <Repetition>
+      <Calculation><![CDATA[1]]></Calculation>
+    </Repetition>
+    <Name>$g</Name>
+  </Step>
+  <Step enable="True" id="71" name="Loop">
+    <Restore state="False"/>
+    <FlushType value="Always"/>
+  </Step>
+  <Step enable="True" id="72" name="Exit Loop If">
+    <Calculation><![CDATA[$g >= $groupCount or not IsEmpty ( $error )]]></Calculation>
+  </Step>
+  <Step enable="True" id="141" name="Set Variable">
+    <Value>
+      <Calculation><![CDATA[JSONGetElement ( $p ; "groups[" & $g & "]" )]]></Calculation>
+    </Value>
+    <Repetition>
+      <Calculation><![CDATA[1]]></Calculation>
+    </Repetition>
+    <Name>$group</Name>
+  </Step>
+  <Step enable="True" id="6" name="Go to Layout">
+    <LayoutDestination value="SelectedLayout"/>
+    <Layout id="0" name="store_BFUsers_order_group"/>
+  </Step>
+  <Step enable="True" id="7" name="New Record/Request"/>
+  <Step enable="True" id="76" name="Set Field">
+    <Calculation><![CDATA[$orderId]]></Calculation>
+    <Field table="store_BFUsers_order_group" id="0" name="order_id"/>
+  </Step>
+  <Step enable="True" id="76" name="Set Field">
+    <Calculation><![CDATA[JSONGetElement ( $group ; "count_locations" )]]></Calculation>
+    <Field table="store_BFUsers_order_group" id="0" name="count_locations"/>
+  </Step>
+  <Step enable="True" id="76" name="Set Field">
+    <Calculation><![CDATA[$group]]></Calculation>
+    <Field table="store_BFUsers_order_group" id="0" name="asJSON"/>
+  </Step>
+  <Step enable="True" id="75" name="Commit Records/Requests">
+    <NoInteract state="True"/>
+    <Option state="True"/>
+    <ESSForceCommit state="False"/>
+  </Step>
+  <Step enable="True" id="141" name="Set Variable">
+    <Value>
+      <Calculation><![CDATA[If ( IsEmpty ( $error ) and Get ( LastError ) ; "Saving shipping group " & ( $g + 1 ) & " (FileMaker error " & Get ( LastError ) & ")" ; $error )]]></Calculation>
+    </Value>
+    <Repetition>
+      <Calculation><![CDATA[1]]></Calculation>
+    </Repetition>
+    <Name>$error</Name>
+  </Step>
+  <Step enable="True" id="141" name="Set Variable">
+    <Value>
+      <Calculation><![CDATA[store_BFUsers_order_group::id]]></Calculation>
+    </Value>
+    <Repetition>
+      <Calculation><![CDATA[1]]></Calculation>
+    </Repetition>
+    <Name>$groupId</Name>
+  </Step>
+  <Step enable="True" id="89" name="# (comment)"/>
+  <Step enable="True" id="89" name="# (comment)">
+    <Text>2a) ITEMS of this group</Text>
+  </Step>
+  <Step enable="True" id="141" name="Set Variable">
+    <Value>
+      <Calculation><![CDATA[ValueCount ( JSONListKeys ( $group ; "items" ) )]]></Calculation>
+    </Value>
+    <Repetition>
+      <Calculation><![CDATA[1]]></Calculation>
+    </Repetition>
+    <Name>$itemCount</Name>
+  </Step>
+  <Step enable="True" id="141" name="Set Variable">
+    <Value>
+      <Calculation><![CDATA[0]]></Calculation>
+    </Value>
+    <Repetition>
+      <Calculation><![CDATA[1]]></Calculation>
+    </Repetition>
+    <Name>$i</Name>
+  </Step>
+  <Step enable="True" id="71" name="Loop">
+    <Restore state="False"/>
+    <FlushType value="Always"/>
+  </Step>
+  <Step enable="True" id="72" name="Exit Loop If">
+    <Calculation><![CDATA[$i >= $itemCount or not IsEmpty ( $error )]]></Calculation>
+  </Step>
+  <Step enable="True" id="141" name="Set Variable">
+    <Value>
+      <Calculation><![CDATA[JSONGetElement ( $group ; "items[" & $i & "]" )]]></Calculation>
+    </Value>
+    <Repetition>
+      <Calculation><![CDATA[1]]></Calculation>
+    </Repetition>
+    <Name>$item</Name>
+  </Step>
+  <Step enable="True" id="141" name="Set Variable">
+    <Value>
+      <Calculation><![CDATA[JSONGetElement ( $item ; "card" )]]></Calculation>
+    </Value>
+    <Repetition>
+      <Calculation><![CDATA[1]]></Calculation>
+    </Repetition>
+    <Name>$card</Name>
+  </Step>
+  <Step enable="True" id="141" name="Set Variable">
+    <Value>
+      <Calculation><![CDATA[JSONGetElement ( $item ; "line_ref" )]]></Calculation>
+    </Value>
+    <Repetition>
+      <Calculation><![CDATA[1]]></Calculation>
+    </Repetition>
+    <Name>$lineRef</Name>
+  </Step>
+  <Step enable="True" id="6" name="Go to Layout">
+    <LayoutDestination value="SelectedLayout"/>
+    <Layout id="0" name="store_BFUsers_order_group_items"/>
+  </Step>
+  <Step enable="True" id="7" name="New Record/Request"/>
+  <Step enable="True" id="76" name="Set Field">
+    <Calculation><![CDATA[$orderId]]></Calculation>
+    <Field table="store_BFUsers_order_group_items" id="0" name="order_id"/>
+  </Step>
+  <Step enable="True" id="76" name="Set Field">
+    <Calculation><![CDATA[$groupId]]></Calculation>
+    <Field table="store_BFUsers_order_group_items" id="0" name="group_id"/>
+  </Step>
+  <Step enable="True" id="76" name="Set Field">
+    <Calculation><![CDATA[$lineRef]]></Calculation>
+    <Field table="store_BFUsers_order_group_items" id="0" name="ops_item_id"/>
+  </Step>
+  <Step enable="True" id="76" name="Set Field">
+    <Calculation><![CDATA[JSONGetElement ( $item ; "product_code" )]]></Calculation>
+    <Field table="store_BFUsers_order_group_items" id="0" name="product_code"/>
+  </Step>
+  <Step enable="True" id="76" name="Set Field">
+    <Calculation><![CDATA[JSONGetElement ( $item ; "catalogue_id" )]]></Calculation>
+    <Field table="store_BFUsers_order_group_items" id="0" name="catalogue_id"/>
+  </Step>
+  <Step enable="True" id="76" name="Set Field">
+    <Calculation><![CDATA[JSONGetElement ( $item ; "language" )]]></Calculation>
+    <Field table="store_BFUsers_order_group_items" id="0" name="language"/>
+  </Step>
+  <Step enable="True" id="76" name="Set Field">
+    <Calculation><![CDATA[JSONGetElement ( $item ; "quantity" )]]></Calculation>
+    <Field table="store_BFUsers_order_group_items" id="0" name="quantity"/>
+  </Step>
+  <Step enable="True" id="76" name="Set Field">
+    <Calculation><![CDATA[JSONGetElement ( $item ; "unit_price" )]]></Calculation>
+    <Field table="store_BFUsers_order_group_items" id="0" name="unit_sell_price"/>
+  </Step>
+  <Step enable="True" id="76" name="Set Field">
+    <Calculation><![CDATA[JSONGetElement ( $item ; "price" )]]></Calculation>
+    <Field table="store_BFUsers_order_group_items" id="0" name="total_sell"/>
+  </Step>
+  <Step enable="True" id="76" name="Set Field">
+    <Calculation><![CDATA[$userId]]></Calculation>
+    <Field table="store_BFUsers_order_group_items" id="0" name="contact_id"/>
+  </Step>
+  <Step enable="True" id="76" name="Set Field">
+    <Calculation><![CDATA[JSONGetElement ( $card ; "name" )]]></Calculation>
+    <Field table="store_BFUsers_order_group_items" id="0" name="name"/>
+  </Step>
+  <Step enable="True" id="76" name="Set Field">
+    <Calculation><![CDATA[JSONGetElement ( $card ; "title" )]]></Calculation>
+    <Field table="store_BFUsers_order_group_items" id="0" name="title"/>
+  </Step>
+  <Step enable="True" id="76" name="Set Field">
+    <Calculation><![CDATA[While ( [
+  ~list = JSONGetElement ( $card ; "degrees" ) ;
+  ~n = ValueCount ( JSONListKeys ( ~list ; "" ) ) ;
+  ~k = 0 ;
+  ~out = ""
+] ;
+  ~k < ~n ;
+[
+  ~out = ~out & If ( ~k ; ", " ) & JSONGetElement ( ~list ; "[" & ~k & "]" ) ;
+  ~k = ~k + 1
+] ;
+  ~out
+)]]></Calculation>
+    <Field table="store_BFUsers_order_group_items" id="0" name="degree"/>
+  </Step>
+  <Step enable="True" id="76" name="Set Field">
+    <Calculation><![CDATA[JSONGetElement ( $card ; "additional_credentials" )]]></Calculation>
+    <Field table="store_BFUsers_order_group_items" id="0" name="additionalCredentials"/>
+  </Step>
+  <Step enable="True" id="76" name="Set Field">
+    <Calculation><![CDATA[JSONGetElement ( $card ; "region" )]]></Calculation>
+    <Field table="store_BFUsers_order_group_items" id="0" name="region"/>
+  </Step>
+  <Step enable="True" id="76" name="Set Field">
+    <Calculation><![CDATA[JSONGetElement ( $card ; "specialized_team" )]]></Calculation>
+    <Field table="store_BFUsers_order_group_items" id="0" name="team"/>
+  </Step>
+  <Step enable="True" id="76" name="Set Field">
+    <Calculation><![CDATA[JSONGetElement ( $card ; "email" )]]></Calculation>
+    <Field table="store_BFUsers_order_group_items" id="0" name="email"/>
+  </Step>
+  <Step enable="True" id="76" name="Set Field">
+    <Calculation><![CDATA[JSONGetElement ( $card ; "phone" )]]></Calculation>
+    <Field table="store_BFUsers_order_group_items" id="0" name="mobile"/>
+  </Step>
+  <Step enable="True" id="76" name="Set Field">
+    <Calculation><![CDATA[JSONGetElement ( $card ; "office_address" )]]></Calculation>
+    <Field table="store_BFUsers_order_group_items" id="0" name="address"/>
+  </Step>
+  <Step enable="True" id="76" name="Set Field">
+    <Calculation><![CDATA[$item]]></Calculation>
+    <Field table="store_BFUsers_order_group_items" id="0" name="fullJSON"/>
+  </Step>
+  <Step enable="True" id="89" name="# (comment)">
+    <Text>Print PDF for this card, decoded into the PrintImage container (cards[] matched on line_ref)</Text>
+  </Step>
+  <Step enable="True" id="141" name="Set Variable">
+    <Value>
+      <Calculation><![CDATA[0]]></Calculation>
+    </Value>
+    <Repetition>
+      <Calculation><![CDATA[1]]></Calculation>
+    </Repetition>
+    <Name>$c</Name>
+  </Step>
+  <Step enable="True" id="71" name="Loop">
+    <Restore state="False"/>
+    <FlushType value="Always"/>
+  </Step>
+  <Step enable="True" id="72" name="Exit Loop If">
+    <Calculation><![CDATA[$c >= $cardCount]]></Calculation>
+  </Step>
+  <Step enable="True" id="68" name="If">
+    <Restore state="False"/>
+    <Calculation><![CDATA[JSONGetElement ( $p ; "cards[" & $c & "].line_ref" ) = $lineRef]]></Calculation>
+  </Step>
+  <Step enable="True" id="76" name="Set Field">
+    <Calculation><![CDATA[Base64Decode (
+  JSONGetElement ( $p ; "cards[" & $c & "].print_pdf_base64" ) ;
+  JSONGetElement ( $p ; "cards[" & $c & "].print_pdf_file_name" )
+)]]></Calculation>
+    <Field table="store_BFUsers_order_group_items" id="0" name="PrintImage"/>
+  </Step>
+  <Step enable="True" id="141" name="Set Variable">
+    <Value>
+      <Calculation><![CDATA[$cardCount]]></Calculation>
+    </Value>
+    <Repetition>
+      <Calculation><![CDATA[1]]></Calculation>
+    </Repetition>
+    <Name>$c</Name>
+  </Step>
+  <Step enable="True" id="70" name="End If"/>
+  <Step enable="True" id="141" name="Set Variable">
+    <Value>
+      <Calculation><![CDATA[$c + 1]]></Calculation>
+    </Value>
+    <Repetition>
+      <Calculation><![CDATA[1]]></Calculation>
+    </Repetition>
+    <Name>$c</Name>
+  </Step>
+  <Step enable="True" id="73" name="End Loop"/>
+  <Step enable="True" id="75" name="Commit Records/Requests">
+    <NoInteract state="True"/>
+    <Option state="True"/>
+    <ESSForceCommit state="False"/>
+  </Step>
+  <Step enable="True" id="141" name="Set Variable">
+    <Value>
+      <Calculation><![CDATA[If ( IsEmpty ( $error ) and Get ( LastError ) ; "Saving item " & ( $i + 1 ) & " of shipping group " & ( $g + 1 ) & " (FileMaker error " & Get ( LastError ) & ")" ; $error )]]></Calculation>
+    </Value>
+    <Repetition>
+      <Calculation><![CDATA[1]]></Calculation>
+    </Repetition>
+    <Name>$error</Name>
+  </Step>
+  <Step enable="True" id="141" name="Set Variable">
+    <Value>
+      <Calculation><![CDATA[$i + 1]]></Calculation>
+    </Value>
+    <Repetition>
+      <Calculation><![CDATA[1]]></Calculation>
+    </Repetition>
+    <Name>$i</Name>
+  </Step>
+  <Step enable="True" id="73" name="End Loop"/>
+  <Step enable="True" id="89" name="# (comment)"/>
+  <Step enable="True" id="89" name="# (comment)">
+    <Text>2b) SHIP-TO LOCATIONS of this group: one shipment each, location_id + location_type.</Text>
+  </Step>
+  <Step enable="True" id="89" name="# (comment)">
+    <Text>    The address is looked up (office &gt; Store_OfficeAddresses, personal &gt; db_addresses), never copied.</Text>
+  </Step>
+  <Step enable="True" id="141" name="Set Variable">
+    <Value>
+      <Calculation><![CDATA[ValueCount ( JSONListKeys ( $group ; "locations" ) )]]></Calculation>
+    </Value>
+    <Repetition>
+      <Calculation><![CDATA[1]]></Calculation>
+    </Repetition>
+    <Name>$locCount</Name>
+  </Step>
+  <Step enable="True" id="141" name="Set Variable">
+    <Value>
+      <Calculation><![CDATA[0]]></Calculation>
+    </Value>
+    <Repetition>
+      <Calculation><![CDATA[1]]></Calculation>
+    </Repetition>
+    <Name>$l</Name>
+  </Step>
+  <Step enable="True" id="71" name="Loop">
+    <Restore state="False"/>
+    <FlushType value="Always"/>
+  </Step>
+  <Step enable="True" id="72" name="Exit Loop If">
+    <Calculation><![CDATA[$l >= $locCount or not IsEmpty ( $error )]]></Calculation>
+  </Step>
+  <Step enable="True" id="141" name="Set Variable">
+    <Value>
+      <Calculation><![CDATA[JSONGetElement ( $group ; "locations[" & $l & "]" )]]></Calculation>
+    </Value>
+    <Repetition>
+      <Calculation><![CDATA[1]]></Calculation>
+    </Repetition>
+    <Name>$loc</Name>
+  </Step>
+  <Step enable="True" id="6" name="Go to Layout">
+    <LayoutDestination value="SelectedLayout"/>
+    <Layout id="0" name="store_BFUsers_order_group_shipment"/>
+  </Step>
+  <Step enable="True" id="7" name="New Record/Request"/>
+  <Step enable="True" id="76" name="Set Field">
+    <Calculation><![CDATA[$orderId]]></Calculation>
+    <Field table="store_BFUsers_order_group_shipment" id="0" name="order_id"/>
+  </Step>
+  <Step enable="True" id="76" name="Set Field">
+    <Calculation><![CDATA[$groupId]]></Calculation>
+    <Field table="store_BFUsers_order_group_shipment" id="0" name="group_id"/>
+  </Step>
+  <Step enable="True" id="76" name="Set Field">
+    <Calculation><![CDATA[JSONGetElement ( $loc ; "location_id" )]]></Calculation>
+    <Field table="store_BFUsers_order_group_shipment" id="0" name="location_id"/>
+  </Step>
+  <Step enable="True" id="76" name="Set Field">
+    <Calculation><![CDATA[JSONGetElement ( $loc ; "location_type" )]]></Calculation>
+    <Field table="store_BFUsers_order_group_shipment" id="0" name="location_type"/>
+  </Step>
+  <Step enable="True" id="76" name="Set Field">
+    <Calculation><![CDATA[JSONGetElement ( $loc ; "boxes_per_item" )]]></Calculation>
+    <Field table="store_BFUsers_order_group_shipment" id="0" name="boxes_per_item"/>
+  </Step>
+  <Step enable="True" id="76" name="Set Field">
+    <Calculation><![CDATA[$loc]]></Calculation>
+    <Field table="store_BFUsers_order_group_shipment" id="0" name="asJSON"/>
+  </Step>
+  <Step enable="True" id="75" name="Commit Records/Requests">
+    <NoInteract state="True"/>
+    <Option state="True"/>
+    <ESSForceCommit state="False"/>
+  </Step>
+  <Step enable="True" id="141" name="Set Variable">
+    <Value>
+      <Calculation><![CDATA[If ( IsEmpty ( $error ) and Get ( LastError ) ; "Saving ship-to " & ( $l + 1 ) & " of shipping group " & ( $g + 1 ) & " (FileMaker error " & Get ( LastError ) & ")" ; $error )]]></Calculation>
+    </Value>
+    <Repetition>
+      <Calculation><![CDATA[1]]></Calculation>
+    </Repetition>
+    <Name>$error</Name>
+  </Step>
+  <Step enable="True" id="141" name="Set Variable">
+    <Value>
+      <Calculation><![CDATA[$l + 1]]></Calculation>
+    </Value>
+    <Repetition>
+      <Calculation><![CDATA[1]]></Calculation>
+    </Repetition>
+    <Name>$l</Name>
+  </Step>
+  <Step enable="True" id="73" name="End Loop"/>
+  <Step enable="True" id="89" name="# (comment)"/>
+  <Step enable="True" id="141" name="Set Variable">
+    <Value>
+      <Calculation><![CDATA[$g + 1]]></Calculation>
+    </Value>
+    <Repetition>
+      <Calculation><![CDATA[1]]></Calculation>
+    </Repetition>
+    <Name>$g</Name>
+  </Step>
+  <Step enable="True" id="73" name="End Loop"/>
+  <Step enable="True" id="89" name="# (comment)"/>
+  <Step enable="True" id="89" name="# (comment)">
+    <Text>3) TELL THE PAGE</Text>
+  </Step>
+  <Step enable="True" id="68" name="If">
+    <Restore state="False"/>
+    <Calculation><![CDATA[not IsEmpty ( $error )]]></Calculation>
+  </Step>
+  <Step enable="True" id="141" name="Set Variable">
+    <Value>
+      <Calculation><![CDATA[JSONSetElement ( $$BF_Model ;
+  [ "submitError" ; $error ; JSONString ] ;
+  [ "submitting" ; 0 ; JSONNumber ]
+)]]></Calculation>
+    </Value>
+    <Repetition>
+      <Calculation><![CDATA[1]]></Calculation>
+    </Repetition>
+    <Name>$$BF_Model</Name>
+  </Step>
+  <Step enable="True" id="103" name="Exit Script">
+    <Calculation><![CDATA[0]]></Calculation>
+  </Step>
+  <Step enable="True" id="70" name="End If"/>
+  <Step enable="True" id="141" name="Set Variable">
+    <Value>
+      <Calculation><![CDATA[JSONSetElement ( $$BF_Model ;
+  [ "orderId" ; $orderId ; JSONString ] ;
+  [ "submitError" ; "" ; JSONString ] ;
+  [ "submitting" ; 0 ; JSONNumber ]
+)]]></Calculation>
+    </Value>
+    <Repetition>
+      <Calculation><![CDATA[1]]></Calculation>
+    </Repetition>
+    <Name>$$BF_Model</Name>
+  </Step>
+  <Step enable="True" id="103" name="Exit Script">
+    <Calculation><![CDATA[1]]></Calculation>
+  </Step>
+</fmxmlsnippet>

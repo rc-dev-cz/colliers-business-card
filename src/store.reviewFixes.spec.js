@@ -13,6 +13,7 @@ import {
   removeLineFromSplit,
   setEditLineId,
   setProof,
+  isLineOffShipping,
   shippedLines,
   shippingReady,
   splitOrder,
@@ -110,6 +111,16 @@ describe('Review: built from shipping, not the cart (BUG-01)', function () {
       })
     ).toEqual(['line-1'])
     expect(orderTotal(record)).toBe(63)
+  }, 20000)
+
+  it('keeps the left-out card in the cart, still off shipping, after Place Order', async function () {
+    expect(await confirmSubmit()).toBe(true)
+    expect(
+      store.cart.map(function (line) {
+        return line.id
+      })
+    ).toEqual(['line-2'])
+    expect(isLineOffShipping('line-2')).toBe(true)
   }, 20000)
 })
 

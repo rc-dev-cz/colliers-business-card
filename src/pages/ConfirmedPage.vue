@@ -23,18 +23,29 @@
         <app-button @click="backToCatalog">{{ t('returnToCatalog') }}</app-button>
       </div>
     </div>
+    <!-- What Place Order sent to FileMaker (memory only, gone after a refresh) -->
+    <div v-if="store.lastOrder" class="mx-auto max-w-4xl pb-12">
+      <order-payload-panel
+        :payload="store.lastOrder.payload"
+        :order-id="String(store.lastOrder.orderId)"
+      ></order-payload-panel>
+    </div>
   </colliers-page-shell>
 </template>
 
 <script>
 import ColliersPageShell from '../layout/ColliersPageShell.vue'
 import AppButton from '../components/AppButton.vue'
-import { t } from '../store'
+import OrderPayloadPanel from '../components/OrderPayloadPanel.vue'
+import { store, t } from '../store'
 import { go } from '../adapters/nav'
 
 export default {
   name: 'ConfirmedPage',
-  components: { ColliersPageShell, AppButton },
+  components: { ColliersPageShell, AppButton, OrderPayloadPanel },
+  data: function () {
+    return { store: store }
+  },
   methods: {
     t: t,
     backToCatalog: function () {

@@ -196,7 +196,7 @@ export default {
      */
     groups: function () {
       var seen = {}
-      function rows(list) {
+      function rows(list, type) {
         var out = []
         ;(list || []).forEach(function (row) {
           var value = String(formatAddressLine(row) || '').trim()
@@ -207,12 +207,13 @@ export default {
             name: String(row.addressName || '').trim() || value,
             detail: row.addressName ? value : '',
             row: row,
+            ref: { addressId: row.id, addressType: type },
           })
         })
         return out.sort(byName)
       }
-      var personal = rows(this.personalAddresses)
-      var offices = rows(this.offices)
+      var personal = rows(this.personalAddresses, 'personal')
+      var offices = rows(this.offices, 'office')
       var other = []
       ;(this.selectedAddresses || []).forEach(function (addr) {
         var value = String(addr || '').trim()
@@ -291,9 +292,16 @@ export default {
       }
       this.selected = this.selected.concat([value])
     },
+    /** Picked address strings, plus each one's address-book id ({ value: ref }) for location_id. */
     done: function () {
       var selected = this.selected.slice()
-      this.$emit('done', selected)
+      var refs = {}
+      this.groups.forEach(function (group) {
+        group.options.forEach(function (opt) {
+          if (opt.ref && selected.indexOf(opt.value) !== -1) refs[opt.value] = opt.ref
+        })
+      })
+      this.$emit('done', selected, refs)
     },
     onClose: function () {
       this.$emit('close')

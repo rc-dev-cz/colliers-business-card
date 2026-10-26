@@ -1,5 +1,10 @@
 import { describe, expect, it, vi } from 'vitest'
-import { buildOrderPayload, cleanCard, logOrderPayload } from './orderPayload.js'
+import {
+  buildOrderPayload,
+  catalogueIdForLine,
+  cleanCard,
+  logOrderPayload,
+} from './orderPayload.js'
 import { makeLine } from './cart.js'
 import { MOCK_OFFICES } from '../data/offices.js'
 
@@ -76,11 +81,17 @@ describe('buildOrderPayload', function () {
       line_ref: 'line-bil',
       product_code: 'BCAD-PL-BIL',
       catalogue_id: null,
-      qty: 3,
+      quantity: 3,
       cards: 750,
       unit_price: 63,
       price: 189,
     })
+  })
+
+  it('reads catalogue_id from the line, else from a FileMaker code', function () {
+    expect(catalogueIdForLine({ code: 'CPL-13616' })).toBe(13616)
+    expect(catalogueIdForLine({ code: 'CPL-13616', catalogueId: '42' })).toBe(42)
+    expect(catalogueIdForLine({ code: 'BCAD-PL-ENG' })).toBe(null)
   })
 
   it('sends a structured address and type for each location', function () {
@@ -99,6 +110,46 @@ describe('buildOrderPayload', function () {
     expect(locs[1].address.address_contact).toBe('Firstname Lastname')
     expect(locs[2]).toMatchObject({ location_id: null, location_type: null })
     expect(locs[2].address.one_line).toBe('1 Unknown Road, Nowhere')
+  })
+
+  it('sends the address-book id kept on the ship-to, not a text match', function () {
+    var byId = buildOrderPayload({
+      cart: cart,
+      order: {
+        splits: [
+          {
+            id: 1,
+            itemIds: ['line-en'],
+            qtys: {},
+            locations: [
+              // Text of office 1, id of office 2: the id wins.
+              {
+                id: 'loc-x',
+                address: '300-5515 North Service Road, Burlington, ON L7L 6G4',
+                qty: 1,
+                addressId: '2',
+                addressType: 'office',
+              },
+              // Id not in the loaded lists: still sent.
+              {
+                id: 'loc-y',
+                address: 'Somewhere',
+                qty: 1,
+                addressId: '77',
+                addressType: 'personal',
+              },
+            ],
+          },
+        ],
+      },
+      session: { email: 'demo' },
+      offices: MOCK_OFFICES,
+      personalAddresses: personal,
+    })
+    var locs = byId.groups[0].locations
+    expect(locs[0]).toMatchObject({ location_id: 2, location_type: 'office' })
+    expect(locs[0].address.address_name).toBe(MOCK_OFFICES[1].addressName)
+    expect(locs[1]).toMatchObject({ location_id: '77', location_type: 'personal' })
   })
 
   it('totals each group and the order', function () {

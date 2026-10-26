@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fmxmlsnippet type="FMObjectList">
+  <Step enable="True" id="89" name="# (comment)">
+    <Text>###########################################################################################</Text>
+  </Step>
+  <Step enable="True" id="89" name="# (comment)">
+    <Text>CONCERN: onFormRequest workflow hnadler for review</Text>
+  </Step>
+  <Step enable="True" id="89" name="# (comment)">
+    <Text>PARAMETERS: $$BF_*var - already instantiated</Text>
+  </Step>
+  <Step enable="True" id="89" name="# (comment)">
+    <Text>RETURNS:</Text>
+  </Step>
+  <Step enable="True" id="89" name="# (comment)">
+    <Text>NOTES:</Text>
+  </Step>
+  <Step enable="True" id="89" name="# (comment)">
+    <Text>	HookSet Name: review</Text>
+  </Step>
+  <Step enable="True" id="89" name="# (comment)">
+    <Text>	Generator Version: 2024-02-01 3:29:02 AM</Text>
+  </Step>
+  <Step enable="True" id="89" name="# (comment)">
+    <Text>###########################################################################################</Text>
+  </Step>
+  <Step enable="True" id="141" name="Set Variable">
+    <Value>
+      <Calculation><![CDATA[List(
+       $$BF_Log;
+       "@" & Get(ScriptName) & " - Start"
+)]]></Calculation>
+    </Value>
+    <Repetition>
+      <Calculation><![CDATA[1]]></Calculation>
+    </Repetition>
+    <Name>$$BF_Log</Name>
+  </Step>
+  <Step enable="True" id="89" name="# (comment)">
+    <Text>---------------------------------------------------------------------------------------</Text>
+  </Step>
+  <Step enable="True" id="89" name="# (comment)"/>
+  <Step enable="True" id="89" name="# (comment)">
+    <Text>add your business logic here as needed</Text>
+  </Step>
+  <Step enable="True" id="89" name="# (comment)">
+    <Text>User is reviewing the order before Place Order. Load the same address lists as Shipping so each ship-to resolves to its address-book row (orderPayload location_id + address details).</Text>
+  </Step>
+  <Step enable="True" id="89" name="# (comment)"/>
+  <Step enable="True" id="89" name="# (comment)">
+    <Text>Company offices: Store_OfficeAddresses rows with address_type = office that are not switched off (active = 0).</Text>
+  </Step>
+  <Step enable="True" id="89" name="# (comment)">
+    <Text>"offices": [{ "id": "1", "addressName": "Burlington Office", "addressStreet": "300-5515 North Service Road", ... }]</Text>
+  </Step>
+  <Step enable="True" id="141" name="Set Variable">
+    <Value>
+      <Calculation><![CDATA[Let ( [
+  ~f = Char ( 9 ) ;
+  ~r = Char ( 13 ) ;
+  ~sql = "SELECT " & SQL.GetFieldName ( Store_OfficeAddresses::id )
+       & ", " & SQL.GetFieldName ( Store_OfficeAddresses::address_name )
+       & ", " & SQL.GetFieldName ( Store_OfficeAddresses::address_street )
+       & ", " & SQL.GetFieldName ( Store_OfficeAddresses::address_street2 )
+       & ", " & SQL.GetFieldName ( Store_OfficeAddresses::address_city )
+       & ", " & SQL.GetFieldName ( Store_OfficeAddresses::address_province )
+       & ", " & SQL.GetFieldName ( Store_OfficeAddresses::address_postal_zip )
+       & ", " & SQL.GetFieldName ( Store_OfficeAddresses::address_country )
+       & " FROM " & SQL.GetTableName ( Store_OfficeAddresses::id )
+       & " WHERE " & SQL.GetFieldName ( Store_OfficeAddresses::address_type ) & " = 'office'"
+       & " AND COALESCE ( " & SQL.GetFieldName ( Store_OfficeAddresses::active ) & " , 1 ) <> 0"
+       & " ORDER BY " & SQL.GetFieldName ( Store_OfficeAddresses::address_name ) & " ASC" ;
+  ~rows = ExecuteSQL ( ~sql ; ~f ; ~r ) ;
+  ~rows = If ( ~rows = "?" ; "" ; ~rows ) ;
+  ~count = ValueCount ( ~rows )
+] ;
+  While (
+    [ ~i = 0 ; ~json = "[]" ] ;
+    ~i < ~count ;
+    [
+      ~row = Substitute ( GetValue ( ~rows ; ~i + 1 ) ; ~f ; ~r ) ;
+      ~json = JSONSetElement ( ~json ; ~i ;
+        JSONSetElement ( "{}" ;
+          [ "id" ; GetValue ( ~row ; 1 ) ; JSONString ] ;
+          [ "addressName" ; GetValue ( ~row ; 2 ) ; JSONString ] ;
+          [ "addressStreet" ; GetValue ( ~row ; 3 ) ; JSONString ] ;
+          [ "addressStreet2" ; GetValue ( ~row ; 4 ) ; JSONString ] ;
+          [ "addressCity" ; GetValue ( ~row ; 5 ) ; JSONString ] ;
+          [ "addressProvince" ; GetValue ( ~row ; 6 ) ; JSONString ] ;
+          [ "addressPostalZip" ; GetValue ( ~row ; 7 ) ; JSONString ] ;
+          [ "addressCountry" ; Let ( ~c = GetValue ( ~row ; 8 ) ; If ( ~c = "CA" ; "Canada" ; ~c ) ) ; JSONString ]
+        ) ; JSONObject ) ;
+      ~i = ~i + 1
+    ] ;
+    ~json
+  )
+)]]></Calculation>
+    </Value>
+    <Repetition>
+      <Calculation><![CDATA[1]]></Calculation>
+    </Repetition>
+    <Name>$offices</Name>
+  </Step>
+  <Step enable="True" id="141" name="Set Variable">
+    <Value>
+      <Calculation><![CDATA[JSONSetElement ( $$BF_Model ; "offices" ; $offices ; JSONArray )]]></Calculation>
+    </Value>
+    <Repetition>
+      <Calculation><![CDATA[1]]></Calculation>
+    </Repetition>
+    <Name>$$BF_Model</Name>
+  </Step>
+  <Step enable="True" id="89" name="# (comment)"/>
+  <Step enable="True" id="89" name="# (comment)">
+    <Text>Load personal addresses for the frontend</Text>
+  </Step>
+  <Step enable="True" id="22" name="Enter Find Mode">
+    <Pause state="False"/>
+    <Restore state="False"/>
+  </Step>
+  <Step enable="True" id="6" name="Go to Layout">
+    <LayoutDestination value="SelectedLayout"/>
+    <Layout id="363" name="store_BFuser_addresses"/>
+  </Step>
+  <Step enable="True" id="76" name="Set Field">
+    <Calculation><![CDATA["*"]]></Calculation>
+    <Field table="store_BFuser_addresses" id="79" name="personal_address"/>
+  </Step>
+  <Step enable="True" id="76" name="Set Field">
+    <Calculation><![CDATA["==" & JSONGetElement ( $$BF_User ; "id" )]]></Calculation>
+    <Field table="store_BFuser_addresses" id="80" name="klai_user_id"/>
+  </Step>
+  <Step enable="True" id="7" name="New Record/Request"/>
+  <Step enable="True" id="76" name="Set Field">
+    <Calculation><![CDATA["*"]]></Calculation>
+    <Field table="store_BFuser_addresses" id="79" name="personal_address"/>
+  </Step>
+  <Step enable="True" id="76" name="Set Field">
+    <Calculation><![CDATA["==" & JSONGetElement ( $$BF_User ; "id" )]]></Calculation>
+    <Field table="store_BFuser_addresses" id="32" name="contact_id"/>
+  </Step>
+  <Step enable="True" id="28" name="Perform Find">
+    <Restore state="False"/>
+  </Step>
+  <Step enable="True" id="16" name="Go to Record/Request/Page">
+    <NoInteract state="True"/>
+    <RowPageLocation value="First"/>
+  </Step>
+  <Step enable="True" id="141" name="Set Variable">
+    <Value>
+      <Calculation><![CDATA["[]"]]></Calculation>
+    </Value>
+    <Repetition>
+      <Calculation><![CDATA[1]]></Calculation>
+    </Repetition>
+    <Name>$addresses</Name>
+  </Step>
+  <Step enable="True" id="71" name="Loop">
+    <Restore state="False"/>
+    <FlushType value="Always"/>
+  </Step>
+  <Step enable="True" id="72" name="Exit Loop If">
+    <Calculation><![CDATA[Get(FoundCount) = 0]]></Calculation>
+  </Step>
+  <Step enable="True" id="141" name="Set Variable">
+    <Value>
+      <Calculation><![CDATA[store_BFuser_addresses::asJSONsmall]]></Calculation>
+    </Value>
+    <Repetition>
+      <Calculation><![CDATA[1]]></Calculation>
+    </Repetition>
+    <Name>$address</Name>
+  </Step>
+  <Step enable="True" id="141" name="Set Variable">
+    <Value>
+      <Calculation><![CDATA[JSONSetElement( $addresses ; Get ( RecordNumber ) - 1 ; $address ; JSONObject )]]></Calculation>
+    </Value>
+    <Repetition>
+      <Calculation><![CDATA[1]]></Calculation>
+    </Repetition>
+    <Name>$addresses</Name>
+  </Step>
+  <Step enable="True" id="72" name="Exit Loop If">
+    <Calculation><![CDATA[Get(RecordNumber) >= Get(FoundCount)]]></Calculation>
+  </Step>
+  <Step enable="True" id="16" name="Go to Record/Request/Page">
+    <NoInteract state="True"/>
+    <Exit state="True"/>
+    <RowPageLocation value="Next"/>
+  </Step>
+  <Step enable="True" id="73" name="End Loop"/>
+  <Step enable="True" id="141" name="Set Variable">
+    <Value>
+      <Calculation><![CDATA[JSONSetElement( $$BF_Model ; "personalAddresses" ; $addresses ; JSONArray )]]></Calculation>
+    </Value>
+    <Repetition>
+      <Calculation><![CDATA[1]]></Calculation>
+    </Repetition>
+    <Name>$$BF_Model</Name>
+  </Step>
+  <Step enable="True" id="89" name="# (comment)"/>
+  <Step enable="True" id="89" name="# (comment)">
+    <Text>------------------------ Do not edit below this line --------------------------</Text>
+  </Step>
+  <Step enable="True" id="103" name="Exit Script">
+    <Calculation><![CDATA[1]]></Calculation>
+  </Step>
+  <Step enable="True" id="89" name="# (comment)"/>
+</fmxmlsnippet>

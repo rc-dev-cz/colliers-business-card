@@ -159,26 +159,36 @@
                           <path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z"></path>
                         </svg>
                       </button>
-                      <button
-                        type="button"
-                        class="inline-flex h-8 w-8 items-center justify-center rounded border border-gray-200 text-gray-400 hover:bg-gray-50 hover:text-red-600"
-                        :aria-label="t('removeFromCart')"
-                        @click.stop="removeLineFromSplit(split, line.id)"
-                      >
-                        <svg
-                          width="15"
-                          height="15"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          stroke-width="2"
-                          aria-hidden="true"
+                      <span class="group relative inline-flex">
+                        <button
+                          type="button"
+                          class="inline-flex h-8 w-8 items-center justify-center rounded border border-gray-200 text-gray-400 hover:bg-gray-50 hover:text-red-600"
+                          :aria-label="t('removeFromShipment')"
+                          :aria-describedby="'ship-trash-tip-' + split.id + '-' + line.id"
+                          @click.stop="removeLineFromSplit(split, line.id)"
                         >
-                          <polyline points="3 6 5 6 21 6"></polyline>
-                          <path d="M8 6V4h8v2"></path>
-                          <path d="M19 6l-1 14H6L5 6"></path>
-                        </svg>
-                      </button>
+                          <svg
+                            width="15"
+                            height="15"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="2"
+                            aria-hidden="true"
+                          >
+                            <polyline points="3 6 5 6 21 6"></polyline>
+                            <path d="M8 6V4h8v2"></path>
+                            <path d="M19 6l-1 14H6L5 6"></path>
+                          </svg>
+                        </button>
+                        <span
+                          :id="'ship-trash-tip-' + split.id + '-' + line.id"
+                          role="tooltip"
+                          class="pointer-events-none absolute left-0 top-full z-20 mt-1.5 hidden w-max max-w-[240px] rounded bg-gray-900 px-2.5 py-1.5 text-xs leading-snug text-white shadow-lg group-focus-within:block group-hover:block"
+                        >
+                          {{ t('removeFromShipmentHint') }}
+                        </span>
+                      </span>
                     </div>
                   </div>
                 </li>
@@ -414,6 +424,7 @@
 </template>
 
 <script>
+import Vue from 'vue'
 import { cardPreviewSlots, previewFrameStyle } from '../helpers/previewModal'
 import Sortable from 'sortablejs'
 import ColliersPageShell from '../layout/ColliersPageShell.vue'
@@ -659,7 +670,9 @@ export default {
     toggleAddItemMenu: function (splitIndex) {
       this.addItemMenuIndex = this.addItemMenuIndex === splitIndex ? null : splitIndex
     },
-    syncSplitAddresses: function (split, addresses) {
+    /** refs: { address: { addressId, addressType } } from the picker, kept on each location. */
+    syncSplitAddresses: function (split, addresses, refs) {
+      var ids = refs || {}
       var wanted = (addresses || [])
         .map(function (row) {
           return String(row || '').trim()
@@ -673,11 +686,17 @@ export default {
       var self = this
       wanted.forEach(function (addr) {
         if (existing[addr]) {
+          // Ship-tos picked before ids were kept get theirs now.
+          var ref = ids[addr]
+          if (ref && !existing[addr].addressId) {
+            Vue.set(existing[addr], 'addressId', String(ref.addressId))
+            Vue.set(existing[addr], 'addressType', ref.addressType || '')
+          }
           next.push(existing[addr])
           return
         }
         var draft = { itemIds: split.itemIds, qtys: split.qtys, locations: next }
-        next.push(createLocation(addr, boxesPerAddressForSplit(draft, store.cart)))
+        next.push(createLocation(addr, boxesPerAddressForSplit(draft, store.cart), ids[addr]))
       })
       split.locations.splice(0, split.locations.length)
       next.forEach(function (loc) {
@@ -709,12 +728,12 @@ export default {
       this.closeAddModal()
       startNewAddressForShipping(split ? split.id : null)
     },
-    onModalDone: function (addresses) {
+    onModalDone: function (addresses, refs) {
       var index = this.modalSplitIndex
       var split = store.order.splits[index]
       this.closeAddModal()
       if (!split) return
-      this.syncSplitAddresses(split, addresses)
+      this.syncSplitAddresses(split, addresses, refs)
     },
     onDocClick: function (event) {
       if (this.addItemMenuIndex == null) return

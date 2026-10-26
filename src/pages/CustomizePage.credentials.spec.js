@@ -225,4 +225,37 @@ describe('CustomizePage name limit helper', function () {
     expect(ctx.flashCredentialNotice).not.toHaveBeenCalled()
     expect(limitReached(ctx.details.name, fonts)).toBe(true)
   })
+
+  it('shows the helper when a wide letter is refused even though a narrow one would fit (BUG-08)', async function () {
+    var fonts = await loadLayoutFonts()
+    var ctx = {
+      details: { name: '', degree: [], additionalCredentials: '' },
+      layoutFonts: fonts,
+      emailEdited: true,
+      nameRefusedAt: '',
+    }
+    var typed = ''
+    for (var n = 0; n < 50; n += 1) {
+      typed = ctx.details.name + 'W'
+      CustomizePage.methods.onName.call(ctx, typed, { target: { value: typed } })
+    }
+    var kept = ctx.details.name
+    expect(kept.length).toBeLessThan(50)
+    // The narrow-letter probe alone says there is still room…
+    expect(nameFitsOnCard({ name: kept + 'i' }, fonts)).toBe(true)
+    // …but the W was refused, so the helper shows.
+    var shown = CustomizePage.computed.nameLimitReached.call({
+      details: { name: kept },
+      layoutFonts: fonts,
+      nameRefusedAt: ctx.nameRefusedAt,
+    })
+    expect(shown).toBe(true)
+    // Deleting a letter makes room again and hides it.
+    var shorter = CustomizePage.computed.nameLimitReached.call({
+      details: { name: kept.slice(0, -1) },
+      layoutFonts: fonts,
+      nameRefusedAt: ctx.nameRefusedAt,
+    })
+    expect(shorter).toBe(false)
+  })
 })

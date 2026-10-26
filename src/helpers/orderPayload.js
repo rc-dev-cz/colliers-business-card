@@ -9,7 +9,7 @@ import { boxesPerAddressForSplit, linesForSplit, readSplitQty } from './order.js
  *
  *   order                     header: email, full name, date, order type, totals
  *   groups[]                  one per shipping group  → sync_BR_order_group
- *     items[]                 Prod. Code, QTY, Cat. ID, Unit Price, Price → _items
+ *     items[]                 product_code, quantity, catalogue_id, unit_price, price → _items
  *     locations[]             Location ID + boxes     → _shipment
  *       address               Address Name, Contact, Street 1 … → _shipment_addresses
  *     total_items / total_shipping   (grand_total comes back once shipping is priced;
@@ -57,6 +57,14 @@ export function cleanCard(details, language) {
   }
 }
 
+/** store_catalogue::id: the line's own id, else the number on a FileMaker code (CPL-13616 → 13616). */
+export function catalogueIdForLine(line) {
+  var row = line || {}
+  if (row.catalogueId != null && row.catalogueId !== '') return Number(row.catalogueId)
+  var match = /-(\d+)$/.exec(String(row.code || ''))
+  return match ? Number(match[1]) : null
+}
+
 function contactName(row) {
   return text([row.firstName, row.lastName].filter(Boolean).join(' '))
 }
@@ -78,6 +86,27 @@ export function cleanAddress(row, oneLine) {
     email: text(src.email),
     one_line: text(oneLine || formatAddressLine(src)),
   }
+}
+
+/**
+ * The ship-to's address-book row: by the id kept on the location (picked in Shipping), else by
+ * matching the address text (ship-tos saved before ids were kept).
+ */
+function findLocationAddress(loc, offices, personal) {
+  var id = loc && loc.addressId != null && loc.addressId !== '' ? String(loc.addressId) : ''
+  if (id) {
+    var byId = function (row) {
+      return String(row.id) === id
+    }
+    var type = loc.addressType
+    var office = type !== 'personal' ? (offices || []).find(byId) : null
+    if (office) return { type: 'office', row: office }
+    var mine = type !== 'office' ? (personal || []).find(byId) : null
+    if (mine) return { type: 'personal', row: mine }
+    // Not in the loaded lists (e.g. Review opened before they loaded): still send the id.
+    return { type: type || null, row: { id: id } }
+  }
+  return findAddress(loc && loc.address, offices, personal)
 }
 
 function findAddress(oneLine, offices, personal) {
@@ -112,9 +141,9 @@ export function buildOrderPayload(input) {
       return {
         line_ref: String(line.id),
         product_code: line.code,
-        catalogue_id: line.catalogueId != null ? line.catalogueId : null,
+        catalogue_id: catalogueIdForLine(line),
         language: text(line.language),
-        qty: qty,
+        quantity: qty,
         cards: cardsFromBoxes(qty),
         unit_price: money(price),
         price: money(price * qty),
@@ -124,7 +153,7 @@ export function buildOrderPayload(input) {
 
     var locations = (split.locations || []).map(function (loc) {
       var boxes = Number(loc.qty) > 0 ? Number(loc.qty) : boxesPerAddressForSplit(split, cart)
-      var found = findAddress(loc.address, src.offices, src.personalAddresses)
+      var found = findLocationAddress(loc, src.offices, src.personalAddresses)
       return {
         location_ref: String(loc.id),
         location_id: found && found.row.id != null ? found.row.id : null,
@@ -176,6 +205,20 @@ export function buildOrderPayload(input) {
     },
     groups: groups,
   }
+}
+
+/** Payload as readable JSON: each print PDF's base64 becomes a short size note. */
+export function payloadJsonForDisplay(payload) {
+  return JSON.stringify(
+    payload,
+    function (key, value) {
+      if (key === 'print_pdf_base64' && typeof value === 'string') {
+        return '<base64 PDF, ' + value.length.toLocaleString('en-US') + ' characters>'
+      }
+      return value
+    },
+    2
+  )
 }
 
 /** One console block the backend can read when Place Order succeeds. */
