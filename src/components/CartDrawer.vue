@@ -1,4 +1,4 @@
-<template>
+  <template>
   <div>
     <drawer :open="store.cartOpen" :close-label="t('close')" @close="closeCart">
       <span slot="label">{{ t('shoppingCart') }}</span>
@@ -28,7 +28,7 @@
                 <div class="min-w-0">
                   <div
                     v-if="personName(line)"
-                    class="text-[15px] font-semibold leading-snug text-gray-900"
+                    class="text-[15px] font-semibold leading-snug text-gray-900 [overflow-wrap:anywhere]"
                   >
                     {{ personName(line) }}
                   </div>
@@ -79,26 +79,36 @@
                         <path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z"></path>
                       </svg>
                     </button>
-                    <button
-                      type="button"
-                      class="inline-flex h-8 w-8 items-center justify-center rounded border border-gray-200 text-gray-400 hover:bg-gray-50 hover:text-red-600"
-                      :aria-label="t('removeFromCart')"
-                      @click.stop="removeLine(line.id)"
-                    >
-                      <svg
-                        width="15"
-                        height="15"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        stroke-width="2"
-                        aria-hidden="true"
+                    <span class="group relative inline-flex">
+                      <button
+                        type="button"
+                        class="inline-flex h-8 w-8 items-center justify-center rounded border border-gray-200 text-gray-400 hover:bg-gray-50 hover:text-red-600"
+                        :aria-label="t('removeFromCart')"
+                        :aria-describedby="'cart-trash-tip-' + line.id"
+                        @click.stop="removeLine(line.id)"
                       >
-                        <polyline points="3 6 5 6 21 6"></polyline>
-                        <path d="M8 6V4h8v2"></path>
-                        <path d="M19 6l-1 14H6L5 6"></path>
-                      </svg>
-                    </button>
+                        <svg
+                          width="15"
+                          height="15"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-width="2"
+                          aria-hidden="true"
+                        >
+                          <polyline points="3 6 5 6 21 6"></polyline>
+                          <path d="M8 6V4h8v2"></path>
+                          <path d="M19 6l-1 14H6L5 6"></path>
+                        </svg>
+                      </button>
+                      <span
+                        :id="'cart-trash-tip-' + line.id"
+                        role="tooltip"
+                        class="pointer-events-none absolute right-0 top-full z-20 mt-1.5 hidden w-max max-w-[220px] rounded bg-gray-900 px-2.5 py-1.5 text-xs leading-snug text-white shadow-lg group-focus-within:block group-hover:block"
+                      >
+                        {{ t('removeFromCartHint') }}
+                      </span>
+                    </span>
                   </div>
                 </div>
               </div>

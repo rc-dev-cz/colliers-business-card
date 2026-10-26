@@ -206,16 +206,15 @@ export default {
       if (idx === -1) {
         if (this.isLocked(option)) {
           this.$emit('locked', val)
-          // Searched for a locked one: close so the "no space" message is not hidden.
-          if (String(this.query || '').trim()) this.close()
+          // Close so the "no space" message under the field is not hidden.
+          this.close()
           return
         }
         next.push(val)
       } else next.splice(idx, 1)
       this.emitValues(next)
-      // A pick found by searching: close and clear, so the card and any message show (BUG-09).
-      // Picks made by scrolling keep the list open for the next tick.
-      if (String(this.query || '').trim()) this.close()
+      // Close and clear after every pick, so the card and any space message show (BUG-09).
+      this.close()
     },
     remove: function (item) {
       this.emitValues(

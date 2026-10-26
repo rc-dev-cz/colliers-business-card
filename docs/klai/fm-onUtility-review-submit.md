@@ -1,5 +1,8 @@
 # FileMaker: `BF - onUtility - review` (type `submit`) — draft
 
+> **Superseded:** the paste-ready scripts are `fm-place-order.xml` (new `Place Order` script)
+> and `fm-onUtility-review-submit.xml` (the submit block). See `fm-place-order.md`.
+
 Place Order on Review runs named action `submitOrder`:
 
 1. `review-submitOrder.js` builds `model.orderPayload` (same shape as Vue `src/helpers/orderPayload.js`)
@@ -29,7 +32,7 @@ Shipment addresses go to `sync_BR_order_group_shipment_addresses` (see Order Gro
     "group_ref": "group-1", "shipment_number": 1, "count_locations": 2,
     "items": [{
       "line_ref": "line-1", "product_code": "BCAD-PL-ENG", "catalogue_id": null, "language": "English",
-      "qty": 2, "cards": 500, "unit_price": 63, "price": 126,
+      "quantity": 2, "cards": 500, "unit_price": 63, "price": 126,
       "card": { "name": "Firstname Lastname", "title": "Associate", "title_fr": null, "degrees": [],
                 "additional_credentials": null, "region": null, "specialized_team": null,
                 "email": "first.lastname@colliersprojectleaders.com", "phone": "555 555 5555",

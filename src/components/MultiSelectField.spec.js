@@ -66,11 +66,20 @@ describe('MultiSelectField', function () {
     expect(wrapper.vm.open).toBe(false)
   })
 
-  it('keeps the list open for a pick made by scrolling', function () {
+  it('also closes after a pick made by scrolling, so messages under the field show', function () {
     var wrapper = field()
     wrapper.vm.toggle()
     wrapper.vm.toggleOption({ value: 'PMP' })
-    expect(wrapper.vm.open).toBe(true)
+    expect(wrapper.emitted().input[0]).toEqual([['PMP']])
+    expect(wrapper.vm.open).toBe(false)
+  })
+
+  it('closes after a click on a locked option without a search', function () {
+    var wrapper = field({ lockedValues: ['LEED AP BD+C'] })
+    wrapper.vm.toggle()
+    wrapper.vm.toggleOption({ value: 'LEED AP BD+C' })
+    expect(wrapper.emitted().locked[0]).toEqual(['LEED AP BD+C'])
+    expect(wrapper.vm.open).toBe(false)
   })
 
   it('shows the warning in yellow, and only when there is no error', async function () {

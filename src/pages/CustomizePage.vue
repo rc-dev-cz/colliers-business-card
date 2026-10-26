@@ -296,6 +296,9 @@ export default {
       store: store,
       NAME_MAX: NAME_MAX,
       EMAIL_MAX: EMAIL_MAX,
+      // Name kept when the last typed letter did not fit (a wide W can be refused
+      // while a narrow i still fits), so the limit helper shows for it too.
+      nameRefusedAt: '',
       printPdfBusy: false,
       printPdfError: '',
       layoutStatus: 'loading',
@@ -368,13 +371,18 @@ export default {
       if (!this.hasLayoutError(LAYOUT_ERROR.name)) return ''
       return this.layoutMessage(LAYOUT_ERROR.name)
     },
-    /** Persistent helper: at 49 characters, or earlier when one more letter will not fit. */
+    /**
+     * Persistent helper: at 49 characters, when a typed letter was just refused for card
+     * width, or earlier when even one more narrow letter will not fit.
+     */
     nameLimitReached: function () {
       var name = String(this.details.name || '')
       if (!name) return false
 
       // Show the notice at 49, before another character is attempted.
       if (name.length >= NAME_MAX - 1) return true
+
+      if (this.nameRefusedAt && this.nameRefusedAt === name) return true
 
       if (!this.layoutFonts) return false
 
@@ -497,9 +505,14 @@ export default {
         return !credentialsFitOnCard(candidate, self.layoutFonts, self.product.language)
       })
     },
+    /**
+     * Link and empty field are off while "No more space" shows, or when not even one letter
+     * fits. A field that already has text stays editable so it can be shortened or cleared.
+     */
     additionalCredentialsDisabled: function () {
-      if (!this.layoutFonts || !this.product) return false
       if (String(this.otherCredentialDraft || '').length) return false
+      if (this.degreeSpaceNotice) return true
+      if (!this.layoutFonts || !this.product) return false
       var candidate = Object.assign({}, this.details, { additionalCredentials: 'i' })
       return !credentialsFitOnCard(candidate, this.layoutFonts, this.product.language)
     },
@@ -568,6 +581,7 @@ export default {
         // The persistent name-limit helper explains why further characters do not stick.
         while (next.length > current.length && !fits(next)) next = next.slice(0, -1)
         if (event && event.target) event.target.value = next
+        this.nameRefusedAt = next
       }
       this.details.name = next
       if (this.emailEdited) return

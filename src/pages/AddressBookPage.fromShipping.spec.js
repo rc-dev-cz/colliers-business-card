@@ -56,6 +56,11 @@ describe('Shipping "+ Add new address" round trip (BUG-20)', function () {
     expect(locations.length).toBe(1)
     expect(locations[0].address).toContain('1 Pine Road')
     expect(locations[0].qty).toBe(1)
+    // The saved address-book id goes with the ship-to (sent to FileMaker as location_id).
+    const saved = store.personalAddresses.find(function (row) {
+      return row.addressName === 'Cabin'
+    })
+    expect(locations[0]).toMatchObject({ addressId: String(saved.id), addressType: 'personal' })
     expect(store.pendingAddressSplitId).toBe(null)
     expect(window.location.hash).toBe('#/shipping')
   })

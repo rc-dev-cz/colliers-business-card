@@ -82,6 +82,9 @@ export const store = Vue.observable({
   adminOrders: [],
   submitting: false,
   submitError: '',
+  // Last placed order and the payload sent to FileMaker, for the Confirmed page.
+  // Memory only: the print PDFs hold names and addresses.
+  lastOrder: null,
 })
 
 function persistCart() {
@@ -596,6 +599,30 @@ export function removeLineFromSplit(split, id) {
   persistOrder()
 }
 
+/**
+ * After Place Order: empty the ordered cards and start a new order. Cards the user took
+ * off shipping were not ordered, so they stay in the cart, still off shipping.
+ */
+export function clearOrderedLines(ordered) {
+  var orderedIds = {}
+  ;(ordered || []).forEach(function (line) {
+    orderedIds[String(line.id)] = true
+  })
+  var kept = store.cart.filter(function (line) {
+    return !orderedIds[String(line.id)]
+  })
+  store.cart = kept
+  store.pendingSplitId = null
+  clearEditLine()
+  resetOrder(store.order)
+  kept.forEach(function (line) {
+    detachLine(store.order, String(line.id))
+  })
+  persistCart()
+  syncAssignments()
+  persistOrder()
+}
+
 export function clearCart() {
   store.cart = []
   store.pendingSplitId = null
@@ -761,7 +788,9 @@ export function finishNewAddressForShipping(record) {
     (split.locations || []).some(function (loc) {
       return loc.address === address
     })
-  if (split && address && !already) addShipLocation(split, address)
+  if (split && address && !already) {
+    addShipLocation(split, address, null, { addressId: record.id, addressType: 'personal' })
+  }
   go('shipping')
 }
 
@@ -783,10 +812,11 @@ export function addLineBackToShipping(lineId) {
   addCartLineToSplit(first, lineId)
 }
 
-export function addShipLocation(split, address, qty) {
+/** ref: { addressId, addressType } of the address-book row, sent to FileMaker as location_id. */
+export function addShipLocation(split, address, qty, ref) {
   if (!linesInSplit(split).length) return
   var boxes = qty != null ? qty : boxesPerAddressForSplit(split, store.cart)
-  pushLocation(split, address, boxes)
+  pushLocation(split, address, boxes, ref)
   fitGroupToLimit(split, store.cart)
   syncAllLineQuantities()
   persistCart()
@@ -1043,9 +1073,14 @@ export async function confirmSubmit() {
     }
     const record = appendConfirmedOrder()
     logOrderPayload(result.orderId || record.id, payload)
+    store.lastOrder = Object.freeze({
+      orderId: result.orderId || record.id,
+      source: result.source || '',
+      payload: payload,
+    })
     // Empty the cart here, not on the Confirmed page, so opening /confirmed again keeps a draft.
-    clearCart()
-    clearOrder()
+    // Cards left off shipping were not ordered and stay in the cart.
+    clearOrderedLines(lines)
     return true
   } catch (error) {
     store.submitError = error && error.message ? error.message : 'Submit failed'

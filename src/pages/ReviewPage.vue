@@ -81,7 +81,7 @@
                       ></card-preview>
                     </button>
                     <div class="min-w-0">
-                      <div class="font-medium text-gray-900">
+                      <div class="font-medium text-gray-900 [overflow-wrap:anywhere]">
                         {{ personName(line) || lineName(line) }}
                       </div>
                       <div v-if="personName(line)" class="mt-0.5 text-sm text-gray-500">

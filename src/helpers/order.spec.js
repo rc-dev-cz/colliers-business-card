@@ -18,6 +18,8 @@ import {
   fitGroupToLimit,
   readSplitQty,
   syncLineQuantityFromSplits,
+  normalizeOrder,
+  snapshotOrder,
 } from './order.js'
 
 describe('shipping groups', function () {
@@ -322,5 +324,24 @@ describe('pruneLocationsWithoutItems', function () {
     pruneLocationsWithoutItems(order, [{ id: 'a', quantity: 1 }])
     expect(order.splits[0].locations).toEqual([])
     expect(order.splits[1].locations.length).toBe(1)
+  })
+})
+
+describe('ship-to address-book id', function () {
+  it('is kept on a new location and survives normalize, snapshot and reload', function () {
+    var loc = createLocation('1 Pine Road, Banff', 2, { addressId: 12, addressType: 'personal' })
+    expect(loc).toMatchObject({
+      address: '1 Pine Road, Banff',
+      qty: 2,
+      addressId: '12',
+      addressType: 'personal',
+    })
+    var order = { splits: [createSplit({ id: 1, itemIds: ['a'], locations: [loc] })] }
+    var copy = normalizeOrder(JSON.parse(JSON.stringify(snapshotOrder(order))))
+    expect(copy.splits[0].locations[0]).toMatchObject({ addressId: '12', addressType: 'personal' })
+  })
+
+  it('stays off a location picked without an id', function () {
+    expect(createLocation('Somewhere', 1)).not.toHaveProperty('addressId')
   })
 })
