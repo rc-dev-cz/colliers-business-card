@@ -52,16 +52,26 @@
             </button>
           </div>
           <form class="space-y-4" @submit.prevent="previewProof">
-            <text-field
-              :label="t('fullName')"
-              :value="details.name"
-              :maxlength="NAME_MAX"
-              :error="nameFieldError"
-              name="name"
-              autocomplete="name"
-              required
-              @input="onName"
-            ></text-field>
+            <div>
+              <text-field
+                :label="t('fullName')"
+                :value="details.name"
+                :maxlength="NAME_MAX"
+                :error="nameFieldError"
+                name="name"
+                autocomplete="name"
+                required
+                @input="onName"
+              ></text-field>
+              <p
+                v-if="nameLimitReached"
+                class="mt-1 text-sm text-amber-700"
+                role="status"
+                aria-live="polite"
+              >
+                {{ t('nameNoSpace') }}
+              </p>
+            </div>
             <div>
               <multi-select-field
                 :label="t('degree')"
@@ -353,11 +363,24 @@ export default {
       return ''
     },
     nameFieldError: function () {
-      if (this.credentialSpaceRejected && this.credentialNoticeField === 'name') {
-        return t('nameNoSpace')
-      }
       if (!this.hasLayoutError(LAYOUT_ERROR.name)) return ''
       return this.layoutMessage(LAYOUT_ERROR.name)
+    },
+    /** Persistent helper: at 49 characters, or earlier when one more letter will not fit. */
+    nameLimitReached: function () {
+      var name = String(this.details.name || '')
+      if (!name) return false
+
+      // Show the notice at 49, before another character is attempted.
+      if (name.length >= NAME_MAX - 1) return true
+
+      if (!this.layoutFonts) return false
+
+      // Check whether even a narrow additional letter would fit.
+      return !nameFitsOnCard(
+        Object.assign({}, this.details, { name: name + 'i' }),
+        this.layoutFonts
+      )
     },
     teamFieldError: function () {
       if (this.credentialSpaceRejected && this.credentialNoticeField === 'team') {
@@ -534,12 +557,10 @@ export default {
         return nameFitsOnCard(Object.assign({}, details, { name: name }), fonts)
       }
       if (!fits(next) && next.length >= current.length) {
-        // Typing or pasting past the room left for name + credentials: keep what fits, say why.
+        // Typing or pasting past the room left for name + credentials: keep what fits.
+        // The persistent name-limit helper explains why further characters do not stick.
         while (next.length > current.length && !fits(next)) next = next.slice(0, -1)
-        this.flashCredentialNotice('name')
         if (event && event.target) event.target.value = next
-      } else if (this.credentialNoticeField === 'name') {
-        this.clearCredentialNotice()
       }
       this.details.name = next
       if (this.emailEdited) return

@@ -58,8 +58,8 @@ export const messages = {
     FR: 'Cette équipe spécialisée est trop longue pour la carte.',
   },
   nameNoSpace: {
-    EN: 'No more space for the name on the card.',
-    FR: 'Il n’y a plus d’espace pour le nom sur la carte.',
+    EN: 'Limit reached for card',
+    FR: 'Limite atteinte pour la carte',
   },
   teamNoSpace: {
     EN: 'No more space for the specialized team on the card.',
