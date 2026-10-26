@@ -70,60 +70,98 @@
           :message="store.officesError"
         ></error-state>
 
-        <div v-else class="colliers-list-panel-scroll overflow-x-auto">
-          <table class="min-w-full text-left text-sm">
-            <thead
-              class="sticky top-0 z-10 border-b border-gray-200 bg-gray-50 text-xs font-medium uppercase tracking-wide text-gray-500"
+        <div v-else class="colliers-list-panel-scroll">
+          <!-- Phones: one card per address, actions under it, no sideways scroll (BUG-24) -->
+          <ul class="divide-y divide-gray-100 sm:hidden">
+            <li
+              v-if="!activeRows.length"
+              class="px-4 py-10 text-center text-sm italic text-gray-500"
             >
-              <tr>
-                <th class="w-48 px-4 py-3 sm:w-56">{{ t('locationName') }}</th>
-                <th class="px-4 py-3">{{ t('address') }}</th>
-                <th class="w-40 px-4 py-3 sm:w-48">{{ t('city') }}</th>
-                <th v-if="activeTab === 'personal'" class="w-40 px-4 py-3 text-right">
-                  {{ t('actions') }}
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-if="!activeRows.length">
-                <td
-                  :colspan="activeTab === 'personal' ? 4 : 3"
-                  class="px-4 py-10 text-center text-sm italic text-gray-500"
+              {{ emptyListLabel }}
+            </li>
+            <li v-for="row in activeRows" :key="'card-' + row.id" class="px-4 py-4">
+              <div class="font-semibold text-gray-900">{{ row.addressName }}</div>
+              <div class="mt-1 text-sm text-gray-700">{{ streetLine(row) }}</div>
+              <div class="text-sm text-gray-500">{{ cityLine(row) }}</div>
+              <div v-if="activeTab === 'personal'" class="mt-3 flex items-center gap-4">
+                <button
+                  type="button"
+                  class="btn-primary-sm"
+                  :aria-label="t('edit')"
+                  @click="openEdit(row.id)"
                 >
-                  {{ emptyListLabel }}
-                </td>
-              </tr>
-              <tr
-                v-for="row in activeRows"
-                :key="row.id"
-                class="border-b border-gray-100 last:border-0"
+                  {{ t('edit') }}
+                </button>
+                <button
+                  type="button"
+                  class="colliers-link-action colliers-link-action--danger"
+                  :aria-label="t('delete')"
+                  @click="confirmDelete(row.id)"
+                >
+                  {{ t('delete') }}
+                </button>
+              </div>
+            </li>
+          </ul>
+
+          <div class="hidden overflow-x-auto sm:block">
+            <table class="min-w-full text-left text-sm">
+              <thead
+                class="sticky top-0 z-10 border-b border-gray-200 bg-gray-50 text-xs font-medium uppercase tracking-wide text-gray-500"
               >
-                <td class="px-4 py-3 font-semibold text-gray-900">{{ row.addressName }}</td>
-                <td class="px-4 py-3 text-gray-700">{{ streetLine(row) }}</td>
-                <td class="px-4 py-3 text-gray-700">{{ cityLine(row) }}</td>
-                <!-- Colliers offices are read-only here (edited in Manage Addresses) -->
-                <td v-if="activeTab === 'personal'" class="whitespace-nowrap px-4 py-3 text-right">
-                  <button
-                    type="button"
-                    class="btn-primary-sm"
-                    :aria-label="t('edit')"
-                    @click="openEdit(row.id)"
+                <tr>
+                  <th class="w-48 px-4 py-3 sm:w-56">{{ t('locationName') }}</th>
+                  <th class="px-4 py-3">{{ t('address') }}</th>
+                  <th class="w-40 px-4 py-3 sm:w-48">{{ t('city') }}</th>
+                  <th v-if="activeTab === 'personal'" class="w-40 px-4 py-3 text-right">
+                    {{ t('actions') }}
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-if="!activeRows.length">
+                  <td
+                    :colspan="activeTab === 'personal' ? 4 : 3"
+                    class="px-4 py-10 text-center text-sm italic text-gray-500"
                   >
-                    {{ t('edit') }}
-                  </button>
-                  <span class="mx-2 text-gray-300">|</span>
-                  <button
-                    type="button"
-                    class="colliers-link-action colliers-link-action--danger"
-                    :aria-label="t('delete')"
-                    @click="confirmDelete(row.id)"
+                    {{ emptyListLabel }}
+                  </td>
+                </tr>
+                <tr
+                  v-for="row in activeRows"
+                  :key="row.id"
+                  class="border-b border-gray-100 last:border-0"
+                >
+                  <td class="px-4 py-3 font-semibold text-gray-900">{{ row.addressName }}</td>
+                  <td class="px-4 py-3 text-gray-700">{{ streetLine(row) }}</td>
+                  <td class="px-4 py-3 text-gray-700">{{ cityLine(row) }}</td>
+                  <!-- Colliers offices are read-only here (edited in Manage Addresses) -->
+                  <td
+                    v-if="activeTab === 'personal'"
+                    class="whitespace-nowrap px-4 py-3 text-right"
                   >
-                    {{ t('delete') }}
-                  </button>
-                </td>
-              </tr>
-            </tbody>
-          </table>
+                    <button
+                      type="button"
+                      class="btn-primary-sm"
+                      :aria-label="t('edit')"
+                      @click="openEdit(row.id)"
+                    >
+                      {{ t('edit') }}
+                    </button>
+                    <span class="mx-2 text-gray-300">|</span>
+                    <button
+                      type="button"
+                      class="colliers-link-action colliers-link-action--danger"
+                      :aria-label="t('delete')"
+                      @click="confirmDelete(row.id)"
+                    >
+                      {{ t('delete') }}
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
     </div>
@@ -132,7 +170,7 @@
       :open="formOpen"
       :title="editingId ? t('editAddress') : t('newAddressTitle')"
       size="xl"
-      @close="closeForm"
+      @close="onFormClose"
     >
       <form @submit="saveForm">
         <div class="space-y-4 px-5 py-5">
@@ -203,7 +241,7 @@
           </div>
         </div>
         <div class="modal-footer">
-          <app-button variant="outline" class="sm:w-auto" @click="closeForm">{{
+          <app-button variant="outline" class="sm:w-auto" @click="onFormClose">{{
             t('cancel')
           }}</app-button>
           <div class="modal-footer-actions">
@@ -231,6 +269,8 @@ import {
   updatePersonal,
   deletePersonal,
   getPersonal,
+  finishNewAddressForShipping,
+  cancelNewAddressForShipping,
 } from '../store'
 import { emptyPersonal, matchesSearch, formatAddressLine } from '../helpers/addressBook'
 
@@ -283,6 +323,8 @@ export default {
   },
   mounted: function () {
     loadOffices()
+    // Came from Shipping "+ Add new address": open the form straight away (BUG-20).
+    if (store.pendingAddressSplitId != null) this.openNew()
   },
   methods: {
     t: t,
@@ -345,6 +387,11 @@ export default {
       this.editingId = id
       this.formOpen = true
     },
+    /** Cancel / close: when Shipping sent us here, go back there with nothing added. */
+    onFormClose: function () {
+      this.closeForm()
+      if (store.pendingAddressSplitId != null) cancelNewAddressForShipping()
+    },
     closeForm: function () {
       this.formOpen = false
       this.clearFormErrors()
@@ -362,11 +409,11 @@ export default {
         addressCountry: String(this.form.addressCountry || '').trim() || 'Canada',
       }
       const isEdit = Boolean(this.editingId)
-      if (isEdit) updatePersonal(this.editingId, payload)
-      else addPersonal(payload)
+      const saved = isEdit ? updatePersonal(this.editingId, payload) : addPersonal(payload)
       this.statusMessageKey = isEdit ? 'addressUpdated' : 'addressSaved'
       this.closeForm()
       this.activeTab = 'personal'
+      if (!isEdit && store.pendingAddressSplitId != null) finishNewAddressForShipping(saved)
     },
     confirmDelete: function (id) {
       this.clearStatusMessage()

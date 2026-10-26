@@ -41,9 +41,24 @@
                   <div class="mt-0.5 text-[13px] leading-snug text-gray-500">
                     {{ t('qty') }}: {{ line.quantity }}
                   </div>
+                  <div
+                    v-if="isLineOffShipping(line.id)"
+                    class="mt-1.5 flex flex-wrap items-center gap-x-2 text-[13px] leading-snug"
+                  >
+                    <span class="text-amber-700">{{ t('notInShipment') }}</span>
+                    <button
+                      type="button"
+                      class="font-medium text-colliers-primary hover:underline"
+                      @click="addLineBackToShipping(line.id)"
+                    >
+                      {{ t('addBackToShipping') }}
+                    </button>
+                  </div>
                 </div>
                 <div class="flex shrink-0 flex-col items-end gap-2">
-                  <div class="text-[15px] font-semibold text-gray-900">${{ lineAmount(line) }}</div>
+                  <div class="text-[15px] font-semibold text-gray-900">
+                    {{ money(lineAmount(line)) }}
+                  </div>
                   <div class="flex items-center gap-2">
                     <button
                       type="button"
@@ -105,7 +120,7 @@
         <div class="space-y-2">
           <div class="flex justify-between text-sm text-gray-700">
             <span>{{ t('subtotal') }}</span>
-            <span>${{ cartTotal.toFixed(2) }}</span>
+            <span>{{ money(cartTotal) }}</span>
           </div>
           <div class="flex justify-between text-sm text-gray-700">
             <span>{{ t('shippingHandling') }}</span>
@@ -115,7 +130,7 @@
             class="flex justify-between border-t border-gray-200 pt-2 text-[15px] font-semibold text-gray-900"
           >
             <span>{{ t('total') }}</span>
-            <span>${{ cartTotal.toFixed(2) }}</span>
+            <span>{{ money(cartTotal) }}</span>
           </div>
         </div>
         <app-button block :disabled="!store.cart.length" @click="goShipping">
@@ -166,6 +181,9 @@ import {
   setProof,
   setEditLineId,
   startShippingFromCart,
+  isLineOffShipping,
+  addLineBackToShipping,
+  money,
 } from '../store'
 import { languageLabel, productNameKey } from '../i18n/messages'
 import { lineTotal } from '../helpers/cart'
@@ -196,6 +214,9 @@ export default {
   },
   methods: {
     t: t,
+    money: money,
+    isLineOffShipping: isLineOffShipping,
+    addLineBackToShipping: addLineBackToShipping,
     removeLine: removeLine,
     closeCart: function () {
       if (this.previewLine) {

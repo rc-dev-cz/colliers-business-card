@@ -142,7 +142,6 @@ import ErrorState from './ErrorState.vue'
 import SearchField from './SearchField.vue'
 import { store, t, loadOffices } from '../store'
 import { formatAddressLine, matchesSearch } from '../helpers/addressBook'
-import { go } from '../adapters/nav'
 
 var modalCount = 0
 
@@ -299,9 +298,9 @@ export default {
     onClose: function () {
       this.$emit('close')
     },
+    /** The page decides where to go (Shipping remembers the shipment first, BUG-20). */
     goAddressBook: function () {
-      this.$emit('close')
-      go('address-book')
+      this.$emit('add-new-address')
     },
   },
 }

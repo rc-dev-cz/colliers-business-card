@@ -52,16 +52,26 @@
             </button>
           </div>
           <form class="space-y-4" @submit.prevent="previewProof">
-            <text-field
-              :label="t('fullName')"
-              :value="details.name"
-              :maxlength="NAME_MAX"
-              :error="nameFieldError"
-              name="name"
-              autocomplete="name"
-              required
-              @input="onName"
-            ></text-field>
+            <div>
+              <text-field
+                :label="t('fullName')"
+                :value="details.name"
+                :maxlength="NAME_MAX"
+                :error="nameFieldError"
+                name="name"
+                autocomplete="name"
+                required
+                @input="onName"
+              ></text-field>
+              <p
+                v-if="nameLimitReached"
+                class="mt-1 text-sm text-amber-700"
+                role="status"
+                aria-live="polite"
+              >
+                {{ t('nameNoSpace') }}
+              </p>
+            </div>
             <div>
               <multi-select-field
                 :label="t('degree')"
@@ -72,6 +82,8 @@
                 :search-placeholder="t('selectDegree')"
                 :empty-label="t('noDegrees')"
                 :error="degreeSpaceNotice"
+                :warning="degreeSpaceWarning"
+                :locked-title="t('credentialTooLong')"
                 @input="onDegrees"
                 @locked="onCredentialLocked"
               ></multi-select-field>
@@ -93,6 +105,14 @@
               :error="additionalSpaceNotice"
               @input="onAdditionalCredentials"
             ></text-field>
+            <button
+              v-if="showOtherCredential && otherCredentialRejected"
+              type="button"
+              class="-mt-2 text-sm font-medium text-colliers-primary underline-offset-2 hover:underline"
+              @click="removeOtherCredential"
+            >
+              {{ t('removeOtherCredential') }}
+            </button>
             <select-field
               :label="t('title')"
               :value="details.title"
@@ -180,7 +200,16 @@ import MultiSelectField from '../components/MultiSelectField.vue'
 import PhoneField from '../components/PhoneField.vue'
 import AppButton from '../components/AppButton.vue'
 import { CARD_COMPANY, emptyCard, getProduct } from '../data/products'
-import { t, store, setProof, loadOffices, loadDegrees, loadTitles } from '../store'
+import {
+  t,
+  store,
+  setProof,
+  loadOffices,
+  loadDegrees,
+  loadTitles,
+  readCustomizeDraft,
+  saveCustomizeDraft,
+} from '../store'
 import { cloneCardDetails } from '../helpers/cart'
 import {
   cleanCardText,
@@ -190,6 +219,7 @@ import {
   EMAIL_MAX,
   isCompletePhone,
   isValidEmail,
+  localPhoneDigits,
   NAME_MAX,
 } from '../helpers/validate'
 import { formatAddressCard, officeLabel } from '../adapters/api'
@@ -335,11 +365,24 @@ export default {
       return ''
     },
     nameFieldError: function () {
-      if (this.credentialSpaceRejected && this.credentialNoticeField === 'name') {
-        return t('nameNoSpace')
-      }
       if (!this.hasLayoutError(LAYOUT_ERROR.name)) return ''
       return this.layoutMessage(LAYOUT_ERROR.name)
+    },
+    /** Persistent helper: at 49 characters, or earlier when one more letter will not fit. */
+    nameLimitReached: function () {
+      var name = String(this.details.name || '')
+      if (!name) return false
+
+      // Show the notice at 49, before another character is attempted.
+      if (name.length >= NAME_MAX - 1) return true
+
+      if (!this.layoutFonts) return false
+
+      // Check whether even a narrow additional letter would fit.
+      return !nameFitsOnCard(
+        Object.assign({}, this.details, { name: name + 'i' }),
+        this.layoutFonts
+      )
     },
     teamFieldError: function () {
       if (this.credentialSpaceRejected && this.credentialNoticeField === 'team') {
@@ -366,10 +409,17 @@ export default {
       })
       return unselected.length > 0 && this.lockedDegreeValues.length === unselected.length
     },
+    /** Full: "No more space". Some options greyed out: say why they are locked (BUG-09). */
+    /** Red: the card is full (or a locked option was clicked). */
     degreeSpaceNotice: function () {
       var flashed = this.credentialSpaceRejected && this.credentialNoticeField === 'degree'
-      if (!flashed && !this.degreesFull) return ''
-      return t('credentialsNoSpace')
+      if (flashed || this.degreesFull) return t('credentialsNoSpace')
+      return ''
+    },
+    /** Yellow: some options are greyed out, short ones still fit (BUG-09). */
+    degreeSpaceWarning: function () {
+      if (this.degreeSpaceNotice || !this.lockedDegreeValues.length) return ''
+      return t('credentialsSomeLocked')
     },
     /** Other credential text that does not fit stays in the field only, never on the card. */
     otherCredentialRejected: function () {
@@ -384,11 +434,12 @@ export default {
     phoneHint: function () {
       return this.phoneError ? '' : t('mobilePhoneHint')
     },
-    /** Partial number: say so instead of silently keeping Preview Proof disabled. */
+    /** Partial, too long or not Canadian: say so instead of silently keeping Preview Proof off. */
     phoneError: function () {
       var digits = String((this.details && this.details.phone) || '').replace(/\D/g, '')
       if (!digits || isCompletePhone(digits)) return ''
-      return t('mobilePhoneIncomplete')
+      if (localPhoneDigits(digits).length < 10) return t('mobilePhoneIncomplete')
+      return t('mobilePhoneInvalid')
     },
     layoutReady: function () {
       return this.layoutStatus === 'valid'
@@ -425,8 +476,9 @@ export default {
         return { value: title, label: title }
       })
     },
+    /** Region names in the card's language (what prints), not the site's. */
     regionOptions: function () {
-      return regionOptions(store.locale)
+      return regionOptions(this.product && this.product.language)
     },
     degreeOptions: function () {
       return (store.degrees || []).map(function (degree) {
@@ -472,6 +524,7 @@ export default {
       handler: function () {
         this.commitOtherCredentialDraft()
         this.replan()
+        this.saveDraft()
       },
     },
   },
@@ -511,12 +564,10 @@ export default {
         return nameFitsOnCard(Object.assign({}, details, { name: name }), fonts)
       }
       if (!fits(next) && next.length >= current.length) {
-        // Typing or pasting past the room left for name + credentials: keep what fits, say why.
+        // Typing or pasting past the room left for name + credentials: keep what fits.
+        // The persistent name-limit helper explains why further characters do not stick.
         while (next.length > current.length && !fits(next)) next = next.slice(0, -1)
-        this.flashCredentialNotice('name')
         if (event && event.target) event.target.value = next
-      } else if (this.credentialNoticeField === 'name') {
-        this.clearCredentialNotice()
       }
       this.details.name = next
       if (this.emailEdited) return
@@ -572,6 +623,12 @@ export default {
       this.otherCredentialDraft = next
       var candidate = Object.assign({}, this.details, { additionalCredentials: next })
       this.details.additionalCredentials = this.credentialsFit(candidate) ? next : ''
+    },
+    /** Drop a refused Other credential in one click, so Preview Proof comes back on. */
+    removeOtherCredential: function () {
+      this.otherCredentialDraft = ''
+      this.details.additionalCredentials = ''
+      this.otherCredentialOpen = false
     },
     /** A draft that did not fit goes on the card once something else frees the room. */
     commitOtherCredentialDraft: function () {
@@ -654,6 +711,19 @@ export default {
           }) || null
         if (line) store.editLineId = line.id
       }
+      // A draft for this card (typed before a refresh) wins over the cart line / proof copy.
+      var draft = readCustomizeDraft(this.product.code, line ? line.id : null)
+      if (draft) {
+        this.setDetails(
+          applyLockedBrand(
+            Object.assign(emptyDetails(language), cloneCardDetails(draft.details)),
+            language
+          )
+        )
+        this.emailEdited = draft.emailEdited
+        this.emailTouched = draft.emailEdited
+        return
+      }
       if (line) {
         this.setDetails(
           applyLockedBrand(
@@ -688,6 +758,16 @@ export default {
       this.setDetails(emptyDetails(language))
       this.emailEdited = false
       this.emailTouched = false
+    },
+    /** Save the form as it is typed, so a refresh keeps it (Vue's twin of Klai app.proof). */
+    saveDraft: function () {
+      if (!this.product) return
+      saveCustomizeDraft({
+        code: this.product.code,
+        lineId: store.editLineId,
+        details: this.details,
+        emailEdited: this.emailEdited,
+      })
     },
     /** Loads card details and the Other credential field together. */
     setDetails: function (details) {

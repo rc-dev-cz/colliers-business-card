@@ -22,4 +22,8 @@ describe('PhoneField', function () {
     expect(wrapper.find('input').attributes('maxlength')).toBeUndefined()
     expect(wrapper.emitted().input[0]).toEqual(['416 555 0199'])
   })
+
+  it('keeps an extra digit visible instead of dropping it (BUG-26)', function () {
+    expect(typeInto('416 5555 0199').emitted().input[0]).toEqual(['416 555 50199'])
+  })
 })

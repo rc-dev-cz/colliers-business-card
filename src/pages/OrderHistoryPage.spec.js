@@ -55,6 +55,18 @@ describe('OrderHistoryPage', function () {
       expect(text).toContain('Burlington')
     })
 
+    it('OH-P04 phone cards: each order has its own Repeat Order and View (BUG-24)', function () {
+      const wrapper = mountPage('admin-orders')
+      const cards = wrapper.findAll('ul.sm\\:hidden > li')
+      expect(cards.length).toBeGreaterThan(0)
+      const first = cards.at(0)
+      expect(first.text()).toContain('ORD-')
+      const labels = first.findAll('button').wrappers.map(function (b) {
+        return b.text().trim()
+      })
+      expect(labels).toEqual(['Repeat Order', 'View'])
+    })
+
     it('OH-P03 profile route for admin still shows company orders', function () {
       const wrapper = mountPage('history')
       expect(wrapper.text()).toContain('ORD-8472')

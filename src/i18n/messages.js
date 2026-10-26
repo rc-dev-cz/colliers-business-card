@@ -4,7 +4,7 @@ export const messages = {
   businessCards: { EN: 'Business Cards', FR: 'Cartes de visite' },
   customize: { EN: 'Customize', FR: 'Personnaliser' },
   details: { EN: 'Details', FR: 'Détails' },
-  pricePerBox: { EN: '${price} / box of 250 cards', FR: '${price} / boîte de 250 cartes' },
+  pricePerBox: { EN: '{price} / box of 250 cards', FR: '{price} / boîte de 250 cartes' },
   back: { EN: 'Back', FR: 'Retour' },
   cardPreview: { EN: 'Card Preview', FR: 'Aperçu de la carte' },
   viewPrintPdf: { EN: 'View print PDF', FR: 'Voir le PDF d’impression' },
@@ -36,6 +36,12 @@ export const messages = {
     EN: 'These credentials are too long for the card.',
     FR: 'Ces désignations sont trop longues pour la carte.',
   },
+  removeOtherCredential: { EN: 'Remove other credential', FR: 'Retirer cette désignation' },
+  credentialsSomeLocked: {
+    EN: 'Little space left: only short credentials still fit on the card.',
+    FR: 'Peu d’espace restant : seules les désignations courtes tiennent encore sur la carte.',
+  },
+  credentialTooLong: { EN: 'Too long to fit on the card', FR: 'Trop long pour tenir sur la carte' },
   credentialsNoSpace: {
     EN: 'No more space for credentials on the card.',
     FR: 'Il n’y a plus d’espace pour les désignations sur la carte.',
@@ -53,8 +59,8 @@ export const messages = {
     FR: 'Cette équipe spécialisée est trop longue pour la carte.',
   },
   nameNoSpace: {
-    EN: 'No more space for the name on the card.',
-    FR: 'Il n’y a plus d’espace pour le nom sur la carte.',
+    EN: 'Limit reached for card',
+    FR: 'Limite atteinte pour la carte',
   },
   teamNoSpace: {
     EN: 'No more space for the specialized team on the card.',
@@ -86,6 +92,10 @@ export const messages = {
   mobilePhoneIncomplete: {
     EN: 'Enter all 10 digits of the mobile number.',
     FR: 'Entrez les 10 chiffres du numéro de mobile.',
+  },
+  mobilePhoneInvalid: {
+    EN: 'Enter a valid 10-digit Canadian number.',
+    FR: 'Entrez un numéro canadien valide à 10 chiffres.',
   },
   companyName: { EN: 'Company Name', FR: "Nom de l'entreprise" },
   address: { EN: 'Address', FR: 'Adresse' },
@@ -122,6 +132,7 @@ export const messages = {
   shippingGroup: { EN: 'Shipping Group', FR: "Groupe d'expédition" },
   total: { EN: 'Total', FR: 'Total' },
   items: { EN: 'items', FR: 'articles' },
+  itemOne: { EN: 'item', FR: 'article' },
   cards: { EN: 'cards', FR: 'cartes' },
   box: { EN: 'box', FR: 'boîte' },
   boxes: { EN: 'boxes', FR: 'boîtes' },
@@ -134,6 +145,11 @@ export const messages = {
   shipment: { EN: 'Shipment', FR: 'Envoi' },
   itemsHeading: { EN: 'Items', FR: 'Articles' },
   shippingTo: { EN: 'Shipping To:', FR: 'Expédier à :' },
+  notInShipment: {
+    EN: 'Not in a shipment — won’t be ordered.',
+    FR: 'Dans aucune expédition — ne sera pas commandée.',
+  },
+  addBackToShipping: { EN: 'Add back', FR: 'Rajouter' },
   shippingTbd: { EN: 'TBD', FR: 'À déterminer' },
   selectedItems: { EN: 'Selected Items', FR: 'Articles sélectionnés' },
   noItemsSelected: { EN: 'No items selected', FR: 'Aucun article sélectionné' },
@@ -352,10 +368,6 @@ export const messages = {
   adminDashboard: { EN: 'Admin Dashboard', FR: 'Tableau de bord admin' },
   systemOptions: { EN: 'System Options', FR: 'Options système' },
   manageAddresses: { EN: 'Manage Addresses', FR: 'Gérer les adresses' },
-  manageColliersOfficesHint: {
-    EN: 'Colliers office locations used on business cards and shipping.',
-    FR: "Adresses de bureau Colliers utilisées sur les cartes et pour l'expédition.",
-  },
   enterNewOfficeAddress: {
     EN: 'Enter new address...',
     FR: 'Entrez la nouvelle adresse...',
@@ -472,6 +484,10 @@ export const messages = {
   },
   noTitlesEn: { EN: 'No English titles yet.', FR: 'Aucun titre anglais pour le moment.' },
   noTitlesFr: { EN: 'No French titles yet.', FR: 'Aucun titre français pour le moment.' },
+  titleAlreadyExists: {
+    EN: 'This title is already on the list.',
+    FR: 'Ce titre est déjà dans la liste.',
+  },
   titleTooLongForCard: {
     EN: 'This title is too long for the card’s title line. Shorten it so it fits.',
     FR: 'Ce titre est trop long pour la ligne de titre de la carte. Raccourcissez-le.',
@@ -510,4 +526,18 @@ export function languageLabel(language, translate) {
   var value = String(language || '').trim()
   var key = { english: 'english', french: 'french', bilingual: 'bilingual' }[value.toLowerCase()]
   return key && typeof translate === 'function' ? translate(key) : value
+}
+
+/**
+ * Money as shown to the user: EN $1,263.00, FR 1 263,00 $ (Canadian French, space before $).
+ * Two decimals always.
+ */
+export function formatMoney(amount, locale) {
+  var n = Number(amount)
+  if (!Number.isFinite(n)) n = 0
+  if (locale === 'FR') {
+    var fr = n.toLocaleString('fr-CA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+    return fr.replace(/[\u202f\u00a0 ]/g, '\u00a0') + '\u00a0$'
+  }
+  return '$' + n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
 }

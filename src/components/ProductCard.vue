@@ -34,7 +34,7 @@
 import CardPreview from './CardPreview.vue'
 import AppButton from './AppButton.vue'
 import { productNameKey } from '../i18n/messages'
-import { t, startNewCustomize } from '../store'
+import { t, startNewCustomize, money } from '../store'
 import { go } from '../adapters/nav'
 
 export default {
@@ -48,9 +48,7 @@ export default {
       return t(productNameKey(this.product.code))
     },
     price: function () {
-      var amount = Number(this.product.price)
-      var priceStr = Number.isFinite(amount) ? amount.toFixed(2) : String(this.product.price)
-      return t('pricePerBox').replace('{price}', priceStr)
+      return t('pricePerBox').replace('{price}', money(this.product.price))
     },
   },
   methods: {

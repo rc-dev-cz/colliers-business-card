@@ -26,7 +26,7 @@
               <td class="px-4 py-3 font-medium text-colliers-primary">{{ row.id }}</td>
               <td class="px-4 py-3 text-gray-700">{{ formatInvoiceDate(row.date) }}</td>
               <td class="px-4 py-3 text-gray-700">{{ row.department }}</td>
-              <td class="px-4 py-3 tabular-nums text-gray-700">${{ formatAmount(row.amount) }}</td>
+              <td class="px-4 py-3 tabular-nums text-gray-700">{{ money(row.amount) }}</td>
               <td class="px-4 py-3">
                 <span
                   class="inline-flex rounded-md px-2.5 py-1 text-xs font-medium"
@@ -55,7 +55,7 @@
 <script>
 import ColliersPageShell from '../../layout/ColliersPageShell.vue'
 import AdminPageHeader from '../../components/AdminPageHeader.vue'
-import { t, store } from '../../store'
+import { t, store, money } from '../../store'
 import { MOCK_INVOICES } from '../../helpers/adminData'
 
 export default {
@@ -68,12 +68,7 @@ export default {
   },
   methods: {
     t: t,
-    formatAmount: function (n) {
-      return Number(n).toLocaleString('en-US', {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2,
-      })
-    },
+    money: money,
     formatInvoiceDate: function (iso) {
       const parts = String(iso || '').split('-')
       if (parts.length !== 3) return iso

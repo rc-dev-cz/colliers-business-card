@@ -32,65 +32,106 @@
           </div>
         </div>
 
-        <div class="overflow-x-auto">
-          <table class="min-w-full text-left text-sm">
-            <thead
-              class="border-b border-gray-200 bg-gray-50 text-xs font-medium uppercase tracking-wide text-gray-500"
-            >
-              <tr>
-                <th class="px-4 py-3">{{ t('orderId') }}</th>
-                <th class="px-4 py-3">{{ personColumnLabel }}</th>
-                <th class="px-4 py-3">{{ t('item') }}</th>
-                <th class="px-4 py-3">{{ t('qty') }}</th>
-                <th class="px-4 py-3">{{ t('date') }}</th>
-                <th class="px-4 py-3">{{ t('status') }}</th>
-                <th class="px-4 py-3 text-right">{{ t('action') }}</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-if="!filteredOrders.length">
-                <td colspan="7" class="px-4 py-10 text-center text-gray-500">
-                  {{ t('noOrders') }}
-                </td>
-              </tr>
-              <tr
-                v-for="row in filteredOrders"
-                :key="rowKey(row)"
-                class="border-b border-gray-100 last:border-0"
+        <div>
+          <!-- Phones: one card per order, actions under it, no sideways scroll (BUG-24) -->
+          <ul class="divide-y divide-gray-100 sm:hidden">
+            <li v-if="!filteredOrders.length" class="px-4 py-10 text-center text-gray-500">
+              {{ t('noOrders') }}
+            </li>
+            <li v-for="row in filteredOrders" :key="'card-' + rowKey(row)" class="px-4 py-4">
+              <div class="flex items-start justify-between gap-3">
+                <div class="font-medium text-colliers-primary">{{ row.id }}</div>
+                <span
+                  class="inline-flex shrink-0 rounded-md px-2.5 py-1 text-xs font-medium"
+                  :class="statusClass(row.status)"
+                >
+                  {{ statusLabel(row.status) }}
+                </span>
+              </div>
+              <div class="mt-1 text-sm text-gray-800">{{ itemLabel(row, t) }}</div>
+              <div class="text-[13px] text-gray-500">
+                {{ formatOrderDate(row.date) }} · {{ cardCount(row) }} {{ t('cards') }}
+                <template v-if="cardholderName(row)"> · {{ cardholderName(row) }}</template>
+              </div>
+              <div class="mt-3 flex items-center gap-4 text-sm">
+                <button
+                  type="button"
+                  class="font-medium text-colliers-primary hover:underline"
+                  @click="onRepeat(row.id)"
+                >
+                  {{ t('repeatOrder') }}
+                </button>
+                <button
+                  type="button"
+                  class="font-medium text-colliers-primary hover:underline"
+                  @click="openDetails(row)"
+                >
+                  {{ t('view') }}
+                </button>
+              </div>
+            </li>
+          </ul>
+
+          <div class="hidden overflow-x-auto sm:block">
+            <table class="min-w-full text-left text-sm">
+              <thead
+                class="border-b border-gray-200 bg-gray-50 text-xs font-medium uppercase tracking-wide text-gray-500"
               >
-                <td class="px-4 py-3 font-medium text-colliers-primary">{{ row.id }}</td>
-                <td class="px-4 py-3 text-gray-800">{{ cardholderName(row) }}</td>
-                <td class="px-4 py-3 text-gray-700">{{ itemLabel(row, t) }}</td>
-                <td class="px-4 py-3 text-gray-700">{{ cardCount(row) }}</td>
-                <td class="px-4 py-3 text-gray-700">{{ formatOrderDate(row.date) }}</td>
-                <td class="px-4 py-3">
-                  <span
-                    class="inline-flex rounded-md px-2.5 py-1 text-xs font-medium"
-                    :class="statusClass(row.status)"
-                  >
-                    {{ statusLabel(row.status) }}
-                  </span>
-                </td>
-                <td class="whitespace-nowrap px-4 py-3 text-right">
-                  <button
-                    type="button"
-                    class="text-colliers-primary hover:underline"
-                    @click="onRepeat(row.id)"
-                  >
-                    {{ t('repeatOrder') }}
-                  </button>
-                  <span class="mx-2 text-gray-300">|</span>
-                  <button
-                    type="button"
-                    class="text-colliers-primary hover:underline"
-                    @click="openDetails(row)"
-                  >
-                    {{ t('view') }}
-                  </button>
-                </td>
-              </tr>
-            </tbody>
-          </table>
+                <tr>
+                  <th class="px-4 py-3">{{ t('orderId') }}</th>
+                  <th class="px-4 py-3">{{ personColumnLabel }}</th>
+                  <th class="px-4 py-3">{{ t('item') }}</th>
+                  <th class="px-4 py-3">{{ t('qty') }}</th>
+                  <th class="px-4 py-3">{{ t('date') }}</th>
+                  <th class="px-4 py-3">{{ t('status') }}</th>
+                  <th class="px-4 py-3 text-right">{{ t('action') }}</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-if="!filteredOrders.length">
+                  <td colspan="7" class="px-4 py-10 text-center text-gray-500">
+                    {{ t('noOrders') }}
+                  </td>
+                </tr>
+                <tr
+                  v-for="row in filteredOrders"
+                  :key="rowKey(row)"
+                  class="border-b border-gray-100 last:border-0"
+                >
+                  <td class="px-4 py-3 font-medium text-colliers-primary">{{ row.id }}</td>
+                  <td class="px-4 py-3 text-gray-800">{{ cardholderName(row) }}</td>
+                  <td class="px-4 py-3 text-gray-700">{{ itemLabel(row, t) }}</td>
+                  <td class="px-4 py-3 text-gray-700">{{ cardCount(row) }}</td>
+                  <td class="px-4 py-3 text-gray-700">{{ formatOrderDate(row.date) }}</td>
+                  <td class="px-4 py-3">
+                    <span
+                      class="inline-flex rounded-md px-2.5 py-1 text-xs font-medium"
+                      :class="statusClass(row.status)"
+                    >
+                      {{ statusLabel(row.status) }}
+                    </span>
+                  </td>
+                  <td class="whitespace-nowrap px-4 py-3 text-right">
+                    <button
+                      type="button"
+                      class="text-colliers-primary hover:underline"
+                      @click="onRepeat(row.id)"
+                    >
+                      {{ t('repeatOrder') }}
+                    </button>
+                    <span class="mx-2 text-gray-300">|</span>
+                    <button
+                      type="button"
+                      class="text-colliers-primary hover:underline"
+                      @click="openDetails(row)"
+                    >
+                      {{ t('view') }}
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
     </div>
@@ -153,7 +194,9 @@
                     </div>
                   </div>
                   <div class="text-right text-sm tabular-nums">
-                    <div class="font-medium text-gray-900">${{ lineCost(details, line) }}</div>
+                    <div class="font-medium text-gray-900">
+                      {{ money(lineCost(details, line)) }}
+                    </div>
                     <div class="text-xs text-gray-500">
                       {{ boxLabel(lineBoxes(details, line)) }} ·
                       {{ cardsFromBoxes(lineBoxes(details, line)) }} {{ t('cards') }}
@@ -221,7 +264,7 @@
         >
           <div class="text-sm text-gray-700">
             {{ t('totalCost') }}:
-            <span class="font-semibold text-gray-900">${{ orderTotal(details).toFixed(2) }}</span>
+            <span class="font-semibold text-gray-900">{{ money(orderTotal(details)) }}</span>
             <span class="text-gray-500">
               · {{ t('quantity') }}: {{ cardCount(details) }} {{ t('cards') }}</span
             >
@@ -247,7 +290,7 @@ import AdminPageHeader from '../components/AdminPageHeader.vue'
 import SearchField from '../components/SearchField.vue'
 import SelectField from '../components/SelectField.vue'
 import CardPreview from '../components/CardPreview.vue'
-import { store, t, isAdmin, loadAdminOrders, repeatOrder } from '../store'
+import { store, t, isAdmin, loadAdminOrders, repeatOrder, money } from '../store'
 import { languageLabel, productNameKey } from '../i18n/messages'
 import { lineTotal, cardsFromBoxes } from '../helpers/cart'
 import { billedBoxesForLine } from '../helpers/order'
@@ -318,6 +361,7 @@ export default {
   },
   methods: {
     t: t,
+    money: money,
     cardCount: cardCount,
     cardholderName: cardholderName,
     formatOrderDate: function (value) {

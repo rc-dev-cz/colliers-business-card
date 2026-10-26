@@ -59,9 +59,26 @@ describe('localPhoneDigits', function () {
     expect(localPhoneDigits('416 555 0199')).toBe('4165550199')
   })
 
-  it('stops at 10 digits while typing', function () {
+  it('keeps extra digits so the field can flag them, never cuts them (BUG-26)', function () {
     expect(localPhoneDigits('+1 4')).toBe('4')
-    expect(localPhoneDigits('416 555 01999')).toBe('4165550199')
+    expect(localPhoneDigits('416 5555 0199')).toBe('41655550199')
+    expect(localPhoneDigits('+44 20 7946 0958')).toBe('442079460958')
+  })
+})
+
+describe('isCompletePhone: valid 10-digit Canadian number (BUG-26)', function () {
+  it('accepts a Canadian number, with or without +1', function () {
+    expect(isCompletePhone('416 555 0199')).toBe(true)
+    expect(isCompletePhone('1-416-555-0199')).toBe(true)
+    expect(isCompletePhone('555 555 5555')).toBe(true)
+  })
+
+  it('refuses too many digits, a foreign number, or 0/1 area code or exchange', function () {
+    expect(isCompletePhone('416 5555 0199')).toBe(false)
+    expect(isCompletePhone('+44 20 7946 0958')).toBe(false)
+    expect(isCompletePhone('0000000000')).toBe(false)
+    expect(isCompletePhone('016 555 0199')).toBe(false)
+    expect(isCompletePhone('416 055 0199')).toBe(false)
   })
 })
 

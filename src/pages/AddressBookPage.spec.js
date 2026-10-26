@@ -60,6 +60,20 @@ describe('AddressBookPage', function () {
     expect(wrapper.text()).not.toContain('Burlington Office')
   })
 
+  it('AB-02b phone cards: each address has its own Edit and Delete (BUG-24)', function () {
+    const wrapper = mountPage()
+    const cards = wrapper.findAll('ul.sm\\:hidden > li')
+    expect(cards.length).toBe(2)
+    expect(cards.at(0).text()).toContain('Home Office')
+    const labels = cards
+      .at(0)
+      .findAll('button')
+      .wrappers.map(function (b) {
+        return b.text().trim()
+      })
+    expect(labels).toEqual(['Edit', 'Delete'])
+  })
+
   it('AB-03 on My tab, + Add New Address is visible', function () {
     const wrapper = mountPage()
     const btn = buttonByText(wrapper, '+ Add New Address')

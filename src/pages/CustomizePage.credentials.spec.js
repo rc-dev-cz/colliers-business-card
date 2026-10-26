@@ -1,6 +1,8 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import CustomizePage from './CustomizePage.vue'
 import { store } from '../store.js'
+import { loadLayoutFonts } from '../helpers/cardFonts'
+import { nameFitsOnCard } from '../helpers/cardLayout'
 
 afterEach(function () {
   vi.useRealTimers()
@@ -91,6 +93,18 @@ describe('CustomizePage credential space guards', function () {
     expect(ctx.details.additionalCredentials).toBe('MBA')
   })
 
+  it('Remove other credential clears the refused text and closes the field', function () {
+    var ctx = {
+      details: { additionalCredentials: '' },
+      otherCredentialDraft: 'MBA, PhD',
+      otherCredentialOpen: true,
+    }
+    CustomizePage.methods.removeOtherCredential.call(ctx)
+    expect(ctx.otherCredentialDraft).toBe('')
+    expect(ctx.details.additionalCredentials).toBe('')
+    expect(ctx.otherCredentialOpen).toBe(false)
+  })
+
   it('blocks Preview Proof while Other credential is refused', function () {
     var ctx = {
       isBilingual: false,
@@ -121,14 +135,26 @@ describe('CustomizePage credential space guards', function () {
     try {
       ctx.degreesFull = CustomizePage.computed.degreesFull.call(ctx)
       expect(ctx.degreesFull).toBe(true)
-      expect(CustomizePage.computed.degreeSpaceNotice.call(ctx)).toBe(
-        'No more space for credentials on the card.'
-      )
+      ctx.degreeSpaceNotice = CustomizePage.computed.degreeSpaceNotice.call(ctx)
+      expect(ctx.degreeSpaceNotice).toBe('No more space for credentials on the card.')
+      // Full: red only, no yellow warning on top.
+      expect(CustomizePage.computed.degreeSpaceWarning.call(ctx)).toBe('')
 
+      // Some options still fit: yellow warning, no red error.
       ctx.lockedDegreeValues = ['PgMP']
       ctx.degreesFull = CustomizePage.computed.degreesFull.call(ctx)
       expect(ctx.degreesFull).toBe(false)
-      expect(CustomizePage.computed.degreeSpaceNotice.call(ctx)).toBe('')
+      ctx.degreeSpaceNotice = CustomizePage.computed.degreeSpaceNotice.call(ctx)
+      expect(ctx.degreeSpaceNotice).toBe('')
+      expect(CustomizePage.computed.degreeSpaceWarning.call(ctx)).toBe(
+        'Little space left: only short credentials still fit on the card.'
+      )
+
+      ctx.lockedDegreeValues = []
+      ctx.degreesFull = CustomizePage.computed.degreesFull.call(ctx)
+      ctx.degreeSpaceNotice = CustomizePage.computed.degreeSpaceNotice.call(ctx)
+      expect(ctx.degreeSpaceNotice).toBe('')
+      expect(CustomizePage.computed.degreeSpaceWarning.call(ctx)).toBe('')
     } finally {
       store.degrees = prior
     }
@@ -151,5 +177,52 @@ describe('CustomizePage credential space guards', function () {
     vi.advanceTimersByTime(3000)
     expect(ctx.credentialSpaceRejected).toBe(false)
     expect(ctx.credentialNoticeField).toBe('')
+  })
+})
+
+describe('CustomizePage name limit helper', function () {
+  function limitReached(name, fonts) {
+    return CustomizePage.computed.nameLimitReached.call({
+      details: { name: name },
+      layoutFonts: fonts || null,
+    })
+  }
+
+  it('stays hidden for a short name and appears at 49 characters', function () {
+    expect(limitReached('')).toBe(false)
+    expect(limitReached('i'.repeat(48))).toBe(false)
+    expect(limitReached('i'.repeat(49))).toBe(true)
+    expect(limitReached('i'.repeat(50))).toBe(true)
+  })
+
+  it('appears before 49 characters when one more letter would not fit', async function () {
+    var fonts = await loadLayoutFonts()
+    // 46 narrow letters still fit on the name block; one more does not.
+    var filled = 'i'.repeat(46)
+    expect(filled.length).toBeLessThan(49)
+    expect(nameFitsOnCard({ name: filled }, fonts)).toBe(true)
+    expect(nameFitsOnCard({ name: filled + 'i' }, fonts)).toBe(false)
+    expect(limitReached(filled, fonts)).toBe(true)
+    expect(limitReached(filled.slice(0, -1), fonts)).toBe(false)
+    expect(limitReached('Ada Lovelace', fonts)).toBe(false)
+  })
+
+  it('clips a name that does not fit without flashing a temporary error', async function () {
+    var fonts = await loadLayoutFonts()
+    var current = 'i'.repeat(46)
+    var input = { value: current + 'i' }
+    var ctx = {
+      details: { name: current, degree: [], additionalCredentials: '' },
+      layoutFonts: fonts,
+      emailEdited: true,
+      flashCredentialNotice: vi.fn(),
+    }
+
+    CustomizePage.methods.onName.call(ctx, current + 'i', { target: input })
+
+    expect(ctx.details.name).toBe(current)
+    expect(input.value).toBe(current)
+    expect(ctx.flashCredentialNotice).not.toHaveBeenCalled()
+    expect(limitReached(ctx.details.name, fonts)).toBe(true)
   })
 })

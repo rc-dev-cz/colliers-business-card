@@ -97,10 +97,10 @@
                   {{ splitLineQty(split, line) }}
                 </td>
                 <td class="px-2 py-4 text-right align-middle text-gray-700">
-                  ${{ unitPrice(line) }}
+                  {{ money(unitPrice(line)) }}
                 </td>
                 <td class="py-4 pl-2 text-right align-middle font-medium text-gray-900">
-                  ${{ lineAmount(split, line) }}
+                  {{ money(lineAmount(split, line)) }}
                 </td>
               </tr>
             </tbody>
@@ -109,7 +109,7 @@
 
         <div class="mt-4 flex justify-end gap-6 text-sm font-semibold text-gray-900">
           <span>{{ t('subtotal') }}</span>
-          <span>${{ splitSubtotal(split).toFixed(2) }}</span>
+          <span>{{ money(splitSubtotal(split)) }}</span>
         </div>
 
         <div class="mt-6 border-t border-gray-100 pt-5">
@@ -143,7 +143,7 @@
       >
         <div class="flex justify-between text-sm text-gray-700">
           <span>{{ t('subtotal') }}</span>
-          <span>${{ orderTotal.toFixed(2) }}</span>
+          <span>{{ money(orderTotal) }}</span>
         </div>
         <div class="mt-2 flex justify-between text-sm text-gray-700">
           <span>{{ t('shipping') }}</span>
@@ -153,7 +153,7 @@
           class="mt-4 flex justify-between border-t border-gray-200 pt-4 text-base font-semibold text-colliers-primary"
         >
           <span>{{ t('total') }}</span>
-          <span>${{ orderTotal.toFixed(2) }}</span>
+          <span>{{ money(orderTotal) }}</span>
         </div>
         <app-button
           block
@@ -209,6 +209,7 @@ import {
   confirmSubmit,
   shippingReady,
   removeEmptySplits,
+  money,
 } from '../store'
 import { languageLabel, productNameKey } from '../i18n/messages'
 import { boxesPerAddressForSplit, readSplitQty } from '../helpers/order'
@@ -242,6 +243,7 @@ export default {
   },
   methods: {
     t: t,
+    money: money,
     linesInSplit: linesInSplit,
     locationBoxes: function (split, loc) {
       return Number(loc.qty) > 0 ? Number(loc.qty) : boxesPerAddressForSplit(split, store.cart)

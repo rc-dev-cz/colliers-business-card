@@ -14,7 +14,8 @@
       <div class="colliers-page-header__actions">
         <div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-gray-500">
           <span v-if="selectedItemCount"
-            >{{ t('total') }} {{ selectedItemCount }} {{ t('items') }}</span
+            >{{ t('total') }} {{ selectedItemCount }}
+            {{ t(selectedItemCount === 1 ? 'itemOne' : 'items') }}</span
           >
           <template v-if="hasAssignedBoxes">
             <span class="hidden h-3 w-px bg-gray-300 sm:inline-block" aria-hidden="true"></span>
@@ -98,7 +99,7 @@
                   </div>
                   <button
                     type="button"
-                    class="card-preview-frame w-[7.5rem] max-w-[7.5rem] shrink-0 cursor-pointer overflow-hidden rounded-md border-0 bg-transparent p-0 text-left transition hover:shadow-[0_0_0_2px_rgba(37,64,143,0.4)] focus:outline-none focus-visible:shadow-[0_0_0_2px_rgba(37,64,143,0.4)] sm:w-[8.5rem] sm:max-w-[8.5rem] [&_*]:pointer-events-none"
+                    class="card-preview-frame w-[6rem] max-w-[6rem] shrink-0 cursor-pointer overflow-hidden rounded-md border-0 bg-transparent p-0 text-left transition hover:shadow-[0_0_0_2px_rgba(37,64,143,0.4)] focus:outline-none focus-visible:shadow-[0_0_0_2px_rgba(37,64,143,0.4)] sm:w-[8.5rem] sm:max-w-[8.5rem] [&_*]:pointer-events-none"
                     :aria-label="t('previewCard')"
                     @click="openPreview(line)"
                   >
@@ -108,19 +109,23 @@
                     ></card-preview>
                   </button>
                   <div class="min-w-0 flex-1">
-                    <div class="flex items-start gap-3">
+                    <!-- Phones: boxes go under the name so the name gets the full width -->
+                    <div class="flex flex-col gap-1 sm:flex-row sm:items-start sm:gap-3">
                       <div class="min-w-0 flex-1">
+                        <!-- Phones wrap instead of "Test P…" so two cards can be told apart (BUG-23) -->
                         <div
                           v-if="personName(line)"
-                          class="truncate text-[15px] font-semibold leading-snug text-gray-900"
+                          class="break-words text-[15px] font-semibold leading-snug text-gray-900 sm:truncate"
                         >
                           {{ personName(line) }}
                         </div>
-                        <div class="mt-0.5 truncate text-[14px] leading-snug text-gray-900">
+                        <div
+                          class="mt-0.5 break-words text-[14px] leading-snug text-gray-900 sm:truncate"
+                        >
                           {{ lineName(line) }}
                         </div>
                       </div>
-                      <div class="shrink-0 pt-0.5 text-right">
+                      <div class="flex shrink-0 items-baseline gap-2 pt-0.5 sm:block sm:text-right">
                         <div
                           class="text-sm font-medium tabular-nums"
                           :class="
@@ -251,7 +256,7 @@
                 {{ t('noShipToAddresses') }}
               </p>
               <ul
-                class="js-loc-sortable relative z-10 min-h-[8rem] space-y-3"
+                class="js-loc-sortable relative z-10 min-h-[8rem] space-y-3 pb-5"
                 :data-split-id="split.id"
                 :data-has-items="splitHasCards(split) ? '1' : '0'"
               >
@@ -259,7 +264,7 @@
                   v-for="(loc, locIndex) in split.locations"
                   :key="loc.id"
                   :data-loc-id="loc.id"
-                  class="flex items-center gap-2"
+                  class="flex flex-wrap items-center gap-2 sm:flex-nowrap"
                 >
                   <div
                     class="drag-handle flex shrink-0 cursor-grab touch-none items-center justify-center rounded p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600 active:cursor-grabbing"
@@ -285,14 +290,14 @@
                       <circle cx="8" cy="14" r="1.5" />
                     </svg>
                   </div>
-                  <input
-                    type="text"
-                    class="min-w-0 flex-1 truncate rounded-lg border border-gray-200 bg-white px-3 py-2.5 text-sm text-gray-800"
-                    :value="loc.address"
-                    :placeholder="t('selectShipToAddress')"
-                    readonly
-                  />
-                  <span class="relative inline-flex min-w-[7.25rem] shrink-0">
+                  <!-- Phones: the full address on its own line, boxes and delete below (BUG-23) -->
+                  <div
+                    class="min-w-0 flex-1 basis-[calc(100%-2.25rem)] break-words rounded-lg border border-gray-200 bg-white px-3 py-2.5 text-sm text-gray-800 sm:basis-auto sm:truncate"
+                    :title="loc.address"
+                  >
+                    {{ loc.address || t('selectShipToAddress') }}
+                  </div>
+                  <span class="relative ml-[1.625rem] inline-flex min-w-[7.25rem] shrink-0 sm:ml-0">
                     <select
                       class="w-full appearance-none rounded-lg border border-gray-200 bg-white py-2.5 pl-3 pr-8 text-sm text-gray-800"
                       :value="String(locationBoxes(split, loc))"
@@ -321,12 +326,12 @@
                     </svg>
                   </span>
                   <span
-                    class="hidden min-w-[4.5rem] shrink-0 text-right text-xs tabular-nums text-gray-500 sm:inline"
+                    class="min-w-[4.5rem] shrink-0 text-xs tabular-nums text-gray-500 sm:text-right"
                     >{{ locationCards(split, loc) }} {{ t('cards') }}</span
                   >
                   <button
                     type="button"
-                    class="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-gray-200 text-gray-400 hover:bg-gray-50 hover:text-red-600 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-transparent disabled:hover:text-gray-400"
+                    class="ml-auto inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-gray-200 text-gray-400 hover:bg-gray-50 hover:text-red-600 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-transparent disabled:hover:text-gray-400 sm:ml-0"
                     :aria-label="t('removeItem')"
                     :disabled="!splitHasCards(split)"
                     @click="removeShipLocation(split, locIndex)"
@@ -380,6 +385,7 @@
       :offices="store.offices"
       @close="closeAddModal"
       @done="onModalDone"
+      @add-new-address="onAddNewAddress"
     ></location-modal>
     <div ref="previewHost" class="pointer-events-none fixed inset-0 z-[80]">
       <app-modal
@@ -453,6 +459,7 @@ import {
   shippingReady,
   hasEmptySplit,
   removeEmptySplits,
+  startNewAddressForShipping,
 } from '../store'
 import { go } from '../adapters/nav'
 
@@ -695,6 +702,12 @@ export default {
     closeAddModal: function () {
       this.modalOpen = false
       this.modalSplitIndex = null
+    },
+    /** Open Address Book's form; the saved address comes back to this shipment. */
+    onAddNewAddress: function () {
+      var split = store.order.splits[this.modalSplitIndex]
+      this.closeAddModal()
+      startNewAddressForShipping(split ? split.id : null)
     },
     onModalDone: function (addresses) {
       var index = this.modalSplitIndex

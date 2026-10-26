@@ -1,5 +1,5 @@
 import Vue from 'vue'
-import { messages } from './i18n/messages'
+import { formatMoney, messages } from './i18n/messages'
 import { readStorage, writeStorage, removeStorage } from './helpers/storage'
 import { cloneCardDetails, consolidateCart, lineTotal, makeLine, sameDetails } from './helpers/cart'
 import {
@@ -34,7 +34,7 @@ import {
   loadOrderHistory as readOrderHistory,
   saveOrderHistory,
 } from './adapters/profileStorage'
-import { createPersonalRecord } from './helpers/addressBook'
+import { createPersonalRecord, formatAddressLine } from './helpers/addressBook'
 import { createOfficeRecord, loadManagedOffices, saveManagedOffices } from './helpers/officeAdmin'
 import { loadManagedTitles, saveManagedTitles } from './helpers/titleAdmin'
 import { loadManagedDegrees, saveManagedDegrees } from './helpers/degreeAdmin'
@@ -68,6 +68,8 @@ export const store = Vue.observable({
   editLineId: null,
   /** Shipping group to receive the next proof add-to-cart (from + Add item). */
   pendingSplitId: null,
+  // Shipping "+ Add new address": the shipment waiting for the address saved in Address Book.
+  pendingAddressSplitId: null,
   order: normalizeOrder(readStorage('order', null)),
   offices: [],
   officesLoading: false,
@@ -121,6 +123,11 @@ function persistHistory() {
 export function loadProfileCollections() {
   replaceList(store.personalAddresses, readPersonalAddresses(userEmail()))
   replaceList(store.orderHistory, readOrderHistory(userEmail()))
+}
+
+/** Price in the current site language ($63.00 / 63,00 $). */
+export function money(amount) {
+  return formatMoney(amount, store.locale)
 }
 
 export function t(key) {
@@ -182,6 +189,35 @@ export function logout() {
   // Cart and shipping draft are not per-user, so the next login must not inherit them.
   clearCart()
   clearOrder()
+  clearCustomizeDraft()
+}
+
+/**
+ * Customize form draft, saved as it is typed so a refresh keeps it (Vue's twin of
+ * Klai app.proof). One draft: the product code, the cart line being edited (if any),
+ * the card details and whether the email was edited by hand.
+ */
+var CUSTOMIZE_DRAFT_KEY = 'customizeDraft'
+
+export function saveCustomizeDraft(draft) {
+  writeStorage(CUSTOMIZE_DRAFT_KEY, {
+    code: draft.code,
+    lineId: draft.lineId != null && draft.lineId !== '' ? String(draft.lineId) : null,
+    details: cloneCardDetails(draft.details),
+    emailEdited: Boolean(draft.emailEdited),
+  })
+}
+
+/** The saved draft for this product and cart line (null line = a new card), or null. */
+export function readCustomizeDraft(code, lineId) {
+  var draft = readStorage(CUSTOMIZE_DRAFT_KEY, null)
+  if (!draft || !draft.details || draft.code !== code) return null
+  var want = lineId != null && lineId !== '' ? String(lineId) : null
+  return draft.lineId === want ? draft : null
+}
+
+export function clearCustomizeDraft() {
+  removeStorage(CUSTOMIZE_DRAFT_KEY)
 }
 
 export function addPersonal(fields) {
@@ -423,6 +459,8 @@ function applyProofToCart(options) {
   const proof = store.proof
   const opts = options || {}
   if (!proof || !proof.code) return
+  // The card is in the cart now; the next Customize starts clean.
+  clearCustomizeDraft()
   const editId = store.editLineId || proof.editLineId
   const clearEdit =
     opts.clearEdit !== false && (opts.bumpIfExisting || opts.openCart || opts.clearEdit === true)
@@ -699,6 +737,50 @@ export function addCartLineToSplit(split, lineId) {
   fitAllGroups()
   persistCart()
   persistOrder()
+}
+
+/**
+ * Shipping → Add location → "+ Add new address" (BUG-20). Shipping and the cart are already
+ * saved in the shared draft, so Address Book can open the form and come back here.
+ */
+export function startNewAddressForShipping(splitId) {
+  store.pendingAddressSplitId = splitId != null ? splitId : null
+  go('address-book')
+}
+
+/** Address Book saved the new address: put it on the waiting shipment and go back to Shipping. */
+export function finishNewAddressForShipping(record) {
+  var splitId = store.pendingAddressSplitId
+  store.pendingAddressSplitId = null
+  var split = (store.order.splits || []).find(function (row) {
+    return String(row.id) === String(splitId)
+  })
+  var address = record ? String(formatAddressLine(record) || '').trim() : ''
+  var already =
+    split &&
+    (split.locations || []).some(function (loc) {
+      return loc.address === address
+    })
+  if (split && address && !already) addShipLocation(split, address)
+  go('shipping')
+}
+
+/** The new-address form was closed without saving: back to Shipping, nothing added. */
+export function cancelNewAddressForShipping() {
+  store.pendingAddressSplitId = null
+  go('shipping')
+}
+
+/** Cart line taken off every shipment with Shipping trash (still in the cart, not ordered). */
+export function isLineOffShipping(lineId) {
+  return ((store.order && store.order.detachedIds) || []).map(String).indexOf(String(lineId)) !== -1
+}
+
+/** Cart drawer "Add back": put an off-shipping card back on Shipment 1 at 1 box. */
+export function addLineBackToShipping(lineId) {
+  var first = (store.order.splits || [])[0]
+  if (!first) return
+  addCartLineToSplit(first, lineId)
 }
 
 export function addShipLocation(split, address, qty) {

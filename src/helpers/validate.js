@@ -82,16 +82,22 @@ export function emailFromFullName(name, fits) {
   return local + domain
 }
 
+// Longest number kept in the Mobile field (E.164). Extra digits stay visible so the
+// error can say so; they are never cut silently (a typo must not print a wrong number).
+var PHONE_INPUT_MAX_DIGITS = 15
+// Canadian (NANP) number: area code and exchange both start 2–9 ("0000000000" fails).
+var CANADIAN_LOCAL = /^[2-9]\d{2}[2-9]\d{6}$/
+
 /**
- * Mobile field: the 10 local digits from whatever was typed or pasted.
+ * Mobile field: the local digits from whatever was typed or pasted.
  * Canadian area codes never start with 1, so a leading 1 is the +1 country
- * code and is dropped before the 10-digit cut ("+1 416 555 0199" → 4165550199).
+ * code and is dropped ("+1 416 555 0199" → 4165550199).
  */
 export function localPhoneDigits(value) {
   return String(value || '')
     .replace(/\D/g, '')
     .replace(/^1/, '')
-    .slice(0, PHONE_DIGITS)
+    .slice(0, PHONE_INPUT_MAX_DIGITS)
 }
 
 export function formatCanadianLocal(digits) {
@@ -111,9 +117,13 @@ export function formatCardPhone(value) {
   return [local.slice(0, 3), local.slice(3, 6), local.slice(6)].filter(Boolean).join(' ')
 }
 
-/** Mobile is complete when it has 10 local digits (an 11-digit 1-prefixed number counts). */
+/**
+ * Mobile is complete when it is a valid 10-digit Canadian number (an 11-digit
+ * 1-prefixed number counts). Too many digits, or an area code / exchange starting
+ * with 0 or 1, is not.
+ */
 export function isCompletePhone(value) {
   var cleaned = String(value || '').replace(/\D/g, '')
   if (cleaned.length === 11 && cleaned.charAt(0) === '1') cleaned = cleaned.slice(1)
-  return cleaned.length === PHONE_DIGITS
+  return cleaned.length === PHONE_DIGITS && CANADIAN_LOCAL.test(cleaned)
 }
