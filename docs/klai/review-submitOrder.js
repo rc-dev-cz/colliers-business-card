@@ -1,4 +1,4 @@
-// Review → namedAction submitOrder, step 1 of 3 (see review-namedActions.json).
+// Review → namedAction submitOrder, step 1 of 4 (see review-namedActions.json).
 // Builds the FileMaker order payload into model.orderPayload. Same shape as Vue
 // src/helpers/orderPayload.js (sync_BR_order_group dashboard):
 //
@@ -16,8 +16,15 @@ var splits = Array.isArray(order.splits) ? order.splits : []
 if (!cart.length) return
 
 var CARDS_PER_BOX = 250
-var offices = model.offices || app.offices || []
-var personal = model.personalAddresses || app.personalAddresses || []
+function firstList() {
+  for (var i = 0; i < arguments.length; i += 1) {
+    if (Array.isArray(arguments[i]) && arguments[i].length) return arguments[i]
+  }
+  return []
+}
+// Review has no request hook: the lists come from Shipping (app) when the page model has none.
+var offices = firstList(model.offices, app.offices)
+var personal = firstList(model.personalAddresses, app.personalAddresses)
 var user = app.user || {}
 
 function money(n) {
@@ -48,6 +55,32 @@ function findAddress(oneLine) {
   var mine = personal.find(match)
   if (mine) return { type: 'personal', row: mine }
   return null
+}
+// store_catalogue::id: the line's own id, else the number on a FileMaker code (CPL-13616 -> 13616).
+function catalogueIdForLine(line) {
+  var row = line || {}
+  if (row.catalogueId != null && row.catalogueId !== '') return Number(row.catalogueId)
+  var match = /-(\d+)$/.exec(String(row.code || ''))
+  return match ? Number(match[1]) : null
+}
+// The ship-to's address row: by the id Shipping keeps on the location (addressId + addressType),
+// else by matching the address text (ship-tos saved before ids were kept). Offices and personal
+// addresses are separate FileMaker tables, so the type goes with the id.
+function findLocationAddress(loc) {
+  var id = loc && loc.addressId != null && loc.addressId !== '' ? String(loc.addressId) : ''
+  if (id) {
+    var type = loc.addressType
+    var byId = function (row) {
+      return String(row.id) === id
+    }
+    var office = type !== 'personal' ? offices.find(byId) : null
+    if (office) return { type: 'office', row: office }
+    var mine = type !== 'office' ? personal.find(byId) : null
+    if (mine) return { type: 'personal', row: mine }
+    // Not in the loaded lists (Review opened straight from a refresh): still send the id.
+    return { type: type || null, row: { id: id } }
+  }
+  return findAddress(loc && loc.address)
 }
 function cleanAddress(row, oneLine) {
   var src = row || {}
@@ -103,10 +136,10 @@ splits.forEach(function (split) {
     var price = Number(line.price) || 0
     return {
       line_ref: String(line.id),
-      product_code: line.code,
-      catalogue_id: line.catalogueId != null ? line.catalogueId : null,
+      product_code: line.productCode || line.code,
+      catalogue_id: catalogueIdForLine(line),
       language: text(line.language),
-      qty: qty,
+      quantity: qty,
       cards: qty * CARDS_PER_BOX,
       unit_price: money(price),
       price: money(price * qty),
@@ -115,7 +148,7 @@ splits.forEach(function (split) {
   })
   var locations = (split.locations || []).map(function (loc) {
     var boxes = Math.max(1, Number(loc.qty) || 1)
-    var found = findAddress(loc.address)
+    var found = findLocationAddress(loc)
     return {
       location_ref: String(loc.id),
       location_id: found && found.row.id != null ? found.row.id : null,
