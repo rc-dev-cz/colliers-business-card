@@ -94,6 +94,9 @@ function setModel(key, value) {
     (snapshotCardDetails(details).degree || []).forEach(function (item) { if (String(item || '').trim()) n += 1; });
     return n;
   }
+  // French faces print the French region name (Vue canadianProvinces.js regionForCard, BUG-10).
+  var REGION_FR = {"British Columbia": "Colombie-Britannique", "New Brunswick": "Nouveau-Brunswick", "Newfoundland and Labrador": "Terre-Neuve-et-Labrador", "Nova Scotia": "Nouvelle-Écosse", "Prince Edward Island": "Île-du-Prince-Édouard", "Quebec": "Québec", "Northwest Territories": "Territoires du Nord-Ouest"};
+  function regionFor(region, french) { var t = String(region || '').trim(); return french && REGION_FR[t] ? REGION_FR[t] : t; }
   function resolveCardFields(details, language) {
     var card = details || {};
     var isFrench = isFrenchLanguage(language || card.language);
@@ -102,7 +105,7 @@ function setModel(key, value) {
     var phoneRaw = String(card.phone || '').trim();
     var website = String(card.website || '').trim();
     if (!website || website === 'colliers.com/canada') website = sample.website;
-    return { isFrench: isFrench, name: rawName || sample.name, credentialSuffix: formatCredentialSuffix(card.degree, card.additionalCredentials), title: formatTitleLine(card.title, card.region, sample.title, sample.region), titleOnly: formatTitleLine(card.title, '', sample.title, ''), region: String(card.region || '').trim(), team: String(card.specializedTeam || '').trim(), email: String(card.email || '').trim() || sample.email, phone: phoneRaw ? formatCardPhone(phoneRaw) : sample.phone, website: website, address: String(card.printAddress || card.address || '').trim() || sample.address };
+    return { isFrench: isFrench, name: rawName || sample.name, credentialSuffix: formatCredentialSuffix(card.degree, card.additionalCredentials), title: formatTitleLine(card.title, regionFor(card.region, isFrench), sample.title, sample.region), titleOnly: formatTitleLine(card.title, '', sample.title, ''), region: regionFor(card.region, isFrench), team: String(card.specializedTeam || '').trim(), email: String(card.email || '').trim() || sample.email, phone: phoneRaw ? formatCardPhone(phoneRaw) : sample.phone, website: website, address: String(card.printAddress || card.address || '').trim() || sample.address };
   }
   function fitsLine(font, text, size, maxWidth) { return font.widthOfTextAtSize(String(text || ''), size) <= maxWidth; }
   function wrapByWords(font, text, size, maxWidth) {
@@ -200,13 +203,14 @@ function setModel(key, value) {
   // 'team | region' too wide -> keep 'Title | Region' when it fits on every page, else own line.
   function applyRegionRule(productPlan, fonts) {
     var pages = productPlan.pages; if (!pages.length) return;
-    var region = pages[0].fields.region, team = String(pages[0].fields.team || '').trim();
-    if (!region) return;
+    // Each page uses its own region text (French name on French faces); the mode must fit on every page.
+    var team = String(pages[0].fields.team || '').trim();
+    if (!pages[0].fields.region) return;
     var mode = 'own';
-    if (team && fitsLine(fonts.font, team + ' | ' + region, L.bodySize, L.identityWidth)) mode = 'team';
-    else if (pages.every(function (pg) { return fitsLine(fonts.font, pg.fields.titleOnly + ' | ' + region, L.bodySize, L.titleMaxWidth); })) mode = 'title';
+    if (team && pages.every(function (pg) { return fitsLine(fonts.font, team + ' | ' + pg.fields.region, L.bodySize, L.identityWidth); })) mode = 'team';
+    else if (pages.every(function (pg) { return fitsLine(fonts.font, pg.fields.titleOnly + ' | ' + pg.fields.region, L.bodySize, L.titleMaxWidth); })) mode = 'title';
     pages.forEach(function (pg) {
-      var ly = pg.layout;
+      var ly = pg.layout, region = pg.fields.region;
       if (mode === 'title') return;
       ly.title = pg.fields.titleOnly;
       if (mode === 'team') { ly.team = team + ' | ' + region; return; }

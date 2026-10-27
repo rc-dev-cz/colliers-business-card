@@ -67,7 +67,7 @@
                 </thead>
                 <tbody>
                   <tr
-                    v-for="(tier, i) in model.product.priceTiers"
+                    v-for="(tier, i) in [{ from: 1, to: 99, pricePer: Number(model.product.price) || 63, unitTotal: Number(model.product.price) || 63 }]"
                     :key="i"
                     class="border-b border-gray-200"
                   >

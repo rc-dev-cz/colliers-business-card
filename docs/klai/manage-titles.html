@@ -12,27 +12,29 @@
   </div>
   <div class="colliers-list-panel colliers-list-panel--viewport">
     <nav class="colliers-tab-nav -mx-6 -mt-6 mb-4" :aria-label="BF.i18n('label_colliers_manageTitles')">
-      <button v-for="lang in ['EN', 'FR']" :key="lang" type="button" class="colliers-tab" :class="model.activeTab === lang ? 'colliers-tab--active' : ''" @click="model.activeTab = lang; model.draft = ''; model.editingId = ''; model.editValue = ''">
+      <button v-for="lang in ['EN', 'FR']" :key="lang" type="button" class="colliers-tab" :class="model.activeTab === lang ? 'colliers-tab--active' : ''" @click="model.activeTab = lang; model.draft = ''; model.addError = ''; model.editError = ''; model.editingId = ''; model.editValue = ''">
         {{ BF.i18n(lang === 'FR' ? 'label_colliers_frenchTitles' : 'label_colliers_englishTitles') }} ({{ (model.titles || []).filter(function (row) { return row.language === lang }).length }})
       </button>
     </nav>
     <div class="mb-4 flex gap-2">
       <label class="sr-only" for="admin-title-add">{{ BF.i18n(model.activeTab === 'FR' ? 'placeholder_colliers_newTitleFr' : 'placeholder_colliers_newTitleEn') }}</label>
-      <input id="admin-title-add" type="text" class="field-input flex-1" :placeholder="BF.i18n(model.activeTab === 'FR' ? 'placeholder_colliers_newTitleFr' : 'placeholder_colliers_newTitleEn')" v-model="model.draft" @keydown.enter.prevent="BF.namedAction('addTitle')">
+      <input id="admin-title-add" type="text" class="field-input flex-1" :placeholder="BF.i18n(model.activeTab === 'FR' ? 'placeholder_colliers_newTitleFr' : 'placeholder_colliers_newTitleEn')" v-model="model.draft" :aria-invalid="model.addError ? 'true' : 'false'" @input="model.addError = ''" @keydown.enter.prevent="BF.namedAction('addTitle')">
       <button type="button" class="btn-primary px-4" :disabled="model.saving" :aria-label="BF.i18n('label_colliers_addTitle')" @click="BF.namedAction('addTitle')"><i class="fa-regular fa-plus" aria-hidden="true"></i></button>
     </div>
+    <p v-if="model.addError" class="-mt-2 mb-4 text-sm text-red-600" role="alert">{{ model.addError }}</p>
     <div v-if="(model.titles || []).some(function (row) { return row.language === model.activeTab })" class="colliers-list-panel-scroll">
       <ul class="space-y-2">
         <li v-for="row in model.titles.filter(function (row) { return row.language === model.activeTab })" :key="row.id" class="colliers-list-row">
-          <div v-if="model.editingId === row.id" class="flex w-full gap-2">
-            <input type="text" class="field-input flex-1" v-model="model.editValue" @keydown.enter.prevent="BF.namedAction('saveEdit')" @keydown.esc.prevent="BF.namedAction('cancelEdit')">
+          <div v-if="model.editingId === row.id" class="flex w-full flex-wrap gap-2">
+            <input type="text" class="field-input flex-1" v-model="model.editValue" :aria-invalid="model.editError ? 'true' : 'false'" @input="model.editError = ''" @keydown.enter.prevent="BF.namedAction('saveEdit')" @keydown.esc.prevent="BF.namedAction('cancelEdit')">
             <button type="button" class="btn-primary p-1.5" :aria-label="BF.i18n('label_general_save')" @click="BF.namedAction('saveEdit')"><i class="fa-solid fa-check" aria-hidden="true"></i></button>
             <button type="button" class="btn-outline p-1.5" :aria-label="BF.i18n('label_colliers_cancel')" @click="BF.namedAction('cancelEdit')"><i class="fa-solid fa-xmark" aria-hidden="true"></i></button>
+            <p v-if="model.editError" class="w-full text-sm text-red-600" role="alert">{{ model.editError }}</p>
           </div>
           <template v-else>
             <span class="colliers-list-row-body text-sm text-gray-800">{{ row.title }}</span>
             <div class="colliers-list-row-actions colliers-list-row-actions--hover">
-              <button type="button" class="rounded p-1.5 text-gray-400 transition-colors hover:text-colliers-primary" :title="BF.i18n('label_colliers_editTitle')" :aria-label="BF.i18n('label_colliers_editTitle')" @click="model.editingId = row.id; model.editValue = row.title"><i class="fa-regular fa-pen-to-square" aria-hidden="true"></i></button>
+              <button type="button" class="rounded p-1.5 text-gray-400 transition-colors hover:text-colliers-primary" :title="BF.i18n('label_colliers_editTitle')" :aria-label="BF.i18n('label_colliers_editTitle')" @click="model.editingId = row.id; model.editValue = row.title; model.editError = ''"><i class="fa-regular fa-pen-to-square" aria-hidden="true"></i></button>
               <button type="button" class="rounded p-1.5 text-gray-400 transition-colors hover:text-red-500" :title="BF.i18n('label_colliers_deleteTitle')" :aria-label="BF.i18n('label_colliers_deleteTitle')" @click="model.actionId = row.id; BF.namedAction('deleteTitle')"><i class="fa-regular fa-trash-can" aria-hidden="true"></i></button>
             </div>
           </template>

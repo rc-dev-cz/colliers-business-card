@@ -1454,12 +1454,52 @@
                 "fr": "Cette adresse était déjà dans ce groupe; les boîtes ont été additionnées."
             },
             "label_colliers_nameNoSpace": {
-                "en": "No more space for the name on the card.",
-                "fr": "Il n’y a plus d’espace pour le nom sur la carte."
+                "en": "Limit reached for card",
+                "fr": "Limite atteinte pour la carte"
             },
             "label_colliers_reportingEmpty": {
                 "en": "No reporting data yet. Reports will appear here once FileMaker reporting is connected.",
                 "fr": "Aucune donnée de rapport pour le moment. Les rapports apparaîtront ici lorsque les rapports FileMaker seront connectés."
+            },
+            "label_colliers_removeOtherCredential": {
+                "en": "Remove other credential",
+                "fr": "Retirer cette désignation"
+            },
+            "label_colliers_credentialsSomeLocked": {
+                "en": "Little space left: only short credentials still fit on the card.",
+                "fr": "Peu d’espace restant : seules les désignations courtes tiennent encore sur la carte."
+            },
+            "label_colliers_credentialTooLong": {
+                "en": "Too long to fit on the card",
+                "fr": "Trop long pour tenir sur la carte"
+            },
+            "label_colliers_layoutErrorTitleOnly": {
+                "en": "This title is too long for the card.",
+                "fr": "Ce titre est trop long pour la carte."
+            },
+            "label_colliers_notInShipment": {
+                "en": "Not in a shipment — won’t be ordered.",
+                "fr": "Dans aucune expédition — ne sera pas commandée."
+            },
+            "label_colliers_addBackToShipping": {
+                "en": "Add back",
+                "fr": "Rajouter"
+            },
+            "label_colliers_noMatchingAddresses": {
+                "en": "No matching addresses.",
+                "fr": "Aucune adresse correspondante."
+            },
+            "label_colliers_titleAlreadyExists": {
+                "en": "This title is already on the list.",
+                "fr": "Ce titre est déjà dans la liste."
+            },
+            "label_colliers_titleTooLongForCard": {
+                "en": "This title is too long for the card’s title line. Shorten it so it fits.",
+                "fr": "Ce titre est trop long pour la ligne de titre de la carte. Raccourcissez-le."
+            },
+            "label_colliers_itemOne": {
+                "en": "item",
+                "fr": "article"
             }
         },
         "langDefault": "en",

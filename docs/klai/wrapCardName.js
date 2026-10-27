@@ -172,15 +172,19 @@ if (!nameFits(nameNow) && nameNow.length >= namePrev.length) {
   nameLines = nameWrap.ok ? nameWrap.lines.slice(0, 2) : [planName]
   if (!nameLines.length) nameLines = [planName]
   last = nameLines[nameLines.length - 1] || ''
-  setModel('nameNotice', 1)
-  clearTimeout(window.__colliersNameNoticeTimer)
-  window.__colliersNameNoticeTimer = setTimeout(function () {
-    setModel('nameNotice', 0)
-  }, 3000)
-} else if (nameNow !== namePrev && Number(model.nameNotice) === 1) {
-  setModel('nameNotice', 0)
+  setModel('nameRefusedAt', nameNow)
 }
 setModel('namePrev', String(model.card.name || ''))
+// "Limit reached for card" stays while it is true (Vue nameLimitReached, BUG-08): at 49 characters,
+// right after a letter was refused for card width, or when not even one more narrow letter fits.
+var nameShown = String(model.card.name || '')
+setModel(
+  'nameNotice',
+  nameShown &&
+    (nameShown.length >= 49 || model.nameRefusedAt === nameShown || !nameFits(nameShown + 'i'))
+    ? 1
+    : 0
+)
 // Credentials stop at the measured card space (Vue credentialsFitOnCard / lockedDegreeValues):
 // an added degree or a longer credential that no longer fits is undone, and options that cannot fit are disabled.
 function credsFit(degreeList, extraText) {
@@ -209,9 +213,8 @@ if (
     prevDegrees.every(function (d) {
       return degrees.indexOf(d) !== -1
     })
-  var grewExtra =
-    degrees.join('|') === prevDegrees.join('|') &&
-    String(model.card.additionalCredentials || '').length > prevExtra.length
+  // Other credential is refused whole below, never clipped as typed (Vue onAdditionalCredentials, BUG-05).
+  var grewExtra = false
   if (addedDegree || grewExtra) {
     if (typeof Vue !== 'undefined' && Vue.set) {
       Vue.set(model.card, 'degree', prevDegrees.slice())
@@ -232,6 +235,28 @@ if (Number(model.credentialLockedClick) === 1) {
   setModel('credentialLockedClick', 0)
   flashCredentialNotice('degree')
 }
+// Other credential is refused whole (Vue onAdditionalCredentials, BUG-05): text that does not fit stays
+// in the field with the no-space message and the card shows none of it. It goes on the card once
+// something else frees the room.
+if (typeof model.card.otherCredentialDraft !== 'string') {
+  if (typeof Vue !== 'undefined' && Vue.set)
+    Vue.set(model.card, 'otherCredentialDraft', String(model.card.additionalCredentials || ''))
+  else model.card.otherCredentialDraft = String(model.card.additionalCredentials || '')
+}
+var draft = model.card.otherCredentialDraft.replace(CARD_TEXT_DISALLOWED, '')
+if (draft !== model.card.otherCredentialDraft) model.card.otherCredentialDraft = draft
+var draftFits = credsFit(degrees, draft)
+var committed = draftFits ? draft : ''
+if (String(model.card.additionalCredentials || '') !== committed) {
+  if (typeof Vue !== 'undefined' && Vue.set) Vue.set(model.card, 'additionalCredentials', committed)
+  else model.card.additionalCredentials = committed
+}
+extra = committed.trim()
+credParts = degrees.slice()
+if (extra) credParts.push(extra)
+credText = credParts.join(', ')
+var otherRejected = Boolean(draft.trim()) && !draftFits
+setModel('otherRejected', otherRejected ? 1 : 0)
 setModel('credPrev', {
   degree: degrees.slice(),
   extra: String(model.card.additionalCredentials || ''),
@@ -242,7 +267,15 @@ var lockedDegrees = (model.degreeOptions || []).filter(function (opt) {
 if ((model.lockedDegrees || []).join('|') !== lockedDegrees.join('|'))
   setModel('lockedDegrees', lockedDegrees)
 // Nothing more fits after the name: lock the empty Additional Credentials field too.
-setModel('additionalLocked', !extra && !credsFit(degrees, 'i') ? 1 : 0)
+// Every option left is locked: the card is full, red "No more space" (Vue degreesFull, CU-02).
+// Some locked: yellow "Little space left" (BUG-09).
+var unselectedDegrees = (model.degreeOptions || []).filter(function (opt) {
+  return degrees.indexOf(opt) === -1
+})
+var degreesFull = unselectedDegrees.length > 0 && lockedDegrees.length === unselectedDegrees.length
+setModel('degreesFull', degreesFull ? 1 : 0)
+// Link and empty field are off while the card is full or not one letter fits; a field with text stays editable.
+setModel('additionalLocked', !draft.trim() && (degreesFull || !credsFit(degrees, 'i')) ? 1 : 0)
 // Only chosen credentials print after the name; an empty card shows none.
 packed = packCredentials(last, credText)
 model.card.nameWrapped = trimmed ? nameLines.join('\n') : ''
@@ -312,17 +345,55 @@ var titlePart = String(model.card.title || '')
   .trim()
 var titleFrPart = isBilingualCard ? String(model.card.titleFr || '').trim() : ''
 var regionPart = String(model.card.region || '').trim()
+// French faces print the French region name (Vue regionForCard, BUG-10); the saved value stays English.
+var REGION_FR = {
+  'British Columbia': 'Colombie-Britannique',
+  'New Brunswick': 'Nouveau-Brunswick',
+  'Newfoundland and Labrador': 'Terre-Neuve-et-Labrador',
+  'Nova Scotia': 'Nouvelle-Écosse',
+  'Prince Edward Island': 'Île-du-Prince-Édouard',
+  Quebec: 'Québec',
+  'Northwest Territories': 'Territoires du Nord-Ouest',
+}
+var regionFrPart = REGION_FR[regionPart] || regionPart
+var isFrenchCard =
+  !isBilingualCard &&
+  /french|fran/i.test(
+    String((model.product && model.product.language) || model.card.language || '')
+  )
+// Region list in the card's language: English Quebec, French Québec, bilingual "Quebec / Québec" (Vue regionOptions).
+var regionChoices = (
+  Array.isArray(model.regionOptions) && model.regionOptions.length ? model.regionOptions : []
+).map(function (r) {
+  var frName = REGION_FR[r] || r
+  return {
+    value: r,
+    label: isFrenchCard ? frName : isBilingualCard && frName !== r ? r + ' / ' + frName : r,
+  }
+})
+if (JSON.stringify(model.regionChoices || null) !== JSON.stringify(regionChoices))
+  setModel('regionChoices', regionChoices)
+// Each face as it prints: [title, region].
+var regionFaces = isFrenchCard
+  ? [[titlePart || 'Titre', regionFrPart]]
+  : [[titlePart || 'Title', regionPart]]
+if (isBilingualCard && titleFrPart) regionFaces.push([titleFrPart, regionFrPart])
 var teamPart = String(model.card.specializedTeam || '').trim()
 // Region placement (Vue cardLayout.js applyPreviewTitleRegionSplit, Oct 2026):
 // team filled -> 'team | region'; otherwise (or 'team | region' too wide) 'Title | Region' on one line
 // when it fits on every face (bilingual EN and FR together), else region on its own line under the title.
 var regionMode = 'none'
 if (regionPart) {
-  if (teamPart && fitsLine(teamPart + ' | ' + regionPart, false, BODY, IDENTITY_W))
+  if (
+    teamPart &&
+    regionFaces.every(function (f) {
+      return fitsLine(teamPart + ' | ' + f[1], false, BODY, IDENTITY_W)
+    })
+  )
     regionMode = 'team'
   else if (
-    [titlePart || 'Title', titleFrPart].filter(Boolean).every(function (t) {
-      return fitsLine(t + ' | ' + regionPart, false, BODY, TITLE_W)
+    regionFaces.every(function (f) {
+      return fitsLine(f[0] + ' | ' + f[1], false, BODY, TITLE_W)
     })
   )
     regionMode = 'title'
@@ -340,10 +411,20 @@ function titleSizeFor(t) {
 }
 var titleSize = titleSizeFor(titlePart)
 var titleFrSize = titleSizeFor(titleFrPart)
-if (!layoutError && titlePart && measure(titlePart, false, titleSize) > TITLE_W)
-  layoutError = i18nErr('label_colliers_layoutErrorTitle')
-if (!layoutError && titleFrPart && measure(titleFrPart, false, titleFrSize) > TITLE_W)
-  layoutError = i18nErr('label_colliers_layoutErrorTitle')
+// Shown once, under the title field that is too long (Vue titleFieldError, BUG-12); "title and region"
+// only when a region is chosen.
+var titleErrKey = regionPart
+  ? 'label_colliers_layoutErrorTitle'
+  : 'label_colliers_layoutErrorTitleOnly'
+var layoutErrorField = ''
+if (!layoutError && titlePart && measure(titlePart, false, titleSize) > TITLE_W) {
+  layoutError = i18nErr(titleErrKey)
+  layoutErrorField = 'title'
+}
+if (!layoutError && titleFrPart && measure(titleFrPart, false, titleFrSize) > TITLE_W) {
+  layoutError = i18nErr(titleErrKey)
+  layoutErrorField = 'titleFr'
+}
 // 6.5 pt on the 252 pt trim = 2.579cqw; shrunk titles scale the same way
 model.card.previewTitleSize = ((titleSize / 252) * 100).toFixed(3) + 'cqw'
 model.card.previewTitleFrSize = ((titleFrSize / 252) * 100).toFixed(3) + 'cqw'
@@ -452,6 +533,7 @@ if (typeof Vue !== 'undefined' && Vue.set) {
   Vue.set(model.card, 'displayAddress', model.card.displayAddress)
 }
 model.layoutError = layoutError
+setModel('layoutErrorField', layoutError ? layoutErrorField : '')
 model.layoutReady = layoutError ? 0 : 1
 var c = model.card || {}
 // Mobile must be a valid 10-digit Canadian number: area code and exchange start 2-9 (Vue
@@ -482,6 +564,7 @@ setModel(
 )
 model.canPreviewProof =
   !layoutError &&
+  !otherRejected &&
   Boolean(String(c.name || '').trim()) &&
   Boolean(String(c.title || '').trim()) &&
   (!isBilingualCard || Boolean(String(c.titleFr || '').trim())) &&

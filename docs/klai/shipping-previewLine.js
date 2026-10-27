@@ -69,6 +69,14 @@ function cardHtml(slot) {
   if (slot.credentialLine)
     html += row(at(slot.previewCredY, 40.27), '2.778cqw', cardEsc(slot.credentialLine), true)
   var region = String(slot.region || '').trim()
+  // French faces print the French region name (Vue regionForCard, BUG-10).
+  if (
+    (fr || slot.bilingualFrench) &&
+    typeof app !== 'undefined' &&
+    app.regionFr &&
+    app.regionFr[region]
+  )
+    region = app.regionFr[region]
   var mode = slot.previewRegionMode || (region ? 'title' : 'none')
   var frTitle = slot.bilingualFrench ? String(slot.titleFr || '').trim() : ''
   var title =
