@@ -22,7 +22,7 @@
     },
     {
       "action": "function",
-      "function": "model.submitting = 0\nif (model.submitError) return\nconsole.info('[Colliers order] Order confirmed: ' + (model.orderId || '(id from FileMaker)'), model.orderPayload)\n// Empty the cart here, not on Confirmed, so opening /confirmed again keeps a draft (Vue confirmSubmit).\nBF.namedAction('clearCart')\nif (typeof app !== 'undefined') app.order = { splits: [{ id: 1, itemIds: [], locations: [] }] }\nBF.namedAction('goConfirmed')"
+      "function": "model.submitting = 0\nif (model.submitError) return\n// The order number FileMaker returns (Place Order sets $$BF_Model.orderId); Confirmed shows it.\nif (typeof app !== 'undefined') app.lastOrderId = model.orderId != null ? String(model.orderId) : ''\nconsole.info('[Colliers order] Order confirmed: ' + (model.orderId || '(id from FileMaker)'), model.orderPayload)\n// Empty the cart here, not on Confirmed, so opening /confirmed again keeps a draft (Vue confirmSubmit).\nBF.namedAction('clearCart')\nif (typeof app !== 'undefined') app.order = { splits: [{ id: 1, itemIds: [], locations: [] }] }\nBF.namedAction('goConfirmed')"
     }
   ],
   "printOrder": [

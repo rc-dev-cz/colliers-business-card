@@ -28,6 +28,12 @@
     <Text>RETURNS: 1 and $$BF_Model.orderId, or 0 and $$BF_Model.submitError</Text>
   </Step>
   <Step enable="True" id="89" name="# (comment)">
+    <Text>$$BF_Model is REPLACED by just orderId / submitError / submitting, so the 160 KB print PDF</Text>
+  </Step>
+  <Step enable="True" id="89" name="# (comment)">
+    <Text>(orderPayload) is not sent back. The page keeps its own copy (modelUpdateMode = merge).</Text>
+  </Step>
+  <Step enable="True" id="89" name="# (comment)">
     <Text>Always a NEW order: Place Order never updates an earlier one.</Text>
   </Step>
   <Step enable="True" id="89" name="# (comment)">
@@ -106,7 +112,7 @@
   </Step>
   <Step enable="True" id="141" name="Set Variable">
     <Value>
-      <Calculation><![CDATA[JSONSetElement ( $$BF_Model ;
+      <Calculation><![CDATA[JSONSetElement ( "{}" ;
   [ "submitError" ; $error ; JSONString ] ;
   [ "submitting" ; 0 ; JSONNumber ]
 )]]></Calculation>
@@ -135,7 +141,7 @@
   </Step>
   <Step enable="True" id="141" name="Set Variable">
     <Value>
-      <Calculation><![CDATA[JSONSetElement ( $$BF_Model ;
+      <Calculation><![CDATA[JSONSetElement ( "{}" ;
   [ "submitError" ; $error ; JSONString ] ;
   [ "submitting" ; 0 ; JSONNumber ]
 )]]></Calculation>
@@ -254,7 +260,7 @@
   </Step>
   <Step enable="True" id="141" name="Set Variable">
     <Value>
-      <Calculation><![CDATA[JSONSetElement ( $$BF_Model ;
+      <Calculation><![CDATA[JSONSetElement ( "{}" ;
   [ "submitError" ; $error ; JSONString ] ;
   [ "submitting" ; 0 ; JSONNumber ]
 )]]></Calculation>
@@ -743,7 +749,7 @@
   </Step>
   <Step enable="True" id="141" name="Set Variable">
     <Value>
-      <Calculation><![CDATA[JSONSetElement ( $$BF_Model ;
+      <Calculation><![CDATA[JSONSetElement ( "{}" ;
   [ "submitError" ; $error ; JSONString ] ;
   [ "submitting" ; 0 ; JSONNumber ]
 )]]></Calculation>
@@ -759,7 +765,7 @@
   <Step enable="True" id="70" name="End If"/>
   <Step enable="True" id="141" name="Set Variable">
     <Value>
-      <Calculation><![CDATA[JSONSetElement ( $$BF_Model ;
+      <Calculation><![CDATA[JSONSetElement ( "{}" ;
   [ "orderId" ; $orderId ; JSONString ] ;
   [ "submitError" ; "" ; JSONString ] ;
   [ "submitting" ; 0 ; JSONNumber ]

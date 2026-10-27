@@ -18,6 +18,10 @@
         </svg>
       </div>
       <h1 class="colliers-page-title mb-4">{{ BF.i18n('label_colliers_orderConfirmed') }}</h1>
+      <p v-if="app && app.lastOrderId" class="mb-2 text-sm text-gray-500">
+        {{ BF.i18n('label_colliers_orderId') }}
+        <span class="font-semibold text-gray-900">#{{ app.lastOrderId }}</span>
+      </p>
       <p class="mx-auto mb-8 max-w-md text-gray-600">{{ BF.i18n('label_colliers_thankYou') }}</p>
       <button type="button" class="btn-primary" @click="BF.namedAction('goCatalog')">
         {{ BF.i18n('label_colliers_returnToCatalog') }}
