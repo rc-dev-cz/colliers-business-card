@@ -43,6 +43,9 @@ function face(details, language) {
   if (language === 'French') {
     if (String(d.titleFr || '').trim()) d.title = d.titleFr
     d.website = d.websiteFr || 'colliersprojectleaders.com/fr'
+    // French faces print the French region name (Vue regionForCard, BUG-10).
+    var region = String(d.region || '').trim()
+    if (typeof app !== 'undefined' && app.regionFr && app.regionFr[region]) d.region = app.regionFr[region]
   }
   // CardPreview falls back to name when nameLines are not planned yet
   d.nameLines = []
@@ -62,9 +65,13 @@ function textWidth(text) {
 function applyRegionRule(faces) {
   var region = String((faces[0] && faces[0].region) || '').trim()
   if (!region) return faces
+  // Each face keeps its own region text (French name on French faces).
+  function regionOf(f) {
+    return String((f && f.region) || '').trim() || region
+  }
   var team = String((faces[0] && faces[0].specializedTeam) || '').trim()
   var mode = 'own'
-  if (team && textWidth(team + ' | ' + region) <= 141.52) mode = 'team'
+  if (team && faces.every(function (f) { return textWidth(team + ' | ' + regionOf(f)) <= 141.52 })) mode = 'team'
   else if (
     team &&
     faces.every(function (f) {
@@ -74,7 +81,7 @@ function applyRegionRule(faces) {
             .split('|')[0]
             .trim() +
             ' | ' +
-            region
+            regionOf(f)
         ) <= 141.52
       )
     })
@@ -82,6 +89,7 @@ function applyRegionRule(faces) {
     mode = 'title'
   return faces.map(function (f) {
     var out = Object.assign({}, f, { region: '' })
+    var region = regionOf(f)
     var title = String(f.title || '')
       .split('|')[0]
       .trim()

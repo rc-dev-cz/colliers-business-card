@@ -91,7 +91,7 @@
             <ul v-else class="space-y-2">
               <li v-for="opt in group.options" :key="opt.value">
                 <label
-                  class="flex cursor-pointer items-start gap-3 rounded-md border px-3 py-2.5 text-sm transition-colors"
+                  class="flex cursor-pointer items-center gap-3 rounded-md border px-3 py-2.5 text-sm transition-colors"
                   :class="
                     isChecked(opt.value)
                       ? 'border-colliers-primary/40 bg-[#F3F6FB]'
@@ -100,7 +100,7 @@
                 >
                   <input
                     type="checkbox"
-                    class="mt-0.5 h-4 w-4 shrink-0 rounded border-gray-300 text-colliers-primary focus:ring-colliers-primary"
+                    class="h-4 w-4 shrink-0 rounded border-gray-300 text-colliers-primary focus:ring-colliers-primary"
                     :checked="isChecked(opt.value)"
                     @change="toggle(opt.value)"
                   />

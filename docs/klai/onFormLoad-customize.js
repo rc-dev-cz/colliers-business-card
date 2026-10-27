@@ -1,4 +1,4 @@
-// Internal tools (the View print PDF button) show only on /customize?...&internal=1.
+// Internal tools flag (/customize?...&internal=1). Oct 27: the View print PDF button is gone from Customize (print PDFs are made on Place Order).
 model.internalTools = /[?&]internal=1(&|$)/.test(String(window.location.hash || '')) ? 1 : 0
 var code = ''
 var id = ''
@@ -56,6 +56,14 @@ function languageFromCode(raw, fallback) {
   if (c === 'BCAD-PL-ENG' || /(?:^|-)ENG(?:-|$)/.test(c)) return 'English'
   return fallback || ''
 }
+// Product names say the language (label_colliers_productBilingual); FileMaker codes do not.
+function languageFromNameKey(key) {
+  var k = String(key || '')
+  if (/bilingual/i.test(k)) return 'Bilingual'
+  if (/french/i.test(k)) return 'French'
+  if (/english/i.test(k)) return 'English'
+  return ''
+}
 var product = _.find(model.products || [], function (row) {
   if (!row) return false
   if (code && row.code === code) return true
@@ -68,6 +76,12 @@ if (
   ((code && model.product.code === code) || (id && String(model.product.id) === String(id)))
 ) {
   product = model.product
+}
+// The row picked on Catalogue / Product Detail (goCustomize keeps it in app.customizeProduct).
+if (!product && typeof app !== 'undefined' && app.customizeProduct) {
+  var picked = app.customizeProduct
+  if ((code && picked.code === code) || (id && String(picked.id) === String(id)))
+    product = Object.assign({}, picked)
 }
 var hookLang =
   (model.product && model.product.language) || (model.card && model.card.language) || ''
@@ -95,7 +109,12 @@ if (!product || !product.code) {
   return
 }
 if (!product.id && id) product.id = id
-var lang = product.language || languageFromCode(product.code, '') || hookLang || 'English'
+var lang =
+  languageFromNameKey(product.nameKey) ||
+  product.language ||
+  languageFromCode(product.code, '') ||
+  hookLang ||
+  'English'
 if (isBilin(lang) || languageFromCode(product.code, '') === 'Bilingual') lang = 'Bilingual'
 else if (isFrenchOnly(lang) || languageFromCode(product.code, '') === 'French') lang = 'French'
 product.language = lang

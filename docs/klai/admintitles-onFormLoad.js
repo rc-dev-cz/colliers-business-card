@@ -24,3 +24,12 @@ rows.sort(function (a, b) { return a.title.localeCompare(b.title); });
 model.titles = rows;
 if (model.activeTab !== 'FR') model.activeTab = 'EN';
 model.saving = false;
+model.addError = '';
+model.editError = '';
+// Open Sans for the title fit check in addTitle / saveEdit (same file as the print PDF).
+if (!window.__colliersTitleFont && typeof FontFace !== 'undefined') {
+  window.__colliersTitleFont = new FontFace('Colliers Open Sans', 'url(https://cdn.jsdelivr.net/gh/googlefonts/opensans@main/fonts/ttf/OpenSans-Regular.ttf)').load().then(function (face) {
+    document.fonts.add(face);
+    window.__colliersTitleFontReady = true;
+  }).catch(function () {});
+}

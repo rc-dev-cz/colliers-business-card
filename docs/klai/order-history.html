@@ -150,11 +150,11 @@
                     {{ line.nameKey ? BF.i18n(line.nameKey) : line.code }}
                   </div>
                   <div class="mt-0.5 text-[13px] text-gray-500">
-                    {{ BF.i18n('label_colliers_language') }}: {{ line.language }}
+                    {{ BF.i18n('label_colliers_language') }}: {{ ['english', 'french', 'bilingual'].indexOf(String(line.language || '').trim().toLowerCase()) !== -1 ? BF.i18n('label_colliers_' + String(line.language).trim().toLowerCase()) : line.language }}
                   </div>
                 </div>
                 <div class="text-right text-sm tabular-nums">
-                  <div class="font-medium text-gray-900">${{ line.price }}</div>
+                  <div class="font-medium text-gray-900">{{ ((app.i18n && app.i18n.langSelected) === 'fr' ? Number(line.price || 0).toLocaleString('fr-CA', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + '\u00a0$' : '$' + Number(line.price || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })) }}</div>
                   <div class="text-xs text-gray-500">
                     {{ line.boxes }} {{ line.boxes === 1 ? BF.i18n('label_colliers_box') :
                     BF.i18n('label_colliers_boxes') }} · {{ line.cards }} {{
@@ -219,7 +219,7 @@
       <div class="modal-footer">
         <div class="text-sm text-gray-700">
           {{ BF.i18n('label_colliers_totalCost') }}:
-          <span class="font-semibold text-gray-900">${{ model.details.total }}</span>
+          <span class="font-semibold text-gray-900">{{ ((app.i18n && app.i18n.langSelected) === 'fr' ? Number(model.details.total || 0).toLocaleString('fr-CA', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + '\u00a0$' : '$' + Number(model.details.total || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })) }}</span>
           <span class="text-gray-500">
             · {{ BF.i18n('label_colliers_qty') }}: {{ model.details.qty }}</span
           >

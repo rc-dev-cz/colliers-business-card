@@ -27,12 +27,12 @@
     <h1 class="colliers-page-title">{{ BF.i18n('label_colliers_reviewOrder') }}</h1>
   </div>
   <p v-if="model.submitError" class="colliers-form-error mb-4">{{ model.submitError }}</p>
-  <div v-if="!model.cart.length" class="py-16 text-center text-gray-500">
+  <div v-if="!(model.view && model.view.shippedCount)" class="py-16 text-center text-gray-500">
     {{ BF.i18n('label_colliers_cartEmpty') }}
   </div>
   <div v-else class="space-y-6">
     <section
-      v-for="(split, splitIndex) in model.view.splits"
+      v-for="(split, splitIndex) in ((model.view && model.view.splits) || [])"
       :key="split.id"
       class="overflow-hidden rounded-xl border border-gray-200 bg-white p-4 shadow-sm sm:p-6"
     >
@@ -74,7 +74,7 @@
                       {{ line.name }}
                     </div>
                     <div v-if="line.language" class="mt-1 text-[13px] text-gray-500">
-                      {{ BF.i18n('label_colliers_language') }}: {{ line.language }}
+                      {{ BF.i18n('label_colliers_language') }}: {{ ['english', 'french', 'bilingual'].indexOf(String(line.language || '').trim().toLowerCase()) !== -1 ? BF.i18n('label_colliers_' + String(line.language).trim().toLowerCase()) : line.language }}
                     </div>
                   </div>
                 </div>
@@ -82,9 +82,9 @@
               <td class="px-2 py-4 text-right align-middle text-gray-700">
                 {{ line.quantity != null ? line.quantity : line.cardsQty }}
               </td>
-              <td class="px-2 py-4 text-right align-middle text-gray-700">${{ line.unitPrice }}</td>
+              <td class="px-2 py-4 text-right align-middle text-gray-700">{{ ((app.i18n && app.i18n.langSelected) === 'fr' ? Number(line.unitPrice || 0).toLocaleString('fr-CA', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + '\u00a0$' : '$' + Number(line.unitPrice || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })) }}</td>
               <td class="py-4 pl-2 text-right align-middle font-medium text-gray-900">
-                ${{ line.amount }}
+                {{ ((app.i18n && app.i18n.langSelected) === 'fr' ? Number(line.amount || 0).toLocaleString('fr-CA', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + '\u00a0$' : '$' + Number(line.amount || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })) }}
               </td>
             </tr>
           </tbody>
@@ -92,7 +92,7 @@
       </div>
       <div class="mt-4 flex justify-end gap-6 text-sm font-semibold text-gray-900">
         <span>{{ BF.i18n('label_colliers_subtotal') }}</span>
-        <span>${{ split.subtotal }}</span>
+        <span>{{ ((app.i18n && app.i18n.langSelected) === 'fr' ? Number(split.subtotal || 0).toLocaleString('fr-CA', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + '\u00a0$' : '$' + Number(split.subtotal || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })) }}</span>
       </div>
       <div class="mt-6 border-t border-gray-100 pt-5">
         <h3 class="mb-3 text-sm font-semibold text-gray-900">
@@ -132,7 +132,7 @@
     >
       <div class="flex justify-between text-sm text-gray-700">
         <span>{{ BF.i18n('label_colliers_subtotal') }}</span>
-        <span>${{ model.view.totals.subtotal }}</span>
+        <span>{{ ((app.i18n && app.i18n.langSelected) === 'fr' ? Number((model.view && model.view.totals && model.view.totals.subtotal) || 0).toLocaleString('fr-CA', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + '\u00a0$' : '$' + Number((model.view && model.view.totals && model.view.totals.subtotal) || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })) }}</span>
       </div>
       <div class="mt-2 flex justify-between text-sm text-gray-700">
         <span>{{ BF.i18n('label_colliers_shipping') }}</span>
@@ -142,17 +142,17 @@
         class="mt-4 flex justify-between border-t border-gray-200 pt-4 text-base font-semibold text-colliers-primary"
       >
         <span>{{ BF.i18n('label_colliers_total') }}</span>
-        <span>${{ model.view.totals.subtotal }}</span>
+        <span>{{ ((app.i18n && app.i18n.langSelected) === 'fr' ? Number((model.view && model.view.totals && model.view.totals.subtotal) || 0).toLocaleString('fr-CA', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + '\u00a0$' : '$' + Number((model.view && model.view.totals && model.view.totals.subtotal) || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })) }}</span>
       </div>
       <button
         type="button"
         class="btn-primary mt-5 w-full"
-        :disabled="!((Array.isArray(app.cart) ? app.cart : model.cart || []).length) || !model.view.shipReady || Number(model.submitting) === 1"
+        :disabled="!((Array.isArray(app.cart) ? app.cart : model.cart || []).length) || !(model.view && model.view.shipReady) || Number(model.submitting) === 1"
         @click="BF.namedAction('submitOrder')"
       >
         {{ BF.i18n('label_colliers_placeOrder') }}
       </button>
-      <p v-if="model.cart.length && !model.view.shipReady" class="mt-3 text-sm text-red-600">
+      <p v-if="(Array.isArray(model.cart) ? model.cart : []).length && !(model.view && model.view.shipReady)" class="mt-3 text-sm text-red-600">
         {{ BF.i18n('label_colliers_shipToRequired') }}
       </p>
     </aside>

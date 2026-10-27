@@ -53,13 +53,6 @@ model.view.lines = model.cart.map(function (line, cartIndex) {
     previewModel: 'cart.' + cartIndex + '.details',
   }
 })
-var subtotal = model.cart.reduce(function (sum, line) {
-  var p = findProduct(line.code)
-  var qty = itemQty(line)
-  var price = Number(p.price || line.price || 63)
-  return sum + price * qty
-}, 0)
-model.view.totals = { subtotal: money(subtotal), shipping: '0.00' }
 model.view.splits = (model.order.splits || []).map(function (split) {
   var lines = (split.itemIds || [])
     .map(function (id) {
@@ -84,6 +77,21 @@ model.view.splits = (model.order.splits || []).map(function (split) {
   })
   return { id: split.id, lines: lines, locations: locations, subtotal: money(splitSub) }
 })
+// Sum of the shipment subtotals: a card taken off shipping stays in the cart but is not
+// ordered (Vue ReviewPage orderTotal, BUG-01).
+var subtotal = model.view.splits.reduce(function (sum, split) {
+  return sum + Number(split.subtotal || 0)
+}, 0)
+model.view.totals = { subtotal: money(subtotal), shipping: '0.00' }
+var shippedIds = {}
+model.view.splits.forEach(function (split) {
+  split.lines.forEach(function (row) {
+    shippedIds[String(row.id)] = true
+  })
+})
+var shippedCount = Object.keys(shippedIds).length
+if (typeof Vue !== 'undefined' && Vue.set) Vue.set(model.view, 'shippedCount', shippedCount)
+else model.view.shippedCount = shippedCount
 // Place Order needs cards and a ship-to on every group (Vue shippingReady).
 var shipReady =
   model.view.splits.length > 0 &&

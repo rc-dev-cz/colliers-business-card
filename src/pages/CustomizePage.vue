@@ -29,15 +29,6 @@
           <p v-if="previewLayoutError" class="mt-3 text-sm text-red-600">
             {{ previewLayoutError }}
           </p>
-          <p v-else-if="printPdfError" class="mt-3 text-sm text-red-600">{{ printPdfError }}</p>
-          <app-button
-            class="mt-4"
-            variant="outline"
-            block
-            :disabled="printPdfBusy || !layoutReady"
-            @click="openPrintPdf"
-            >{{ printPdfBusy ? t('loading') : t('viewPrintPdf') }}</app-button
-          >
         </div>
 
         <div class="min-w-0 flex-1">
@@ -224,7 +215,6 @@ import {
 } from '../helpers/validate'
 import { formatAddressCard, officeLabel } from '../adapters/api'
 import { go, goBack } from '../adapters/nav'
-import { viewPrintPdf } from '../helpers/printPdf'
 import { loadLayoutFonts } from '../helpers/cardFonts'
 import {
   LAYOUT_ERROR,
@@ -299,8 +289,6 @@ export default {
       // Name kept when the last typed letter did not fit (a wide W can be refused
       // while a narrow i still fits), so the limit helper shows for it too.
       nameRefusedAt: '',
-      printPdfBusy: false,
-      printPdfError: '',
       layoutStatus: 'loading',
       layoutErrorCode: '',
       productPlan: null,
@@ -689,7 +677,6 @@ export default {
       return credentialsFitOnCard(details, this.layoutFonts, this.product.language)
     },
     replan: function () {
-      this.printPdfError = ''
       if (!this.layoutFonts || !this.product) {
         this.layoutStatus = 'loading'
         this.layoutErrorCode = ''
@@ -795,7 +782,6 @@ export default {
       this.emailTouched = false
       this.otherCredentialOpen = false
       this.clearCredentialNotice()
-      this.printPdfError = ''
     },
     back: function () {
       goBack()
@@ -809,24 +795,6 @@ export default {
         editLineId: store.editLineId,
       })
       go('proof', { code: this.product.code })
-    },
-    openPrintPdf: function () {
-      var self = this
-      if (!this.product || this.printPdfBusy || !this.layoutReady) return
-      this.printPdfBusy = true
-      this.printPdfError = ''
-      viewPrintPdf(
-        Object.assign({}, this.details, {
-          degree: Array.isArray(this.details.degree) ? this.details.degree.slice() : [],
-        }),
-        this.product.language
-      )
-        .catch(function (err) {
-          self.printPdfError = (err && err.message) || String(err)
-        })
-        .then(function () {
-          self.printPdfBusy = false
-        })
     },
   },
 }

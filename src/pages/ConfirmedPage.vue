@@ -19,6 +19,11 @@
           </svg>
         </div>
         <h1 class="colliers-page-title mb-4">{{ t('orderConfirmed') }}</h1>
+        <!-- The order number the backend returns (FileMaker Place Order: $$BF_Model.orderId) -->
+        <p v-if="store.lastOrder && store.lastOrder.orderId" class="mb-2 text-sm text-gray-500">
+          {{ t('orderId') }}
+          <span class="font-semibold text-gray-900">#{{ store.lastOrder.orderId }}</span>
+        </p>
         <p class="mx-auto mb-8 max-w-md text-gray-600">{{ t('thankYou') }}</p>
         <app-button @click="backToCatalog">{{ t('returnToCatalog') }}</app-button>
       </div>

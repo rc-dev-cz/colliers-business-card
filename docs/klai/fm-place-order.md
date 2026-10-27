@@ -60,7 +60,7 @@ cards[]     line_ref, language, print_pdf_file_name, print_pdf_base64
 | `order.order_type`, `total_items`, `total_shipping`                      | `store_BFUsers_order::` same names                                                                                                               |
 | `Get ( CurrentDate )`                                                    | `store_BFUsers_order::date`                                                                                                                      |
 | `$orderId`, `count_locations`, whole group JSON                          | `store_BFUsers_order_group::order_id`, `::count_locations`, `::asJSON`                                                                           |
-| `$orderId`, `$groupId`, `line_ref`                                       | `store_BFUsers_order_group_items::order_id`, `::group_id`, `::ops_item_id`                                                                       |
+| `$orderId`, `$groupId`                                                   | `store_BFUsers_order_group_items::order_id`, `::group_id` (`line_ref` stays in `::fullJSON`; `::ops_item_id` is a Number field for the OPS sync) |
 | `product_code`, `catalogue_id`, `language`, `quantity`                   | items `::` same names                                                                                                                            |
 | `unit_price`                                                             | items `::unit_sell_price`                                                                                                                        |
 | `card.name`, `title`, `region`, `email`                                  | items `::name`, `::title`, `::region`, `::email`                                                                                                 |
@@ -91,7 +91,10 @@ on the Confirmed page.
 
 **FileMaker setup** on `store_BFUsers_order_group_shipment`:
 
-1. Field `location_type` (Text).
+1. Field `location_type` (Text). Missing in the file on Oct 27: the Place Order step that sets it
+   pasted as `<Field Missing>` and was commented out. After adding the field, uncomment that step
+   and re-pick `location_type` in it. For shipments saved while it was off, fill it from the copy
+   in `asJSON`: Replace Field Contents with `JSONGetElement ( asJSON ; "location_type" )`.
 2. Calculation fields (Number, unstored is fine):
    - `personal_address_id` = `If ( location_type = "personal" ; location_id )`
    - `office_address_id` = `If ( location_type = "office" ; location_id )`
@@ -116,6 +119,55 @@ FileMaker shows `<Field Missing>` / `<unknown>` for any that do not match; re-pi
 - Print PDF goes in the existing `store_BFUsers_order_group_items::PrintImage` container;
   `boxes_per_item` (Number) was added to `store_BFUsers_order_group_shipment`.
 - **`Perform Script [ "Place Order" ]`** in the onUtility block: re-pick the script if it shows `<unknown>`.
+
+## What goes back to the page (do not echo the order)
+
+The hook log for order 2179 showed `review / submit`: **payload 269 837, result 263 765** bytes.
+The result was the request again plus `orderId`: FileMaker sends the whole `$$BF_Model` back, and
+that model holds `orderPayload.cards[].print_pdf_base64` (about 210 000 characters per card).
+
+Only three keys need to go back. In **Place Order**, every `Set Variable [ $$BF_Model ; … ]`
+(4 error exits + the success step, 5 in all) starts from an empty object instead of the model:
+
+```
+# success (last step)
+Set Variable [ $$BF_Model ; JSONSetElement ( "{}" ;
+    [ "orderId" ; $orderId ; JSONString ] ;
+    [ "submitError" ; "" ; JSONString ] ;
+    [ "submitting" ; 0 ; JSONNumber ] ) ]
+
+# each error exit
+Set Variable [ $$BF_Model ; JSONSetElement ( "{}" ;
+    [ "submitError" ; $error ; JSONString ] ;
+    [ "submitting" ; 0 ; JSONNumber ] ) ]
+```
+
+i.e. replace `JSONSetElement ( $$BF_Model ;` with `JSONSetElement ( "{}" ;`. `fm-place-order.xml`
+already has it. Nothing else in `BF - onUtility - review` writes `$$BF_Model` after Place Order.
+
+Why this is safe: the hook state has `modelUpdateMode = merge` (both in the request and the
+result), so Klai merges the returned keys into the page model. `cart`, `order` and `orderPayload`
+stay on the page; they just do not travel back. The result drops to well under 1 KB.
+
+| Returned key  | Read by                                                                      |
+| ------------- | ---------------------------------------------------------------------------- |
+| `orderId`     | Review `submitOrder` step 4 → `app.lastOrderId` → Confirmed "Order ID #2179" |
+| `submitError` | Review: shown above the cart; non-empty = stay on Review                     |
+| `submitting`  | Review: re-enables Place Order                                               |
+
+Review now has **Send full schema in utility hooks** off (`sendFullSchema: false`, Studio rec 42,
+Oct 27), like Catalogue, so hooks no longer carry the page schema (including the PDF script text).
+
+## First orders (2180, 2181, Oct 27): what to fix in the file
+
+- **`ops_item_id`**: an earlier version set it to `line_ref` (`line-1793118207728-bvd089`). It is a
+  Number field, so the dashboard showed `-1.7931E+15`. Delete that `Set Field` step (the XML no longer
+  has it) and clear the field on the test items.
+- **Ship-to commit**: the shipment `Commit Records/Requests` must be `With dialog: Off`, like the others.
+- **Office ship-tos missing under "Shipping Addresses"** on the Order Group Sync Dashboard (order 2180
+  group 14 lists location 1224 but only shows address 1256): that portal follows `location_id` to the
+  personal-address table. Add the `office_address_id` / `personal_address_id` calculations and the
+  office relationship from "Addresses: id + type" above, and show both on the dashboard.
 
 ## Errors
 

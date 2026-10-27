@@ -1,5 +1,5 @@
 {
-  "_readme": "Review page named actions as saved in Klai Studio (Oct 16, 2026). submitOrder = 1) review-submitOrder.js builds model.orderPayload, 2) review-buildPrintPdfs.js builds ONE print PDF (base64) per unique card and adds it to orderPayload.cards[] (linked to items by line_ref; order.print_pdf_status = ok | disabled | failed: ...). Nothing is stored in the browser; 3) runUtilityHook sends the order, 4) confirms or shows submitError. FileMaker reads $$BF_Model.orderPayload in 'BF - onUtility - review' (type submit); it may set orderId or submitError. Draft FM script: fm-onUtility-review-submit.md. Oct 23, 2026 (local mirror, not yet saved to Studio): refreshView (review-refreshView.js) builds model.view; each line has previewModel = 'cart.N.details' for the CardPreview thumbnail. previewLine (review-previewLine.js, same code as Shipping previewLine) opens the Business Card Preview popup; bilingual shows both faces.",
+  "_readme": "Review page named actions as saved in Klai Studio (Oct 16, 2026). submitOrder = 1) review-submitOrder.js builds model.orderPayload, 2) review-buildPrintPdfs.js builds ONE print PDF (base64) per unique card and adds it to orderPayload.cards[] (linked to items by line_ref; order.print_pdf_status = ok | disabled | failed: ...). Nothing is stored in the browser; 3) runUtilityHook sends the order, 4) confirms or shows submitError. FileMaker reads $$BF_Model.orderPayload in 'BF - onUtility - review' (type submit); it may set orderId or submitError. Draft FM script: fm-onUtility-review-submit.md. Oct 23, 2026 (saved to Studio Oct 27, recModCount 40): refreshView (review-refreshView.js) builds model.view; each line has previewModel = 'cart.N.details' for the CardPreview thumbnail. previewLine (review-previewLine.js, same code as Shipping previewLine) opens the Business Card Preview popup; bilingual shows both faces. Oct 27: amounts show as $63.00 (EN) / 63,00 $ (FR).",
   "submitOrder": [
     {
       "action": "function",
@@ -12,13 +12,17 @@
     {
       "action": "runUtilityHook",
       "options": {
-        "modelFilterKeys": ["cart", "order", "orderPayload"],
+        "modelFilterKeys": [
+          "cart",
+          "order",
+          "orderPayload"
+        ],
         "type": "submit"
       }
     },
     {
       "action": "function",
-      "function": "model.submitting = 0\nif (model.submitError) return\nconsole.info('[Colliers order] Order confirmed: ' + (model.orderId || '(id from FileMaker)'), model.orderPayload)\n// Empty the cart here, not on Confirmed, so opening /confirmed again keeps a draft (Vue confirmSubmit).\nBF.namedAction('clearCart')\nif (typeof app !== 'undefined') app.order = { splits: [{ id: 1, itemIds: [], locations: [] }] }\nBF.namedAction('goConfirmed')"
+      "function": "model.submitting = 0\nif (model.submitError) return\n// The order number FileMaker returns (Place Order sets $$BF_Model.orderId); Confirmed shows it.\nif (typeof app !== 'undefined') app.lastOrderId = model.orderId != null ? String(model.orderId) : ''\nconsole.info('[Colliers order] Order confirmed: ' + (model.orderId || '(id from FileMaker)'), model.orderPayload)\n// Empty the ordered cards here, not on Confirmed, so opening /confirmed again keeps a draft (Vue confirmSubmit).\n// Cards left off shipping were not ordered: they stay in the cart, still off shipping (Vue clearOrderedLines).\nvar orderedIds = {}\nvar anyOrdered = false\nfunction markOrdered(id) {\n  orderedIds[String(id)] = true\n  anyOrdered = true\n}\n;((model.orderPayload && model.orderPayload.groups) || []).forEach(function (group) {\n  ;(group.items || []).forEach(function (item) {\n    markOrdered(item.line_ref)\n  })\n})\nif (!anyOrdered && typeof app !== 'undefined' && app.order)\n  (app.order.splits || []).forEach(function (split) {\n    ;(split.itemIds || []).forEach(markOrdered)\n  })\nvar cartNow = typeof app !== 'undefined' && Array.isArray(app.cart) ? app.cart : []\nvar kept = anyOrdered\n  ? cartNow.filter(function (line) {\n      return !orderedIds[String(line.id)]\n    })\n  : []\nif (!kept.length) {\n  BF.namedAction('clearCart')\n  if (typeof app !== 'undefined') app.order = { splits: [{ id: 1, itemIds: [], locations: [] }] }\n} else {\n  cartNow.splice.apply(cartNow, [0, cartNow.length].concat(kept))\n  app.cart = cartNow\n  app.order = {\n    splits: [{ id: 1, itemIds: [], locations: [] }],\n    detachedIds: kept.map(function (line) {\n      return String(line.id)\n    }),\n  }\n  try {\n    if (typeof sessionStorage !== 'undefined') {\n      sessionStorage.setItem('colliers-tab.cart', JSON.stringify(cartNow))\n      sessionStorage.setItem('colliers-tab.order', JSON.stringify(app.order))\n    }\n  } catch (err) {}\n  BF.namedAction('syncCartHeader')\n}\nBF.namedAction('goConfirmed')"
     }
   ],
   "printOrder": [

@@ -28,7 +28,6 @@ if (!source) {
     setValue(split, 'itemIds', withoutLine(split.itemIds))
   })
 } else if (source !== target) {
-  var movedQty = source.qtys ? source.qtys[lineId] : null
   var alreadyThere = (target.itemIds || []).map(String).indexOf(lineId) !== -1
   setValue(source, 'itemIds', withoutLine(source.itemIds))
   if (source.qtys && source.qtys[lineId] != null) {
@@ -36,10 +35,11 @@ if (!source) {
     delete sourceQtys[lineId]
     setValue(source, 'qtys', sourceQtys)
   }
-  // Keep the boxes the card had in its old group unless the target already had it.
-  if (movedQty != null && movedQty !== '' && !alreadyThere) {
+  // Its old boxes belonged to the old group's addresses: a card new to this group starts at
+  // 1 box (Vue moveItem, BUG-03).
+  if (!alreadyThere) {
     var targetQtys = Object.assign({}, target.qtys || {})
-    targetQtys[lineId] = movedQty
+    targetQtys[lineId] = 1
     setValue(target, 'qtys', targetQtys)
   }
 }
