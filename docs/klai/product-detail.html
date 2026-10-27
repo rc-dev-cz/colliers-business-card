@@ -73,8 +73,8 @@
                   >
                     <td class="px-3 py-2">{{ tier.from }} BX</td>
                     <td class="px-3 py-2">{{ tier.to }}</td>
-                    <td class="px-3 py-2">${{ Number(tier.pricePer).toFixed(2) }} / BX</td>
-                    <td class="px-3 py-2">${{ Number(tier.unitTotal).toFixed(2) }}</td>
+                    <td class="px-3 py-2">{{ ((app.i18n && app.i18n.langSelected) === 'fr' ? Number(tier.pricePer || 0).toLocaleString('fr-CA', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + '\u00a0$' : '$' + Number(tier.pricePer || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })) }} / BX</td>
+                    <td class="px-3 py-2">{{ ((app.i18n && app.i18n.langSelected) === 'fr' ? Number(tier.unitTotal || 0).toLocaleString('fr-CA', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + '\u00a0$' : '$' + Number(tier.unitTotal || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })) }}</td>
                   </tr>
                 </tbody>
               </table>

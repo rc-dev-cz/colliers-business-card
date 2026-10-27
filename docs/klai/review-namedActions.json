@@ -1,5 +1,5 @@
 {
-  "_readme": "Review page named actions as saved in Klai Studio (Oct 16, 2026). submitOrder = 1) review-submitOrder.js builds model.orderPayload, 2) review-buildPrintPdfs.js builds ONE print PDF (base64) per unique card and adds it to orderPayload.cards[] (linked to items by line_ref; order.print_pdf_status = ok | disabled | failed: ...). Nothing is stored in the browser; 3) runUtilityHook sends the order, 4) confirms or shows submitError. FileMaker reads $$BF_Model.orderPayload in 'BF - onUtility - review' (type submit); it may set orderId or submitError. Draft FM script: fm-onUtility-review-submit.md. Oct 23, 2026 (local mirror, not yet saved to Studio): refreshView (review-refreshView.js) builds model.view; each line has previewModel = 'cart.N.details' for the CardPreview thumbnail. previewLine (review-previewLine.js, same code as Shipping previewLine) opens the Business Card Preview popup; bilingual shows both faces.",
+  "_readme": "Review page named actions as saved in Klai Studio (Oct 16, 2026). submitOrder = 1) review-submitOrder.js builds model.orderPayload, 2) review-buildPrintPdfs.js builds ONE print PDF (base64) per unique card and adds it to orderPayload.cards[] (linked to items by line_ref; order.print_pdf_status = ok | disabled | failed: ...). Nothing is stored in the browser; 3) runUtilityHook sends the order, 4) confirms or shows submitError. FileMaker reads $$BF_Model.orderPayload in 'BF - onUtility - review' (type submit); it may set orderId or submitError. Draft FM script: fm-onUtility-review-submit.md. Oct 23, 2026 (saved to Studio Oct 27, recModCount 40): refreshView (review-refreshView.js) builds model.view; each line has previewModel = 'cart.N.details' for the CardPreview thumbnail. previewLine (review-previewLine.js, same code as Shipping previewLine) opens the Business Card Preview popup; bilingual shows both faces. Oct 27: amounts show as $63.00 (EN) / 63,00 $ (FR).",
   "submitOrder": [
     {
       "action": "function",
@@ -12,7 +12,11 @@
     {
       "action": "runUtilityHook",
       "options": {
-        "modelFilterKeys": ["cart", "order", "orderPayload"],
+        "modelFilterKeys": [
+          "cart",
+          "order",
+          "orderPayload"
+        ],
         "type": "submit"
       }
     },

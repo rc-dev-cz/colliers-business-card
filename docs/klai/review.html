@@ -82,9 +82,9 @@
               <td class="px-2 py-4 text-right align-middle text-gray-700">
                 {{ line.quantity != null ? line.quantity : line.cardsQty }}
               </td>
-              <td class="px-2 py-4 text-right align-middle text-gray-700">${{ line.unitPrice }}</td>
+              <td class="px-2 py-4 text-right align-middle text-gray-700">{{ ((app.i18n && app.i18n.langSelected) === 'fr' ? Number(line.unitPrice || 0).toLocaleString('fr-CA', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + '\u00a0$' : '$' + Number(line.unitPrice || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })) }}</td>
               <td class="py-4 pl-2 text-right align-middle font-medium text-gray-900">
-                ${{ line.amount }}
+                {{ ((app.i18n && app.i18n.langSelected) === 'fr' ? Number(line.amount || 0).toLocaleString('fr-CA', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + '\u00a0$' : '$' + Number(line.amount || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })) }}
               </td>
             </tr>
           </tbody>
@@ -92,7 +92,7 @@
       </div>
       <div class="mt-4 flex justify-end gap-6 text-sm font-semibold text-gray-900">
         <span>{{ BF.i18n('label_colliers_subtotal') }}</span>
-        <span>${{ split.subtotal }}</span>
+        <span>{{ ((app.i18n && app.i18n.langSelected) === 'fr' ? Number(split.subtotal || 0).toLocaleString('fr-CA', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + '\u00a0$' : '$' + Number(split.subtotal || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })) }}</span>
       </div>
       <div class="mt-6 border-t border-gray-100 pt-5">
         <h3 class="mb-3 text-sm font-semibold text-gray-900">
@@ -132,7 +132,7 @@
     >
       <div class="flex justify-between text-sm text-gray-700">
         <span>{{ BF.i18n('label_colliers_subtotal') }}</span>
-        <span>${{ (model.view && model.view.totals && model.view.totals.subtotal) || '0.00' }}</span>
+        <span>{{ ((app.i18n && app.i18n.langSelected) === 'fr' ? Number((model.view && model.view.totals && model.view.totals.subtotal) || 0).toLocaleString('fr-CA', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + '\u00a0$' : '$' + Number((model.view && model.view.totals && model.view.totals.subtotal) || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })) }}</span>
       </div>
       <div class="mt-2 flex justify-between text-sm text-gray-700">
         <span>{{ BF.i18n('label_colliers_shipping') }}</span>
@@ -142,7 +142,7 @@
         class="mt-4 flex justify-between border-t border-gray-200 pt-4 text-base font-semibold text-colliers-primary"
       >
         <span>{{ BF.i18n('label_colliers_total') }}</span>
-        <span>${{ (model.view && model.view.totals && model.view.totals.subtotal) || '0.00' }}</span>
+        <span>{{ ((app.i18n && app.i18n.langSelected) === 'fr' ? Number((model.view && model.view.totals && model.view.totals.subtotal) || 0).toLocaleString('fr-CA', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + '\u00a0$' : '$' + Number((model.view && model.view.totals && model.view.totals.subtotal) || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })) }}</span>
       </div>
       <button
         type="button"

@@ -28,8 +28,8 @@
         </div>
         <div class="mb-8 text-[14px] font-normal text-gray-600">{{ product.code }}</div>
         <div class="mb-6 mt-auto text-[15px] font-bold text-black">
-          {{ BF.i18n('label_colliers_pricePerBox').replace('{price}',
-          String(Math.round(product.price))) }}
+          {{ BF.i18n('label_colliers_pricePerBox').replace(/\$?\{price\}/,
+          ((app.i18n && app.i18n.langSelected) === 'fr' ? Number(product.price || 0).toLocaleString('fr-CA', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + '\u00a0$' : '$' + Number(product.price || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }))) }}
         </div>
         <button
           type="button"
