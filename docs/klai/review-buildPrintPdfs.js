@@ -166,9 +166,9 @@ function setModel(key, value) {
     var credMode = packed.mode === 'error' ? 'none' : packed.mode;
     if (packed.mode === 'error') errors.push('credentials');
     if (!fitsLine(font, fields.website, L.bodySize, L.identityWidth)) errors.push('website');
-    // Titles are saved with a curly apostrophe (titleLocale.js); compare both forms.
-    var TA_FR = 'Partenaire d’affaires sénior en acquisition de talent';
-    var titleSize = (String(fields.titleOnly || '').replace(/'/g, '’') === TA_FR && !fitsLine(font, TA_FR, L.bodySize, L.titleMaxWidth)) ? (function () { var sz = Number(((L.bodySize * L.titleMaxWidth) / font.widthOfTextAtSize(TA_FR, L.bodySize)).toFixed(2)); while (sz > 1 && !fitsLine(font, TA_FR, sz, L.titleMaxWidth)) sz = Number((sz - 0.01).toFixed(2)); return sz; })() : L.bodySize;
+    // A title too long for its lane shrinks to fit, down to 5.5 pt (Vue titleSizeFor / shrinkToFitSize;
+    // Customize wrapCardName uses the same rule, so what the preview shows is what prints).
+    var titleSize = (function (t) { t = String(t || '').trim(); if (!t || fitsLine(font, t, L.bodySize, L.titleMaxWidth)) return L.bodySize; var sz = Number(((L.bodySize * L.titleMaxWidth) / font.widthOfTextAtSize(t, L.bodySize)).toFixed(2)); while (sz > 1 && !fitsLine(font, t, sz, L.titleMaxWidth)) sz = Number((sz - 0.01).toFixed(2)); return sz >= 5.5 ? sz : L.bodySize; })(fields.titleOnly || fields.title);
     if (!fitsLine(font, fields.titleOnly || fields.title, titleSize, L.titleMaxWidth)) errors.push('title');
     if (String(fields.team || '').trim() && !fitsLine(font, fields.team, L.bodySize, L.identityWidth)) errors.push('team');
     if (!fitsLine(font, fields.email, L.bodySize, L.emailMaxWidth)) errors.push('email');

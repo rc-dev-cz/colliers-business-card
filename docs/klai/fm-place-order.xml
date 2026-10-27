@@ -476,9 +476,8 @@
     <Calculation><![CDATA[$groupId]]></Calculation>
     <Field table="store_BFUsers_order_group_items" id="0" name="group_id"/>
   </Step>
-  <Step enable="True" id="76" name="Set Field">
-    <Calculation><![CDATA[$lineRef]]></Calculation>
-    <Field table="store_BFUsers_order_group_items" id="0" name="ops_item_id"/>
+  <Step enable="True" id="89" name="# (comment)">
+    <Text>line_ref stays in fullJSON. ops_item_id is a Number field for the OPS item id (filled by the OPS sync).</Text>
   </Step>
   <Step enable="True" id="76" name="Set Field">
     <Calculation><![CDATA[JSONGetElement ( $item ; "product_code" )]]></Calculation>

@@ -328,16 +328,15 @@ if (regionPart) {
     regionMode = 'title'
   else regionMode = 'own'
 }
-// Only the Talent Acquisition French title may shrink below 6.5 pt to fit the lane (Cynthia, Oct 2026; Vue titleSizeFor).
-var TITLE_FR_TALENT_ACQUISITION = 'Partenaire d’affaires sénior en acquisition de talent'
+// A title too long for its lane shrinks to fit, down to 5.5 pt; one that would need less stays 6.5 pt
+// and reports too long (Vue cardLayout.js titleSizeFor / shrinkToFitSize, lineMinSize 5.5).
+var TITLE_MIN = 5.5
 function titleSizeFor(t) {
-  t = String(t || '')
-  // Older cards saved a straight apostrophe.
-  if (t.replace(/'/g, '’') !== TITLE_FR_TALENT_ACQUISITION || fitsLine(t, false, BODY, TITLE_W))
-    return BODY
+  t = String(t || '').trim()
+  if (!t || fitsLine(t, false, BODY, TITLE_W)) return BODY
   var size = Number(((BODY * TITLE_W) / measure(t, false, BODY)).toFixed(2))
   while (size > 1 && !fitsLine(t, false, size, TITLE_W)) size = Number((size - 0.01).toFixed(2))
-  return size
+  return size >= TITLE_MIN ? size : BODY
 }
 var titleSize = titleSizeFor(titlePart)
 var titleFrSize = titleSizeFor(titleFrPart)

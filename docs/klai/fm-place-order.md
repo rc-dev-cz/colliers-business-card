@@ -60,7 +60,7 @@ cards[]     line_ref, language, print_pdf_file_name, print_pdf_base64
 | `order.order_type`, `total_items`, `total_shipping`                      | `store_BFUsers_order::` same names                                                                                                               |
 | `Get ( CurrentDate )`                                                    | `store_BFUsers_order::date`                                                                                                                      |
 | `$orderId`, `count_locations`, whole group JSON                          | `store_BFUsers_order_group::order_id`, `::count_locations`, `::asJSON`                                                                           |
-| `$orderId`, `$groupId`, `line_ref`                                       | `store_BFUsers_order_group_items::order_id`, `::group_id`, `::ops_item_id`                                                                       |
+| `$orderId`, `$groupId`                                                   | `store_BFUsers_order_group_items::order_id`, `::group_id` (`line_ref` stays in `::fullJSON`; `::ops_item_id` is a Number field for the OPS sync) |
 | `product_code`, `catalogue_id`, `language`, `quantity`                   | items `::` same names                                                                                                                            |
 | `unit_price`                                                             | items `::unit_sell_price`                                                                                                                        |
 | `card.name`, `title`, `region`, `email`                                  | items `::name`, `::title`, `::region`, `::email`                                                                                                 |
@@ -157,6 +157,17 @@ stay on the page; they just do not travel back. The result drops to well under 1
 
 Review now has **Send full schema in utility hooks** off (`sendFullSchema: false`, Studio rec 42,
 Oct 27), like Catalogue, so hooks no longer carry the page schema (including the PDF script text).
+
+## First orders (2180, 2181, Oct 27): what to fix in the file
+
+- **`ops_item_id`**: an earlier version set it to `line_ref` (`line-1793118207728-bvd089`). It is a
+  Number field, so the dashboard showed `-1.7931E+15`. Delete that `Set Field` step (the XML no longer
+  has it) and clear the field on the test items.
+- **Ship-to commit**: the shipment `Commit Records/Requests` must be `With dialog: Off`, like the others.
+- **Office ship-tos missing under "Shipping Addresses"** on the Order Group Sync Dashboard (order 2180
+  group 14 lists location 1224 but only shows address 1256): that portal follows `location_id` to the
+  personal-address table. Add the `office_address_id` / `personal_address_id` calculations and the
+  office relationship from "Addresses: id + type" above, and show both on the dashboard.
 
 ## Errors
 
