@@ -501,6 +501,14 @@
                 "en": "10-digit Canadian number",
                 "fr": "Numéro canadien à 10 chiffres"
             },
+            "label_colliers_mobilePhoneIncomplete": {
+                "en": "Enter all 10 digits of the mobile number.",
+                "fr": "Entrez les 10 chiffres du numéro de mobile."
+            },
+            "label_colliers_mobilePhoneInvalid": {
+                "en": "Enter a valid 10-digit Canadian number.",
+                "fr": "Entrez un numéro canadien valide à 10 chiffres."
+            },
             "label_colliers_monthlySpendOverview": {
                 "en": "Monthly Spend Overview",
                 "fr": "Aperçu des dépenses mensuelles"

@@ -106,6 +106,7 @@
                     <div>
                         <label class="field-label text-[14px] font-normal text-gray-700" for="card-phone">{{ BF.i18n('label_colliers_mobilePhone') }}<span class="text-red-600" aria-hidden="true">*</span></label>
                         <input id="card-phone" type="tel" inputmode="numeric" maxlength="12" class="field-input" placeholder="416 555 1234" :value="(function () { var d = String(model.card.phone || '').replace(/\D/g, ''); if (d.length === 11 && d.charAt(0) === '1') d = d.slice(1); d = d.slice(0, 10); if (!d) return ''; if (d.length <= 3) return d; if (d.length <= 6) return d.slice(0, 3) + ' ' + d.slice(3); return d.slice(0, 3) + ' ' + d.slice(3, 6) + ' ' + d.slice(6); })()" @input="(function (e) { var d = String(e.target.value).replace(/\D/g, ''); if (d.length === 11 && d.charAt(0) === '1') d = d.slice(1); d = d.slice(0, 10); model.card.phone = d ? (d.length <= 3 ? d : d.length <= 6 ? d.slice(0, 3) + ' ' + d.slice(3) : d.slice(0, 3) + ' ' + d.slice(3, 6) + ' ' + d.slice(6)) : ''; BF.namedAction('wrapCardName'); })($event)" />
+                        <p v-if="model.phoneError" class="mt-1 text-sm text-red-600">{{ model.phoneError }}</p><p v-else class="mt-1.5 text-[12px] text-gray-500">{{ BF.i18n('label_colliers_mobilePhoneHint') }}</p>
                     </div>
                     <div>
                         <label class="field-label text-[14px] font-normal text-gray-700" for="card-address">{{ BF.i18n('label_colliers_officeLocation') }}<span class="text-red-600" aria-hidden="true">*</span></label>

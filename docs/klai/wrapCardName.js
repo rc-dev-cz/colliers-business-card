@@ -454,10 +454,22 @@ if (typeof Vue !== 'undefined' && Vue.set) {
 model.layoutError = layoutError
 model.layoutReady = layoutError ? 0 : 1
 var c = model.card || {}
-// Mobile needs all 10 digits; bilingual cards need the French title (Vue isCompletePhone / canPreviewProof)
+// Mobile must be a valid 10-digit Canadian number: area code and exchange start 2-9 (Vue
+// isCompletePhone, BUG-26). Bilingual cards need the French title (Vue canPreviewProof).
 var phoneDigits = String(c.phone || '')
   .replace(/\D/g, '')
   .replace(/^1(?=\d{10}$)/, '')
+var phoneOk = /^[2-9]\d{2}[2-9]\d{6}$/.test(phoneDigits)
+setModel(
+  'phoneError',
+  phoneDigits && !phoneOk
+    ? i18nErr(
+        phoneDigits.length < 10
+          ? 'label_colliers_mobilePhoneIncomplete'
+          : 'label_colliers_mobilePhoneInvalid'
+      )
+    : ''
+)
 // Email format is checked once the field is left, then live while it is fixed (Vue isValidEmail).
 var EMAIL_FORMAT = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/
 var emailText = String(c.email || '').trim()
@@ -474,7 +486,7 @@ model.canPreviewProof =
   Boolean(String(c.title || '').trim()) &&
   (!isBilingualCard || Boolean(String(c.titleFr || '').trim())) &&
   emailFormatOk &&
-  phoneDigits.length === 10 &&
+  phoneOk &&
   Boolean(String(c.address || '').trim())
     ? 1
     : 0

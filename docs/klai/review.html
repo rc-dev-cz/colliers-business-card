@@ -27,7 +27,7 @@
     <h1 class="colliers-page-title">{{ BF.i18n('label_colliers_reviewOrder') }}</h1>
   </div>
   <p v-if="model.submitError" class="colliers-form-error mb-4">{{ model.submitError }}</p>
-  <div v-if="!((Array.isArray(model.cart) ? model.cart : []).length)" class="py-16 text-center text-gray-500">
+  <div v-if="!(model.view && model.view.shippedCount)" class="py-16 text-center text-gray-500">
     {{ BF.i18n('label_colliers_cartEmpty') }}
   </div>
   <div v-else class="space-y-6">
@@ -74,7 +74,7 @@
                       {{ line.name }}
                     </div>
                     <div v-if="line.language" class="mt-1 text-[13px] text-gray-500">
-                      {{ BF.i18n('label_colliers_language') }}: {{ line.language }}
+                      {{ BF.i18n('label_colliers_language') }}: {{ ['english', 'french', 'bilingual'].indexOf(String(line.language || '').trim().toLowerCase()) !== -1 ? BF.i18n('label_colliers_' + String(line.language).trim().toLowerCase()) : line.language }}
                     </div>
                   </div>
                 </div>
