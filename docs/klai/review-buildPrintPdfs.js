@@ -166,8 +166,9 @@ function setModel(key, value) {
     var credMode = packed.mode === 'error' ? 'none' : packed.mode;
     if (packed.mode === 'error') errors.push('credentials');
     if (!fitsLine(font, fields.website, L.bodySize, L.identityWidth)) errors.push('website');
-    var TA_FR = "Partenaire d'affaires sénior en acquisition de talent";
-    var titleSize = (fields.titleOnly === TA_FR && !fitsLine(font, TA_FR, L.bodySize, L.titleMaxWidth)) ? (function () { var sz = Number(((L.bodySize * L.titleMaxWidth) / font.widthOfTextAtSize(TA_FR, L.bodySize)).toFixed(2)); while (sz > 1 && !fitsLine(font, TA_FR, sz, L.titleMaxWidth)) sz = Number((sz - 0.01).toFixed(2)); return sz; })() : L.bodySize;
+    // Titles are saved with a curly apostrophe (titleLocale.js); compare both forms.
+    var TA_FR = 'Partenaire d’affaires sénior en acquisition de talent';
+    var titleSize = (String(fields.titleOnly || '').replace(/'/g, '’') === TA_FR && !fitsLine(font, TA_FR, L.bodySize, L.titleMaxWidth)) ? (function () { var sz = Number(((L.bodySize * L.titleMaxWidth) / font.widthOfTextAtSize(TA_FR, L.bodySize)).toFixed(2)); while (sz > 1 && !fitsLine(font, TA_FR, sz, L.titleMaxWidth)) sz = Number((sz - 0.01).toFixed(2)); return sz; })() : L.bodySize;
     if (!fitsLine(font, fields.titleOnly || fields.title, titleSize, L.titleMaxWidth)) errors.push('title');
     if (String(fields.team || '').trim() && !fitsLine(font, fields.team, L.bodySize, L.identityWidth)) errors.push('team');
     if (!fitsLine(font, fields.email, L.bodySize, L.emailMaxWidth)) errors.push('email');
