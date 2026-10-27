@@ -91,7 +91,10 @@ on the Confirmed page.
 
 **FileMaker setup** on `store_BFUsers_order_group_shipment`:
 
-1. Field `location_type` (Text).
+1. Field `location_type` (Text). Missing in the file on Oct 27: the Place Order step that sets it
+   pasted as `<Field Missing>` and was commented out. After adding the field, uncomment that step
+   and re-pick `location_type` in it. For shipments saved while it was off, fill it from the copy
+   in `asJSON`: Replace Field Contents with `JSONGetElement ( asJSON ; "location_type" )`.
 2. Calculation fields (Number, unstored is fine):
    - `personal_address_id` = `If ( location_type = "personal" ; location_id )`
    - `office_address_id` = `If ( location_type = "office" ; location_id )`
@@ -152,8 +155,8 @@ stay on the page; they just do not travel back. The result drops to well under 1
 | `submitError` | Review: shown above the cart; non-empty = stay on Review                     |
 | `submitting`  | Review: re-enables Place Order                                               |
 
-Also worth checking: Review has `sendFullSchema: true`, so each hook also carries the page
-schema (including the PDF script text). Catalogue uses `false`.
+Review now has **Send full schema in utility hooks** off (`sendFullSchema: false`, Studio rec 42,
+Oct 27), like Catalogue, so hooks no longer carry the page schema (including the PDF script text).
 
 ## Errors
 
