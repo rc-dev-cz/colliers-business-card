@@ -292,3 +292,91 @@ export function formatOrderDate(value, locale) {
   if (locale === 'FR') return Number(match[3]) + ' ' + month + ' ' + match[1]
   return month + ' ' + Number(match[3]) + ', ' + match[1]
 }
+
+// FileMaker sends a saved order with "Ordered" until it moves on; the page knows three statuses.
+export function orderStatus(status) {
+  return ORDER_STATUSES.indexOf(status) !== -1 ? status : 'Processing'
+}
+
+function parseGroup(group) {
+  if (typeof group !== 'string') return group
+  try {
+    return JSON.parse(group)
+  } catch (_e) {
+    return null
+  }
+}
+
+function detailsFromCard(card) {
+  const c = card || {}
+  return {
+    name: c.name || '',
+    title: c.title || '',
+    titleFr: c.title_fr || '',
+    degree: Array.isArray(c.degrees) ? c.degrees.slice() : [],
+    additionalCredentials: c.additional_credentials || '',
+    region: c.region || '',
+    specializedTeam: c.specialized_team || '',
+    email: c.email || '',
+    phone: c.phone || '',
+    address: c.office_address || '',
+    website: c.website || '',
+  }
+}
+
+/**
+ * FileMaker Order History row → the record this page reads ({ cart, order.splits }).
+ * `BF - onFormRequest - orders` sends each order's shipping groups as Place Order saved them
+ * (store_BFUsers_order_group::asJSON, the orderPayload group shape): items with their card, and
+ * locations with boxes per item. A row that already has a cart is returned as it is.
+ */
+export function orderFromFileMaker(row) {
+  const record = Object.assign({}, row, { status: orderStatus(row && row.status) })
+  if (Array.isArray(record.cart) && record.cart.length) return record
+  const groups = (Array.isArray(record.groups) ? record.groups : [])
+    .map(parseGroup)
+    .filter(Boolean)
+    .sort(function (a, b) {
+      return (Number(a.shipment_number) || 0) - (Number(b.shipment_number) || 0)
+    })
+  if (!groups.length) return record
+  const cart = []
+  const byId = {}
+  const splits = groups.map(function (group, index) {
+    const itemIds = []
+    const qtys = {}
+    ;(group.items || []).forEach(function (item, itemIndex) {
+      const id = String(item.line_ref || 'line-' + (index + 1) + '-' + (itemIndex + 1))
+      const qty = Number(item.quantity) || 1
+      if (!byId[id]) {
+        byId[id] = {
+          id: id,
+          code: item.product_code || '',
+          language: item.language || '',
+          quantity: 0,
+          price: Number(item.unit_price) || BOX_PRICE,
+          details: detailsFromCard(item.card),
+        }
+        cart.push(byId[id])
+      }
+      byId[id].quantity += qty
+      itemIds.push(id)
+      qtys[id] = qty
+    })
+    return {
+      id: group.group_ref || 'group-' + (index + 1),
+      itemIds: itemIds,
+      qtys: qtys,
+      locations: (group.locations || []).map(function (loc, locIndex) {
+        return {
+          id: String(loc.location_ref || 'loc-' + (index + 1) + '-' + (locIndex + 1)),
+          address: (loc.address && loc.address.one_line) || '',
+          qty: Number(loc.boxes_per_item) || 1,
+        }
+      }),
+    }
+  })
+  record.cart = cart
+  record.order = { detachedIds: [], splits: splits }
+  return record
+}

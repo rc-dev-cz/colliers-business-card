@@ -23,15 +23,19 @@ function isFrench(lang) {
   return /french|fran|^fr$/i.test(String(lang || '')) && !isBilingual(lang)
 }
 function boxesFor(line) {
-  // Sum this line's qty across every shipping group it is in (split.qtys), else line.quantity
+  // Boxes sent to each ship-to of every shipping group this line is in, else line.quantity
+  // (Vue billedBoxesForLine; same count as the Qty column).
   var total = 0
+  var shipped = false
   splits.forEach(function (split) {
     var ids = (split.itemIds || []).map(String)
-    if (ids.indexOf(String(line.id)) === -1) return
-    var q = split.qtys && split.qtys[String(line.id)]
-    total += Math.max(1, Number(q != null ? q : line.quantity) || 1)
+    if (ids.indexOf(String(line.id)) === -1 || !(split.locations || []).length) return
+    shipped = true
+    split.locations.forEach(function (loc) {
+      total += Math.max(1, Number(loc.qty) || 1)
+    })
   })
-  return total || Math.max(1, Number(line.quantity) || 1)
+  return shipped ? total : Math.max(1, Number(line.quantity) || 1)
 }
 function face(details, language) {
   var d = Object.assign({}, details || {})
