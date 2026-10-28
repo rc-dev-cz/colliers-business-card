@@ -8,6 +8,9 @@ Place Order already saves every shipping group whole in `store_BFUsers_order_gro
 Send those groups with each order; Klai rebuilds the lines from them
 ([`orderHistory-filterOrders.js`](orderHistory-filterOrders.js), Vue `orderFromFileMaker`).
 
+Live in FileMaker Oct 28, 2026: the whole script as it is now is [`fm-onFormRequest-orders.xml`](fm-onFormRequest-orders.xml).
+Orders 2178–2185 show cardholder, item and cards; 2172–2177 (saved before Place Order) have no groups and stay blank.
+
 ## Add inside the loop, after `Set Variable [ $order ; store_BFUsers_order::asJSONsmall ]`
 
 Paste-ready: [`fm-onFormRequest-orders-groups.xml`](fm-onFormRequest-orders-groups.xml) (5 steps). Put it on the
