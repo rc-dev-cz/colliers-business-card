@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fmxmlsnippet type="FMObjectList">
+  <Step enable="True" id="89" name="# (comment)">
+    <Text>Shipping groups as Place Order saved them (store_BFUsers_order_group::asJSON), so Order History can show cardholder, item, cards, ship-tos and total.</Text>
+  </Step>
+  <Step enable="True" id="141" name="Set Variable">
+    <Value>
+      <Calculation><![CDATA[Let ( [
+  ~asJSON = GetFieldName ( store_BFUsers_order_group::asJSON ) ;
+  ~orderId = GetFieldName ( store_BFUsers_order_group::order_id ) ;
+  ~table = GetValue ( Substitute ( ~asJSON ; "::" ; ¶ ) ; 1 ) ;
+  ~sql = "SELECT " & Quote ( GetValue ( Substitute ( ~asJSON ; "::" ; ¶ ) ; 2 ) )
+       & " FROM " & Quote ( ~table )
+       & " WHERE STRVAL ( " & Quote ( GetValue ( Substitute ( ~orderId ; "::" ; ¶ ) ; 2 ) ) & " ) = ?"
+       & " AND " & Quote ( GetValue ( Substitute ( ~asJSON ; "::" ; ¶ ) ; 2 ) ) & " IS NOT NULL" ;
+  ~rows = ExecuteSQL ( ~sql ; "" ; "," ; GetAsText ( store_BFUsers_order::id ) ) ;
+  ~array = "[" & ~rows & "]"
+] ;
+  // Leave groups out on an SQL error ("?") or anything that is not valid JSON.
+  If ( IsEmpty ( ~rows ) or ~rows = "?" or Left ( JSONFormatElements ( ~array ) ; 1 ) = "?" ; "" ; ~array )
+)]]></Calculation>
+    </Value>
+    <Repetition>
+      <Calculation><![CDATA[1]]></Calculation>
+    </Repetition>
+    <Name>$groups</Name>
+  </Step>
+  <Step enable="True" id="68" name="If">
+    <Restore state="False"/>
+    <Calculation><![CDATA[not IsEmpty ( $groups )]]></Calculation>
+  </Step>
+  <Step enable="True" id="141" name="Set Variable">
+    <Value>
+      <Calculation><![CDATA[JSONSetElement ( $order ; "groups" ; $groups ; JSONArray )]]></Calculation>
+    </Value>
+    <Repetition>
+      <Calculation><![CDATA[1]]></Calculation>
+    </Repetition>
+    <Name>$order</Name>
+  </Step>
+  <Step enable="True" id="70" name="End If"/>
+</fmxmlsnippet>
