@@ -182,7 +182,10 @@
             {{ formError }}
           </p>
           <div>
-            <label class="field-label" for="addr-nickname">{{ t('locationNickname') }}</label>
+            <label class="field-label" for="addr-nickname"
+              >{{ t('locationNickname')
+              }}<span class="field-required" aria-hidden="true">*</span></label
+            >
             <text-field
               id="addr-nickname"
               :value="form.addressName"
@@ -193,7 +196,10 @@
           </div>
           <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div>
-              <label class="field-label" for="addr-street">{{ t('addressLine1') }}</label>
+              <label class="field-label" for="addr-street"
+                >{{ t('addressLine1')
+                }}<span class="field-required" aria-hidden="true">*</span></label
+              >
               <text-field
                 id="addr-street"
                 :value="form.addressStreet"
@@ -203,7 +209,9 @@
               ></text-field>
             </div>
             <div>
-              <label class="field-label" for="addr-city">{{ t('city') }}</label>
+              <label class="field-label" for="addr-city"
+                >{{ t('city') }}<span class="field-required" aria-hidden="true">*</span></label
+              >
               <text-field
                 id="addr-city"
                 :value="form.addressCity"
@@ -240,7 +248,7 @@
             </div>
           </div>
         </div>
-        <div class="modal-footer">
+        <div class="modal-footer modal-footer--sticky">
           <app-button variant="outline" class="sm:w-auto" @click="onFormClose">{{
             t('cancel')
           }}</app-button>

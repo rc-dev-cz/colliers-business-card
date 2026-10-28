@@ -60,7 +60,7 @@
                 role="status"
                 aria-live="polite"
               >
-                {{ t('nameNoSpace') }}
+                {{ nameLimitByCredentials ? t('nameNoSpaceCredentials') : t('nameNoSpace') }}
               </p>
             </div>
             <div>
@@ -225,7 +225,11 @@ import {
   planProductLayout,
   teamFitsOnCard,
 } from '../helpers/cardLayout'
-import { isBilingualLanguage, websiteForProduct } from '../helpers/formatCardIdentity'
+import {
+  formatCredentialSuffix,
+  isBilingualLanguage,
+  websiteForProduct,
+} from '../helpers/formatCardIdentity'
 import {
   bilingualEnglishPreviewDetails,
   bilingualFrenchPreviewDetails,
@@ -379,6 +383,18 @@ export default {
         Object.assign({}, this.details, { name: name + 'i' }),
         this.layoutFonts
       )
+    },
+    /**
+     * The name limit comes from the credentials sharing its line: without them one more
+     * letter would still fit (BUG-29).
+     */
+    nameLimitByCredentials: function () {
+      var name = String(this.details.name || '')
+      if (!this.nameLimitReached || name.length >= NAME_MAX - 1 || !this.layoutFonts) return false
+      if (!formatCredentialSuffix(this.details.degree, this.details.additionalCredentials)) {
+        return false
+      }
+      return nameFitsOnCard({ name: name + 'i' }, this.layoutFonts)
     },
     teamFieldError: function () {
       if (this.credentialSpaceRejected && this.credentialNoticeField === 'team') {

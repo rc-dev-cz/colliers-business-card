@@ -51,9 +51,6 @@
       </button>
     </div>
   </div>
-  <p v-if="model.view.hasEmptySplit" class="mb-4 text-sm text-red-600">
-    {{ BF.i18n('label_colliers_emptyShipment') }}
-  </p>
   <div class="space-y-6">
     <div
       v-for="(split, splitIndex) in model.order.splits"
@@ -235,7 +232,8 @@
                     <button
                       type="button"
                       class="inline-flex h-8 w-8 items-center justify-center rounded border border-gray-200 text-gray-400 hover:bg-gray-50 hover:text-red-600"
-                      :aria-label="BF.i18n('label_colliers_removeFromCart') || 'Remove from cart'"
+                      :aria-label="BF.i18n('label_colliers_removeFromShipment')"
+                      :title="BF.i18n('label_colliers_removeFromShipmentHint')"
                       @click.stop="BF.namedAction('removeLine', { splitId: split.id, lineId: line.id })"
                     >
                       <svg
@@ -514,4 +512,3 @@
     </div>
   </div>
 </div>
-

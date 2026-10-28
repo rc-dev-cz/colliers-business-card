@@ -1457,6 +1457,18 @@
                 "en": "Limit reached for card",
                 "fr": "Limite atteinte pour la carte"
             },
+            "label_colliers_nameNoSpaceCredentials": {
+                "en": "Name and credentials share one line. Remove a credential to make room.",
+                "fr": "Le nom et les désignations partagent une ligne. Retirez une désignation pour faire de la place."
+            },
+            "label_colliers_removeFromShipment": {
+                "en": "Remove from this shipment",
+                "fr": "Retirer de cette expédition"
+            },
+            "label_colliers_removeFromShipmentHint": {
+                "en": "Removes this card from this shipment only. It stays in your cart.",
+                "fr": "Retire cette carte de cette expédition seulement. Elle reste dans votre panier."
+            },
             "label_colliers_reportingEmpty": {
                 "en": "No reporting data yet. Reports will appear here once FileMaker reporting is connected.",
                 "fr": "Aucune donnée de rapport pour le moment. Les rapports apparaîtront ici lorsque les rapports FileMaker seront connectés."

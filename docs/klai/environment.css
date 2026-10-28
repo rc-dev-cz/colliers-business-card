@@ -1098,6 +1098,61 @@ select.field-input {
   }
 }
 
+/* Form modal look (Address Book, same as Vue AppModal): grey header, bold title, × close, and a
+   full-width footer that stays in view while the form scrolls, Cancel left / Save right. */
+.colliers-modal-header--brand {
+  align-items: flex-start;
+  background: #f8f9fa;
+  padding: 1.25rem;
+}
+
+.colliers-modal-header--brand h2 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #0a1a3a;
+}
+
+@media (min-width: 640px) {
+  .colliers-modal-header--brand {
+    padding: 1.5rem;
+  }
+
+  .colliers-modal-header--brand h2 {
+    font-size: 1.5rem;
+  }
+}
+
+.colliers-modal-close--icon {
+  font-size: 1.5rem;
+  line-height: 1;
+  padding: 0.125rem 0.5rem;
+}
+
+.modal-footer--sticky {
+  position: sticky;
+  bottom: 0;
+  z-index: 1;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.modal-footer--sticky .modal-footer-actions {
+  flex-direction: row;
+}
+
+.modal-footer--sticky > *,
+.modal-footer--sticky .modal-footer-actions > * {
+  flex: 1 1 0%;
+}
+
+@media (min-width: 640px) {
+  .modal-footer--sticky > *,
+  .modal-footer--sticky .modal-footer-actions > * {
+    flex: none;
+  }
+}
+
 /* Admin dashboard tiles — Inter metrics to match designer */
 .colliers-admin-section-title {
   margin: 0 0 1.25rem;

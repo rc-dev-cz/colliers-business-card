@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import { isAdmin, isAuthenticated } from './store'
+import { closeCart, isAdmin, isAuthenticated, store } from './store'
 import LoginPage from './pages/LoginPage.vue'
 import CatalogPage from './pages/CatalogPage.vue'
 import DetailsPage from './pages/DetailsPage.vue'
@@ -159,6 +159,11 @@ router.beforeEach(function (to, from, next) {
     return
   }
   next()
+})
+
+// Leaving a page closes the cart drawer, so it never stays open over the next page (KLAI-10).
+router.afterEach(function () {
+  if (store.cartOpen) closeCart()
 })
 
 export default router

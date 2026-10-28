@@ -62,6 +62,10 @@ export const messages = {
     EN: 'Limit reached for card',
     FR: 'Limite atteinte pour la carte',
   },
+  nameNoSpaceCredentials: {
+    EN: 'Name and credentials share one line. Remove a credential to make room.',
+    FR: 'Le nom et les désignations partagent une ligne. Retirez une désignation pour faire de la place.',
+  },
   teamNoSpace: {
     EN: 'No more space for the specialized team on the card.',
     FR: 'Il n’y a plus d’espace pour l’équipe spécialisée sur la carte.',
@@ -126,7 +130,6 @@ export const messages = {
   previewCard: { EN: 'Preview card', FR: 'Aperçu de la carte' },
   editItem: { EN: 'Edit item', FR: 'Modifier l’article' },
   removeItem: { EN: 'Remove item', FR: 'Retirer l’article' },
-  removeFromShipment: { EN: 'Remove from this shipment', FR: 'Retirer de cet envoi' },
   removeFromCart: { EN: 'Remove from cart', FR: 'Retirer du panier' },
   removeFromCartHint: {
     EN: 'Deletes this card from your cart.',

@@ -51,12 +51,16 @@
 
         <h3 class="mb-3 text-sm font-semibold text-gray-900">{{ t('itemsHeading') }}</h3>
         <div class="overflow-x-auto">
-          <table class="w-full min-w-[36rem] text-left text-sm">
+          <table class="w-full text-left text-sm sm:min-w-[36rem]">
             <thead>
               <tr class="border-b border-gray-100 text-gray-400">
                 <th class="pb-2 pr-4 font-medium">{{ t('item') }}</th>
-                <th class="pb-2 px-2 text-right font-medium">{{ t('qty') }}</th>
-                <th class="pb-2 px-2 text-right font-medium">{{ t('price') }}</th>
+                <th class="hidden pb-2 px-2 text-right font-medium sm:table-cell">
+                  {{ t('qty') }}
+                </th>
+                <th class="hidden pb-2 px-2 text-right font-medium sm:table-cell">
+                  {{ t('price') }}
+                </th>
                 <th class="pb-2 pl-2 text-right font-medium">{{ t('total') }}</th>
               </tr>
             </thead>
@@ -67,7 +71,8 @@
                 class="border-b border-gray-50"
               >
                 <td class="py-4 pr-4 align-middle">
-                  <div class="flex items-center gap-4">
+                  <!-- Phones: thumbnail above the text so long names wrap (BUG-30). -->
+                  <div class="flex flex-col items-start gap-3 sm:flex-row sm:items-center sm:gap-4">
                     <button
                       type="button"
                       class="card-preview-frame card-preview-frame--thumb shrink-0 cursor-pointer border-0 bg-transparent p-0 text-left transition hover:shadow-[0_0_0_2px_rgba(37,64,143,0.4)] focus:outline-none focus-visible:shadow-[0_0_0_2px_rgba(37,64,143,0.4)] [&_*]:pointer-events-none"
@@ -90,13 +95,17 @@
                       <div v-if="line.language" class="mt-1 text-[13px] text-gray-500">
                         {{ t('language') }}: {{ languageText(line) }}
                       </div>
+                      <div class="mt-1 text-[13px] text-gray-500 sm:hidden">
+                        {{ t('qty') }} {{ splitLineQty(split, line) }} ×
+                        {{ money(unitPrice(line)) }}
+                      </div>
                     </div>
                   </div>
                 </td>
-                <td class="px-2 py-4 text-right align-middle text-gray-700">
+                <td class="hidden px-2 py-4 text-right align-middle text-gray-700 sm:table-cell">
                   {{ splitLineQty(split, line) }}
                 </td>
-                <td class="px-2 py-4 text-right align-middle text-gray-700">
+                <td class="hidden px-2 py-4 text-right align-middle text-gray-700 sm:table-cell">
                   {{ money(unitPrice(line)) }}
                 </td>
                 <td class="py-4 pl-2 text-right align-middle font-medium text-gray-900">

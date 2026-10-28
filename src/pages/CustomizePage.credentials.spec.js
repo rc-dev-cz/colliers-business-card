@@ -258,4 +258,39 @@ describe('CustomizePage name limit helper', function () {
     })
     expect(shorter).toBe(false)
   })
+
+  it('blames the credentials when they, not the name, fill the line (BUG-29)', async function () {
+    var fonts = await loadLayoutFonts()
+    var degree = ['P. Eng.', 'PMP', 'LEED AP BD+C', 'CAPM', 'PMI-RMP', 'PMI-SP', 'PgMP', 'CET']
+    var ctx = {
+      details: { name: 'Test Person', degree: degree, additionalCredentials: '' },
+      layoutFonts: fonts,
+      nameRefusedAt: '',
+    }
+    // Grow the name until the credentials leave no room for one more letter.
+    while (
+      nameFitsOnCard(Object.assign({}, ctx.details, { name: ctx.details.name + 'i' }), fonts)
+    ) {
+      ctx.details.name += 'i'
+    }
+    ctx.nameLimitReached = CustomizePage.computed.nameLimitReached.call(ctx)
+    expect(ctx.nameLimitReached).toBe(true)
+    expect(CustomizePage.computed.nameLimitByCredentials.call(ctx)).toBe(true)
+
+    // Same name with no credentials: no limit, so no credentials message either.
+    ctx.details.degree = []
+    ctx.nameLimitReached = CustomizePage.computed.nameLimitReached.call(ctx)
+    expect(ctx.nameLimitReached).toBe(false)
+    expect(CustomizePage.computed.nameLimitByCredentials.call(ctx)).toBe(false)
+  })
+
+  it('keeps the plain limit message when the name alone is too long', async function () {
+    var fonts = await loadLayoutFonts()
+    var ctx = {
+      details: { name: 'i'.repeat(46), degree: ['PMP'], additionalCredentials: '' },
+      layoutFonts: fonts,
+      nameLimitReached: true,
+    }
+    expect(CustomizePage.computed.nameLimitByCredentials.call(ctx)).toBe(false)
+  })
 })

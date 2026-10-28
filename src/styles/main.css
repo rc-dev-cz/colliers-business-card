@@ -61,6 +61,20 @@
     @apply flex w-full flex-col-reverse gap-3 sm:w-auto sm:flex-row sm:justify-end;
   }
 
+  /* Form modals: the footer stays in view while the form scrolls; Cancel and Save side by side. */
+  .modal-footer--sticky {
+    @apply sticky bottom-0 z-[1] flex-row items-center justify-between;
+  }
+
+  .modal-footer--sticky .modal-footer-actions {
+    @apply w-auto flex-row;
+  }
+
+  .modal-footer--sticky > *,
+  .modal-footer--sticky .modal-footer-actions > * {
+    @apply flex-1 sm:flex-none;
+  }
+
   .field-input {
     @apply w-full rounded border border-gray-300 px-3 py-2.5 text-[14px] focus:border-colliers-primary focus:outline-none focus:ring-1 focus:ring-colliers-primary disabled:cursor-not-allowed disabled:bg-gray-100 disabled:text-gray-500;
   }
