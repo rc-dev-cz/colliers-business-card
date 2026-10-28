@@ -19,6 +19,13 @@ app.header = Object.assign(
 app.header.menuOpen = false;
 app.header.mobileMenuOpen = false;
 
+// Admin menu and admin colours only for admins. FileMaker sets app.user.role ("admin" | "user") at
+// login; anything else is a user. Re-read on every route change, since login fills app.user after mount.
+var syncRole = function() {
+    var role = String((app.user && app.user.role) || '').trim().toLowerCase();
+    app.header.role = role === 'admin' ? 'admin' : 'user';
+};
+
 var registry = window.__bfComponentState =
     window.__bfComponentState || {};
 
@@ -80,6 +87,7 @@ var onDocKey = function(event) {
 window.__colliersHeaderOnHash = function() {
     app.header.menuOpen = false;
     app.header.mobileMenuOpen = false;
+    syncRole();
     updateActiveNav();
 };
 
@@ -97,4 +105,5 @@ registry[key] = {
     onDocKey: onDocKey
 };
 
+syncRole();
 updateActiveNav();

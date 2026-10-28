@@ -71,7 +71,7 @@ Bus variables (FileMaker side): `$$BF_Payload`, `$$BF_Model`, `$$BF_Actions`, `$
 | Manage Addresses    | `/admin/addresses` | `adminaddresses` | false (planned true) | `BF - onFormRequest - adminaddresses` | `create`, `update`, `delete` (offices) — client stub until FM | Live UI |
 | Manage Titles       | `/admin/titles`    | `admintitles`    | true                 | `BF - onFormRequest - admintitles`    | `save`, `delete`                                              | Live UI |
 | Manage Degrees      | `/admin/degrees`   | `admindegrees`   | true                 | `BF - onFormRequest - admindegrees`   | `save`, `delete`                                              | Live UI |
-| Admin Order History | `/admin/orders`    | `adminorders`    | false (planned true) | `BF - onFormRequest - adminorders`    | Admin-scoped order list (employee); no `repeat` in v1         | Live UI |
+| Admin Order History | `/admin/orders`    | `adminorders`    | false (planned true) | `BF - onFormRequest - adminorders`    | Admin-scoped order list (employee); same View details as Order History ([`adminOrders-openDetails.js`](adminOrders-openDetails.js)); no `repeat` in v1 | Live UI |
 | Invoice History     | `/admin/invoices`  | `admininvoices`  | false (planned true) | `BF - onFormRequest - admininvoices`  | Invoice table + download (mock)                               | Live UI |
 | Reporting           | `/admin/reporting` | `adminreporting` | false (planned true) | `BF - onFormRequest - adminreporting` | Empty state until the FM hook supplies data                   | Live UI |
 
@@ -387,6 +387,8 @@ Shipping & handling is always `$0.00` (included in the box price). No payment.
 
 ### Admin — Live UI / Planned
 
+**Admin role (Oct 28, 2026).** FileMaker sets `app.user.role` to `"admin"` or `"user"` at login (the Klai template's own convention). Every admin page starts `onFormLoad` with [`admin-requireAdmin.js`](admin-requireAdmin.js): anyone who is not an admin is sent to the catalogue. The UserHeader reads the same field on mount and on every route change ([`user-header-onMount.js`](user-header-onMount.js)), so only admins see the admin menu. Until FileMaker sends the role, nobody can open the admin pages in Klai. This check is for the screens only; FileMaker must still refuse the admin request and utility hooks for non-admins. Vue twin: `router.js` `adminMeta` + `isAdmin()` (`store.session.role`). Saved to Studio Oct 28 with the Add credential save and the Admin Order History details (Admin Home 8, Manage Titles 17, Manage Credentials 17, Manage Addresses 14, Admin Order History 48, Reporting 6, Invoice History 6, UserHeader 41).
+
 Hook set names below are the agreed Mike / FileMaker contract. Build FM scripts to match; do not invent alternate names without updating this doc.
 
 **Manage Titles** (`admintitles`) — Live UI in Klai (`formName` Manage Titles; route `/admin/titles`). English / French tabs over FileMaker `store_titles` (`id`, `title`, `language`). FileMaker scripts: [`fm-admintitles.md`](fm-admintitles.md).
@@ -445,6 +447,8 @@ Tiles are UI-only. Counts may come from this object or from loading the three li
 
 **Manage Degrees** (`admindegrees`) — Live UI in Klai, shown as **Manage Credentials** (route `/admin/degrees`). Degree strings from FileMaker `store_degrees`. Customize labels the same list "Credentials (Optional)"; free text is "Other credential" behind a "Not on the list? Add another" link. An empty card shows no sample credential (the old "C.M." placeholder is gone from preview, print and Vue).
 
+`addDegree`, `saveEdit` and `deleteDegree` each call the utility hook (`save`, `save`, `delete` with `options.degree`), so a credential added in Klai is sent to FileMaker like an edit (Oct 28, 2026; it used to stay on screen only).
+
 Until FileMaker returns `degrees`, `onFormLoad` seeds the 32 client-approved designations (`Designations.xlsx`, Oct 2026; [`admindegrees-onFormLoad.js`](admindegrees-onFormLoad.js)). Customize `degreeOptions` uses the same list ([`onFormLoad-customize.js`](onFormLoad-customize.js)), and Admin Home falls back to `counts.degrees = 32` ([`admin-onFormLoad.js`](admin-onFormLoad.js)). Any non-empty FileMaker list wins. Keep the three seeds in sync until FM serves the list.
 
 ```json
@@ -453,7 +457,7 @@ Until FileMaker returns `degrees`, `onFormLoad` seeds the 32 client-approved des
 }
 ```
 
-**Admin Order History** (`adminorders`) — Live UI in Klai (route `/admin/orders`). Company-wide list. **Order** plus employee fields. No `repeat` utility in v1 (ADM-035 open).
+**Admin Order History** (`adminorders`) — Live UI in Klai (route `/admin/orders`). Company-wide list. **Order** plus employee fields. View opens the same details as Order History (card faces per line, shipments with box / card counts, total; [`adminOrders-openDetails.js`](adminOrders-openDetails.js)), with the employee in place of the cardholder. No `repeat` utility in v1 (ADM-035 open).
 
 ```json
 {

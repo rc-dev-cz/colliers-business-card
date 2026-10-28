@@ -5,58 +5,21 @@
     </div>
     <div class="colliers-page-header__actions">
       <button type="button" class="colliers-back-link" @click="BF.namedAction('goDashboard')">
-        <svg
-          class="colliers-back-link__icon"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-          stroke-width="2"
-          aria-hidden="true"
-        >
-          <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
-        </svg>
+        <svg class="colliers-back-link__icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" /></svg>
         {{ BF.i18n('label_colliers_backToDashboard') }}
       </button>
     </div>
   </div>
   <div class="colliers-content-card">
     <div class="colliers-card-toolbar" style="justify-content: space-between">
-      <h2 class="text-base font-semibold text-gray-900">
-        {{ BF.i18n('label_colliers_recentOrders') }}
-      </h2>
+      <h2 class="text-base font-semibold text-gray-900">{{ BF.i18n('label_colliers_recentOrders') }}</h2>
       <div class="flex w-full flex-col gap-3 sm:w-auto sm:flex-row sm:items-center">
-        <label class="sr-only" for="admin-order-search"
-          >{{ BF.i18n('label_colliers_searchOrders') }}</label
-        >
+        <label class="sr-only" for="admin-order-search">{{ BF.i18n('label_colliers_searchOrders') }}</label>
         <div class="colliers-search-field w-full sm:w-64">
-          <svg
-            class="colliers-search-field__icon"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            stroke-width="2"
-            aria-hidden="true"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"
-            />
-          </svg>
-          <input
-            id="admin-order-search"
-            type="search"
-            class="colliers-search-field__input"
-            :placeholder="BF.i18n('placeholder_colliers_searchOrderByName')"
-            :value="model.search"
-            @input="model.search = $event.target.value; BF.namedAction('filterOrders')"
-          />
+          <svg class="colliers-search-field__icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" /></svg>
+          <input id="admin-order-search" type="search" class="colliers-search-field__input" :placeholder="BF.i18n('placeholder_colliers_searchOrderByName')" :value="model.search" @input="model.search = $event.target.value; BF.namedAction('filterOrders')">
         </div>
-        <select
-          class="field-input w-full sm:w-48"
-          :value="model.statusFilter"
-          @change="model.statusFilter = $event.target.value; BF.namedAction('filterOrders')"
-        >
+        <select class="field-input w-full sm:w-48" :value="model.statusFilter" @change="model.statusFilter = $event.target.value; BF.namedAction('filterOrders')">
           <option value="all">{{ BF.i18n('label_colliers_allStatuses') }}</option>
           <option value="Delivered">{{ BF.i18n('label_colliers_statusDelivered') }}</option>
           <option value="Shipped">{{ BF.i18n('label_colliers_statusShipped') }}</option>
@@ -88,23 +51,12 @@
             <td class="text-gray-700">{{ row.qty }}</td>
             <td class="text-gray-700">{{ row.dateFormatted }}</td>
             <td>
-              <span
-                class="colliers-status-badge"
-                :class="row.status === 'Delivered' ? 'colliers-status-badge--delivered' : row.status === 'Shipped' ? 'colliers-status-badge--shipped' : 'colliers-status-badge--processing'"
-              >
-                {{ row.status === 'Delivered' ? BF.i18n('label_colliers_statusDelivered') :
-                row.status === 'Shipped' ? BF.i18n('label_colliers_statusShipped') :
-                BF.i18n('label_colliers_statusProcessing') }}
+              <span class="colliers-status-badge" :class="row.status === 'Delivered' ? 'colliers-status-badge--delivered' : row.status === 'Shipped' ? 'colliers-status-badge--shipped' : 'colliers-status-badge--processing'">
+                {{ row.status === 'Delivered' ? BF.i18n('label_colliers_statusDelivered') : row.status === 'Shipped' ? BF.i18n('label_colliers_statusShipped') : BF.i18n('label_colliers_statusProcessing') }}
               </span>
             </td>
             <td class="whitespace-nowrap text-right">
-              <button
-                type="button"
-                class="colliers-link-action"
-                @click="BF.namedAction('openDetails', { id: row.id })"
-              >
-                {{ BF.i18n('label_general_view') }}
-              </button>
+              <button type="button" class="colliers-link-action" @click="BF.namedAction('openDetails', { id: row.id })">{{ BF.i18n('label_general_view') }}</button>
             </td>
           </tr>
         </tbody>
@@ -118,51 +70,129 @@
     v-if="model.details"
     @click.self="BF.namedAction('closeDetails')"
   >
-    <div class="colliers-modal-panel colliers-modal-panel--lg" @click.stop>
+    <!-- model.details is built by namedAction openDetails (orderHistory-openDetails.js) -->
+    <div
+      class="colliers-modal-panel colliers-modal-panel--lg flex max-h-[92vh] flex-col"
+      @click.stop
+    >
       <div class="colliers-modal-header">
-        <h2>{{ BF.i18n('label_colliers_orderDetails') }}</h2>
-        <button type="button" class="colliers-modal-close" @click="BF.namedAction('closeDetails')">
-          {{ BF.i18n('label_general_close') }}
+        <div class="min-w-0">
+          <div class="flex flex-wrap items-center gap-3">
+            <h2>{{ BF.i18n('label_colliers_orderDetails') }} · {{ model.details.id }}</h2>
+            <span
+              class="colliers-status-badge"
+              :class="model.details.status === 'Delivered' ? 'colliers-status-badge--delivered' : model.details.status === 'Shipped' ? 'colliers-status-badge--shipped' : 'colliers-status-badge--processing'"
+            >
+              {{ model.details.status === 'Delivered' ? BF.i18n('label_colliers_statusDelivered') :
+              model.details.status === 'Shipped' ? BF.i18n('label_colliers_statusShipped') :
+              BF.i18n('label_colliers_statusProcessing') }}
+            </span>
+          </div>
+          <p class="mt-1 text-sm text-gray-500">
+            {{ BF.i18n('label_colliers_date') }}: {{ model.details.dateFormatted }} · {{
+            BF.i18n('label_colliers_employee') }}: {{ model.details.employee }}
+          </p>
+        </div>
+        <button type="button" class="colliers-modal-close" :aria-label="BF.i18n('label_general_close')" @click="BF.namedAction('closeDetails')">
+          ×
         </button>
       </div>
-      <div class="space-y-3 px-5 py-5 text-sm" v-if="model.details">
-        <div class="flex justify-between gap-4">
-          <span class="text-gray-500">{{ BF.i18n('label_colliers_orderId') }}</span
-          ><span class="font-medium text-gray-900">{{ model.details.id }}</span>
-        </div>
-        <div class="flex justify-between gap-4">
-          <span class="text-gray-500">{{ BF.i18n('label_colliers_date') }}</span
-          ><span class="text-gray-900">{{ model.details.dateFormatted }}</span>
-        </div>
-        <div class="flex justify-between gap-4">
-          <span class="text-gray-500">{{ BF.i18n('label_general_status') }}</span>
-          <span
-            class="colliers-status-badge"
-            :class="model.details.status === 'Delivered' ? 'colliers-status-badge--delivered' : model.details.status === 'Shipped' ? 'colliers-status-badge--shipped' : 'colliers-status-badge--processing'"
-          >
-            {{ model.details.status === 'Delivered' ? BF.i18n('label_colliers_statusDelivered') :
-            model.details.status === 'Shipped' ? BF.i18n('label_colliers_statusShipped') :
-            BF.i18n('label_colliers_statusProcessing') }}
-          </span>
-        </div>
-        <div class="flex justify-between gap-4">
-          <span class="text-gray-500">{{ BF.i18n('label_colliers_employee') }}</span
-          ><span class="text-gray-900">{{ model.details.employee }}</span>
-        </div>
-        <div class="flex justify-between gap-4">
-          <span class="text-gray-500">{{ BF.i18n('label_colliers_item') }}</span
-          ><span class="text-gray-900">{{ model.details.item }}</span>
-        </div>
-        <div class="flex justify-between gap-4">
-          <span class="text-gray-500">{{ BF.i18n('label_colliers_qty') }}</span
-          ><span class="text-gray-900">{{ model.details.qty }}</span>
-        </div>
+      <div class="flex-1 space-y-6 overflow-y-auto px-5 py-5 sm:px-6">
+        <section>
+          <h3 class="mb-3 text-sm font-semibold text-gray-900">
+            {{ BF.i18n('label_colliers_itemsHeading') }}
+          </h3>
+          <ul class="space-y-4">
+            <li
+              v-for="(line, li) in model.details.lines || []"
+              :key="'line-' + li"
+              class="rounded-lg border border-gray-100 p-4"
+            >
+              <div class="flex flex-wrap items-start justify-between gap-3">
+                <div class="min-w-0">
+                  <div class="font-medium text-gray-900">
+                    {{ line.nameKey ? BF.i18n(line.nameKey) : line.code }}
+                  </div>
+                  <div class="mt-0.5 text-[13px] text-gray-500">
+                    {{ BF.i18n('label_colliers_language') }}: {{ ['english', 'french', 'bilingual'].indexOf(String(line.language || '').trim().toLowerCase()) !== -1 ? BF.i18n('label_colliers_' + String(line.language).trim().toLowerCase()) : line.language }}
+                  </div>
+                </div>
+                <div class="text-right text-sm tabular-nums">
+                  <div class="font-medium text-gray-900">{{ ((app.i18n && app.i18n.langSelected) === 'fr' ? Number(line.price || 0).toLocaleString('fr-CA', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + '\u00a0$' : '$' + Number(line.price || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })) }}</div>
+                  <div class="text-xs text-gray-500">
+                    {{ line.boxes }} {{ line.boxes === 1 ? BF.i18n('label_colliers_box') :
+                    BF.i18n('label_colliers_boxes') }} · {{ line.cards }} {{
+                    BF.i18n('label_colliers_cards') }}
+                  </div>
+                </div>
+              </div>
+              <div
+                class="mt-3 grid gap-3"
+                :class="(line.faces || []).length > 1 ? 'sm:grid-cols-2' : 'sm:max-w-sm'"
+              >
+                <figure v-for="(face, fi) in line.faces || []" :key="'face-' + fi" class="m-0">
+                  <bfcomp
+                    name="CardPreview"
+                    :model="'details.lines.' + li + '.faces.' + fi"
+                  ></bfcomp>
+                  <figcaption
+                    v-if="(line.faces || []).length > 1"
+                    class="mt-1.5 text-xs font-medium uppercase tracking-wide text-gray-500"
+                  >
+                    {{ face.language === 'French' ? 'Français' : 'English' }}
+                  </figcaption>
+                </figure>
+              </div>
+            </li>
+          </ul>
+        </section>
+        <section v-if="(model.details.shipments || []).length">
+          <h3 class="mb-3 text-sm font-semibold text-gray-900">
+            {{ BF.i18n('label_colliers_shippingTo') }}
+          </h3>
+          <div class="space-y-3">
+            <div v-for="(ship, si) in model.details.shipments" :key="'ship-' + si">
+              <div
+                v-if="model.details.shipments.length > 1"
+                class="mb-1.5 text-xs font-medium uppercase tracking-wide text-gray-500"
+              >
+                {{ BF.i18n('label_colliers_shipment') }} {{ si + 1 }}
+              </div>
+              <ul class="divide-y divide-gray-100 rounded-lg border border-gray-100">
+                <li
+                  v-for="(loc, ci) in ship.locations"
+                  :key="'loc-' + si + '-' + ci"
+                  class="flex items-center justify-between gap-4 px-4 py-3 text-sm"
+                >
+                  <span class="min-w-0 text-gray-700">{{ loc.address }}</span>
+                  <span class="shrink-0 text-right tabular-nums">
+                    <span class="block font-medium text-gray-900"
+                      >{{ loc.boxes }} {{ loc.boxes === 1 ? BF.i18n('label_colliers_box') :
+                      BF.i18n('label_colliers_boxes') }}</span
+                    >
+                    <span class="block text-xs text-gray-500"
+                      >{{ loc.cards }} {{ BF.i18n('label_colliers_cards') }}</span
+                    >
+                  </span>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </section>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn-outline" @click="BF.namedAction('closeDetails')">
-          {{ BF.i18n('label_general_close') }}
-        </button>
+        <div class="text-sm text-gray-700">
+          {{ BF.i18n('label_colliers_totalCost') }}:
+          <span class="font-semibold text-gray-900">{{ ((app.i18n && app.i18n.langSelected) === 'fr' ? Number(model.details.total || 0).toLocaleString('fr-CA', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + '\u00a0$' : '$' + Number(model.details.total || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })) }}</span>
+          <span class="text-gray-500">
+            · {{ BF.i18n('label_colliers_qty') }}: {{ model.details.qty }}</span
+          >
+        </div>
+        <div class="modal-footer-actions">
+          <button type="button" class="btn-outline" @click="BF.namedAction('closeDetails')">
+            {{ BF.i18n('label_general_close') }}
+          </button>
+        </div>
       </div>
     </div>
-  </div>
-</div>
+  </div></div>
