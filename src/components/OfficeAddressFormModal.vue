@@ -1,8 +1,7 @@
 <template>
   <app-modal
     :open="open"
-    :title="isEditing ? t('updateExistingAddress') : t('newAddressTitle')"
-    :subtitle="t('officeAddressFormIntro')"
+    :title="isEditing ? t('editOfficeAddressTitle') : t('newOfficeAddressTitle')"
     size="wide"
     @close="onClose"
   >

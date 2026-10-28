@@ -397,18 +397,15 @@ export const messages = {
   systemOptions: { EN: 'System Options', FR: 'Options système' },
   manageAddresses: { EN: 'Manage Addresses', FR: 'Gérer les adresses' },
   enterNewOfficeAddress: {
-    EN: 'Enter new address...',
-    FR: 'Entrez la nouvelle adresse...',
+    EN: 'Enter new office address...',
+    FR: 'Entrez la nouvelle adresse de bureau...',
   },
   editOfficeAddress: { EN: 'Edit address', FR: "Modifier l'adresse" },
   removeOfficeAddress: { EN: 'Remove address', FR: "Supprimer l'adresse" },
   addOfficeAddress: { EN: 'Add office address', FR: 'Ajouter une adresse de bureau' },
   newAddressTitle: { EN: 'New Address', FR: 'Nouvelle adresse' },
-  updateExistingAddress: { EN: 'Update Existing Address', FR: "Mettre à jour l'adresse existante" },
-  officeAddressFormIntro: {
-    EN: 'Please provide the details for the address below.',
-    FR: "Veuillez fournir les détails de l'adresse ci-dessous.",
-  },
+  newOfficeAddressTitle: { EN: 'Add new office address', FR: 'Ajouter une adresse de bureau' },
+  editOfficeAddressTitle: { EN: 'Edit office address', FR: "Modifier l'adresse de bureau" },
   addressName: { EN: 'Address Name', FR: "Nom de l'adresse" },
   addressNamePlaceholder: {
     EN: 'e.g. Headquarters, Branch Office',

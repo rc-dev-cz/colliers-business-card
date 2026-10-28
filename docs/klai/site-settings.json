@@ -1354,8 +1354,8 @@
                 "fr": "Voir mon compte"
             },
             "placeholder_colliers_enterNewOfficeAddress": {
-                "en": "Enter new address...",
-                "fr": "Entrez la nouvelle adresse..."
+                "en": "Enter new office address...",
+                "fr": "Entrez la nouvelle adresse de bureau..."
             },
             "placeholder_colliers_newDegree": {
                 "en": "Enter new credential...",
@@ -1520,6 +1520,14 @@
             "label_colliers_noInvoices": {
                 "en": "No invoices yet. Invoices will appear here once FileMaker invoicing is connected.",
                 "fr": "Aucune facture pour le moment. Les factures apparaîtront ici lorsque la facturation FileMaker sera connectée."
+            },
+            "label_colliers_newOfficeAddressTitle": {
+                "en": "Add new office address",
+                "fr": "Ajouter une adresse de bureau"
+            },
+            "label_colliers_editOfficeAddressTitle": {
+                "en": "Edit office address",
+                "fr": "Modifier l'adresse de bureau"
             }
         },
         "langDefault": "en",
