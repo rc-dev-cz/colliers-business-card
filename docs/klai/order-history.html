@@ -125,7 +125,7 @@
             </span>
           </div>
           <p class="mt-1 text-sm text-gray-500">
-            {{ BF.i18n('label_colliers_date') }}: {{ model.details.dateFormatted }} · {{
+            {{ (model.details.status === 'Delivered' ? BF.i18n('label_colliers_dateDelivered') : BF.i18n('label_colliers_date')) }}: {{ model.details.dateFormatted }} · {{
             BF.i18n('label_colliers_cardholder') }}: {{ model.details.cardholder }}
           </p>
         </div>

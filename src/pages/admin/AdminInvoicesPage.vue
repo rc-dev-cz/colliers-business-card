@@ -18,6 +18,11 @@
             </tr>
           </thead>
           <tbody>
+            <tr v-if="!invoices.length">
+              <td colspan="6" class="px-4 py-10 text-center text-gray-500">
+                {{ t('noInvoices') }}
+              </td>
+            </tr>
             <tr
               v-for="row in invoices"
               :key="row.id"

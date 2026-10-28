@@ -454,6 +454,10 @@ export const messages = {
   },
   invoiceHistory: { EN: 'Invoice History', FR: 'Historique des factures' },
   reporting: { EN: 'Reporting', FR: 'Rapports' },
+  noInvoices: {
+    EN: 'No invoices yet. Invoices will appear here once FileMaker invoicing is connected.',
+    FR: 'Aucune facture pour le moment. Les factures apparaîtront ici lorsque la facturation FileMaker sera connectée.',
+  },
   reportingEmpty: {
     EN: 'No reporting data yet. Reports will appear here once FileMaker reporting is connected.',
     FR: 'Aucune donnée de rapport pour le moment. Les rapports apparaîtront ici lorsque les rapports FileMaker seront connectés.',
