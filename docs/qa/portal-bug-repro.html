@@ -1,0 +1,227 @@
+<title>Portal Bug Repro Steps</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&family=Source+Serif+4:opsz,wght@8..60,600&display=swap">
+<style>
+  /* Layout: one readable column of bug sheets, each a numbered checklist a tester walks top to bottom. */
+  :root {
+    --bg: #f6f7fa;
+    --surface: #ffffff;
+    --ink: #0a1a3a;
+    --muted: #5d6475;
+    --line: #dfe3ec;
+    --accent: #25408f;
+    --high: #b4232c;
+    --high-bg: #fbe9ea;
+    --med: #9a5b00;
+    --med-bg: #fdf1dc;
+    --low: #3d5a80;
+    --low-bg: #e8eef7;
+    --check: #f0f3fa;
+    --font-display: "Source Serif 4", Georgia, serif;
+    --font-body: "Open Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0d1220; --surface: #151c2e; --ink: #e8ecf5; --muted: #9aa3b8; --line: #2a3350;
+      --accent: #8fa7ee; --high: #ff8a91; --high-bg: #3a1a1f; --med: #f3c06b; --med-bg: #3a2c12;
+      --low: #a9c1e6; --low-bg: #1d2a42; --check: #1b2338; color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #0d1220; --surface: #151c2e; --ink: #e8ecf5; --muted: #9aa3b8; --line: #2a3350;
+    --accent: #8fa7ee; --high: #ff8a91; --high-bg: #3a1a1f; --med: #f3c06b; --med-bg: #3a2c12;
+    --low: #a9c1e6; --low-bg: #1d2a42; --check: #1b2338; color-scheme: dark;
+  }
+  body {
+    background: var(--bg); color: var(--ink); font-family: var(--font-body);
+    font-size: 15px; line-height: 1.6;
+    padding-left: max(16px, env(safe-area-inset-left, 0px));
+    padding-right: max(16px, env(safe-area-inset-right, 0px));
+    padding-block: 40px 64px;
+  }
+  .wrap { max-width: 760px; margin: 0 auto; display: flex; flex-direction: column; gap: 28px; }
+  header { display: flex; flex-direction: column; gap: 10px; }
+  h1 { font-family: var(--font-display); font-weight: 600; font-size: 2rem; line-height: 1.15; margin: 0; text-wrap: balance; }
+  .lede { margin: 0; color: var(--muted); max-width: 62ch; }
+  .meta { display: flex; flex-wrap: wrap; gap: 8px 20px; font-size: 13px; color: var(--muted); }
+  .meta b { color: var(--ink); font-weight: 600; }
+  code, .url { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0.88em; overflow-wrap: anywhere; }
+
+  .summary { overflow-x: auto; background: var(--surface); border: 1px solid var(--line); border-radius: 8px; }
+  table { border-collapse: collapse; width: 100%; font-size: 14px; }
+  th, td { text-align: left; padding: 10px 14px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+  tr:last-child td { border-bottom: 0; }
+  td a { color: var(--accent); text-decoration: none; font-weight: 600; }
+  td a:hover, td a:focus-visible { text-decoration: underline; }
+
+  .pill { display: inline-block; font-size: 11px; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; padding: 2px 8px; border-radius: 999px; white-space: nowrap; }
+  .high { color: var(--high); background: var(--high-bg); }
+  .med { color: var(--med); background: var(--med-bg); }
+  .low { color: var(--low); background: var(--low-bg); }
+  .tag { color: var(--muted); border: 1px solid var(--line); background: transparent; }
+
+  h2 { font-family: var(--font-display); font-weight: 600; font-size: 1.3rem; margin: 12px 0 0; }
+  .bug { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 22px 24px; display: flex; flex-direction: column; gap: 14px; scroll-margin-top: 16px; }
+  .bug-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 12px; }
+  .bug-id { font-family: ui-monospace, Menlo, monospace; font-size: 12px; color: var(--muted); }
+  .bug h3 { margin: 0; font-size: 1.08rem; font-weight: 700; line-height: 1.35; flex-basis: 100%; text-wrap: balance; }
+  .where { margin: 0; font-size: 13px; color: var(--muted); }
+  .label { font-size: 11px; letter-spacing: 0.07em; text-transform: uppercase; color: var(--muted); font-weight: 700; margin: 0 0 4px; }
+  ol { margin: 0; padding-left: 1.4em; display: flex; flex-direction: column; gap: 4px; }
+  ol li::marker { color: var(--accent); font-weight: 700; }
+  .result { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .result > div { background: var(--check); border-radius: 6px; padding: 10px 14px; min-width: 0; }
+  .result p { margin: 0; }
+  .note { margin: 0; font-size: 13px; color: var(--muted); border-left: 3px solid var(--line); padding-left: 12px; }
+  @media (max-width: 560px) { .result { grid-template-columns: 1fr; } .bug { padding: 18px 16px; } h1 { font-size: 1.6rem; } }
+</style>
+
+<div class="wrap">
+  <header>
+    <h1>Colliers Portal: bugs to reproduce</h1>
+    <p class="lede">Each bug below has simple steps anyone can follow in a browser. No coding needed. Do not place a real order while testing.</p>
+    <div class="meta">
+      <span>Site: <b class="url">colliers-project-manager.clientportal.cloud</b></span>
+      <span>Updated: <b>Nov 2, 2026</b></span>
+      <span>Source: <b>QA bot report + code review</b></span>
+    </div>
+  </header>
+
+  <div class="summary">
+    <table>
+      <thead><tr><th>#</th><th>Bug</th><th>Severity</th><th>Who can test</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td><a href="#bug-1">Order History shows empty orders</a></td><td><span class="pill high">High</span></td><td>Any user</td></tr>
+        <tr><td>2</td><td><a href="#bug-2">Bilingual card turns English after a page refresh</a></td><td><span class="pill high">High</span></td><td>Any user</td></tr>
+        <tr><td>3</td><td><a href="#bug-3">Editing a Bilingual card from Shipping turns it English</a></td><td><span class="pill high">High</span></td><td>Any user</td></tr>
+        <tr><td>4</td><td><a href="#bug-4">Footer links do nothing</a></td><td><span class="pill med">Medium</span></td><td>Any user</td></tr>
+        <tr><td>5</td><td><a href="#bug-5">Screen reader reads code on Address Book</a></td><td><span class="pill med">Medium</span></td><td>Any user</td></tr>
+        <tr><td>6</td><td><a href="#bug-6">Admin: address count always shows 0</a></td><td><span class="pill med">Medium</span></td><td>Admin</td></tr>
+        <tr><td>7</td><td><a href="#bug-7">Admin: title and credential counts never change</a></td><td><span class="pill low">Low</span></td><td>Admin</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2>Steps</h2>
+
+  <section class="bug" id="bug-1">
+    <div class="bug-head"><span class="bug-id">#1 · BUG-005</span><span class="pill high">High</span>
+      <h3>Order History shows empty orders that can still be repeated</h3></div>
+    <p class="where">Page: Order History</p>
+    <div><p class="label">Steps</p>
+      <ol>
+        <li>Sign in with an account that has placed orders before.</li>
+        <li>Open <b>Order History</b> from the menu.</li>
+        <li>Look down the list of orders.</li>
+        <li>On a row with no cardholder name, click <b>View</b>, then try <b>Repeat Order</b>. Do not finish the repeat order.</li>
+      </ol></div>
+    <div class="result">
+      <div><p class="label">Expected</p><p>Every row shows a cardholder, an item and a quantity. Empty orders are not listed.</p></div>
+      <div><p class="label">Actual</p><p>Some rows have no cardholder or item, quantity 0, status <b>Processing</b>. View and Repeat Order still work on them.</p></div>
+    </div>
+  </section>
+
+  <section class="bug" id="bug-2">
+    <div class="bug-head"><span class="bug-id">#2 · BUG-006</span><span class="pill high">High</span>
+      <h3>Bilingual card turns into an English card after a page refresh</h3></div>
+    <p class="where">Page: Customize</p>
+    <div><p class="label">Steps</p>
+      <ol>
+        <li>Go to the <b>Catalogue</b> and open <b>Business Card Bilingual</b>.</li>
+        <li>Click <b>Customize</b>. Check that the form has a <b>French title</b> field.</li>
+        <li>Refresh the page (<b>Cmd+R</b> on Mac, <b>F5</b> on Windows).</li>
+        <li>Also try: copy the page address, open a new tab, and paste it there.</li>
+      </ol></div>
+    <div class="result">
+      <div><p class="label">Expected</p><p>The page still shows the Bilingual form with the French title field.</p></div>
+      <div><p class="label">Actual</p><p>The form shows as English, with no French title field. Sometimes the page fails with a time-out error (408).</p></div>
+    </div>
+  </section>
+
+  <section class="bug" id="bug-3">
+    <div class="bug-head"><span class="bug-id">#3 · NEW</span><span class="pill high">High</span><span class="pill tag">Needs confirming</span>
+      <h3>Editing a Bilingual card from Shipping turns it into an English card</h3></div>
+    <p class="where">Pages: Shipping → Customize → Cart</p>
+    <div><p class="label">Steps</p>
+      <ol>
+        <li>From the Catalogue, customize a <b>Business Card Bilingual</b>. Fill in a name and a French title, preview the proof, approve it and add it to the cart.</li>
+        <li>Go back to the Catalogue and add a <b>Business Card English</b> to the cart the same way.</li>
+        <li>Go to <b>Shipping</b> and click <b>Edit</b> on the Bilingual card.</li>
+        <li>Look at the form. Save the card again and check the cart.</li>
+      </ol></div>
+    <div class="result">
+      <div><p class="label">Expected</p><p>The Bilingual form opens with its French title. After saving, the cart still says Bilingual.</p></div>
+      <div><p class="label">Actual (from the code)</p><p>The form opens as English with no French title. After saving, the card is listed as English, so the order changes.</p></div>
+    </div>
+    <p class="note">Found by reading the code, not tested in the browser yet. Same cause as bug #2.</p>
+  </section>
+
+  <section class="bug" id="bug-4">
+    <div class="bug-head"><span class="bug-id">#4 · BUG-001</span><span class="pill med">Medium</span>
+      <h3>Footer links do nothing</h3></div>
+    <p class="where">Every page, bottom</p>
+    <div><p class="label">Steps</p>
+      <ol>
+        <li>Scroll to the bottom of any page.</li>
+        <li>Click <b>Contact Us</b>, then <b>Security / Privacy Policy</b>, then <b>Terms of Use / Copyright</b>.</li>
+        <li>Switch the site to French and click the same three links again.</li>
+      </ol></div>
+    <div class="result">
+      <div><p class="label">Expected</p><p>Each link opens its page.</p></div>
+      <div><p class="label">Actual</p><p>Nothing happens when you click.</p></div>
+    </div>
+  </section>
+
+  <section class="bug" id="bug-5">
+    <div class="bug-head"><span class="bug-id">#5 · BUG-002</span><span class="pill med">Medium</span>
+      <h3>Screen reader reads code instead of "Address Book"</h3></div>
+    <p class="where">Page: Address Book (the My Address Book / Office Addresses tabs)</p>
+    <div><p class="label">Steps (Mac)</p>
+      <ol>
+        <li>Open <b>Address Book</b>.</li>
+        <li>Turn on VoiceOver with <b>Cmd+F5</b>.</li>
+        <li>Press <b>Tab</b> until you reach the <b>My Address Book</b> tab, and listen.</li>
+        <li>Turn VoiceOver off with <b>Cmd+F5</b>.</li>
+      </ol></div>
+    <div class="result">
+      <div><p class="label">Expected</p><p>VoiceOver says "Address Book, navigation".</p></div>
+      <div><p class="label">Actual</p><p>VoiceOver reads raw code: <code>{{ BF.i18n('label_general_addressBook') }}</code>.</p></div>
+    </div>
+    <p class="note">The page looks normal. Only screen-reader users notice this.</p>
+  </section>
+
+  <section class="bug" id="bug-6">
+    <div class="bug-head"><span class="bug-id">#6 · BUG-003</span><span class="pill med">Medium</span>
+      <h3>Admin: address count always shows 0</h3></div>
+    <p class="where">Page: Admin home</p>
+    <div><p class="label">Steps</p>
+      <ol>
+        <li>Sign in as an admin and open the <b>Admin</b> page.</li>
+        <li>Read the number on the <b>Manage Addresses</b> tile.</li>
+        <li>Click the tile and count the offices in the list.</li>
+      </ol></div>
+    <div class="result">
+      <div><p class="label">Expected</p><p>The tile shows the number of offices in the list (22 today).</p></div>
+      <div><p class="label">Actual</p><p>The tile always says 0.</p></div>
+    </div>
+  </section>
+
+  <section class="bug" id="bug-7">
+    <div class="bug-head"><span class="bug-id">#7 · BUG-004</span><span class="pill low">Low</span>
+      <h3>Admin: title and credential counts never change</h3></div>
+    <p class="where">Pages: Admin home, Manage Titles, Manage Credentials</p>
+    <div><p class="label">Steps</p>
+      <ol>
+        <li>On the <b>Admin</b> page, write down the numbers on the <b>Manage Titles</b> tile (39) and the <b>Manage Credentials</b> tile (32).</li>
+        <li>Open <b>Manage Titles</b>. Count the titles on the English tab plus the French tab.</li>
+        <li>Add a test title named <b>QA Test Title</b>, then go back to the Admin page.</li>
+        <li>Check the tile again, then delete <b>QA Test Title</b>.</li>
+      </ol></div>
+    <div class="result">
+      <div><p class="label">Expected</p><p>The tile matches the English + French total and goes up by one after you add a title.</p></div>
+      <div><p class="label">Actual</p><p>The tile always shows 39 for titles and 32 for credentials, whatever the lists contain.</p></div>
+    </div>
+    <p class="note">The bot compared 39 with the English tab alone (32). The real problem is that the numbers are fixed and never update.</p>
+  </section>
+</div>
