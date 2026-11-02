@@ -95,7 +95,7 @@ Shapes the request/utility hooks should put on `$$BF_Model` (Klai `model`). Incl
 
 **Product** — full row (Product Detail). Catalogue only needs `id`, `code`, `nameKey`, `price`, `previewKey`. Shipping only needs `code`, `language`.
 
-FileMaker (`store_catalogue`) is the only source: Catalogue (`requestHook: true`) and Product Detail load it from their hooks; neither page keeps a local product list or a made-up fallback. Live codes are FileMaker's (`CPL-13617`, from `store_catalogue::code`); `BCAD-PL-*` is only in Vue mock data and Klai dev data. Links pass `?code=` and `?id=` (`store_catalogue::id`).
+FileMaker (`store_catalogue`) is the only source: Catalogue (`requestHook: true`) and Product Detail load it from their hooks; neither page keeps a local product list or a made-up fallback. Live codes are FileMaker's (`CPL-13617`, from `store_catalogue::code`); `BCAD-PL-*` is only in Vue mock data and Klai dev data. Links pass `?code=` and `?id=` (`store_catalogue::id`). Customize links also pass `?lang=` (English / French / Bilingual): live codes do not say the language, so a refresh of Customize, or Edit on a cart line, reads it from the link (or the edited cart line) instead of falling back to English (QA BUG-006, Nov 2026). `BF - onFormRequest - customize` also returns `product` (`id`, `code`, `language` from `store_catalogue::language` or `::name`, `nameKey`, `price` from `::sell`) when the link has `id` ([`fm-onFormRequest-customize.xml`](fm-onFormRequest-customize.xml)); an unknown language is sent as `""` so the link's `lang` wins.
 
 ```json
 {
@@ -377,7 +377,7 @@ Shipping & handling is always `$0.00` (included in the box price). No payment.
 }
 ```
 
-**Order History** (`orders`) — planned request load; utility `repeat` uses `id` / `idToRepeat`
+**Order History** (`orders`) — planned request load; utility `repeat` uses `id` / `idToRepeat`. `filterOrders` (here and in Admin Order History) skips orders with no cards: an order whose shipping groups never saved showed as a blank Processing row (QA BUG-005, Nov 2026). FileMaker should only return orders that have groups ([`fm-onFormRequest-orders-loop.xml`](fm-onFormRequest-orders-loop.xml) replaces the loop in `BF - onFormRequest - orders`).
 
 ```json
 {

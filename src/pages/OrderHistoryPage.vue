@@ -351,6 +351,9 @@ export default {
     filteredOrders: function () {
       const self = this
       return this.ordersList.filter(function (row) {
+        // An order with no cards (Place Order stopped before its shipping groups saved) is not
+        // listed: it showed as a blank Processing row (QA BUG-005; Klai filterOrders twin).
+        if (!(row.cart || []).length) return false
         if (self.statusFilter !== 'all' && row.status !== self.statusFilter) return false
         return matchesOrderSearch(row, self.search)
       })

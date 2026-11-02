@@ -83,8 +83,32 @@ if (!product && typeof app !== 'undefined' && app.customizeProduct) {
   if ((code && picked.code === code) || (id && String(picked.id) === String(id)))
     product = Object.assign({}, picked)
 }
+// FileMaker codes (CPL-13617) carry no language and app.customizeProduct is gone after a page refresh.
+// So the language also rides on the link (?lang=, from goCustomize / cart Edit) or comes from the cart line being edited.
+function normLang(s) {
+  var v = String(s || '').trim()
+  return isBilin(v) ? 'Bilingual' : isFrenchOnly(v) ? 'French' : /^(english|en|eng)$/i.test(v) ? 'English' : ''
+}
+var urlLang = normLang(action && action.options && action.options.lang)
+if (!urlLang) {
+  var langMatch = hash.match(/[?&]lang=([^&]+)/)
+  if (langMatch) urlLang = normLang(decodeURIComponent(langMatch[1]))
+}
+if (!urlLang && lineId && typeof app !== 'undefined') {
+  if (app.editCard && String(app.editCard.lineId) === lineId) urlLang = normLang(app.editCard.language)
+  if (!urlLang) {
+    var cartRows = Array.isArray(app.cart) ? app.cart : (app.cart && app.cart.items) || []
+    var editRow = _.find(cartRows, function (row) {
+      return row && String(row.id) === lineId
+    })
+    if (editRow) urlLang = normLang(editRow.language)
+  }
+}
 var hookLang =
-  (model.product && model.product.language) || (model.card && model.card.language) || ''
+  urlLang ||
+  (model.product && model.product.language) ||
+  (model.card && model.card.language) ||
+  ''
 if (!product && (code || id)) {
   var inferred =
     languageFromCode(code, '') ||
@@ -115,6 +139,11 @@ var lang =
   languageFromCode(product.code, '') ||
   hookLang ||
   'English'
+// The link / edited line wins over a remembered product when the code itself says nothing.
+if (urlLang && !languageFromCode(product.code, '') && normLang(lang) !== urlLang) {
+  lang = urlLang
+  product.nameKey = ''
+}
 if (isBilin(lang) || languageFromCode(product.code, '') === 'Bilingual') lang = 'Bilingual'
 else if (isFrenchOnly(lang) || languageFromCode(product.code, '') === 'French') lang = 'French'
 product.language = lang

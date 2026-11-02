@@ -126,7 +126,6 @@ export const messages = {
   previewCard: { EN: 'Preview card', FR: 'Aperçu de la carte' },
   editItem: { EN: 'Edit item', FR: 'Modifier l’article' },
   removeItem: { EN: 'Remove item', FR: 'Retirer l’article' },
-  removeFromShipment: { EN: 'Remove from this shipment', FR: 'Retirer de cet envoi' },
   removeFromCart: { EN: 'Remove from cart', FR: 'Retirer du panier' },
   removeFromCartHint: {
     EN: 'Deletes this card from your cart.',

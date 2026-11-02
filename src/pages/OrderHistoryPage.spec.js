@@ -88,5 +88,12 @@ describe('OrderHistoryPage', function () {
       expect(wrapper.text()).toContain('500')
       expect(wrapper.text()).not.toContain('ORD-8472')
     })
+
+    it('OH-P05 an order with no cards is not listed (QA BUG-005)', function () {
+      store.orderHistory.push({ id: 'ORD-EMPTY', date: '2026-11-01', status: 'Ordered', cart: [] })
+      const wrapper = mountPage('history')
+      expect(wrapper.text()).toContain('ORD-1001')
+      expect(wrapper.text()).not.toContain('ORD-EMPTY')
+    })
   })
 })
