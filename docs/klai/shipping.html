@@ -51,6 +51,17 @@
       </button>
     </div>
   </div>
+  <div
+    v-if="model.repeatNotice"
+    class="mb-4 rounded-md border border-blue-200 bg-blue-50 px-4 py-3 text-sm text-blue-900"
+    role="status"
+  >
+    <p>{{ BF.i18n('label_colliers_repeatOrderNotice').replace('{id}', model.repeatNotice.orderId) }}</p>
+    <p v-if="model.repeatNotice.removedAddresses" class="mt-1 font-medium">
+      {{ BF.i18n('label_colliers_repeatOrderRemovedAddresses').replace('{n}',
+      model.repeatNotice.removedAddresses) }}
+    </p>
+  </div>
   <p v-if="model.view.hasEmptySplit" class="mb-4 text-sm text-red-600">
     {{ BF.i18n('label_colliers_emptyShipment') }}
   </p>

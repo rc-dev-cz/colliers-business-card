@@ -2,6 +2,9 @@ import { makeLine, lineTotal } from './cart.js'
 import { billedBoxesCart, billedBoxesForLine, snapshotOrder } from './order.js'
 import { CARD_COMPANY, getProduct } from '../data/products.js'
 import { productNameKey } from '../i18n/messages.js'
+import { MOCK_OFFICES } from '../data/offices.js'
+import { SEED_PERSONAL } from './addressBook.js'
+import { formatAddressLine } from '../adapters/api.js'
 
 export const BOX_PRICE = 63
 export const ORDER_STATUSES = ['Delivered', 'Shipped', 'Processing']
@@ -64,8 +67,180 @@ function seedRecord(payload) {
   }
 }
 
+function officeShipTo(officeId, qty) {
+  const row = MOCK_OFFICES.find(function (office) {
+    return Number(office.id) === Number(officeId)
+  })
+  return { address: formatAddressLine(row), qty: qty, addressId: officeId, addressType: 'office' }
+}
+
+function personalShipTo(personalId, qty) {
+  const row = SEED_PERSONAL.find(function (address) {
+    return address.id === personalId
+  })
+  return {
+    address: formatAddressLine(row),
+    qty: qty,
+    addressId: personalId,
+    addressType: 'personal',
+  }
+}
+
+/** A personal ship-to whose address was since deleted from the Address Book (Repeat Order drops it). */
+function deletedShipTo(qty) {
+  return {
+    address: '12 Lakeshore Road, Huntsville, ON P1H 1A1',
+    qty: qty,
+    addressId: 'seed-deleted-cottage',
+    addressType: 'personal',
+  }
+}
+
+/**
+ * Seed order with several cards and shipping groups, quantities as Shipping sets them: every
+ * card in a group gets that group's address-box total, and a card's quantity is the sum over
+ * the groups it is in.
+ *   cards:  [{ id, code, language, details }]
+ *   groups: [{ cards: [card ids], shipTos: [officeShipTo / personalShipTo / deletedShipTo] }]
+ */
+function seedGroupedRecord(payload) {
+  const totals = {}
+  const splits = payload.groups.map(function (group, index) {
+    const boxes = group.shipTos.reduce(function (sum, loc) {
+      return sum + loc.qty
+    }, 0)
+    const qtys = {}
+    group.cards.forEach(function (cardId) {
+      qtys[cardId] = boxes
+      totals[cardId] = (totals[cardId] || 0) + boxes
+    })
+    return {
+      id: index + 1,
+      itemIds: group.cards.slice(),
+      qtys: qtys,
+      locations: group.shipTos.map(function (loc, locIndex) {
+        return Object.assign({ id: payload.id + '-loc-' + (index + 1) + '-' + (locIndex + 1) }, loc)
+      }),
+    }
+  })
+  const cart = payload.cards.map(function (card) {
+    return seedLine(Object.assign({}, card, { quantity: totals[card.id] || 1 }))
+  })
+  return {
+    id: payload.id,
+    date: payload.date,
+    status: payload.status,
+    cart: cart,
+    order: snapshotOrder({ splits: splits }),
+  }
+}
+
+const SEED_CARD_PARTNER = { name: 'Demo Partner' }
+const SEED_CARD_ASSOCIATE = { name: 'Demo Associate', email: 'demo.associate@colliers.com' }
+const SEED_CARD_DIRECTOR = { name: 'Demo Director', email: 'demo.director@colliers.com' }
+
+/** Seed orders added after ORD-1001…1003; loadOrderHistory merges them into saved histories. */
+export const ORDER_HISTORY_SEED_VERSION = 2
+
 export function seedOrderHistory() {
   return [
+    // Three cards, two shipments, two addresses each.
+    seedGroupedRecord({
+      id: 'ORD-1006',
+      date: '2026-10-30',
+      status: 'Processing',
+      cards: [
+        {
+          id: 'seed-1006-eng',
+          code: 'BCAD-PL-ENG',
+          language: 'English',
+          details: SEED_CARD_PARTNER,
+        },
+        {
+          id: 'seed-1006-fr',
+          code: 'BCAD-PL-FR',
+          language: 'French',
+          details: SEED_CARD_ASSOCIATE,
+        },
+        {
+          id: 'seed-1006-bil',
+          code: 'BCAD-PL-BIL',
+          language: 'Bilingual',
+          details: SEED_CARD_DIRECTOR,
+        },
+      ],
+      groups: [
+        {
+          cards: ['seed-1006-eng', 'seed-1006-fr'],
+          shipTos: [officeShipTo(17, 2), personalShipTo('seed-home', 1)],
+        },
+        {
+          cards: ['seed-1006-bil'],
+          shipTos: [officeShipTo(11, 1), officeShipTo(19, 2)],
+        },
+      ],
+    }),
+    // The same card in two shipments (4 boxes to Burlington, 1 more to a temporary address).
+    seedGroupedRecord({
+      id: 'ORD-1005',
+      date: '2026-10-22',
+      status: 'Shipped',
+      cards: [
+        {
+          id: 'seed-1005-eng',
+          code: 'BCAD-PL-ENG',
+          language: 'English',
+          details: SEED_CARD_PARTNER,
+        },
+        {
+          id: 'seed-1005-fr',
+          code: 'BCAD-PL-FR',
+          language: 'French',
+          details: SEED_CARD_ASSOCIATE,
+        },
+      ],
+      groups: [
+        { cards: ['seed-1005-eng'], shipTos: [officeShipTo(1, 4)] },
+        {
+          cards: ['seed-1005-eng', 'seed-1005-fr'],
+          shipTos: [personalShipTo('seed-temp', 1)],
+        },
+      ],
+    }),
+    // A ship-to that is no longer in the Address Book: Repeat Order removes it, and the second
+    // shipment is left with no address to pick on Shipping.
+    seedGroupedRecord({
+      id: 'ORD-1004',
+      date: '2026-10-15',
+      status: 'Delivered',
+      cards: [
+        {
+          id: 'seed-1004-eng',
+          code: 'BCAD-PL-ENG',
+          language: 'English',
+          details: SEED_CARD_PARTNER,
+        },
+        {
+          id: 'seed-1004-eng-2',
+          code: 'BCAD-PL-ENG',
+          language: 'English',
+          details: SEED_CARD_ASSOCIATE,
+        },
+        {
+          id: 'seed-1004-bil',
+          code: 'BCAD-PL-BIL',
+          language: 'Bilingual',
+          details: SEED_CARD_DIRECTOR,
+        },
+      ],
+      groups: [
+        {
+          cards: ['seed-1004-eng', 'seed-1004-eng-2'],
+          shipTos: [officeShipTo(9, 2), deletedShipTo(1)],
+        },
+        { cards: ['seed-1004-bil'], shipTos: [deletedShipTo(3)] },
+      ],
+    }),
     seedRecord({
       id: 'ORD-1001',
       date: '2026-08-12',

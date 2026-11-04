@@ -689,6 +689,26 @@
                 "en": "Repeat Order",
                 "fr": "Commander à nouveau"
             },
+            "label_colliers_repeatOrderConfirmBody": {
+                "en": "Your cart has {n} item(s). Repeating order {id} replaces them with the cards, shipments and addresses from that order.",
+                "fr": "Votre panier contient {n} article(s). Commander à nouveau {id} les remplace par les cartes, envois et adresses de cette commande."
+            },
+            "label_colliers_repeatOrderConfirmTitle": {
+                "en": "Replace your cart?",
+                "fr": "Remplacer votre panier?"
+            },
+            "label_colliers_repeatOrderNotice": {
+                "en": "Copied from order {id}. Check the shipments and addresses, then continue.",
+                "fr": "Copié de la commande {id}. Vérifiez les envois et les adresses, puis continuez."
+            },
+            "label_colliers_repeatOrderRemovedAddresses": {
+                "en": "{n} ship-to address(es) no longer exist and were removed. Add a new address where needed.",
+                "fr": "{n} adresse(s) de livraison n’existent plus et ont été retirées. Ajoutez une nouvelle adresse au besoin."
+            },
+            "label_colliers_replaceCart": {
+                "en": "Replace cart",
+                "fr": "Remplacer le panier"
+            },
             "label_colliers_reporting": {
                 "en": "Reporting",
                 "fr": "Rapports"

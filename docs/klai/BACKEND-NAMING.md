@@ -24,7 +24,7 @@ Local style:
 - **`hookSetName`** — lowercase, no spaces (`catalogue`, `catalogueitem`, `shipping`, `adminaddresses`)
 - **Routes** — kebab-case path segments (`product-detail`, `address-book`, `order-history`). Catalogue is layout `default` → `/`
 - **Page `formName`** — Title Case display name in Studio
-- **Utility `type`** — lowercase, no spaces (`repeat`, `create`, `update`, `delete`, `submit`)
+- **Utility `type`** — lowercase, no spaces (`save`, `create`, `update`, `delete`, `submit`)
 
 Bus variables (FileMaker side): `$$BF_Payload`, `$$BF_Model`, `$$BF_Actions`, `$$BF_User`.
 
@@ -49,7 +49,7 @@ Bus variables (FileMaker side): `$$BF_Payload`, `$$BF_Model`, `$$BF_Actions`, `$
 | Page (`formName`) | Route            | `hookSetName` | `requestHook`                       | Expected FM onFormRequest        | Utility / notes                                                                            | Status  |
 | ----------------- | ---------------- | ------------- | ----------------------------------- | -------------------------------- | ------------------------------------------------------------------------------------------ | ------- |
 | Address Book      | `/address-book`  | `addresses`   | true                                | `BF - onFormRequest - addresses` | Planned: `create`, `update`, `delete` (personal). Save/edit/delete still client-side today | Live    |
-| Order History     | `/order-history` | `orders`      | true (planned; false in Klai today) | `BF - onFormRequest - orders`    | `repeat` → `BF - onUtility - orders` (utility already wired in Klai)                       | Live UI |
+| Order History     | `/order-history` | `orders`      | true                                | `BF - onFormRequest - orders`    | Repeat Order is client-side (cart copy → Shipping). No `repeat` utility; see Repeat Order below | Live UI |
 
 ### Auth
 
@@ -71,7 +71,7 @@ Bus variables (FileMaker side): `$$BF_Payload`, `$$BF_Model`, `$$BF_Actions`, `$
 | Manage Addresses    | `/admin/addresses` | `adminaddresses` | false (planned true) | `BF - onFormRequest - adminaddresses` | `create`, `update`, `delete` (offices) — client stub until FM | Live UI |
 | Manage Titles       | `/admin/titles`    | `admintitles`    | true                 | `BF - onFormRequest - admintitles`    | `save`, `delete`                                              | Live UI |
 | Manage Degrees      | `/admin/degrees`   | `admindegrees`   | true                 | `BF - onFormRequest - admindegrees`   | `save`, `delete`                                              | Live UI |
-| Admin Order History | `/admin/orders`    | `adminorders`    | false (planned true) | `BF - onFormRequest - adminorders`    | Admin-scoped order list (employee); no `repeat` in v1         | Live UI |
+| Admin Order History | `/admin/orders`    | `adminorders`    | false (planned true) | `BF - onFormRequest - adminorders`    | Admin-scoped order list (employee); no Repeat Order in v1     | Live UI |
 | Invoice History     | `/admin/invoices`  | `admininvoices`  | false (planned true) | `BF - onFormRequest - admininvoices`  | Invoice table + download (mock)                               | Live UI |
 | Reporting           | `/admin/reporting` | `adminreporting` | false (planned true) | `BF - onFormRequest - adminreporting` | Empty state until the FM hook supplies data                   | Live UI |
 
@@ -377,13 +377,22 @@ Shipping & handling is always `$0.00` (included in the box price). No payment.
 }
 ```
 
-**Order History** (`orders`) — planned request load; utility `repeat` uses `id` / `idToRepeat`. `filterOrders` (here and in Admin Order History) skips orders with no cards: an order whose shipping groups never saved showed as a blank Processing row (QA BUG-005, Nov 2026). FileMaker should only return orders that have groups ([`fm-onFormRequest-orders-loop.xml`](fm-onFormRequest-orders-loop.xml) replaces the loop in `BF - onFormRequest - orders`).
+**Order History** (`orders`) — request hook on. `BF - onFormRequest - orders` returns, per order, `asJSONsmall` (id, date, status) plus `groups` = `JSON.ArrayFromRelated ( store_BFUsers_order_group::asJSON )`, the payload groups Place Order saved. [`orderHistory-filterOrders.js`](orderHistory-filterOrders.js) (`orderFromFileMaker`) rebuilds `cart` + `order.splits` from them; each ship-to keeps `location_id` / `location_type` as `addressId` / `addressType`. `filterOrders` (here and in Admin Order History) skips orders with no cards: an order whose shipping groups never saved showed as a blank Processing row (QA BUG-005, Nov 2026). FileMaker should only return orders that have groups ([`fm-onFormRequest-orders-loop.xml`](fm-onFormRequest-orders-loop.xml) replaces the loop in `BF - onFormRequest - orders`). In that script the disabled ExecuteSQL loop can be deleted, and the find should be `"==" & $userId` on `contact_id` so one user never matches another's id.
 
 ```json
 {
-  "orders": [/* Order */]
+  "orders": [{ "id": 2190, "date": "11/01/2026", "status": "Ordered", "groups": [/* Place Order group JSON */] }]
 }
 ```
+
+**Repeat Order** (Nov 2026; Vue `repeatOrder` / `copyOrderForRepeat`). Client-side only, no FileMaker write:
+
+1. Order History `repeatOrder` ([`orderHistory-repeatOrder.js`](orderHistory-repeatOrder.js)) is one `function` step. Cart not empty → `model.confirmRepeat = { id, count }` opens "Replace your cart?"; Replace cart calls `repeatOrder` again with `confirmed: true`.
+2. It copies the order into `app.cart` / `app.order` (and `colliers-tab.cart` / `colliers-tab.order`) with new line, group and ship-to ids, so the new order never reuses the old `line_ref` / `location_ref`. Sets `app.repeatNotice = { orderId, checked: false }`, then `/shipping`.
+3. Shipping `onFormLoad` ([`shipping-onFormLoad.js`](shipping-onFormLoad.js)) checks the copied ship-tos once against the `offices` / `personalAddresses` it loaded: a row still there refreshes the text, an id missing from a non-empty list is dropped. The notice moves to `model.repeatNotice` (banner on this visit only).
+4. The person fixes groups / addresses; Review Place Order creates a **new** order (new print PDFs, shipments with address-book ids).
+
+The old `repeat` utility (`runUtilityHook type "repeat"` → `BF - onUtility - orders`, a Duplicate Record script) is retired. Do not install it: it skipped `store_BFUsers_order_group_shipment`, left items on the old `order_id`, copied status / print PDF / `ops_item_id`, walked the found set while duplicating into it, and did not check `contact_id`. Admin Order History has no Repeat Order (ADM-035).
 
 ### Admin — Live UI / Planned
 
@@ -453,7 +462,7 @@ Until FileMaker returns `degrees`, `onFormLoad` seeds the 32 client-approved des
 }
 ```
 
-**Admin Order History** (`adminorders`) — Live UI in Klai (route `/admin/orders`). Company-wide list. **Order** plus employee fields. No `repeat` utility in v1 (ADM-035 open).
+**Admin Order History** (`adminorders`) — Live UI in Klai (route `/admin/orders`). Company-wide list. **Order** plus employee fields. No Repeat Order in v1 (ADM-035 open).
 
 ```json
 {
@@ -499,7 +508,7 @@ Until FileMaker returns `degrees`, `onFormLoad` seeds the 32 client-approved des
 
 ## Gaps / To Review
 
-- **Order History** — turn on `requestHook` + `BF - onFormRequest - orders` when live load is ready (`repeat` utility already exists).
+- **Order History** — Repeat Order (Nov 2026) is mirrored here, not yet saved to Studio: `repeatOrder`, `filterOrders` (address ids), the confirm modal, the Shipping banner + `onFormLoad` check, and five labels (`label_colliers_repeatOrderConfirmTitle`, `…ConfirmBody`, `…Notice`, `…RemovedAddresses`, `label_colliers_replaceCart`). Remove the `type: "repeat"` block from `BF - onUtility - orders` if it was pasted.
 - **Address Book** — wire `create` / `update` / `delete` utilities; load already uses request hook.
 - **Customize / Product Detail** — Catalogue opens both with `?code=` and `?id=` (`store_catalogue::id`, such as `13616` for `CPL-13616`). If `product.id` is missing, the click uses the trailing number on `code`. Each page shows the form from that query even when the dev product list does not contain the code. FileMaker should still set `model.product` with the same `code`.
 - **FM (you): `BF - onFormRequest - customize`** — do **not** hardcode `"language" ; "English"`. After the catalogue find, set `$$BF_Model.product` `{ id, code, language, price, nameKey }` from `store_catalogue`, and `$$BF_Model.card.language` to match. Bilingual SKUs (e.g. `/#/customize?code=CPL-13616&id=13616`) need `language: "Bilingual"` or Klai shows one face. Leave `BF - onUtility - customize` `type: "addToCart"` alone; cart stays frontend until Review `submit`.

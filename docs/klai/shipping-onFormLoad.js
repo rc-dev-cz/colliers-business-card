@@ -151,6 +151,82 @@ try {
     sessionStorage.removeItem('colliers-tab.addresses')
   }
 } catch (errAddr) {}
+// Repeat Order (Order History repeatOrder) leaves app.repeatNotice. The copied ship-tos are checked
+// once against the address book this page loaded (Vue copyOrderForRepeat): a row still there
+// refreshes the text, an id gone from a loaded list is dropped. An empty list counts as not loaded,
+// so nothing is dropped from it (Place Order still refuses a ship-to missing from the book).
+// The notice moves to model.repeatNotice so it shows on this visit only.
+function addressText(row) {
+  function pick(keys) {
+    for (var k = 0; k < keys.length; k += 1) {
+      var v = row[keys[k]]
+      if (v != null && String(v).trim()) return String(v).trim()
+    }
+    return ''
+  }
+  return [
+    pick(['addressStreet', 'address_street', 'address']),
+    pick(['addressCity', 'address_city']),
+    pick(['addressProvince', 'address_province', 'address_pr']),
+    pick(['addressPostalZip', 'address_postal_zip', 'addressPostal']),
+  ]
+    .filter(Boolean)
+    .join(', ')
+}
+function checkRepeatedShipTos(order) {
+  var removed = 0
+  function byId(id) {
+    return function (row) {
+      return row && row.id != null && String(row.id) === id
+    }
+  }
+  ;((order && order.splits) || []).forEach(function (split) {
+    var before = split.locations || []
+    var kept = before.filter(function (loc) {
+      var id = loc.addressId != null && loc.addressId !== '' ? String(loc.addressId) : ''
+      if (!id) return true
+      var type = loc.addressType || ''
+      var office = type !== 'personal' && officeRows.length ? officeRows.find(byId(id)) : null
+      var mine =
+        !office && type !== 'office' && personalRows.length ? personalRows.find(byId(id)) : null
+      var row = office || mine
+      if (row) {
+        loc.addressType = office ? 'office' : 'personal'
+        loc.address = addressText(row) || loc.address
+        return true
+      }
+      var checked =
+        type === 'office'
+          ? officeRows.length > 0
+          : type === 'personal'
+            ? personalRows.length > 0
+            : officeRows.length > 0 && personalRows.length > 0
+      if (!checked) return true
+      removed += 1
+      return false
+    })
+    if (kept.length !== before.length) before.splice.apply(before, [0, before.length].concat(kept))
+  })
+  return removed
+}
+var repeatNotice = typeof app !== 'undefined' ? app.repeatNotice : null
+if (repeatNotice) {
+  if (!repeatNotice.checked) {
+    repeatNotice.removedAddresses = checkRepeatedShipTos(model.order)
+    repeatNotice.checked = true
+    try {
+      if (typeof sessionStorage !== 'undefined' && model.order)
+        sessionStorage.setItem('colliers-tab.order', JSON.stringify(model.order))
+    } catch (errRepeat) {}
+  }
+  setModel('repeatNotice', {
+    orderId: repeatNotice.orderId,
+    removedAddresses: repeatNotice.removedAddresses || 0,
+  })
+  app.repeatNotice = null
+} else {
+  deleteModelKey('repeatNotice')
+}
 function refreshLater() {
   if (typeof BF !== 'undefined' && BF.namedAction) BF.namedAction('refreshView')
 }

@@ -225,6 +225,20 @@ export const messages = {
   action: { EN: 'Action', FR: 'Action' },
   view: { EN: 'View', FR: 'Voir' },
   repeatOrder: { EN: 'Repeat Order', FR: 'Commander à nouveau' },
+  repeatOrderConfirmTitle: { EN: 'Replace your cart?', FR: 'Remplacer votre panier?' },
+  repeatOrderConfirmBody: {
+    EN: 'Your cart has {n} item(s). Repeating order {id} replaces them with the cards, shipments and addresses from that order.',
+    FR: 'Votre panier contient {n} article(s). Commander à nouveau {id} les remplace par les cartes, envois et adresses de cette commande.',
+  },
+  replaceCart: { EN: 'Replace cart', FR: 'Remplacer le panier' },
+  repeatOrderNotice: {
+    EN: 'Copied from order {id}. Check the shipments and addresses, then continue.',
+    FR: 'Copié de la commande {id}. Vérifiez les envois et les adresses, puis continuez.',
+  },
+  repeatOrderRemovedAddresses: {
+    EN: '{n} ship-to address(es) no longer exist and were removed. Add a new address where needed.',
+    FR: '{n} adresse(s) de livraison n’existent plus et ont été retirées. Ajoutez une nouvelle adresse au besoin.',
+  },
   searchOrders: { EN: 'Search orders', FR: 'Rechercher des commandes' },
   searchByName: { EN: 'Search by Name...', FR: 'Rechercher par nom...' },
   allStatuses: { EN: 'All Statuses', FR: 'Tous les statuts' },

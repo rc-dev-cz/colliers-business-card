@@ -19,7 +19,9 @@ describe('orderHistory helpers', function () {
   })
 
   it('OH-02 personal seed stores box qty; cardCount converts to cards for display', function () {
-    const personal = seedOrderHistory()
+    const personal = seedOrderHistory().filter(function (row) {
+      return ['ORD-1001', 'ORD-1002', 'ORD-1003'].indexOf(row.id) !== -1
+    })
     expect(personal.length).toBe(3)
     expect(boxCount(personal[0])).toBe(2)
     expect(cardCount(personal[0])).toBe(500)
@@ -30,6 +32,34 @@ describe('orderHistory helpers', function () {
     expect(personal[0].cart[0].details.degree).toEqual([])
     expect(personal[0].cart[0].details.title).toBe('Associate')
     expect(personal[0].cart[0].details.website).toBe('colliersprojectleaders.com')
+  })
+
+  it('OH-02b grouped seeds: several cards and shipments, quantities as Shipping sets them', function () {
+    const byId = {}
+    seedOrderHistory().forEach(function (row) {
+      byId[row.id] = row
+    })
+    const team = byId['ORD-1006']
+    expect(team.cart.map((l) => l.code)).toEqual(['BCAD-PL-ENG', 'BCAD-PL-FR', 'BCAD-PL-BIL'])
+    expect(team.order.splits).toHaveLength(2)
+    expect(team.order.splits[0].locations.map((l) => l.qty)).toEqual([2, 1])
+    expect(team.order.splits[0].qtys).toEqual({ 'seed-1006-eng': 3, 'seed-1006-fr': 3 })
+    expect(team.cart.map((l) => l.quantity)).toEqual([3, 3, 3])
+    expect(boxCount(team)).toBe(9)
+    expect(cardCount(team)).toBe(2250)
+    expect(team.order.splits[0].locations[0]).toMatchObject({
+      addressId: '17',
+      addressType: 'office',
+    })
+
+    const split = byId['ORD-1005']
+    // Same English card in both shipments: 4 + 1 boxes.
+    expect(split.cart.map((l) => l.quantity)).toEqual([5, 1])
+    expect(boxCount(split)).toBe(6)
+
+    const stale = byId['ORD-1004']
+    expect(stale.order.splits[1].locations[0].addressId).toBe('seed-deleted-cottage')
+    expect(boxCount(stale)).toBe(9)
   })
 
   it('OH-03 admin seed exposes designer rows with card qty and totals', function () {

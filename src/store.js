@@ -48,6 +48,7 @@ import {
   SEND_PDFS_TO_FILEMAKER,
 } from './helpers/orderPdfs'
 import { buildHistoryRecord, nextOrderId } from './helpers/orderHistory'
+import { copyOrderForRepeat } from './helpers/repeatOrder'
 import { getProduct } from './data/products.js'
 import { go } from './adapters/nav'
 import {
@@ -85,6 +86,8 @@ export const store = Vue.observable({
   // Last placed order and the payload sent to FileMaker, for the Confirmed page.
   // Memory only: the print PDFs hold names and addresses.
   lastOrder: null,
+  // Repeat Order just filled the cart: Shipping shows which order and any dropped ship-tos.
+  repeatNotice: null,
 })
 
 function persistCart() {
@@ -193,6 +196,7 @@ export function logout() {
   clearCart()
   clearOrder()
   clearCustomizeDraft()
+  store.repeatNotice = null
 }
 
 /**
@@ -270,6 +274,11 @@ export function appendConfirmedOrder() {
   return record
 }
 
+/**
+ * Repeat Order: copy a past order into the cart (replacing what is there) with new ids and
+ * today's addresses, then the caller opens Shipping to confirm groups and ship-tos.
+ * Returns false when the order is not found or has no cards.
+ */
 export function repeatOrder(id) {
   const record =
     store.orderHistory.find(function (row) {
@@ -278,21 +287,28 @@ export function repeatOrder(id) {
     store.adminOrders.find(function (row) {
       return row.id === id
     })
-  if (!record) return false
-  return loadOrderIntoCart(record)
-}
-
-function loadOrderIntoCart(record) {
-  replaceList(
-    store.cart,
-    (record.cart || []).map(function (line) {
-      return makeLine(line)
-    })
-  )
-  Vue.set(store, 'order', normalizeOrder(record.order))
+  if (!record || !(record.cart || []).length) return false
+  if (!store.offices.length) store.offices = loadManagedOffices()
+  // An admin repeating someone else's order: their ship-tos are in that person's address book.
+  const owner = record.ownerEmail ? String(record.ownerEmail).toLowerCase() : ''
+  const personal =
+    owner && owner !== String(userEmail() || '').toLowerCase()
+      ? readPersonalAddresses(owner)
+      : store.personalAddresses
+  const copy = copyOrderForRepeat(record, { offices: store.offices, personal: personal })
+  replaceList(store.cart, copy.cart)
+  Vue.set(store, 'order', copy.order)
+  store.editLineId = null
+  store.pendingSplitId = null
+  store.pendingAddressSplitId = null
   persistCart()
   persistOrder()
+  store.repeatNotice = { orderId: record.id, removedAddresses: copy.removedAddresses }
   return true
+}
+
+export function clearRepeatNotice() {
+  store.repeatNotice = null
 }
 
 export function itemCount() {

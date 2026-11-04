@@ -46,6 +46,17 @@
       </div>
     </div>
 
+    <div
+      v-if="store.repeatNotice"
+      class="mb-4 rounded-md border border-blue-200 bg-blue-50 px-4 py-3 text-sm text-blue-900"
+      role="status"
+    >
+      <p>{{ repeatNoticeText }}</p>
+      <p v-if="store.repeatNotice.removedAddresses" class="mt-1 font-medium">
+        {{ repeatRemovedText }}
+      </p>
+    </div>
+
     <p v-if="emptySplit" class="mb-4 text-sm text-red-600">{{ t('emptyShipment') }}</p>
 
     <div class="space-y-6">
@@ -469,6 +480,7 @@ import {
   syncShippingQuantities,
   shippingReady,
   hasEmptySplit,
+  clearRepeatNotice,
   removeEmptySplits,
   startNewAddressForShipping,
 } from '../store'
@@ -527,6 +539,14 @@ export default {
     emptySplit: function () {
       return hasEmptySplit()
     },
+    repeatNoticeText: function () {
+      var notice = store.repeatNotice
+      return notice ? t('repeatOrderNotice').replace('{id}', notice.orderId) : ''
+    },
+    repeatRemovedText: function () {
+      var notice = store.repeatNotice
+      return notice ? t('repeatOrderRemovedAddresses').replace('{n}', notice.removedAddresses) : ''
+    },
   },
   mounted: function () {
     ensureSampleShippingDraft()
@@ -542,6 +562,7 @@ export default {
     this.bindSortables()
   },
   beforeDestroy: function () {
+    clearRepeatNotice()
     if (this.mergedTimer) clearTimeout(this.mergedTimer)
     this.destroySortables()
     document.removeEventListener('click', this.onDocClick, true)

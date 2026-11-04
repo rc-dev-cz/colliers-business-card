@@ -239,4 +239,42 @@
       </div>
     </div>
   </div>
+  <div
+    class="colliers-modal-overlay"
+    role="dialog"
+    aria-modal="true"
+    v-if="model.confirmRepeat"
+    :aria-label="BF.i18n('label_colliers_repeatOrderConfirmTitle')"
+    @click.self="model.confirmRepeat = null"
+  >
+    <!-- Repeat Order with cards already in the cart (namedAction repeatOrder, orderHistory-repeatOrder.js) -->
+    <div class="colliers-modal-panel colliers-modal-panel--md" @click.stop>
+      <div class="colliers-modal-header">
+        <h2>{{ BF.i18n('label_colliers_repeatOrderConfirmTitle') }}</h2>
+        <button type="button" class="colliers-modal-close" @click="model.confirmRepeat = null">
+          ×
+        </button>
+      </div>
+      <div class="px-5 py-5 sm:px-6">
+        <p class="text-sm text-gray-700">
+          {{ BF.i18n('label_colliers_repeatOrderConfirmBody').replace('{n}',
+          model.confirmRepeat.count).replace('{id}', model.confirmRepeat.id) }}
+        </p>
+      </div>
+      <div class="modal-footer">
+        <div class="modal-footer-actions">
+          <button type="button" class="btn-outline" @click="model.confirmRepeat = null">
+            {{ BF.i18n('label_colliers_cancel') }}
+          </button>
+          <button
+            type="button"
+            class="btn-primary"
+            @click="BF.namedAction('repeatOrder', { id: model.confirmRepeat.id, confirmed: true })"
+          >
+            {{ BF.i18n('label_colliers_replaceCart') }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>

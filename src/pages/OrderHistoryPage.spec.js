@@ -4,6 +4,11 @@ import { createLocalVue, mount } from '@vue/test-utils'
 import OrderHistoryPage from './OrderHistoryPage.vue'
 import { store, loadAdminOrders, loadProfileCollections } from '../store'
 import { seedOrderHistory } from '../helpers/orderHistory'
+import { go } from '../adapters/nav'
+
+vi.mock('../adapters/nav', function () {
+  return { go: vi.fn() }
+})
 
 const localVue = createLocalVue()
 
@@ -82,9 +87,10 @@ describe('OrderHistoryPage', function () {
 
     it('OH-P04 personal route shows card quantity not box count', function () {
       const wrapper = mountPage('history')
-      const personal = seedOrderHistory()
-      expect(personal[0].id).toBe('ORD-1001')
+      const ids = seedOrderHistory().map((row) => row.id)
+      expect(ids).toContain('ORD-1001')
       expect(wrapper.text()).toContain('ORD-1001')
+      expect(wrapper.text()).toContain('ORD-1006')
       expect(wrapper.text()).toContain('500')
       expect(wrapper.text()).not.toContain('ORD-8472')
     })
@@ -94,6 +100,81 @@ describe('OrderHistoryPage', function () {
       const wrapper = mountPage('history')
       expect(wrapper.text()).toContain('ORD-1001')
       expect(wrapper.text()).not.toContain('ORD-EMPTY')
+    })
+  })
+
+  describe('Repeat Order', function () {
+    function repeatButton(wrapper) {
+      return wrapper
+        .findAll('button')
+        .filter(function (btn) {
+          return btn.text().trim() === 'Repeat Order'
+        })
+        .at(0)
+    }
+
+    function buttonByText(wrapper, label) {
+      return wrapper
+        .findAll('button')
+        .filter(function (btn) {
+          return btn.text().trim() === label
+        })
+        .at(0)
+    }
+
+    var existing = {
+      id: 'in-cart-1',
+      code: 'BCAD-PL-ENG',
+      language: 'English',
+      quantity: 1,
+      details: { name: 'Firstname Lastname' },
+    }
+
+    beforeEach(function () {
+      Vue.set(store, 'session', { email: 'demo@colliers.com', role: 'user', loggedInAt: 1 })
+      loadProfileCollections()
+      store.cart.splice(0, store.cart.length)
+      store.repeatNotice = null
+      go.mockClear()
+    })
+
+    it('OH-P06 empty cart: copies the order and opens Shipping with new line ids', async function () {
+      const wrapper = mountPage('history')
+      repeatButton(wrapper).trigger('click')
+      await wrapper.vm.$nextTick()
+      expect(wrapper.text()).not.toContain('Replace your cart?')
+      expect(go).toHaveBeenCalledWith('shipping')
+      const source = seedOrderHistory()[0]
+      expect(store.repeatNotice.orderId).toBe(source.id)
+      expect(store.cart.length).toBe(source.cart.length)
+      expect(store.cart[0].id).not.toBe(source.cart[0].id)
+      expect(store.order.splits).toHaveLength(source.order.splits.length)
+    })
+
+    it('OH-P07 cart has cards: asks first, Cancel keeps the cart', async function () {
+      store.cart.push(Object.assign({}, existing))
+      const wrapper = mountPage('history')
+      repeatButton(wrapper).trigger('click')
+      await wrapper.vm.$nextTick()
+      expect(wrapper.text()).toContain('Replace your cart?')
+      expect(wrapper.text()).toContain('Your cart has 1 item(s)')
+      buttonByText(wrapper, 'Cancel').trigger('click')
+      await wrapper.vm.$nextTick()
+      expect(wrapper.text()).not.toContain('Replace your cart?')
+      expect(go).not.toHaveBeenCalled()
+      expect(store.cart.map((l) => l.id)).toEqual(['in-cart-1'])
+    })
+
+    it('OH-P08 cart has cards: Replace cart copies the order and opens Shipping', async function () {
+      store.cart.push(Object.assign({}, existing))
+      const wrapper = mountPage('history')
+      repeatButton(wrapper).trigger('click')
+      await wrapper.vm.$nextTick()
+      buttonByText(wrapper, 'Replace cart').trigger('click')
+      await wrapper.vm.$nextTick()
+      expect(go).toHaveBeenCalledWith('shipping')
+      expect(store.cart.map((l) => l.id)).not.toContain('in-cart-1')
+      expect(store.cart.length).toBe(seedOrderHistory()[0].cart.length)
     })
   })
 })

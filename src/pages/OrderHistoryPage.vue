@@ -280,12 +280,29 @@
         </div>
       </div>
     </div>
+    <app-modal
+      :open="!!confirmRepeatId"
+      :title="t('repeatOrderConfirmTitle')"
+      size="md"
+      @close="cancelRepeat"
+    >
+      <div class="space-y-5 px-5 py-5 sm:px-6">
+        <p class="text-sm text-gray-700">{{ repeatConfirmBody }}</p>
+        <div class="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
+          <app-button variant="outline" class="sm:w-auto" @click="cancelRepeat">{{
+            t('cancel')
+          }}</app-button>
+          <app-button class="sm:w-auto" @click="confirmRepeat">{{ t('replaceCart') }}</app-button>
+        </div>
+      </div>
+    </app-modal>
   </colliers-page-shell>
 </template>
 
 <script>
 import ColliersPageShell from '../layout/ColliersPageShell.vue'
 import AppButton from '../components/AppButton.vue'
+import AppModal from '../components/AppModal.vue'
 import AdminPageHeader from '../components/AdminPageHeader.vue'
 import SearchField from '../components/SearchField.vue'
 import SelectField from '../components/SelectField.vue'
@@ -314,6 +331,7 @@ export default {
   components: {
     ColliersPageShell,
     AppButton,
+    AppModal,
     AdminPageHeader,
     SearchField,
     SelectField,
@@ -325,9 +343,16 @@ export default {
       search: '',
       statusFilter: 'all',
       details: null,
+      // Order waiting for "Replace cart" (Repeat Order with cards already in the cart).
+      confirmRepeatId: null,
     }
   },
   computed: {
+    repeatConfirmBody: function () {
+      return t('repeatOrderConfirmBody')
+        .replace('{n}', this.store.cart.length)
+        .replace('{id}', this.confirmRepeatId || '')
+    },
     fromAdmin: function () {
       return this.$route.name === 'admin-orders'
     },
@@ -432,8 +457,26 @@ export default {
     closeDetails: function () {
       this.details = null
     },
+    /** Repeat Order replaces the cart: ask first when it already holds cards. */
     onRepeat: function (id) {
-      if (repeatOrder(id)) go('shipping')
+      if (this.store.cart.length) {
+        this.confirmRepeatId = id
+        return
+      }
+      this.runRepeat(id)
+    },
+    confirmRepeat: function () {
+      var id = this.confirmRepeatId
+      this.confirmRepeatId = null
+      this.runRepeat(id)
+    },
+    cancelRepeat: function () {
+      this.confirmRepeatId = null
+    },
+    runRepeat: function (id) {
+      if (!repeatOrder(id)) return
+      this.details = null
+      go('shipping')
     },
   },
 }
