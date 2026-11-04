@@ -12,6 +12,7 @@ export const CANADIAN_PROVINCES = [
   { value: 'NT', label: 'Northwest Territories', labelFr: 'Territoires du Nord-Ouest' },
   { value: 'NU', label: 'Nunavut', labelFr: 'Nunavut' },
   { value: 'YT', label: 'Yukon', labelFr: 'Yukon' },
+  { value: 'NA', label: 'National', labelFr: 'National' },
 ]
 
 /**

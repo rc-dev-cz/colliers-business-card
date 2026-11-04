@@ -38,6 +38,7 @@ if (String(details.titleFr || '').trim()) details.titleFrEdited = 1;
 if (editId && typeof app !== 'undefined') app.editLineId = editId;
 model.editLineId = editId || model.editLineId;
 model.card = Object.assign({}, model.card || {}, details);
+if (model.card.titleFr == null) model.card.titleFr = '';
 // Other credential field starts from the saved credential (wrapCardName refuses a draft that does not fit).
 model.card.otherCredentialDraft = String(model.card.additionalCredentials || '');
 var lang = model.product.language || model.card.language;

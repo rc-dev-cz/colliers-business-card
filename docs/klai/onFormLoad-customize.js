@@ -165,6 +165,7 @@ model.card = model.card || {}
 var c = model.card
 if (c.name == null) c.name = ''
 if (c.title == null) c.title = ''
+if (c.titleFr == null) c.titleFr = ''
 if (c.email == null) c.email = ''
 if (c.emailEdited == null) c.emailEdited = false
 if (c.phone == null) c.phone = ''
@@ -223,7 +224,7 @@ var TITLES_FR = [
   'Directrice',
   'Gestionnaire de Projet',
   'Gestionnaire de projet adjoint',
-  'Gestionnaire de projets principal',
+  'Directeur de projet',
   'Gestionnaire de projets Senior',
   'Partenaire d’affaires sénior en acquisition de talent',
   'Responsable du développement commercial',
@@ -302,8 +303,10 @@ if (!Array.isArray(model.regionOptions) || !model.regionOptions.length) {
     'Northwest Territories',
     'Nunavut',
     'Yukon',
+    'National',
   ]
 }
+if (model.regionOptions.indexOf('National') === -1) model.regionOptions.push('National')
 var keepProof = !fresh && typeof app !== 'undefined' && app.proof && app.proof.details
 if (!lineId && !keepProof) {
   model.editLineId = ''

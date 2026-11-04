@@ -132,10 +132,6 @@
             <span>{{ t('subtotal') }}</span>
             <span>{{ money(cartTotal) }}</span>
           </div>
-          <div class="flex justify-between text-sm text-gray-700">
-            <span>{{ t('shippingHandling') }}</span>
-            <span>{{ t('shippingTbd') }}</span>
-          </div>
           <div
             class="flex justify-between border-t border-gray-200 pt-2 text-[15px] font-semibold text-gray-900"
           >

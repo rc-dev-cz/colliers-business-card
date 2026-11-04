@@ -158,7 +158,6 @@ export const messages = {
     FR: 'Dans aucune expédition — ne sera pas commandée.',
   },
   addBackToShipping: { EN: 'Add back', FR: 'Rajouter' },
-  shippingTbd: { EN: 'TBD', FR: 'À déterminer' },
   selectedItems: { EN: 'Selected Items', FR: 'Articles sélectionnés' },
   noItemsSelected: { EN: 'No items selected', FR: 'Aucun article sélectionné' },
   addItem: { EN: 'Add item', FR: 'Ajouter un article' },
@@ -300,7 +299,6 @@ export const messages = {
   qty: { EN: 'Qty', FR: 'Qté' },
   clearCart: { EN: 'Clear cart', FR: 'Vider le panier' },
   subtotal: { EN: 'Subtotal', FR: 'Sous-total' },
-  shippingHandling: { EN: 'Shipping & Handling', FR: 'Expédition et manutention' },
   orderConfirmed: { EN: 'Order Confirmed', FR: 'Commande confirmée' },
   thankYou: {
     EN: 'Thank you for your order. Your business cards are being prepared.',

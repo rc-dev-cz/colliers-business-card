@@ -56,10 +56,6 @@
         <span>{{ BF.i18n('label_colliers_subtotal') }}</span>
         <span>{{ ((app.i18n && app.i18n.langSelected) === 'fr' ? Number(_.get(app, 'header.cartTotal') || 0).toLocaleString('fr-CA', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + '\u00a0$' : '$' + Number(_.get(app, 'header.cartTotal') || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })) }}</span>
       </div>
-      <div class="flex justify-between text-sm text-gray-700">
-        <span>{{ BF.i18n('label_colliers_shippingHandling') }}</span>
-        <span>{{ BF.i18n('label_colliers_shippingTbd') }}</span>
-      </div>
       <div class="flex justify-between border-t border-gray-200 pt-2 text-[15px] font-semibold text-gray-900">
         <span>{{ BF.i18n('label_colliers_total') }}</span>
         <span>{{ ((app.i18n && app.i18n.langSelected) === 'fr' ? Number(_.get(app, 'header.cartTotal') || 0).toLocaleString('fr-CA', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + '\u00a0$' : '$' + Number(_.get(app, 'header.cartTotal') || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })) }}</span>

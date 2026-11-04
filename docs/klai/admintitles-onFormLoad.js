@@ -4,7 +4,7 @@
 // Until FileMaker returns any titles: the client's 31 English titles (Colliers Project Leaders Titles.xlsx, Oct 2026)
 // and the 8 French titles (Titles French.xlsx, Oct 2026).
 var SEED_EN = ["Advisor", "Assistant Preconstruction Manager", "Assistant Project Manager", "Associate", "Business Development Manager", "Director", "Director, Preconstruction", "Human Resources Business Partner", "Independent Consultant", "Manager", "Manager, Infrastructure Advisory", "Managing Principal", "National Sector Lead", "Preconstruction Manager", "Principal", "Professional Practice Specialist", "Project Director", "Project Manager", "Proposal Writer", "Regional Marketing Specialist", "Sector Director", "Senior Advisor", "Senior Associate - Infrastructure Advisory", "Senior Manager, Project Controls", "Senior Preconstruction Manager", "Senior Project Manager", "Senior Proposal Writer", "Senior Vice President", "Talent Acquisition Business Partner", "Team Lead", "Vice President"];
-var SEED_FR = ["Responsable du développement commercial", "Directrice", "Gestionnaire de projets Senior", "Chef d’équipe", "Gestionnaire de Projet", "Gestionnaire de projets principal", "Gestionnaire de projet adjoint", "Partenaire d’affaires sénior en acquisition de talent"];
+var SEED_FR = ["Responsable du développement commercial", "Directrice", "Gestionnaire de projets Senior", "Chef d’équipe", "Gestionnaire de Projet", "Directeur de projet", "Gestionnaire de projet adjoint", "Partenaire d’affaires sénior en acquisition de talent"];
 function toRecord(row, index) {
   if (row && typeof row === 'object') {
     return {

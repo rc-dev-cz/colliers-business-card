@@ -21,6 +21,8 @@ describe('French region names (BUG-10)', function () {
     expect(label('French', 'Quebec')).toBe('Québec')
     expect(label('Bilingual', 'Quebec')).toBe('Quebec / Québec')
     expect(label('Bilingual', 'Ontario')).toBe('Ontario')
+    expect(label('English', 'National')).toBe('National')
+    expect(label('French', 'National')).toBe('National')
     regionOptions('French').forEach(function (row) {
       expect(row.value).not.toMatch(/[éÉî]/)
     })

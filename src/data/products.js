@@ -109,7 +109,7 @@ export const jobTitlesFr = [
   'Directrice',
   'Gestionnaire de Projet',
   'Gestionnaire de projet adjoint',
-  'Gestionnaire de projets principal',
+  'Directeur de projet',
   'Gestionnaire de projets Senior',
   'Partenaire d’affaires sénior en acquisition de talent',
   'Responsable du développement commercial',

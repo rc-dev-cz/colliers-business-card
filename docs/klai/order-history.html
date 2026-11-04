@@ -169,7 +169,7 @@
                 <figure v-for="(face, fi) in line.faces || []" :key="'face-' + fi" class="m-0">
                   <bfcomp
                     name="CardPreview"
-                    :model="'details.lines.' + li + '.faces.' + fi"
+                    :model="'orderPreview.' + li + '.faces.' + fi"
                   ></bfcomp>
                   <figcaption
                     v-if="(line.faces || []).length > 1"

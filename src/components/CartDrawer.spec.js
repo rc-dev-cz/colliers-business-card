@@ -19,16 +19,12 @@ describe('CartDrawer shipping (BUG-07)', function () {
     clearCart()
   })
 
-  it('shows Shipping & Handling as TBD, not $0.00', function () {
+  it('shows subtotal and total without a shipping line', function () {
     var text = openDrawer().text()
-    expect(text).toContain('Shipping & Handling')
-    expect(text).toContain('TBD')
-    expect(text).not.toContain('$0.00')
-  })
-
-  it('shows À déterminer in FR', function () {
-    setLocale('FR')
-    expect(openDrawer().text()).toContain('À déterminer')
+    expect(text).toContain('Subtotal')
+    expect(text).toContain('Total')
+    expect(text).not.toContain('Shipping & Handling')
+    expect(text).not.toContain('TBD')
   })
 })
 

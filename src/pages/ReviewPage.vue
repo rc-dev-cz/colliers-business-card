@@ -145,10 +145,6 @@
           <span>{{ t('subtotal') }}</span>
           <span>{{ money(orderTotal) }}</span>
         </div>
-        <div class="mt-2 flex justify-between text-sm text-gray-700">
-          <span>{{ t('shipping') }}</span>
-          <span>{{ t('shippingTbd') }}</span>
-        </div>
         <div
           class="mt-4 flex justify-between border-t border-gray-200 pt-4 text-base font-semibold text-colliers-primary"
         >
