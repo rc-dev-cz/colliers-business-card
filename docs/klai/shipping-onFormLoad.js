@@ -119,6 +119,11 @@ function dropEmptySplits(order, cartRows) {
 dropEmptySplits(model.order, normalizeCart(model.cart) || [])
 // An item added from an empty group is already assigned by now; a leftover id is stale.
 if (typeof app !== 'undefined') app.pendingSplitId = null
+// FileMaker's shipping hook always sends personalAddresses (an empty array when the user has none)
+// together with the offices. An empty list that came back with the offices is a checked, empty
+// address book, not a list that failed to load.
+var personalLoaded =
+  Array.isArray(model.personalAddresses) && Array.isArray(model.offices) && model.offices.length > 0
 var personalRows = firstNonEmpty(
   model.personalAddresses,
   typeof app !== 'undefined' ? app.personalAddresses : null,
@@ -153,8 +158,9 @@ try {
 } catch (errAddr) {}
 // Repeat Order (Order History repeatOrder) leaves app.repeatNotice. The copied ship-tos are checked
 // once against the address book this page loaded (Vue copyOrderForRepeat): a row still there
-// refreshes the text, an id gone from a loaded list is dropped. An empty list counts as not loaded,
-// so nothing is dropped from it (Place Order still refuses a ship-to missing from the book).
+// refreshes the text, an id gone from a loaded list is dropped. An empty office list counts as not
+// loaded; an empty personal list FileMaker sent (personalLoaded) is checked, so a ship-to whose
+// address was deleted is dropped here (Review would otherwise send its dead id to FileMaker).
 // The notice moves to model.repeatNotice so it shows on this visit only.
 function addressText(row) {
   function pick(keys) {
@@ -199,8 +205,8 @@ function checkRepeatedShipTos(order) {
         type === 'office'
           ? officeRows.length > 0
           : type === 'personal'
-            ? personalRows.length > 0
-            : officeRows.length > 0 && personalRows.length > 0
+            ? personalRows.length > 0 || personalLoaded
+            : officeRows.length > 0 && (personalRows.length > 0 || personalLoaded)
       if (!checked) return true
       removed += 1
       return false

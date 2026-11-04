@@ -14,7 +14,6 @@ const PATHS = {
   'order-history': '/order-history',
   review: '/review',
   confirmed: '/confirmed',
-  'contact-us': '/contact-us',
   admin: '/admin',
   'admin-addresses': '/admin/addresses',
   'admin-titles': '/admin/titles',
