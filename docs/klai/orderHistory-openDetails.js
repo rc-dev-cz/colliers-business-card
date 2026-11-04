@@ -157,7 +157,7 @@ model.details = {
   status: row.status,
   dateFormatted: row.dateFormatted || row.date || '',
   cardholder: row.cardholder || '',
-  qty: row.quantity,
+  qty: row.qty,
   total: (total || Number(row.total) || 0).toFixed(2),
   lines: lines,
   shipments: shipments,
